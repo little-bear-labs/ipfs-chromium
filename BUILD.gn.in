@@ -1,0 +1,15 @@
+component("ipfs") {
+  sources = [
+  @gn_sources@]
+  defines = [  ]
+  include_dirs = [
+    "."
+  ]
+  deps = [
+    "//base",
+    "//components/policy/core/common",
+    "//components/services/quarantine",
+    "//net",
+  ]
+  defines = [ "IS_IPFS_IMPL" ]
+}
