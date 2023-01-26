@@ -23,7 +23,9 @@ target_include_directories(ipfs_component
 )
 target_compile_options(ipfs_component
     PUBLIC
-        -nostdinc++ #TODO(maybe)
+        #TODO(maybe)
+        -nostdinc++
+        -fno-rtti
 )
 
 foreach(source ${sources})

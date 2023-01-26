@@ -7,7 +7,7 @@ namespace ipfs {
 
   class Loader final : public network::URLLoader {
   public:
-    Loader();
+    Loader( network::URLLoaderContext& ctxt, network::ResourceRequest const& res_req );
   };
 
 }

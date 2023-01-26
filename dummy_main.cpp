@@ -3,6 +3,6 @@
 
 int main()
 {
-  ipfs::Loader l{};
-  ipfs::LoaderFactory f{};
+//  ipfs::Loader l{};
+  ipfs::LoaderFactory f{mojo::PendingReceiver<network::mojom::URLLoaderFactory>{}};
 }
