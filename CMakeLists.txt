@@ -2,44 +2,56 @@ cmake_minimum_required(VERSION 3.24)
 project(chromium-ipfs)
 
 set(CHROMIUM_SOURCE_TREE "/mnt/big/lbl/code/chromium/src" CACHE STRING "Path to chromium/src")
-set(CHROMIUM_OUT_DIR "${CHROMIUM_SOURCE_TREE}/out/Default" CACHE STRING "Path to chromium/src")
-include(cmake/fromoutside.cmake)
+set(CHROMIUM_PROFILE "Default" CACHE STRING "The profile of the current Chromium build.")
 
-file(
-    GLOB
-        sources
-    CONFIGURE_DEPENDS
-        component/*.cc
-)
+include(cmake/setup.cmake)
 
-add_library(ipfs_component
-    ${sources}
-)
-target_include_directories(ipfs_component
-    SYSTEM
-    BEFORE
+add_subdirectory(library)
+add_executable(simple simple_main.cpp)
+target_link_libraries(simple
     PUBLIC
-        ${chromium_external_inc_dirs}
+        ipfs_client
 )
-target_compile_options(ipfs_component
-    PUBLIC
-        -nostdinc++ #TODO(maybe)
-)
+if(IS_DIRECTORY "${CHROMIUM_SOURCE_TREE}")
+    add_subdirectory(component)
 
-foreach(source ${sources})
-#    message(WARNING "source=${source}")
-    get_filename_component(basename "${source}" NAME )
-    set(gn_sources "${gn_sources}  \"${basename}\",\n  ")
-endforeach()
-configure_file(
+    set(target_dir "${CHROMIUM_SOURCE_TREE}/components/ipfs/${basename}")
+    file(
+        COPY
+            component/
+        DESTINATION
+            "${target_dir}"
+    )
+    file(
+        GLOB
+            sources
+        CONFIGURE_DEPENDS
+            component/*.cc
+            component/*.h
+            library/src/*.cc
+    )
+    install(
+        FILES
+            ${sources}
+        DESTINATION
+            ${target_dir}
+    )
+    install(
+        DIRECTORY
+            library/include/ipfs_client/
+        DESTINATION
+            "${target_dir}/ipfs_client/"
+    )
+    foreach(source ${sources})
+        get_filename_component(basename "${source}" NAME )
+        set(gn_sources "${gn_sources}  \"${basename}\",\n  ")
+    endforeach()
+    configure_file(
         BUILD.gn.in
-        ${CMAKE_CURRENT_SOURCE_DIR}/component/BUILD.gn
-    @ONLY
-)
+        ${target_dir}/BUILD.gn
+        @ONLY
+    )
 
-add_executable(dummy dummy_main.cpp )
-target_link_libraries(dummy
-    PUBLIC
-        ipfs_component
-        ${chromium_shared_objects}
-)
+else()
+    message(WARNING "CHROMIUM_SOURCE_TREE not pointing to source tree.")
+endif()

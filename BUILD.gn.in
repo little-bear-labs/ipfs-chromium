@@ -8,8 +8,13 @@ component("ipfs") {
   deps = [
     "//base",
     "//components/policy/core/common",
-    "//components/services/quarantine",
+    "//mojo/public/cpp/bindings",
     "//net",
+    "//services/network:network_service",
+    "//services/network/public/cpp:cpp",
+    "//services/network/public/mojom",
+    "//services/network/public/mojom:url_loader_base",
+    "//url",
   ]
   defines = [ "IS_IPFS_IMPL" ]
 }
