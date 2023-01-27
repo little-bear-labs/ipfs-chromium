@@ -41,7 +41,8 @@ configure_file(
 
 add_executable(dummy dummy_main.cpp )
 target_link_libraries(dummy
-    PUBLIC
+    PRIVATE
         ipfs_component
         ${chromium_shared_objects}
+        ${chromium_static_archives}
 )

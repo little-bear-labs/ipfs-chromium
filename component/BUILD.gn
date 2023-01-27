@@ -1,5 +1,6 @@
 component("ipfs") {
   sources = [
+    "gateways.cc",
     "interceptor.cc",
     "loader.cc",
     "loader_factory.cc",
@@ -11,9 +12,11 @@ component("ipfs") {
   deps = [
     "//base",
     "//components/policy/core/common",
+    "//mojo/public/cpp/bindings",
+    "//net",
     "//services/network:network_service",
     "//services/network/public/cpp:cpp",
-    "//net",
+    "//services/network/public/mojom",
     "//url",
   ]
   defines = [ "IS_IPFS_IMPL" ]

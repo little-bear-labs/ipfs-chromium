@@ -15,6 +15,10 @@ foreach(third abseil-cpp boringssl perfetto protobuf quiche skia)
 endforeach()
 
 set(chromium_shared_objects "")
-foreach(lib base bindings_base c++ content cpp network_cpp network_service url )
+foreach(lib absl base bindings bindings_base c++ content cpp leveldatabase network_cpp network_cpp_base network_param_mojom_support network_service perfetto public storage_browser storage_service_filesystem_support url )
     list(APPEND chromium_shared_objects "${CHROMIUM_OUT_DIR}/lib${lib}.so")
 endforeach()
+file(GLOB_RECURSE
+    chromium_static_archives
+    ${CHROMIUM_OUT_DIR}/obj/lib*.a
+)
