@@ -11,6 +11,7 @@ component("ipfs") {
     "//services/network:network_service",
     "//services/network/public/cpp:cpp",
     "//net",
+    "//url",
   ]
   defines = [ "IS_IPFS_IMPL" ]
 }

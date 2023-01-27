@@ -1,8 +1,10 @@
 #include "component/loader.h"
 #include "component/loader_factory.h"
+#include "component/interceptor.h"
 
 int main()
 {
 //  ipfs::Loader l{};
   ipfs::LoaderFactory f{mojo::PendingReceiver<network::mojom::URLLoaderFactory>{}};
+  ipfs::Interceptor i;
 }

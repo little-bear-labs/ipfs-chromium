@@ -1,30 +1,39 @@
 #include "loader.h"
 
-namespace i = ipfs;
-namespace n = network;
-namespace m = n::mojom;
+using Self = ipfs::Loader;
 
-i::Loader::Loader( n::URLLoaderContext& ctxt, n::ResourceRequest const& res_req )
-: URLLoader(
-          ctxt
-        , DeleteCallback{}
-        , mojo::PendingReceiver<m::URLLoader> {}
-        , 0
-        , res_req
-        , mojo::PendingRemote<m::URLLoaderClient>{}
-        , base::WeakPtr<m::URLLoaderClient>{}
-        , net::NetworkTrafficAnnotationTag::NotReached()
-        , 0
-        , 0
-        , {}
-        , {}
-        , {}
-        , {}
-        , {}
-        , {}
-        , {}
-        , {}
-        , {}
-        )
+Self::Loader()
 {
+  std::clog << "\n\n ### HIT " << __PRETTY_FUNCTION__ << " ### \n\n";
+}
+
+void Self::FollowRedirect(
+      std::vector<std::string> const& removed_headers
+    , net::HttpRequestHeaders  const& modified_headers
+    , net::HttpRequestHeaders  const& modified_cors_exempt_headers
+    , absl::optional<::GURL>   const& new_url
+    )
+{
+  std::clog << "\n\n ### HIT " << __PRETTY_FUNCTION__ << " ### \n\n";
+}
+void Self::SetPriority(net::RequestPriority priority, int32_t intra_priority_value)
+{
+  std::clog << "\n\n ### HIT " << __PRETTY_FUNCTION__ << " ### \n\n";
+}
+void Self::PauseReadingBodyFromNet()
+{
+  std::clog << "\n\n ### HIT " << __PRETTY_FUNCTION__ << " ### \n\n";
+}
+void Self::ResumeReadingBodyFromNet()
+{
+  std::clog << "\n\n ### HIT " << __PRETTY_FUNCTION__ << " ### \n\n";
+}
+
+void Self::StartRequest(
+    network::ResourceRequest const& resource_request
+  , mojo::PendingReceiver<network::mojom::URLLoader      > receiver
+  , mojo::PendingRemote  <network::mojom::URLLoaderClient> client
+  )
+{
+  std::clog << "\n\n ### HIT " << __PRETTY_FUNCTION__ << " ### \n\n";
 }
