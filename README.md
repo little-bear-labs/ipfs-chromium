@@ -5,18 +5,18 @@
 1. Outside of components/ipfs
    1. chrome/browser gains a dependency on components/ipfs
       1. Other apps may opt in as well.
-   2. in ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors
+   2. In ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors
       1. Instantiate an ipfs::Interceptor and add it to the list.
    3. ipfs:// and ipns:// URLs should be recongized in the omnibar
 2. New component "ipfs" contains classes:
    1. URLLoaderRequestInterceptor
-      1. checks the scheme against ipfs/ipns to decide whether to intercept
+      1. Checks the scheme against ipfs/ipns to decide whether to intercept
       2. Creates Loader for each IPFS/IPNS request
    2. Gateways - maintains a list of known http gateways
       1. Some are hard-coded
       2. An embedder has the option to add more
       3. Possible future work
-         1. browser settings for end-users to manage gateway list
+         1. Browser settings for end-users to manage gateway list
          2. Zeroconf
       4. Maintains dynamic scoring of gateways based on performance
       5. get_list() generates an ordered (prioritized) list to be used for a given request
@@ -67,7 +67,7 @@ graph TD;
     gwreq0 --> v["validate"] --> store["Store/append the block if we're at the end of the path"] --> links{"Are there links in the block?"} --YES--> filtr["If URL contains path, only follow appropriate DAG links"] --"For Each"--> hdr
     gwreq --ALL FAIL--> errored
     gwreq0 --ALL FAIL--> errored
-    links --NO--> reconstitute --> successed(["Call back to the client with 200 and body"])
+    links --NO--> reconstitute --> successed(["Call back with status 200 and response body"])
     style successed fill:#9CF,color:black
  ```
 
@@ -77,7 +77,7 @@ The class maintains:
 * Pending requests: A list where each member has:
   * URL suffix (everything after the gateway)
   * enum/callback for what to do with the response
-  * dup count: how many gateways it's been requested from already
+  * duplicate count: how many gateways it's been requested from already
 * A list of gateways marked or segregated based on:
   * GOOD/BAD - whether the gateway has returned a successful http response during _this_ class's lifetime yet.
   * BUSY/FREE - whether an HTTP request to that gateway is outstanding
