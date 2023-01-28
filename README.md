@@ -50,3 +50,14 @@
 3. Possible future(?) work
    1. If multiple blocks are known at once, request them from different gateways in parallel TODO: either substantiate that this can happen or remove this point
    2. If a download is underway and appears healthy (content being received with an x-ipfs-path header) and the expected length is large, pause concurrent downloads from other gateways.
+
+## Tmptest
+
+```mermaid
+  graph TD;
+      A-->B;
+      A-->C;
+      B-->D;
+      C-->D;
+```
+
