@@ -75,7 +75,35 @@ graph TD;
 
 ### Gateway Request
 
-TODO
+The class maintains:
+* Pending requests: A list where each member has:
+  * URL suffix (everything after the gateway)
+  * enum/callback for what to do with the response
+  * dup count: how many gateways it's been requested from already
+* A list of gateways marked or segregated based on:
+  * GOOD/BAD - whether the gateway has returned a successful http response during _this_ class's lifetime yet.
+  * BUSY/FREE - whether an HTTP request to that gateway is outstanding
+* For each gateway, a set of failed requests (URL suffixes)
+
+```mermaid
+graph TD;
+    start(["URL suffix from above flow"]) --> add[("Add to pending requests")]
+    style start fill:#9CF
+    add --> selreq["Select the pending request with the lowest dup count"] --> incdup["Increase its dup count"] 
+    incdup --> goodfree{"Is there a gateway that is both GOOD and FREE"} --NO--> badfree{"Are there any FREE that have not already failed this request?"} 
+    badfree --NO--> wait(("Wait for pending requests to finish (return flow control)"))
+    badfree --YES--> selbf["Select the one with the fewest failed requests, initial priority tiebreaks"] --> mark_busy["Mark the gateway as BUSY"]
+    goodfree --YES--> selbf
+    mark_busy --> send["Create and send an HTTP URLRequest"]
+    send -.callback.-> resp
+    send --> conc{"Do we have the max concurrent requests already?"} --NO--> selreq
+    conc --YES--> wait
+    resp[/"URL response"/] --> markfree["Mark the gateway as FREE"] --> success{"status=200 + body?"} 
+    style resp fill:#FFE
+    success --YES--> cancel["Cancel identical requests"] --> markgood["Mark the gateway as GOOD"] ----> successed(["Return response (see previous diagram)"])
+    style successed fill:#9CF
+    success --NO--> addbad["Add the URL suffix to this gateway's set of failures."] --> selreq
+```
 
 ## Class Diagram
 
