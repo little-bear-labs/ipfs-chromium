@@ -53,7 +53,7 @@ graph TD;
     style req1 fill:#FFE
     req1 --> next[["Next Interceptor(not handled)"]]
     is_ipfs --"YES (creates)"--> loader[["ipfs::Loader(URLLoader)"]]
-    state[["ipfs::InterRequestState"]] --> gwlist[/"Prioritized list of gateways"/] --> loader
+    state[["Gateways"]] --> gwlist[/"Prioritized list of gateways"/] --> loader
     style gwlist fill:#FFE
     req2[/"URLRequest(2)"/] --"Maybe modified, but not scheme"--> loader
     style req2 fill:#FFE
@@ -90,9 +90,12 @@ graph TD;
     start(["URL suffix from above flow"]) --> add[("Add to pending requests")]
     style start fill:#9CF
     add --> selreq["Select the pending request with the lowest dup count"] --> incdup["Increase its dup count"] 
-    incdup --> goodfree{"Is there a gateway that is both GOOD and FREE"} --NO--> badfree{"Are there any FREE that have not already failed this request?"} 
-    badfree --NO--> anybusy{"Are there any BUSY gateways?"} --YES--> wait(("Wait for pending requests to finish (return flow control)"))
-    badfree --YES--> selbf["Select the one with the fewest failed requests, initial priority tiebreaks"] --> mark_busy["Mark the gateway as BUSY"]
+    incdup --> goodfree{"Is there a gateway that is both GOOD and FREE"} 
+    goodfree --NO--> badfree{"Are there any FREE that have not already failed this request?"} 
+    badfree --NO--> anybusy{"Are there any BUSY gateways?"} 
+    anybusy --YES--> wait(("Wait for pending requests to finish (return flow control)"))
+    badfree --YES--> selbf["Select the one with the fewest failed requests, initial priority tiebreaks"] 
+    selbf --> mark_busy["Mark the gateway as BUSY"]
     goodfree --YES--> selbf
     mark_busy --> send["Create and send an HTTP URLRequest"]
     send -.callback.-> resp
@@ -100,13 +103,28 @@ graph TD;
     conc --YES--> wait
     resp[/"URL response"/] --> markfree["Mark the gateway as FREE"] --> success{"status=200 + body?"} 
     style resp fill:#FFE
-    success --YES--> cancel["Cancel identical requests"] --> markgood["Mark the gateway as GOOD"] ----> successed(["Return response (see previous diagram)"])
+    success --YES--> cancel["Cancel identical requests"] --> markgood["Mark the gateway as GOOD"] 
+    markgood --> incprio["Indicate to Gateways that this gateway's score/priority should be a bit higher"] 
+    incprio ----> successed(["Return response (see previous diagram)"])
     style successed fill:#9CF
-    success --NO--> addbad["Add the URL suffix to this gateway's set of failures."] --> selreq
-    anybusy --NO--> all_failed(["As all gateways have failed on a given request, report that failure"])
+    success --NO--> addbad["Add the URL suffix to this gateway's set of failures."] 
+    addbad --> decprio[Indicate to Gateways that this gateway's score/priority should be a bit lower] --> selreq
+    anybusy --NO---> all_failed(["As all gateways have failed on a given request, report that failure"])
     style all_failed fill:#9CF
  ```
 
 ## Class Diagram
 
-TODO
+classDiagram
+class ChromeContentBrowserClient {
+WillCreateURLLoaderRequestInterceptors()
+...
+}
+class ipfs_Loader {
+...
+}
+ChromeContentBrowserClient ..> ipfs_Interceptor
+ipfs_Interceptor ..> Gateways
+ipfs_Interceptor ..> ipfs_Loader
+ipfs_Loader ..> Gateways
+
