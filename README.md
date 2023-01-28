@@ -91,7 +91,7 @@ graph TD;
     style start fill:#9CF
     add --> selreq["Select the pending request with the lowest dup count"] --> incdup["Increase its dup count"] 
     incdup --> goodfree{"Is there a gateway that is both GOOD and FREE"} --NO--> badfree{"Are there any FREE that have not already failed this request?"} 
-    badfree --NO--> wait(("Wait for pending requests to finish (return flow control)"))
+    badfree --NO--> anybusy{"Are there any BUSY gateways?"} --YES--> wait(("Wait for pending requests to finish (return flow control)"))
     badfree --YES--> selbf["Select the one with the fewest failed requests, initial priority tiebreaks"] --> mark_busy["Mark the gateway as BUSY"]
     goodfree --YES--> selbf
     mark_busy --> send["Create and send an HTTP URLRequest"]
@@ -103,7 +103,9 @@ graph TD;
     success --YES--> cancel["Cancel identical requests"] --> markgood["Mark the gateway as GOOD"] ----> successed(["Return response (see previous diagram)"])
     style successed fill:#9CF
     success --NO--> addbad["Add the URL suffix to this gateway's set of failures."] --> selreq
-```
+    anybusy --NO--> all_failed(["As all gateways have failed on a given request, report that failure"])
+    style all_failed fill:#9CF
+ ```
 
 ## Class Diagram
 
