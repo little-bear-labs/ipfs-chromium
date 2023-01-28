@@ -41,34 +41,34 @@
 ```mermaid
 graph TD;
     start(["ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors()"])
-    style start fill:#9CF
+    style start fill:#9CF,color:black
     start --"(creates)"----> inter[[ipfs::Interceptor]]
     prev[[Previous Interceptor]] --> req0[/"URLRequest(1)"/]
-    style req0 fill:#FFE
+    style req0 fill:#FFE,color:black
     req0 --> inter
     inter --> is_ipfs{"Is scheme ip_s?"}
     is_ipfs --NO--> req1[/"URLRequest(1)"/]
-    style req1 fill:#FFE
+    style req1 fill:#FFE,color:black
     req1 --> next[["Next Interceptor(not handled)"]]
     is_ipfs --"YES (creates)"--> loader[["ipfs::Loader(URLLoader)"]]
     state[["Gateways"]] --> gwlist[/"Prioritized list of gateways"/] --> loader
-    style gwlist fill:#FFE
+    style gwlist fill:#FFE,color:black
     req2[/"URLRequest(2)"/] --"Maybe modified, but not scheme"--> loader
-    style req2 fill:#FFE
+    style req2 fill:#FFE,color:black
     errored(["Call back to client code with error"])
-    style errored fill:#9CF
+    style errored fill:#9CF,color:black
     loader --> is_ipns{"URL Scheme"} --IPNS--> parse_ipns[/"Attempt to parse name as CIDV1"/] --FAIL--> dns_txt[/"Attempt to fetch dnslink= from TXT"/] --FAIL--> errored
     dns_txt --PASS--> dns_sub["Replace URL prefix based on value"] --> is_ipns
     parse_ipns --PASS--> detnrurl["Set 'Accept: application/vnd.ipfs.ipns-record'"] --> gwreq>"Gateway Request (see next chart)"]
-    style gwreq fill:#FDC
+    style gwreq fill:#FDC,color:black
     gwreq --> validate --> sub["Substitute into URL"] --> is_ipns
     is_ipns --IPFS--> hdr["Set 'Accept: application/vnd.ipld.raw'"] --> gwreq0>"Gateway Request"]
-    style gwreq0 fill:#FDC
+    style gwreq0 fill:#FDC,color:black
     gwreq0 --> v["validate"] --> store["Store/append the block if we're at the end of the path"] --> links{"Are there links in the block?"} --YES--> filtr["If URL contains path, only follow appropriate DAG links"] --"For Each"--> hdr
     gwreq --ALL FAIL--> errored
     gwreq0 --ALL FAIL--> errored
     links --NO--> reconstitute --> successed(["Call back to the client with 200 and body"])
-    style successed fill:#9CF    
+    style successed fill:#9CF,color:black
  ```
 
 ### Gateway Request
@@ -86,7 +86,7 @@ The class maintains:
 ```mermaid
 graph TD;
     start(["URL suffix from above flow"]) --> add[("Add to pending requests")]
-    style start fill:#9CF
+    style start fill:#9CF,color:black
     add --> selreq["Select the pending request with the lowest dup count"] --> incdup["Increase its dup count"] 
     incdup --> goodfree{"Is there a gateway that is both GOOD and FREE"} 
     goodfree --NO--> badfree{"Are there any FREE that have not already failed this request?"} 
@@ -100,15 +100,15 @@ graph TD;
     send --> conc{"Do we have the max concurrent requests already?"} --NO--> selreq
     conc --YES--> wait
     resp[/"URL response"/] --> markfree["Mark the gateway as FREE"] --> success{"status=200 + body?"} 
-    style resp fill:#FFE
+    style resp fill:#FFE,color:black
     success --YES--> cancel["Cancel identical requests"] --> markgood["Mark the gateway as GOOD"] 
     markgood --> incprio["Indicate to Gateways that this gateway's score/priority should be a bit higher"] 
     incprio ----> successed(["Return response (see previous diagram)"])
-    style successed fill:#9CF
+    style successed fill:#9CF,color:black
     success --NO--> addbad["Add the URL suffix to this gateway's set of failures."] 
     addbad --> decprio[Indicate to Gateways that this gateway's score/priority should be a bit lower] --> selreq
     anybusy --NO---> all_failed(["As all gateways have failed on a given request, report that failure"])
-    style all_failed fill:#9CF
+    style all_failed fill:#9CF,color:black
  ```
 
 ## Class Diagram
@@ -120,7 +120,14 @@ classDiagram
       ...
    }
    class ipfs_Loader {
+      pending_requests
+      gateway_list
       ...
+   }
+   class Gateways {
+      get_list()
+      increase_priority()
+      decrease_priority()
    }
    ChromeContentBrowserClient ..> ipfs_Interceptor
    ipfs_Interceptor ..> Gateways
