@@ -115,16 +115,17 @@ graph TD;
 
 ## Class Diagram
 
+```mermaid
 classDiagram
-class ChromeContentBrowserClient {
-WillCreateURLLoaderRequestInterceptors()
-...
-}
-class ipfs_Loader {
-...
-}
-ChromeContentBrowserClient ..> ipfs_Interceptor
-ipfs_Interceptor ..> Gateways
-ipfs_Interceptor ..> ipfs_Loader
-ipfs_Loader ..> Gateways
-
+   class ChromeContentBrowserClient {
+      WillCreateURLLoaderRequestInterceptors()
+      ...
+   }
+   class ipfs_Loader {
+      ...
+   }
+   ChromeContentBrowserClient ..> ipfs_Interceptor
+   ipfs_Interceptor ..> Gateways
+   ipfs_Interceptor ..> ipfs_Loader
+   ipfs_Loader ..> Gateways   
+```
