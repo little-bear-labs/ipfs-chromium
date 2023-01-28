@@ -66,7 +66,7 @@ graph TD;
     gwreq --> validate --> sub["Substitute into URL"] --> is_ipns
     is_ipns --IPFS--> hdr["Set 'Accept: application/vnd.ipld.raw'"] --> gwreq0>"Gateway Request"]
     style gwreq0 fill:#FDC
-    gwreq0 --> v["validate"] --> store["Store/append the block if we're at the end of the path"] --> links{"Are there links in the block?"} --YES--> filter["If URL contains path, only follow appropriate DAG links"] --"For Each"--> hdr
+    gwreq0 --> v["validate"] --> store["Store/append the block if we're at the end of the path"] --> links{"Are there links in the block?"} --YES--> filtr["If URL contains path, only follow appropriate DAG links"] --"For Each"--> hdr
     gwreq --ALL FAIL--> errored
     gwreq0 --ALL FAIL--> errored
     links --NO--> reconstitute --> successed(["Call back to the client with 200 and body"])
@@ -75,4 +75,8 @@ graph TD;
 
 ### Gateway Request
 
+TODO
 
+## Class Diagram
+
+TODO
