@@ -30,9 +30,7 @@
          2. Hash the block and check that they match
       2. IPNS validation
          1. Parse the name as CIDv1, if fails assume DNSLink
-         2. Fetch the IPNS name record, see https://github.com/ipfs/specs/issues/320
-         3. Validate signature
-         4. Hash key & check it matches hash from the name CID
+         2. Fetch the IPNS name record, see https://gist.github.com/hacdias/f8935decee0c6a57513f2221c5a2fd7c for examples.
       4. DNSLink URLs
          1. Attempt to fetch the TXT record by standard Chromium means
          2. Do the substitution as described [here](http://chomp:8080/ipfs/bafybeidkrrsdauzr6lfkfr7so625myv7njbzvkptrrj2a4ir4ejlg3sieu/concepts/dnslink/#resolve-dnslink-name)
@@ -61,7 +59,7 @@ graph TD;
     style errored fill:#9CF
     loader --> is_ipns{"URL Scheme"} --IPNS--> parse_ipns[/"Attempt to parse name as CIDV1"/] --FAIL--> dns_txt[/"Attempt to fetch dnslink= from TXT"/] --FAIL--> errored
     dns_txt --PASS--> dns_sub["Replace URL prefix based on value"] --> is_ipns
-    parse_ipns --PASS--> detnrurl["Determine URL to get name record"] --> gwreq>"Gateway Request (see next chart)"]
+    parse_ipns --PASS--> detnrurl["Set 'Accept: application/vnd.ipfs.ipns-record'"] --> gwreq>"Gateway Request (see next chart)"]
     style gwreq fill:#FDC
     gwreq --> validate --> sub["Substitute into URL"] --> is_ipns
     is_ipns --IPFS--> hdr["Set 'Accept: application/vnd.ipld.raw'"] --> gwreq0>"Gateway Request"]
