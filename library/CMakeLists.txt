@@ -25,7 +25,7 @@ target_include_directories(ipfs_client
 find_package(absl)
 if(absl_FOUND)
     target_link_libraries(ipfs_client
-        PUBLIC
+        PRIVATE # It is conceptually public, that is clients need abseil, but ../component can't use *this* abseil
             absl::flat_hash_map
             absl::flat_hash_set
     )

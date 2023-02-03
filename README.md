@@ -1,6 +1,8 @@
-# Planned Design (unimplemented)
+# IPFS integration for Chromium
 
-## Changes/Additions
+## Planned Design
+
+### Changes/Additions
 
 1. Outside of components/ipfs
    1. chrome/browser gains a dependency on components/ipfs
@@ -35,9 +37,9 @@
          1. Attempt to fetch the TXT record by standard Chromium means
          2. Do the substitution as described [here](http://chomp:8080/ipfs/bafybeidkrrsdauzr6lfkfr7so625myv7njbzvkptrrj2a4ir4ejlg3sieu/concepts/dnslink/#resolve-dnslink-name)
 
-## Navigation Request Flow
+### Navigation Request Flow
 
-### Top-Level
+#### Top-Level
 ```mermaid
 graph TD;
     start(["ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors()"])
@@ -71,7 +73,7 @@ graph TD;
     style successed fill:#9CF,color:black
  ```
 
-### Gateway Request
+#### Gateway Request
 
 The class maintains:
 * Pending requests: A list where each member has:
@@ -111,7 +113,7 @@ graph TD;
     style all_failed fill:#9CF,color:black
  ```
 
-## Class Diagram
+### Class Diagram
 
 ```mermaid
 classDiagram
@@ -134,3 +136,17 @@ classDiagram
    ipfs_Interceptor ..> ipfs_Loader
    ipfs_Loader ..> Gateways   
 ```
+
+## Outstanding Questions
+
+ * In what ways will be interact with browser cache? 
+   - If you request 2 different paths within the same path, there is duplication higher on the root, etc..
+   - If we send them to a different gateway, this fools browser cache.
+   - Should we maintain our own cache? 
+ * Changes needed to enable support in the Omnibar
+ * Any changes necessary for responses to be treated appropriately, despite not having a standard origin (TODO: how is CEF doing this and is the approach stealable?)
+ * Chromium DNS TXT record access - may/should we use //net for TxtRecordRdata and the like?
+ * Best way to steal from cpp-libp2p, while minimizing cross-maintenance
+ * Is there existing C++ implementation for [UnixFS/PB-DAG](https://ipld.io/specs/codecs/dag-pb/spec/#implementations). 
+   - Only a subset of functionality needed. And Chromium does have protobuf support available already.
+   - Could be implemented as part of this effort, but better not to duplicate.

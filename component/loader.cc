@@ -142,6 +142,7 @@ bool Self::start_gateway_request( ptr me, GatewayList& free_gws, GatewayList& bu
 void Self::on_gateway_response(ptr me,std::size_t req_idx, std::unique_ptr<std::string> body)
 {
     CP;
+    body->assign("<html><body><p>Just here to see that it's seen - John</p></body>");
     network::mojom::URLResponseHead const* head = gateway_requests_[req_idx]->ResponseInfo();
     if ( head ) {
         std::clog << head->headers->GetStatusLine()
@@ -166,12 +167,12 @@ void Self::on_gateway_response(ptr me,std::size_t req_idx, std::unique_ptr<std::
     std::clog << " Writing response on pipe.\n";
     std::uint32_t write_size = body->size();
     pipe_prod_->WriteData(body.get(), &write_size, MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE);
-    auto altered_head = head->Clone();
-    std::clog << "head->web_bundle_url=" << altered_head->web_bundle_url.spec() << '\n';
-    altered_head->web_bundle_url = GURL{"file://" + altered_head->web_bundle_url.spec()};
+
+    auto raw_hdrs = head->headers->raw_headers();
+    std::replace_if(raw_hdrs.begin(),raw_hdrs.end(),[](auto c){return!std::isgraph(c);},' ');
+    std::clog << raw_hdrs << '\n';
     client_->OnReceiveResponse(
-//          network::mojom::URLResponseHead::From(*head)
-          std::move(altered_head)
+          head->Clone()
         , std::move(pipe_cons_) //Danger Will Robinson!d
         , absl::nullopt
         );

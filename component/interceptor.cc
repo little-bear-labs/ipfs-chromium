@@ -2,10 +2,11 @@
 
 #include "loader.h"
 
+#include "base/supports_user_data.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/url_loader_factory.h"
-#include "base/supports_user_data.h"
+#include "url/url_util.h"
 
 #include <iostream>
 
@@ -14,7 +15,8 @@ using Interceptor = ipfs::Interceptor;
 
 Interceptor::Interceptor(network::mojom::URLLoaderFactory* handles_http)
 : loader_factory_{handles_http}
-{}
+{
+}
 
 void handle(
       network::mojom::URLLoaderFactory* loader_factory
