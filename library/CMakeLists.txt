@@ -17,6 +17,10 @@ target_compile_features(ipfs_client
     PUBLIC
         cxx_std_20
 )
+target_compile_options(ipfs_client
+    PRIVATE
+        ${WARNING_FLAGS}
+)
 target_include_directories(ipfs_client
     PUBLIC
         include/

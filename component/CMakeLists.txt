@@ -20,8 +20,8 @@ target_compile_features(local_shim_build
 )
 target_compile_options(local_shim_build
     PUBLIC
-        -nostdinc++
-        -fno-rtti
+        ${CHROMIUM_COMPILER_FLAGS}
+        ${WARNING_FLAGS}
 )
 target_include_directories(local_shim_build
     SYSTEM
@@ -76,9 +76,9 @@ if(Python3_EXECUTABLE)
         add_custom_target(in_tree_build
             ALL
             DEPENDS setup_component
-            WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
+            WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
             COMMENT "Building component in Chromium source tree ${target_dir}, output in out/${CHROMIUM_PROFILE}"
-            COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 9 -C out/${CHROMIUM_PROFILE} components/ipfs
+            COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 9 components/ipfs
         )
     else()
         message(WARNING "No depot_tools")

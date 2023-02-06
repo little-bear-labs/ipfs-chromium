@@ -54,8 +54,9 @@ namespace ipfs {
       std::array<GatewayList,4> gateways_;
       std::vector<std::unique_ptr<network::SimpleURLLoader>> gateway_requests_;
       network::mojom::URLLoaderFactory* lower_loader_factory_;
-      mojo::ScopedDataPipeProducerHandle pipe_prod_;
-      mojo::ScopedDataPipeConsumerHandle pipe_cons_;
+      mojo::ScopedDataPipeProducerHandle pipe_prod_ = {};
+      mojo::ScopedDataPipeConsumerHandle pipe_cons_ = {};
+      std::string requested_path_;
 
       void startup(ptr, unsigned concurrent_requests = 10);
       bool start_gateway_request(ptr);

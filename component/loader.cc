@@ -5,6 +5,7 @@
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -58,6 +59,7 @@ void Self::StartRequest(
   me->receiver_.Bind(std::move(receiver));
   me->client_.Bind(std::move(client));
   me->gateways_[FREE | MAYB] = Gateways{}.get_list();
+  me->requested_path_ = resource_request.url.PathForRequest();
   me->startup(me);
 }
 
@@ -105,18 +107,17 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 bool Self::start_gateway_request( ptr me, GatewayList& free_gws, GatewayList& busy_gws )
 {
     CP
-    std::string suffix = "/ipfs/bafybeiaysi4s6lnjev27ln5icwm6tueaw2vdykrtjkwiphwekaywqhcjze";
     auto gw_it = std::find_if(
               free_gws.begin()
             , free_gws.end()
-            , [&suffix](auto&gw){return gw.accept(suffix);}
+            , [this](auto&gw){return gw.accept(requested_path_);}
             );
     if ( free_gws.end() == gw_it ) {
         return false;
     }
     //TODO lots of things wrong with this function
     auto req = std::make_unique<network::ResourceRequest>();
-    req->url = GURL{gw_it->url_prefix() + suffix};
+    req->url = GURL{gw_it->url_prefix() + requested_path_};
     auto idx = gateway_requests_.size();
     gateway_requests_.emplace_back(
         network::SimpleURLLoader::Create(
@@ -142,16 +143,20 @@ bool Self::start_gateway_request( ptr me, GatewayList& free_gws, GatewayList& bu
 void Self::on_gateway_response(ptr me,std::size_t req_idx, std::unique_ptr<std::string> body)
 {
     CP;
-    body->assign("<html><body><p>Just here to see that it's seen - John</p></body>");
+    if ( !body ) {
+        return;
+    }
     network::mojom::URLResponseHead const* head = gateway_requests_[req_idx]->ResponseInfo();
     if ( head ) {
-        std::clog << head->headers->GetStatusLine()
-                  << ' ' << head->headers->GetStatusText() << '\n';
+        std::clog << head->headers->GetStatusLine() << ' '
+                  << head->headers->GetStatusText() << ' '
+                  << head->mime_type << ' '
+                  << '\n';
     } else {
         std::clog << "Null head.\n";
     }
     if ( body ) {
-        std::clog << "Received response with " << body->size() << " bytes.\n";
+        std::clog << "Received response with " << body->size() << " bytes:|" << *body << "|\n";
     } else {
         std::clog << "No body.\n";
         return;
@@ -164,18 +169,26 @@ void Self::on_gateway_response(ptr me,std::size_t req_idx, std::unique_ptr<std::
         std::clog << " ERROR: failed to create data pipe: " << result << '\n';
         return;
     }
-    std::clog << " Writing response on pipe.\n";
     std::uint32_t write_size = body->size();
-    pipe_prod_->WriteData(body.get(), &write_size, MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE);
+    std::clog << " Writing response on pipe. " << write_size << " bytes: " << *body << std::endl;
+    pipe_prod_->WriteData(body->c_str(), &write_size, MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE);
 
-    auto raw_hdrs = head->headers->raw_headers();
-    std::replace_if(raw_hdrs.begin(),raw_hdrs.end(),[](auto c){return!std::isgraph(c);},' ');
-    std::clog << raw_hdrs << '\n';
+    auto head_out = head->Clone();
+    head_out->mime_type = "text";
+    auto ipfs_uri = "ipfs:" + requested_path_;
+    std::clog << "ipfs_uri=" << ipfs_uri << std::endl;
+    head_out->parsed_headers = network::PopulateParsedHeaders(
+          head->headers.get()
+        , GURL{ipfs_uri}
+        );
+
     client_->OnReceiveResponse(
-          head->Clone()
+          std::move(head_out)
         , std::move(pipe_cons_) //Danger Will Robinson!d
         , absl::nullopt
         );
+    client_->OnComplete(network::URLLoaderCompletionStatus{});
+
     std::iter_swap( gateway_requests_.begin(), gateway_requests_.begin() + req_idx );
     gateway_requests_.resize(1);
 }
