@@ -8,13 +8,13 @@ ipfs::Gateways::Gateways()
 : known_gateways_{
       {"http://localhost:8080/"s, 0}
     , {"https://ipfs.io/"s, 0}
-    , {"https://cloudflare-ipfs.com/"s, 0}
+//    , {"https://cloudflare-ipfs.com/"s, 0}
     , {"https://gateway.pinata.cloud/"s, 0}
     , {"https://gateway.ipfs.io/"s, 0}
     , {"https://dweb.link/"s, 0}
     , {"https://ipfs.runfission.com/"s, 0}
     , {"https://ipfs-gateway.cloud/"s, 0}
-    , {"https://w3s.link/"s, 0}
+//    , {"https://w3s.link/"s, 0}
     , {"https://via0.com/"s, 0}
     , {"https://jorropo.net/"s, 0}
     , {"https://hardbin.com/"s, 0}

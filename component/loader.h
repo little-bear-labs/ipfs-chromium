@@ -52,7 +52,7 @@ namespace ipfs {
       mojo::Receiver<network::mojom::URLLoader> receiver_{this};
       mojo::Remote<network::mojom::URLLoaderClient> client_;
       std::array<GatewayList,4> gateways_;
-      std::vector<std::unique_ptr<network::SimpleURLLoader>> gateway_requests_;
+      std::vector<std::pair<std::string,std::unique_ptr<network::SimpleURLLoader>>> gateway_requests_;
       network::mojom::URLLoaderFactory* lower_loader_factory_;
       mojo::ScopedDataPipeProducerHandle pipe_prod_ = {};
       mojo::ScopedDataPipeConsumerHandle pipe_cons_ = {};

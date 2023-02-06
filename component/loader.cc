@@ -117,10 +117,13 @@ bool Self::start_gateway_request( ptr me, GatewayList& free_gws, GatewayList& bu
     }
     //TODO lots of things wrong with this function
     auto req = std::make_unique<network::ResourceRequest>();
-    req->url = GURL{gw_it->url_prefix() + requested_path_};
+    auto url = gw_it->url_prefix() + "ipfs" + requested_path_.substr(1);
+    std::clog << "Requesting URL " << url << '\n';
+    req->url = GURL{url};
     auto idx = gateway_requests_.size();
     gateway_requests_.emplace_back(
-        network::SimpleURLLoader::Create(
+        url
+      , network::SimpleURLLoader::Create(
               std::move(req)
             , kTrafficAnnotation
             , FROM_HERE
@@ -132,7 +135,7 @@ bool Self::start_gateway_request( ptr me, GatewayList& free_gws, GatewayList& bu
         , me
         , idx
         );
-    gateway_requests_.back()->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+    gateway_requests_.back().second->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
           lower_loader_factory_
         , std::move(cb)
         );
@@ -143,10 +146,14 @@ bool Self::start_gateway_request( ptr me, GatewayList& free_gws, GatewayList& bu
 void Self::on_gateway_response(ptr me,std::size_t req_idx, std::unique_ptr<std::string> body)
 {
     CP;
+    auto from_req = gateway_requests_.at(req_idx).first;
     if ( !body ) {
+        std::clog << from_req << " null body\n";
+        start_gateway_request(me);
         return;
     }
-    network::mojom::URLResponseHead const* head = gateway_requests_[req_idx]->ResponseInfo();
+    network::SimpleURLLoader* gw_req = gateway_requests_[req_idx].second.get();
+    network::mojom::URLResponseHead const* head = gw_req->ResponseInfo();
     if ( head ) {
         std::clog << head->headers->GetStatusLine() << ' '
                   << head->headers->GetStatusText() << ' '
@@ -156,7 +163,7 @@ void Self::on_gateway_response(ptr me,std::size_t req_idx, std::unique_ptr<std::
         std::clog << "Null head.\n";
     }
     if ( body ) {
-        std::clog << "Received response with " << body->size() << " bytes:|" << *body << "|\n";
+        std::clog << "Received response with " << body->size() << " bytes from " << from_req << " which became " << gw_req->GetFinalURL() << '\n';
     } else {
         std::clog << "No body.\n";
         return;
@@ -174,13 +181,31 @@ void Self::on_gateway_response(ptr me,std::size_t req_idx, std::unique_ptr<std::
     pipe_prod_->WriteData(body->c_str(), &write_size, MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE);
 
     auto head_out = head->Clone();
-    head_out->mime_type = "text";
+
+    auto raw = head_out->headers->raw_headers();
+    std::replace(raw.begin(),raw.end(),'\0','\n');
+    std::clog << "before headers:|" << raw << "|\n";
+
+    head_out->mime_type = "text/html";
+    head_out->content_length = write_size;
+    head_out->headers->RemoveHeader("access-control-allow-origin");
+    head_out->headers->RemoveHeader("x-content-type-options");
+    head_out->headers->RemoveHeader("report-to");
+    head_out->headers->RemoveHeader("referrer-policy");
+    head_out->headers->RemoveHeader("content-encoding");
+    head_out->headers->RemoveHeader("nel");
+    head_out->headers->RemoveHeader("link");
+    raw = head_out->headers->raw_headers();
+    std::replace(raw.begin(),raw.end(),'\0','\n');
+    std::clog << "after headers:|" << raw << "|\n";
+
     auto ipfs_uri = "ipfs:" + requested_path_;
     std::clog << "ipfs_uri=" << ipfs_uri << std::endl;
     head_out->parsed_headers = network::PopulateParsedHeaders(
           head->headers.get()
         , GURL{ipfs_uri}
         );
+    head_out->was_fetched_via_spdy = false;
 
     client_->OnReceiveResponse(
           std::move(head_out)
