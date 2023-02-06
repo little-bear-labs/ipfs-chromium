@@ -1,0 +1,76 @@
+diff --git a/base/memory/ref_counted.h b/base/memory/ref_counted.h
+index 9ef94d84769df..f70e30748a389 100644
+--- a/base/memory/ref_counted.h
++++ b/base/memory/ref_counted.h
+@@ -7,6 +7,7 @@
+ 
+ #include <stddef.h>
+ 
++#include <limits>
+ #include <utility>
+ 
+ #include "base/atomic_ref_count.h"
+diff --git a/base/threading/thread_local_internal.h b/base/threading/thread_local_internal.h
+index ed99410ea8a31..d89d48ba981ab 100644
+--- a/base/threading/thread_local_internal.h
++++ b/base/threading/thread_local_internal.h
+@@ -30,8 +30,7 @@ class CheckedThreadLocalOwnedPointer {
+  public:
+   CheckedThreadLocalOwnedPointer() = default;
+ 
+-  CheckedThreadLocalOwnedPointer<T>(const CheckedThreadLocalOwnedPointer<T>&) =
+-      delete;
++  CheckedThreadLocalOwnedPointer(const CheckedThreadLocalOwnedPointer&) = delete;
+   CheckedThreadLocalOwnedPointer<T>& operator=(
+       const CheckedThreadLocalOwnedPointer<T>&) = delete;
+ 
+diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
+index f9f3d15fda7dd..6c549292fcc4d 100644
+--- a/chrome/browser/BUILD.gn
++++ b/chrome/browser/BUILD.gn
+@@ -2152,6 +2152,7 @@ static_library("browser") {
+     "//components/infobars/content",
+     "//components/infobars/core",
+     "//components/invalidation/impl",
++    "//components/ipfs",
+     "//components/javascript_dialogs",
+     "//components/keyed_service/content",
+     "//components/language/content/browser",
+diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
+index d02d11096690d..724be033016ee 100644
+--- a/chrome/browser/chrome_content_browser_client.cc
++++ b/chrome/browser/chrome_content_browser_client.cc
+@@ -213,6 +213,7 @@
+ #include "components/error_page/common/localized_error.h"
+ #include "components/error_page/content/browser/net_error_auto_reloader.h"
+ #include "components/google/core/common/google_switches.h"
++#include "components/ipfs/interceptor.h"
+ #include "components/keep_alive_registry/keep_alive_types.h"
+ #include "components/keep_alive_registry/scoped_keep_alive.h"
+ #include "components/language/core/browser/pref_names.h"
+@@ -5899,6 +5900,8 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
+     int frame_tree_node_id) {
+   std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+       interceptors;
++  interceptors.push_back(std::make_unique<ipfs::Interceptor>(g_browser_process->system_network_context_manager()->GetURLLoaderFactory()));
++      //TODO(jbt)
+ #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+   interceptors.push_back(
+       std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(
+diff --git a/content/browser/renderer_host/navigation_request.cc b/content/browser/renderer_host/navigation_request.cc
+index 0106a5da5ddf7..3b6c9b55909f8 100644
+--- a/content/browser/renderer_host/navigation_request.cc
++++ b/content/browser/renderer_host/navigation_request.cc
+@@ -893,6 +893,12 @@ GetOriginForURLLoaderFactoryUncheckedWithDebugInfo(
+         "web_bundle");
+   }
+ 
++  if (common_params.url.SchemeIs("ipfs")) {
++    return std::make_pair(
++        url::Origin::Create(common_params.url),
++        "url");
++  }
++
+   // In cases not covered above, URLLoaderFactory should be associated with the
+   // origin of |common_params.url| and/or |common_params.initiator_origin|.
+   return std::make_pair(

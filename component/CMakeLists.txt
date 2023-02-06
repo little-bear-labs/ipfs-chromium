@@ -71,6 +71,16 @@ foreach(hdr ${lib_hdrs})
         COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}../library/include/${hdr}" "${target_dir}/${dir}"
     )
 endforeach()
+if(GIT_EXECUTABLE)
+    add_custom_command(
+        TARGET setup_component
+        POST_BUILD
+        WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
+        COMMAND "${GIT_EXECUTABLE}" diff --patch > "${CMAKE_CURRENT_LIST_DIR}/rest_of_chromium.patch"
+    )
+else()
+    message(WARNING "git not in path - will not be creating the patch file to save your changes.")
+endif()
 if(Python3_EXECUTABLE)
     if(DEPOT_TOOLS_NINJA_PY)
         add_custom_target(in_tree_build

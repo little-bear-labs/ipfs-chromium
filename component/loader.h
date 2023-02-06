@@ -56,12 +56,12 @@ namespace ipfs {
       network::mojom::URLLoaderFactory* lower_loader_factory_;
       mojo::ScopedDataPipeProducerHandle pipe_prod_ = {};
       mojo::ScopedDataPipeConsumerHandle pipe_cons_ = {};
-      std::string requested_path_;
 
-      void startup(ptr, unsigned concurrent_requests = 10);
-      bool start_gateway_request(ptr);
-      bool start_gateway_request( ptr, GatewayList& free_gws, GatewayList& busy_gws );
-      void on_gateway_response(ptr, std::size_t, std::unique_ptr<std::string>);
+      void startup( ptr, std::string requested_path, unsigned concurrent_requests = 10 );
+      bool start_gateway_request( ptr, std::string requested_path );
+      bool start_gateway_request( ptr, GatewayList& free_gws, GatewayList& busy_gws, std::string requested_path );
+      void on_gateway_response(ptr, std::string requested_path, std::size_t, std::unique_ptr<std::string>);
+      bool handle_response(std::string,network::SimpleURLLoader*,std::string*);
   };
 
 }
