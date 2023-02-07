@@ -1,3 +1,16 @@
+diff --git a/base/allocator/partition_allocator/pointers/raw_ptr.h b/base/allocator/partition_allocator/pointers/raw_ptr.h
+index ac91c41a57a8a..3636be8e95465 100644
+--- a/base/allocator/partition_allocator/pointers/raw_ptr.h
++++ b/base/allocator/partition_allocator/pointers/raw_ptr.h
+@@ -715,7 +715,7 @@ struct TraitsToImpl {
+ // compiler. We have not managed to construct such an example in Chromium yet.
+ template <typename T, RawPtrTraits Traits = RawPtrTraits::kEmpty>
+ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
+-  using RawPtrTraits = RawPtrTraits;
++//  using RawPtrTraits = RawPtrTraits;
+   // Type to return from ExtractAsDangling(), which is identical except
+   // kMayDangle trait is added (if one isn't there already).
+   using DanglingRawPtrType = raw_ptr<T, Traits | RawPtrTraits::kMayDangle>;
 diff --git a/base/memory/ref_counted.h b/base/memory/ref_counted.h
 index 9ef94d84769df..f70e30748a389 100644
 --- a/base/memory/ref_counted.h
@@ -25,10 +38,10 @@ index ed99410ea8a31..d89d48ba981ab 100644
        const CheckedThreadLocalOwnedPointer<T>&) = delete;
  
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index f9f3d15fda7dd..6c549292fcc4d 100644
+index 0a338dd358391..f4ec6979fa9a0 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -2152,6 +2152,7 @@ static_library("browser") {
+@@ -2154,6 +2154,7 @@ static_library("browser") {
      "//components/infobars/content",
      "//components/infobars/core",
      "//components/invalidation/impl",
@@ -37,10 +50,10 @@ index f9f3d15fda7dd..6c549292fcc4d 100644
      "//components/keyed_service/content",
      "//components/language/content/browser",
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
-index d02d11096690d..724be033016ee 100644
+index febbb4791f6a2..157d13c43ac6c 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -213,6 +213,7 @@
+@@ -212,6 +212,7 @@
  #include "components/error_page/common/localized_error.h"
  #include "components/error_page/content/browser/net_error_auto_reloader.h"
  #include "components/google/core/common/google_switches.h"
@@ -48,20 +61,19 @@ index d02d11096690d..724be033016ee 100644
  #include "components/keep_alive_registry/keep_alive_types.h"
  #include "components/keep_alive_registry/scoped_keep_alive.h"
  #include "components/language/core/browser/pref_names.h"
-@@ -5899,6 +5900,8 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
+@@ -5888,6 +5889,7 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
      int frame_tree_node_id) {
    std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
        interceptors;
 +  interceptors.push_back(std::make_unique<ipfs::Interceptor>(g_browser_process->system_network_context_manager()->GetURLLoaderFactory()));
-+      //TODO(jbt)
  #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
    interceptors.push_back(
        std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(
 diff --git a/content/browser/renderer_host/navigation_request.cc b/content/browser/renderer_host/navigation_request.cc
-index 0106a5da5ddf7..3b6c9b55909f8 100644
+index d66761d9e1030..ad303be4a10e3 100644
 --- a/content/browser/renderer_host/navigation_request.cc
 +++ b/content/browser/renderer_host/navigation_request.cc
-@@ -893,6 +893,12 @@ GetOriginForURLLoaderFactoryUncheckedWithDebugInfo(
+@@ -873,6 +873,12 @@ GetOriginForURLLoaderFactoryUncheckedWithDebugInfo(
          "web_bundle");
    }
  

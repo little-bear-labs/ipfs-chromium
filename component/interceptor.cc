@@ -25,14 +25,11 @@ void handle(
     , ipfs::Interceptor::Interceptor::LoaderCallback&& loader_callback
     )
 {
-//  base::SupportsUserData::Data* inter_request_state = context
-//        ? context->GetUserData(user_data_key)
-//        : nullptr
-//        ;
+  auto todo = ipfs::Gateways{}.get_list();
   std::move(loader_callback).Run(
     base::BindOnce(
         &ipfs::Loader::StartRequest
-      , std::make_shared<ipfs::Loader>(loader_factory)
+      , std::make_shared<ipfs::Loader>(loader_factory,std::move(todo))
       )
     );
 }

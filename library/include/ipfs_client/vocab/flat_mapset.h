@@ -2,6 +2,7 @@
 #define CHROMIUM_IPFS_VOCAB_MAP_SET_H_
 
 #if __has_include("base/containers/flat_map.h")
+  #include "base/debug/debugging_buildflags.h"
   #include "base/containers/flat_map.h"
   #include "base/containers/flat_set.h"
   namespace ipfs {

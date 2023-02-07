@@ -57,6 +57,18 @@ bool ipfs::Gateway::operator<(Gateway const& rhs) const {
     }
     return prefix_ < rhs.prefix_;
 }
-bool ipfs::Gateway::accept(const std::string& suffix) const {
-    return ! failed_requests_.contains(suffix);
+bool ipfs::Gateway::accept(std::string const& suffix) {
+    if ( tasked_with_.empty() && ! failed_requests_.contains(suffix) ) {
+        tasked_with_.assign(suffix);
+    }
+    return suffix == tasked_with_;
+}
+std::string const& ipfs::Gateway::url_prefix() const {
+    return prefix_;
+}
+void ipfs::Gateway::make_available() {
+    tasked_with_.clear();
+}
+std::string ipfs::Gateway::url() const {
+    return url_prefix() + tasked_with_;
 }

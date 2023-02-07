@@ -38,12 +38,38 @@ target_link_libraries(local_shim_build
         ipfs_client
 )
 
+file(
+    READ "${CHROMIUM_SOURCE_TREE}/chrome/browser/BUILD.gn"
+    browser_build
+)
+string(
+    FIND
+        "${browser_build}"
+        ipfs
+        ipfs_dep
+)
+if(ipfs_dep GREATER -1)
+    message(STATUS "Looks like you might have already patched Chromium.")
+elseif(GIT_EXECUTABLE)
+    message(WARNING "ipfs dependency not found in chrome/browser/BUILD.gn. Assuming your Chromium source is not patched - will attempt to apply a patch right now.")
+    execute_process(
+        COMMAND "${GIT_EXECUTABLE}" apply "${CMAKE_CURRENT_LIST_DIR}/rest_of_chromium.patch"
+        WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
+    )
+elseif()
+    message(FATAL_ERROR "It would appear your Chromium source tree is unpatched, and I don't have access to git.")
+endif()
+
 set(target_dir "${CHROMIUM_SOURCE_TREE}/components/ipfs/${basename}")
 file(GLOB lib_srcs ../library/src/*.cc)
 file(GLOB_RECURSE
-    lib_hdrs
-    RELATIVE ../library/include/
-    ../library/include/*.h
+    lib_hdrs_rel
+    RELATIVE "${CMAKE_SOURCE_DIR}/library/include"
+    "${CMAKE_SOURCE_DIR}/library/include/*.h"
+)
+file(GLOB_RECURSE
+    lib_hdrs_abs
+    "${CMAKE_SOURCE_DIR}/library/include/*.h"
 )
 
 foreach(source ${srcs} ${lib_srcs})
@@ -60,15 +86,17 @@ add_custom_target(setup_component
     DEPENDS local_shim_build
     COMMENT "Moving code over to ${target_dir} and setting up the build there."
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${srcs} ${hdrs} ${lib_srcs} ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn "${target_dir}"
+    SOURCES ${srcs} ${hdrs} ${lib_srcs} ${lib_hdrs_abs}
 )
-foreach(hdr ${lib_hdrs})
+
+foreach(hdr ${lib_hdrs_rel})
     get_filename_component(dir "${hdr}" DIRECTORY)
     file(MAKE_DIRECTORY
         "${target_dir}/${dir}"
     )
     add_custom_command(TARGET setup_component
         PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_LIST_DIR}../library/include/${hdr}" "${target_dir}/${dir}"
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/library/include/${hdr}" "${target_dir}/${dir}"
     )
 endforeach()
 if(GIT_EXECUTABLE)

@@ -25,6 +25,11 @@ target_include_directories(ipfs_client
     PUBLIC
         include/
 )
+target_include_directories(ipfs_client
+    PRIVATE
+    SYSTEM
+        include/ipfs_client/pb/
+)
 
 find_package(absl)
 if(absl_FOUND)
@@ -45,3 +50,15 @@ if(Boost_FOUND)
             Boost::boost
     )
 endif()
+
+protobuf_generate_cpp(
+    pb_src
+    pb_hdr
+    src/pb-dag.proto
+)
+add_custom_command(
+    TARGET ipfs_client
+    PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${pb_hdr}" "${CMAKE_CURRENT_LIST_DIR}/include/ipfs_client/gen"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${pb_src}" "${CMAKE_CURRENT_LIST_DIR}/src/gen"
+)

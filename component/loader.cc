@@ -11,10 +11,13 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/url_loader_factory.h"
 
+#include <iostream>
+
 #define CP { std::clog << "\n ### " << __PRETTY_FUNCTION__ << " ### " << base::PlatformThread::GetName() << " ### \n"; }
 
-ipfs::Loader::Loader(network::mojom::URLLoaderFactory* handles_http)
+ipfs::Loader::Loader(network::mojom::URLLoaderFactory* handles_http, GatewayList&& initial_gws)
 : lower_loader_factory_{handles_http}
+, sched_{std::move(initial_gws)}
 {
   CP
 }
@@ -23,15 +26,15 @@ ipfs::Loader::~Loader() noexcept {
 }
 
 void ipfs::Loader::FollowRedirect(
-      std::vector<std::string> const& removed_headers
-    , net::HttpRequestHeaders  const& modified_headers
-    , net::HttpRequestHeaders  const& modified_cors_exempt_headers
-    , absl::optional<::GURL>   const& new_url
+      std::vector<std::string> const& //removed_headers
+    , net::HttpRequestHeaders  const& //modified_headers
+    , net::HttpRequestHeaders  const& //modified_cors_exempt_headers
+    , absl::optional<::GURL>   const& //new_url
     )
 {
   CP
 }
-void ipfs::Loader::SetPriority(net::RequestPriority priority, int32_t intra_priority_value)
+void ipfs::Loader::SetPriority(net::RequestPriority /*priority*/, int32_t /*intra_priority_value*/)
 {
   CP
 }
@@ -56,8 +59,9 @@ void ipfs::Loader::StartRequest(
   DCHECK(!me->client_.is_bound());
   me->receiver_.Bind(std::move(receiver));
   me->client_.Bind(std::move(client));
-  me->gateways_[FREE | MAYB] = Gateways{}.get_list();
-  me->startup(me, resource_request.url.PathForRequest());
+  auto path = resource_request.url.spec();
+  path.erase(4,2);
+  me->startup(me, path);
 }
 
 void ipfs::Loader::startup(ptr me, std::string requested_path, unsigned concurrent)
@@ -68,18 +72,6 @@ void ipfs::Loader::startup(ptr me, std::string requested_path, unsigned concurre
     }
 }
 
-bool ipfs::Loader::start_gateway_request( ptr me, std::string requested_path )
-{
-    CP
-    for ( auto stature : {GOOD, MAYB} ) {
-        auto& from = gateways_[stature | FREE];
-        auto& busy = gateways_[stature | BUSY];
-        if ( start_gateway_request(me, from, busy, requested_path) ) {
-            return true;
-        }
-    }
-    return false;
-}
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("ipfs_gateway_request", R"(
       semantics {
@@ -96,25 +88,16 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         setting: "Currently, this feature cannot be disabled by settings. TODO"
       }
     )");
-bool ipfs::Loader::start_gateway_request( ptr me, GatewayList& free_gws, GatewayList& busy_gws, std::string requested_path )
+bool ipfs::Loader::start_gateway_request( ptr me, std::string requested_path )
 {
-    CP
-    auto gw_it = std::find_if(
-              free_gws.begin()
-            , free_gws.end()
-            , [requested_path](auto&gw){return gw.accept(requested_path);}
-            );
-    if ( free_gws.end() == gw_it ) {
-        return false;
-    }
+    std::clog << "start_gateway_request(" << static_cast<void*>(me.get()) << ',' << requested_path << ") in " << __PRETTY_FUNCTION__  << '\n';
+    auto assigned = sched_.schedule(requested_path);
     //TODO lots of things wrong with this function
     auto req = std::make_unique<network::ResourceRequest>();
-    auto url = gw_it->url_prefix() + "ipfs" + requested_path.substr(1);
-    std::clog << "Requesting URL " << url << '\n';
-    req->url = GURL{url};
+    req->url = GURL{assigned->url()};
     auto idx = gateway_requests_.size();
     gateway_requests_.emplace_back(
-        url
+        std::move(assigned)
       , network::SimpleURLLoader::Create(
               std::move(req)
             , kTrafficAnnotation
@@ -132,27 +115,27 @@ bool ipfs::Loader::start_gateway_request( ptr me, GatewayList& free_gws, Gateway
           lower_loader_factory_
         , std::move(cb)
         );
-    busy_gws.insert( *gw_it );
-    free_gws.erase( gw_it );
     return true;
 }
 void ipfs::Loader::on_gateway_response( ptr me, std::string requested_path, std::size_t req_idx, std::unique_ptr<std::string> body )
 {
-    auto from_url = gateway_requests_.at(req_idx).first;
-    network::SimpleURLLoader* http_loader = gateway_requests_.at(req_idx).second.get();
-    if ( handle_response(from_url, http_loader, body.get()) )
+    auto& gw = gateway_requests_.at(req_idx).first;
+    auto& http_loader = gateway_requests_.at(req_idx).second;
+    if ( handle_response(gw.get(), http_loader.get(), body.get()) )
     {
         std::iter_swap( gateway_requests_.begin(), gateway_requests_.begin() + req_idx );
         //TODO remove only identical requests
-        gateway_requests_.resize(1);
+        gateway_requests_.erase(std::next(gateway_requests_.begin()),gateway_requests_.end());
     }
     else
     {
+        gw.reset();
+        http_loader.reset();
         std::clog << "Response failure, starting new request.\n";
         start_gateway_request( me, requested_path );
     }
 }
-bool ipfs::Loader::handle_response( std::string from_url, network::SimpleURLLoader* gw_req, std::string* body )
+bool ipfs::Loader::handle_response( Gateway* gw, network::SimpleURLLoader* gw_req, std::string* body )
 {
     CP;
     if ( !body ) {
@@ -160,17 +143,17 @@ bool ipfs::Loader::handle_response( std::string from_url, network::SimpleURLLoad
     }
     network::mojom::URLResponseHead const* head = gw_req->ResponseInfo();
     if ( !head ) {
-        std::clog << from_url << " Null head.\n";
+        std::clog << gw->url() << " Null head.\n";
         return false;
     }
     std::string reported_path;
     head->headers->EnumerateHeader(nullptr, "X-Ipfs-Path", &reported_path);
     if ( reported_path.empty() ) {
-        std::clog << from_url << " gave us a non-ipfs response.\n";
+        std::clog << gw->url() << " gave us a non-ipfs response.\n";
         return false;
     }
-    if ( from_url.find(reported_path) == std::string::npos ) {
-        std::clog << "Requested " << from_url << " but got a response to " << reported_path << ". Most likely this is just a different hash algo.\n";
+    if ( gw->url().find(reported_path) == std::string::npos ) {
+        std::clog << "Requested " << gw->url() << " but got a response to " << reported_path << ". Most likely this is just a different hash algo.\n";
     }
     auto result = mojo::CreateDataPipe(body->size(), pipe_prod_, pipe_cons_);
     if ( result ) {
@@ -187,7 +170,7 @@ bool ipfs::Loader::handle_response( std::string from_url, network::SimpleURLLoad
     std::replace(raw.begin(),raw.end(),'\0','\n');
     std::clog << "before headers:|" << raw << "|\n";
 
-    head_out->mime_type = "text/html";
+    head_out->mime_type = head->mime_type;//"text/html";
     head_out->content_length = write_size;
     head_out->headers->RemoveHeader("access-control-allow-origin");
     head_out->headers->RemoveHeader("x-content-type-options");
