@@ -8,13 +8,13 @@ ipfs::Gateways::Gateways()
 : known_gateways_{
       {"http://localhost:8080/"s, 0}
     , {"https://ipfs.io/"s, 0}
-//    , {"https://cloudflare-ipfs.com/"s, 0}
+    , {"https://cloudflare-ipfs.com/"s, 0}
     , {"https://gateway.pinata.cloud/"s, 0}
     , {"https://gateway.ipfs.io/"s, 0}
     , {"https://dweb.link/"s, 0}
     , {"https://ipfs.runfission.com/"s, 0}
     , {"https://ipfs-gateway.cloud/"s, 0}
-//    , {"https://w3s.link/"s, 0}
+    , {"https://w3s.link/"s, 0}
     , {"https://via0.com/"s, 0}
     , {"https://jorropo.net/"s, 0}
     , {"https://hardbin.com/"s, 0}
@@ -60,15 +60,21 @@ bool ipfs::Gateway::operator<(Gateway const& rhs) const {
 bool ipfs::Gateway::accept(std::string const& suffix) {
     if ( tasked_with_.empty() && ! failed_requests_.contains(suffix) ) {
         tasked_with_.assign(suffix);
+        return true;
     }
-    return suffix == tasked_with_;
+    return false;
 }
 std::string const& ipfs::Gateway::url_prefix() const {
     return prefix_;
 }
 void ipfs::Gateway::make_available() {
     tasked_with_.clear();
+    ++priority_;
 }
 std::string ipfs::Gateway::url() const {
     return url_prefix() + tasked_with_;
+}
+void ipfs::Gateway::failed() {
+    failed_requests_.insert(tasked_with_);
+    priority_ /= 2;
 }

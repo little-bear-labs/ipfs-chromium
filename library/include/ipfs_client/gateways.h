@@ -19,11 +19,15 @@ namespace ipfs {
       Gateway(std::string url_prefix, unsigned priority);
       explicit Gateway(Gateway const&);
       ~Gateway();
-      bool operator<(Gateway const&) const;
-      bool accept(std::string const& suffix);
+
       std::string const& url_prefix() const;
-      void make_available();
       std::string url() const;
+
+      bool accept(std::string const& suffix);
+      void make_available();
+      void failed();
+
+      bool operator<(Gateway const&) const;
     };
 
     using GatewayList = flat_set<Gateway>;

@@ -9,9 +9,11 @@ include(cmake/setup.cmake)
 
 add_subdirectory(library)
 add_executable(simple simple_main.cpp)
+find_package(absl)
 target_link_libraries(simple
     PUBLIC
         ipfs_client
+        absl::statusor
 )
 if(IS_DIRECTORY "${CHROMIUM_SOURCE_TREE}")
     add_subdirectory(component)

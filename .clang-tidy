@@ -27,8 +27,7 @@
                     modernize-use-noexcept,
                     modernize-use-nullptr,
                     modernize-use-override,
-                    modernize-use-transparent-functors,
-                    readability-redundant-member-init'
+                    modernize-use-transparent-functors'
   CheckOptions:
     - key:          bugprone-assert-side-effect.AssertMacros
       value:        assert,DCHECK

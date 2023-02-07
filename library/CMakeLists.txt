@@ -5,13 +5,19 @@ project(ipfs_client
     LANGUAGES CXX
 )
 
-file(GLOB
+file(GLOB_RECURSE
     sources
     CONFIGURE_DEPENDS
     src/*.cc
+    src/*.cpp
+)
+file(GLOB_RECURSE
+    headers
+    include/*.h
 )
 add_library(ipfs_client
     ${sources}
+    ${headers} #Mostly for IDEs' sake - this used to be considered bad practice but... generator expressions and such
 )
 target_compile_features(ipfs_client
     PUBLIC
@@ -28,15 +34,20 @@ target_include_directories(ipfs_client
 target_include_directories(ipfs_client
     PRIVATE
     SYSTEM
-        include/ipfs_client/pb/
+        include/ipfs_client/gen/
+)
+target_link_libraries(ipfs_client
+    PUBLIC
+        ${Protobuf_LIBRARIES}
 )
 
 find_package(absl)
 if(absl_FOUND)
     target_link_libraries(ipfs_client
-        PRIVATE # It is conceptually public, that is clients need abseil, but ../component can't use *this* abseil
+        PRIVATE # It is conceptually public, that is to say clients need abseil, but ../component can't use *this* abseil
             absl::flat_hash_map
             absl::flat_hash_set
+            absl::statusor
     )
 endif()
 

@@ -70,14 +70,14 @@ index febbb4791f6a2..157d13c43ac6c 100644
    interceptors.push_back(
        std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(
 diff --git a/content/browser/renderer_host/navigation_request.cc b/content/browser/renderer_host/navigation_request.cc
-index d66761d9e1030..ad303be4a10e3 100644
+index d66761d9e1030..10e021038f457 100644
 --- a/content/browser/renderer_host/navigation_request.cc
 +++ b/content/browser/renderer_host/navigation_request.cc
 @@ -873,6 +873,12 @@ GetOriginForURLLoaderFactoryUncheckedWithDebugInfo(
          "web_bundle");
    }
  
-+  if (common_params.url.SchemeIs("ipfs")) {
++  if (common_params.url.SchemeIs("ipfs") || common_params.url.SchemeIs("ipns")) {
 +    return std::make_pair(
 +        url::Origin::Create(common_params.url),
 +        "url");

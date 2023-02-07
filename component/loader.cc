@@ -92,9 +92,17 @@ bool ipfs::Loader::start_gateway_request( ptr me, std::string requested_path )
 {
     std::clog << "start_gateway_request(" << static_cast<void*>(me.get()) << ',' << requested_path << ") in " << __PRETTY_FUNCTION__  << '\n';
     auto assigned = sched_.schedule(requested_path);
+    if ( !assigned ) {
+        std::clog << "Unable to assign a gateway... TODO are we completely failed here?";
+        return false;
+    }
+    auto check = sched_.schedule(requested_path);
+    assert(check.get() != assigned.get());
     //TODO lots of things wrong with this function
     auto req = std::make_unique<network::ResourceRequest>();
-    req->url = GURL{assigned->url()};
+    auto url = assigned->url();
+    std::clog << "Staring a gateway request: '" << url << "'\n";
+    req->url = GURL{url};
     auto idx = gateway_requests_.size();
     gateway_requests_.emplace_back(
         std::move(assigned)
@@ -129,6 +137,7 @@ void ipfs::Loader::on_gateway_response( ptr me, std::string requested_path, std:
     }
     else
     {
+        gw->failed();
         gw.reset();
         http_loader.reset();
         std::clog << "Response failure, starting new request.\n";
