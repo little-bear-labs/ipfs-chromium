@@ -6,30 +6,39 @@ using namespace std::string_literals;
 
 ipfs::Gateways::Gateways()
 : known_gateways_{
-      {"http://localhost:8080/"s, 0}
-    , {"https://ipfs.io/"s, 0}
+      {"http://localhost:8080/"s, 9}
+    , {"https://4everland.io/"s, 0}
+    , {"https://c4rex.co/"s, 0}
     , {"https://cloudflare-ipfs.com/"s, 0}
+    , {"https://dweb.link/"s, 1}
+    , {"https://gateway.ipfs.io/"s, 1}
     , {"https://gateway.pinata.cloud/"s, 0}
-    , {"https://gateway.ipfs.io/"s, 0}
-    , {"https://dweb.link/"s, 0}
+    , {"https://ipfs.czip.it/"s, 1}
+    , {"https://ipfs.best-practice.se/"s, 1}
+    , {"https://ipfs-gateway.cloud/"s, 1}
+    , {"https://ipfs.io/"s, 1}
+    , {"https://ipfs.joaoleitao.org/"s, 2}
+    , {"https://ipfs.storry.tv/"s, 1}
+    , {"https://jorropo.net/"s, 1}
+    , {"https://ipfs.jpu.jp/"s, 1}
+    , {"https://ipfs.litnet.work/"s, 1}
     , {"https://ipfs.runfission.com/"s, 0}
-    , {"https://ipfs-gateway.cloud/"s, 0}
-    , {"https://w3s.link/"s, 0}
-    , {"https://via0.com/"s, 0}
     , {"https://jorropo.net/"s, 0}
     , {"https://hardbin.com/"s, 0}
     , {"https://nftstorage.link/"s, 0}
     , {"https://video.oneloveipfs.com/"s, 0}
     , {"https://cf-ipfs.com/"s, 0}
-    , {"https://4everland.io/"s, 0}
-    }
+    , {"https://storry.tv/"s, 1}
+    , {"https://via0.com/"s, 0}
+    , {"https://w3s.link/"s, 0}
+}
 , random_engine_{std::random_device{}()}
 , dist_{0.0625}
 {
 }
 ipfs::Gateways::~Gateways() {}
 
-auto ipfs::Gateways::get_list() const -> GatewayList {
+auto ipfs::Gateways::GenerateList() const -> GatewayList {
     GatewayList result;
     for ( auto [k,v] : known_gateways_ ) {
         result.emplace(k,v + dist_(random_engine_));
@@ -37,44 +46,12 @@ auto ipfs::Gateways::get_list() const -> GatewayList {
     return result;
 }
 
-ipfs::Gateway::Gateway(std::string url_prefix, unsigned int priority)
-: prefix_{std::move(url_prefix)}
-, priority_{priority}
-{}
-ipfs::Gateway::Gateway(Gateway const& other)
-: prefix_{other.prefix_}
-, priority_{other.priority_}
-{}
-ipfs::Gateway::~Gateway(){}
-
-//Less means should-be-preferred
-bool ipfs::Gateway::operator<(Gateway const& rhs) const {
-    if ( failed_requests_.size() != rhs.failed_requests_.size() ) {
-        return failed_requests_.size() < rhs.failed_requests_.size();
+void ipfs::Gateways::promote(std::string const& key) {
+    known_gateways_.at(key)++;
+}
+void ipfs::Gateways::demote(std::string const& key) {
+    auto prio = known_gateways_.at(key);
+    if (prio > 1) {
+        --prio;
     }
-    if ( priority_ != rhs.priority_ ) {
-        return priority_ > rhs.priority_;
-    }
-    return prefix_ < rhs.prefix_;
-}
-bool ipfs::Gateway::accept(std::string const& suffix) {
-    if ( tasked_with_.empty() && ! failed_requests_.contains(suffix) ) {
-        tasked_with_.assign(suffix);
-        return true;
-    }
-    return false;
-}
-std::string const& ipfs::Gateway::url_prefix() const {
-    return prefix_;
-}
-void ipfs::Gateway::make_available() {
-    tasked_with_.clear();
-    ++priority_;
-}
-std::string ipfs::Gateway::url() const {
-    return url_prefix() + tasked_with_;
-}
-void ipfs::Gateway::failed() {
-    failed_requests_.insert(tasked_with_);
-    priority_ /= 2;
 }

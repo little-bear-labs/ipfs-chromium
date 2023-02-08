@@ -1,7 +1,9 @@
 #include "loader.h"
+#include "inter_request_state.h"
 
 #include "ipfs_client/gateways.h"
 
+#include "base/notreached.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -10,20 +12,15 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/url_loader_factory.h"
+#include "base/strings/escape.h"
 
-#include <iostream>
-
-#define CP { std::clog << "\n ### " << __PRETTY_FUNCTION__ << " ### " << base::PlatformThread::GetName() << " ### \n"; }
-
-ipfs::Loader::Loader(network::mojom::URLLoaderFactory* handles_http, GatewayList&& initial_gws)
-: lower_loader_factory_{handles_http}
-, sched_{std::move(initial_gws)}
+ipfs::Loader::Loader(network::mojom::URLLoaderFactory* handles_http, InterRequestState& state)
+: state_{state}
+, lower_loader_factory_{handles_http}
+, sched_{state_.gateways().GenerateList()}
 {
-  CP
 }
-ipfs::Loader::~Loader() noexcept {
-  CP
-}
+ipfs::Loader::~Loader() noexcept {}
 
 void ipfs::Loader::FollowRedirect(
       std::vector<std::string> const& //removed_headers
@@ -32,19 +29,19 @@ void ipfs::Loader::FollowRedirect(
     , absl::optional<::GURL>   const& //new_url
     )
 {
-  CP
+    NOTIMPLEMENTED();
 }
 void ipfs::Loader::SetPriority(net::RequestPriority /*priority*/, int32_t /*intra_priority_value*/)
 {
-  CP
+    NOTIMPLEMENTED();
 }
 void ipfs::Loader::PauseReadingBodyFromNet()
 {
-  CP
+    NOTIMPLEMENTED();
 }
 void ipfs::Loader::ResumeReadingBodyFromNet()
 {
-  CP
+    NOTIMPLEMENTED();
 }
 
 void ipfs::Loader::StartRequest(
@@ -54,19 +51,32 @@ void ipfs::Loader::StartRequest(
   , mojo::PendingRemote  <network::mojom::URLLoaderClient> client
   )
 {
-  CP
-  DCHECK(!me->receiver_.is_bound());
-  DCHECK(!me->client_.is_bound());
-  me->receiver_.Bind(std::move(receiver));
-  me->client_.Bind(std::move(client));
-  auto path = resource_request.url.spec();
-  path.erase(4,2);
-  me->startup(me, path);
+    std::clog << __PRETTY_FUNCTION__  << " got " << resource_request.url.spec() << std::endl;
+    DCHECK(!me->receiver_.is_bound());
+    DCHECK(!me->client_.is_bound());
+    me->receiver_.Bind(std::move(receiver));
+    me->client_.Bind(std::move(client));
+//    using un = base::UnescapeRule;
+    me->original_url_ = resource_request.url.spec();
+/*  me->original_url_ = base::UnescapeURLComponent(resource_request.url.spec(), un::PATH_SEPARATORS);
+    auto uri = base::UnescapeURLComponent(
+          resource_request.url.path().substr(16)//16 == strlen("/ipfs-over-http/")
+        , ( un::PATH_SEPARATORS
+          | un::SPACES
+          | un::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS
+          )
+        );
+    if (uri.size() <= 6UL) {
+        LOG(ERROR) << "I do not know how to handle this URI: " << uri;
+    }
+    uri.erase(4,2);//We had ipfs://blah or ipns://blah , here we remove :/ so we have ipfs/blah
+    LOG(INFO) << uri << " delegated to IPFS component.";
+  */
+    me->startup(me, resource_request.url.path(), 3);
 }
 
 void ipfs::Loader::startup(ptr me, std::string requested_path, unsigned concurrent)
 {
-    CP
     while ( concurrent > 0 && start_gateway_request(me, requested_path) ) {
         --concurrent;
     }
@@ -90,18 +100,19 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     )");
 bool ipfs::Loader::start_gateway_request( ptr me, std::string requested_path )
 {
-    std::clog << "start_gateway_request(" << static_cast<void*>(me.get()) << ',' << requested_path << ") in " << __PRETTY_FUNCTION__  << '\n';
-    auto assigned = sched_.schedule(requested_path);
-    if ( !assigned ) {
-        std::clog << "Unable to assign a gateway... TODO are we completely failed here?";
+    auto [status,assigned] = sched_.schedule(requested_path);
+    if ( status == Scheduler::Result::Failed ) {
+        LOG(ERROR) << "Request completely failed: " << requested_path;
         return false;
     }
-    auto check = sched_.schedule(requested_path);
-    assert(check.get() != assigned.get());
+    if ( !assigned ) {
+        DCHECK(status == Scheduler::Result::InProgress);
+        return true;
+    }
     //TODO lots of things wrong with this function
     auto req = std::make_unique<network::ResourceRequest>();
     auto url = assigned->url();
-    std::clog << "Staring a gateway request: '" << url << "'\n";
+    LOG(INFO) << "Starting a gateway request: " << url;
     req->url = GURL{url};
     auto idx = gateway_requests_.size();
     gateway_requests_.emplace_back(
@@ -129,75 +140,87 @@ void ipfs::Loader::on_gateway_response( ptr me, std::string requested_path, std:
 {
     auto& gw = gateway_requests_.at(req_idx).first;
     auto& http_loader = gateway_requests_.at(req_idx).second;
+    auto prefix = gw->url_prefix();//Doing a deep copy to avoid reference invalidation concerns below, for simplicity.
     if ( handle_response(gw.get(), http_loader.get(), body.get()) )
     {
         std::iter_swap( gateway_requests_.begin(), gateway_requests_.begin() + req_idx );
         //TODO remove only identical requests
         gateway_requests_.erase(std::next(gateway_requests_.begin()),gateway_requests_.end());
+        LOG(INFO) << "Promoting " << prefix;
+        state_.gateways().promote(prefix);
     }
     else
     {
+        auto url = gw->url();
         gw->failed();
         gw.reset();
-        http_loader.reset();
-        std::clog << "Response failure, starting new request.\n";
-        start_gateway_request( me, requested_path );
+        if ( start_gateway_request(me, requested_path) ) {
+            LOG(INFO) << "Response failure for " << url << ", starting new request.";
+        } else if ( http_loader->CompletionStatus().has_value() ) {
+            LOG(ERROR) << "Complete failure on " << requested_path << '\n';
+            client_->OnComplete(http_loader->CompletionStatus().value());
+        }
+        LOG(INFO) << "Demoting " << prefix;
+        state_.gateways().demote(prefix);
+        //TODO http_loader.reset();
     }
 }
 bool ipfs::Loader::handle_response( Gateway* gw, network::SimpleURLLoader* gw_req, std::string* body )
 {
-    CP;
     if ( !body ) {
+        LOG(INFO) << "handle_response(" << gw->url() << ") Null body - presumably http error.\n";
         return false;
     }
     network::mojom::URLResponseHead const* head = gw_req->ResponseInfo();
     if ( !head ) {
-        std::clog << gw->url() << " Null head.\n";
+        LOG(INFO) << "handle_response(" << gw->url() << ") Null head.\n";
         return false;
     }
     std::string reported_path;
     head->headers->EnumerateHeader(nullptr, "X-Ipfs-Path", &reported_path);
     if ( reported_path.empty() ) {
-        std::clog << gw->url() << " gave us a non-ipfs response.\n";
+        LOG(INFO) << "handle_response(" << gw->url() << ") gave us a non-ipfs response.\n";
         return false;
     }
     if ( gw->url().find(reported_path) == std::string::npos ) {
-        std::clog << "Requested " << gw->url() << " but got a response to " << reported_path << ". Most likely this is just a different hash algo.\n";
+        LOG(INFO) << "Requested " << gw->url() << " but got a response to " << reported_path << ". Most likely this is just a different hash algo.\n";
     }
     auto result = mojo::CreateDataPipe(body->size(), pipe_prod_, pipe_cons_);
     if ( result ) {
-        std::clog << " ERROR: failed to create data pipe: " << result << '\n';
+        LOG(ERROR) << " ERROR: failed to create data pipe: " << result;
         return false;
     }
     std::uint32_t write_size = body->size();
-    std::clog << " Writing response on pipe. " << write_size << " bytes\n";
     pipe_prod_->WriteData(body->c_str(), &write_size, MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE);
 
     auto head_out = head->Clone();
 
-    auto raw = head_out->headers->raw_headers();
-    std::replace(raw.begin(),raw.end(),'\0','\n');
-    std::clog << "before headers:|" << raw << "|\n";
-
     head_out->mime_type = head->mime_type;//"text/html";
     head_out->content_length = write_size;
-    head_out->headers->RemoveHeader("access-control-allow-origin");
-    head_out->headers->RemoveHeader("x-content-type-options");
-    head_out->headers->RemoveHeader("report-to");
+    head_out->headers->SetHeader("access-control-allow-origin", "*");
+    head_out->headers->RemoveHeader("content-security-policy");
     head_out->headers->RemoveHeader("referrer-policy");
-    head_out->headers->RemoveHeader("content-encoding");
-    head_out->headers->RemoveHeader("nel");
     head_out->headers->RemoveHeader("link");
-    raw = head_out->headers->raw_headers();
-    std::replace(raw.begin(),raw.end(),'\0','\n');
-    std::clog << "after headers:|" << raw << "|\n";
-
-    auto ipfs_uri = "ipfs:/" + reported_path;
-    std::clog << "ipfs_uri=" << ipfs_uri << std::endl;
+//    auto raw = head_out->headers->raw_headers();
+//    std::replace(raw.begin(),raw.end(),'\0','\n');
+//    std::clog << "headers:|" << raw << "|\n";
+    if (original_url_.ends_with("%2F")) {
+        original_url_.append("index.html");//TODO This isn't quite right.
+    }
     head_out->parsed_headers = network::PopulateParsedHeaders(
           head->headers.get()
-        , GURL{ipfs_uri}
+        , GURL{original_url_}
     );
+    /*
+    std::clog << "ipfs_uri=" << ipfs_uri << " ... CSP: \n";
+    for ( auto& csp : head_out->parsed_headers->content_security_policy ) {
+        if ( csp ) {
+            std::clog << "  " << csp->header->header_value << '\n';
+        } else {
+            std::clog << "  null\n";
+        }
+    }
+     */
     head_out->was_fetched_via_spdy = false;
 
     client_->OnReceiveResponse(

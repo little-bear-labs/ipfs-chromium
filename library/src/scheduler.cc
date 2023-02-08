@@ -12,7 +12,8 @@ void ptr_make_available(ipfs::Gateway* p) {
     p->make_available();
 }
 
-auto ipfs::Scheduler::schedule(std::string const& suffix) -> BusyGateway {
+auto ipfs::Scheduler::schedule(std::string const& suffix) -> std::pair<Result,BusyGateway> {
+    auto failure_type = Result::Failed;
     for ( GatewayList* list : {&good_, &unproven_} ) {
         auto match = std::find_if(
             list->begin()
@@ -21,13 +22,20 @@ auto ipfs::Scheduler::schedule(std::string const& suffix) -> BusyGateway {
           );
         if ( match != list->end() ) {
            return {
-                &*match
-              , ptr_make_available
-              };
+               Result::Scheduled
+             , BusyGateway{&*match, ptr_make_available},
+           };
+        }
+        auto working_on = [suffix](auto&gw){return gw.current_task() == suffix;};
+        if ( std::any_of(list->begin(),list->end(),working_on) ) {
+            failure_type = Result::InProgress;
         }
     }
-    return BusyGateway{
-          nullptr
-        , ptr_make_available
-    };
+    return {
+        failure_type
+      , BusyGateway{
+            nullptr
+          , ptr_make_available
+          }
+      };
 }

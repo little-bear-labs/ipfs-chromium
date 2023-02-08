@@ -17,6 +17,7 @@ namespace network {
 }
 
 namespace ipfs {
+  class InterRequestState;
 
   class Loader final : public network::mojom::URLLoader {
     void FollowRedirect(
@@ -30,7 +31,7 @@ namespace ipfs {
     void ResumeReadingBodyFromNet() override;
 
   public:
-    explicit Loader(network::mojom::URLLoaderFactory* handles_http,GatewayList&& initial);
+    explicit Loader(network::mojom::URLLoaderFactory* handles_http,InterRequestState& state);
     ~Loader() override;
 
     using ptr = std::shared_ptr<Loader>;
@@ -47,6 +48,7 @@ namespace ipfs {
   private:
       using RequestHandle = std::unique_ptr<network::SimpleURLLoader>;
 
+      InterRequestState& state_;
       mojo::Receiver<network::mojom::URLLoader> receiver_{this};
       mojo::Remote<network::mojom::URLLoaderClient> client_;
       network::mojom::URLLoaderFactory* lower_loader_factory_;
@@ -54,6 +56,7 @@ namespace ipfs {
       mojo::ScopedDataPipeConsumerHandle pipe_cons_ = {};
       Scheduler sched_;
       std::vector<std::pair<BusyGateway,RequestHandle>> gateway_requests_;
+      std::string original_url_;
 
       void startup( ptr, std::string requested_path, unsigned concurrent_requests = 10 );
       bool start_gateway_request( ptr, std::string requested_path );

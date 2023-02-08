@@ -55,6 +55,7 @@ elseif(GIT_EXECUTABLE)
     execute_process(
         COMMAND "${GIT_EXECUTABLE}" apply "${CMAKE_CURRENT_LIST_DIR}/rest_of_chromium.patch"
         WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
+	COMMAND_ERROR_IS_FATAL ANY
     )
 elseif()
     message(FATAL_ERROR "It would appear your Chromium source tree is unpatched, and I don't have access to git.")

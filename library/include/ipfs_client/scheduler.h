@@ -14,7 +14,12 @@ namespace ipfs {
     public:
         explicit Scheduler(GatewayList&& initial_list);
         ~Scheduler();
-        BusyGateway schedule(std::string const& suffix);
+        enum Result {
+            Scheduled,
+            InProgress,
+            Failed
+        };
+        std::pair<Result,BusyGateway> schedule(std::string const& suffix);
     };
 }
 

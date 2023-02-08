@@ -1,6 +1,7 @@
 #ifndef CHROMIUM_IPFS_GATEWAYS_H_
 #define CHROMIUM_IPFS_GATEWAYS_H_
 
+#include "gateway.h"
 #include "vocab/flat_mapset.h"
 
 #include <random>
@@ -9,27 +10,6 @@
 #include <vector>
 
 namespace ipfs {
-    class Gateway {
-      std::string prefix_;
-      flat_set<std::string> failed_requests_;
-      unsigned priority_;
-      std::string tasked_with_;
-
-    public:
-      Gateway(std::string url_prefix, unsigned priority);
-      explicit Gateway(Gateway const&);
-      ~Gateway();
-
-      std::string const& url_prefix() const;
-      std::string url() const;
-
-      bool accept(std::string const& suffix);
-      void make_available();
-      void failed();
-
-      bool operator<(Gateway const&) const;
-    };
-
     using GatewayList = flat_set<Gateway>;
 
     class Gateways {
@@ -39,9 +19,9 @@ namespace ipfs {
     public:
         Gateways();
         ~Gateways();
-        GatewayList get_list() const;
-        void promote(std::string_view);
-        void  demote(std::string_view);
+        GatewayList GenerateList() const;
+        void promote(std::string const&);
+        void  demote(std::string const&);
     };
 }
 
