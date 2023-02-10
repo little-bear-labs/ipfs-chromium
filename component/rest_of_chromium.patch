@@ -50,18 +50,87 @@ index 0a338dd358391..f4ec6979fa9a0 100644
      "//components/keyed_service/content",
      "//components/language/content/browser",
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
-index febbb4791f6a2..46e1724ad5ac3 100644
+index febbb4791f6a2..a4e526f4b621c 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -212,6 +212,7 @@
+@@ -212,6 +212,8 @@
  #include "components/error_page/common/localized_error.h"
  #include "components/error_page/content/browser/net_error_auto_reloader.h"
  #include "components/google/core/common/google_switches.h"
 +#include "components/ipfs/interceptor.h"
++#include "components/ipfs/url_loader_factory.h"
  #include "components/keep_alive_registry/keep_alive_types.h"
  #include "components/keep_alive_registry/scoped_keep_alive.h"
  #include "components/language/core/browser/pref_names.h"
-@@ -5886,8 +5887,9 @@ std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+@@ -5309,7 +5311,7 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
+     content::NavigationUIData* navigation_ui_data,
+     int frame_tree_node_id) {
+   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+-
++  std::clog << "\n\t###\t" << __PRETTY_FUNCTION__ << "\t###\t" << request.url.spec() << "\t###\n\n";
+   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
+ 
+   DCHECK(browser_context);
+@@ -5448,6 +5450,8 @@ void ChromeContentBrowserClient::RegisterNonNetworkNavigationURLLoaderFactories(
+     int frame_tree_node_id,
+     ukm::SourceIdObj ukm_source_id,
+     NonNetworkURLLoaderFactoryMap* factories) {
++  // factories->emplace("ipfs",ipfs::IpfsURLLoaderFactory::Create("ipfs RegisterNonNetworkNavigationURLLoaderFactories"));
++  // factories->emplace("ipns",ipfs::IpfsURLLoaderFactory::Create("ipns RegisterNonNetworkNavigationURLLoaderFactories"));
+ #if BUILDFLAG(ENABLE_EXTENSIONS) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+     !BUILDFLAG(IS_ANDROID)
+   content::WebContents* web_contents =
+@@ -5497,6 +5501,9 @@ void ChromeContentBrowserClient::
+         NonNetworkURLLoaderFactoryMap* factories) {
+   DCHECK(browser_context);
+   DCHECK(factories);
++  std::clog << __PRETTY_FUNCTION__ << '\n';
++  // factories->emplace("ipfs",ipfs::IpfsURLLoaderFactory::Create("ipfs RegisterNonNetworkWorkerMainResourceURLLoaderFactories"));
++  // factories->emplace("ipns",ipfs::IpfsURLLoaderFactory::Create("ipns RegisterNonNetworkWorkerMainResourceURLLoaderFactories"));
+ 
+ #if BUILDFLAG(ENABLE_EXTENSIONS)
+   DCHECK(!ChromeContentBrowserClientExtensionsPart::
+@@ -5515,6 +5522,9 @@ void ChromeContentBrowserClient::
+         NonNetworkURLLoaderFactoryMap* factories) {
+   DCHECK(browser_context);
+   DCHECK(factories);
++  std::clog << __PRETTY_FUNCTION__ << '\n';
++  // factories->emplace("ipfs",ipfs::IpfsURLLoaderFactory::Create("ipfs RegisterNonNetworkServiceWorkerUpdateURLLoaderFactories"));
++  // factories->emplace("ipns",ipfs::IpfsURLLoaderFactory::Create("ipns RegisterNonNetworkServiceWorkerUpdateURLLoaderFactories"));
+ 
+ #if !BUILDFLAG(IS_ANDROID)
+   if (content::IsolatedWebAppsPolicy::AreIsolatedWebAppsEnabled(
+@@ -5735,13 +5745,13 @@ void ChromeContentBrowserClient::
+         int render_frame_id,
+         const absl::optional<url::Origin>& request_initiator_origin,
+         NonNetworkURLLoaderFactoryMap* factories) {
+-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS) || \
+-    !BUILDFLAG(IS_ANDROID)
++  std::clog << "\n\t###\t" << __PRETTY_FUNCTION__ << "\t###\n";
+   content::RenderFrameHost* frame_host =
+       RenderFrameHost::FromID(render_process_id, render_frame_id);
+   WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
+-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS) || \
+-        // !BUILDFLAG(IS_ANDROID)
++  network::mojom::URLLoaderFactory* default_factory = g_browser_process->system_network_context_manager()->GetURLLoaderFactory();
++  ipfs::IpfsURLLoaderFactory::Create(factories, __PRETTY_FUNCTION__,web_contents->GetBrowserContext(),default_factory);
++
+ 
+ #if BUILDFLAG(IS_CHROMEOS_ASH)
+   if (web_contents) {
+@@ -5836,7 +5846,10 @@ bool ChromeContentBrowserClient::WillCreateURLLoaderFactory(
+     bool* disable_secure_dns,
+     network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
+   bool use_proxy = false;
+-
++  std::clog << "\n\n\t###\t" << __PRETTY_FUNCTION__ << "\t###\t" << static_cast<long>(type) << "\t###\n" << std::endl;
++  if ( type == URLLoaderFactoryType::kDocumentSubResource ) {
++    std::clog << "document sub-resource!\n";
++  }
+ #if BUILDFLAG(ENABLE_EXTENSIONS)
+   auto* web_request_api =
+       extensions::BrowserContextKeyedAPIFactory<extensions::WebRequestAPI>::Get(
+@@ -5886,8 +5899,9 @@ std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
  ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
      content::NavigationUIData* navigation_ui_data,
      int frame_tree_node_id) {
@@ -73,50 +142,15 @@ index febbb4791f6a2..46e1724ad5ac3 100644
  #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
    interceptors.push_back(
        std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(
-diff --git a/chrome/common/chrome_content_client.cc b/chrome/common/chrome_content_client.cc
-index db08f6151229e..033a7c56ddd8a 100644
---- a/chrome/common/chrome_content_client.cc
-+++ b/chrome/common/chrome_content_client.cc
-@@ -279,7 +279,12 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
-   schemes->predefined_handler_schemes.emplace_back(
-       url::kWebcalScheme, chrome::kChromeOSDefaultWebcalHandler);
- #endif
--
-+  /*
-+  schemes->predefined_handler_schemes.emplace_back(
-+      "ipfs", "http://127.0.0.1:46997/ipfs-over-http/%s");
-+  schemes->predefined_handler_schemes.emplace_back(
-+      "ipns", "http://127.0.0.1:46997/ipfs-over-http/%s");
-+  */
-   schemes->secure_schemes.push_back(chrome::kIsolatedAppScheme);
-   schemes->cors_enabled_schemes.push_back(chrome::kIsolatedAppScheme);
-   schemes->service_worker_schemes.push_back(chrome::kIsolatedAppScheme);
-diff --git a/content/browser/loader/navigation_url_loader_impl.cc b/content/browser/loader/navigation_url_loader_impl.cc
-index 6d1ead9d8a304..0217aec8e80d2 100644
---- a/content/browser/loader/navigation_url_loader_impl.cc
-+++ b/content/browser/loader/navigation_url_loader_impl.cc
-@@ -308,9 +308,11 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
- // Called for requests that we don't have a URLLoaderFactory for.
- void UnknownSchemeCallback(
-     bool handled_externally,
--    const network::ResourceRequest& /* resource_request */,
-+    const network::ResourceRequest& resource_request,
-     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-+  //TODO(jbt)
-+  LOG(ERROR) << "\n\t###\t " << resource_request.url.spec() << "\t####\n";
-   mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
-       ->OnComplete(network::URLLoaderCompletionStatus(
-           handled_externally ? net::ERR_ABORTED : net::ERR_UNKNOWN_URL_SCHEME));
 diff --git a/url/url_util.cc b/url/url_util.cc
-index 3a3847d82698a..c817bfb6b99e6 100644
+index 3a3847d82698a..7eeae34be9622 100644
 --- a/url/url_util.cc
 +++ b/url/url_util.cc
 @@ -96,6 +96,7 @@ struct SchemeRegistry {
        kHttpsScheme,
        kHttpScheme,
        kDataScheme,
-+      "ipfs",//Maybe not ipns
++      "ipfs",
    };
  
    // Schemes that can be used by web to store data (local storage, etc).

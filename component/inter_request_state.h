@@ -5,13 +5,19 @@
 
 #include "base/supports_user_data.h"
 
-namespace ipfs {
-  class InterRequestState : public base::SupportsUserData::Data {
-      Gateways gws_;
-
-   public:
-      Gateways& gateways() { return gws_; }
-  };
+namespace content {
+class BrowserContext;
 }
+
+namespace ipfs {
+class InterRequestState : public base::SupportsUserData::Data {
+  Gateways gws_;
+
+ public:
+  Gateways& gateways() { return gws_; }
+
+  static InterRequestState& FromBrowserContext(content::BrowserContext*);
+};
+}  // namespace ipfs
 
 #endif  // IPFS_INTER_REQUEST_STATE_H_

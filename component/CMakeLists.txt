@@ -3,10 +3,21 @@ file(GLOB
     CONFIGURE_DEPENDS
     *.cc
 )
+list(FILTER
+    srcs
+    EXCLUDE
+    REGEX
+    ".*test.cc$"
+)
 file(GLOB
     hdrs
     CONFIGURE_DEPENDS
     *.h
+)
+file(GLOB
+    test_srcs
+    CONFIGURE_DEPENDS
+    *test.cc
 )
 
 #Mostly for the sake of IDEs, though it also serves a purpose here.
@@ -77,6 +88,10 @@ foreach(source ${srcs} ${lib_srcs})
     get_filename_component(basename "${source}" NAME )
     set(gn_sources "${gn_sources}  \"${basename}\",\n  ")
 endforeach()
+foreach(source ${srcs} ${test_srcs})
+    get_filename_component(basename "${source}" NAME )
+    set(gn_test_sources "${gn_test_sources}  \"${basename}\",\n  ")
+endforeach()
 configure_file(
     BUILD.gn.in
     ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn
@@ -86,7 +101,7 @@ add_custom_target(setup_component
     ALL
     DEPENDS local_shim_build
     COMMENT "Moving code over to ${target_dir} and setting up the build there."
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${srcs} ${hdrs} ${lib_srcs} ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn "${target_dir}"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${srcs} ${hdrs} ${lib_srcs} ${test_srcs} ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn "${target_dir}"
     SOURCES ${srcs} ${hdrs} ${lib_srcs} ${lib_hdrs_abs}
 )
 
@@ -117,7 +132,8 @@ if(Python3_EXECUTABLE)
             DEPENDS setup_component
             WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
             COMMENT "Building component in Chromium source tree ${target_dir}, output in out/${CHROMIUM_PROFILE}"
-            COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 9 components/ipfs
+            COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 9 components/ipfs:ipfs
+#            COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 9 components/ipfs:ipfs_unit_tests
         )
     else()
         message(WARNING "No depot_tools")
@@ -125,3 +141,47 @@ if(Python3_EXECUTABLE)
 else()
     message(WARNING "No python3")
 endif()
+
+file(GLOB
+    chromium_libs
+    "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/lib*.so"
+    "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/obj/t*/*/lib*.a"
+)
+if(ENABLE_OUTOFTREE_TESTING)
+    enable_testing()
+    foreach(test_src ${test_srcs})
+        get_filename_component(
+            name
+            ${test_srcs}
+            NAME_WE
+        )
+        add_executable(${name}_runner
+            ${test_src}
+        )
+        target_include_directories(${name}_runner
+            PUBLIC
+                "${CHROMIUM_SOURCE_TREE}/third_party/googletest/src/googletest/include"
+        )
+        target_link_libraries(${name}_runner
+            PUBLIC
+                local_shim_build
+                ${chromium_libs}
+        )
+        add_test(
+            NAME ${name}
+            COMMAND "$<TARGET_FILE:${name}_runner>"
+        )
+        add_custom_command(
+            OUTPUT ${name}.cert
+            COMMAND "$<TARGET_FILE:${name}_runner>"
+            COMMAND "${CMAKE_COMMAND}" -E touch ${name}.cert
+            DEPENDS ${name}_runner
+        )
+        list(APPEND certs ${name}.cert)
+    endforeach()
+    add_custom_target(check_tests
+        ALL
+        DEPENDS ${certs}
+        COMMAND echo "Tests up-to-date."
+    )
+endif(ENABLE_OUTOFTREE_TESTING)

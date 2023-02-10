@@ -6,31 +6,31 @@ using namespace std::string_literals;
 
 ipfs::Gateways::Gateways()
 : known_gateways_{
-      {"http://localhost:8080/"s, 9}
-    , {"https://4everland.io/"s, 0}
-    , {"https://c4rex.co/"s, 0}
-    , {"https://cloudflare-ipfs.com/"s, 0}
-    , {"https://dweb.link/"s, 1}
-    , {"https://gateway.ipfs.io/"s, 1}
-    , {"https://gateway.pinata.cloud/"s, 0}
-    , {"https://ipfs.czip.it/"s, 1}
-    , {"https://ipfs.best-practice.se/"s, 1}
-    , {"https://ipfs-gateway.cloud/"s, 1}
-    , {"https://ipfs.io/"s, 1}
-    , {"https://ipfs.joaoleitao.org/"s, 2}
-    , {"https://ipfs.storry.tv/"s, 1}
-    , {"https://jorropo.net/"s, 1}
-    , {"https://ipfs.jpu.jp/"s, 1}
-    , {"https://ipfs.litnet.work/"s, 1}
-    , {"https://ipfs.runfission.com/"s, 0}
-    , {"https://jorropo.net/"s, 0}
-    , {"https://hardbin.com/"s, 0}
-    , {"https://nftstorage.link/"s, 0}
-    , {"https://video.oneloveipfs.com/"s, 0}
-    , {"https://cf-ipfs.com/"s, 0}
-    , {"https://storry.tv/"s, 1}
-    , {"https://via0.com/"s, 0}
-    , {"https://w3s.link/"s, 0}
+      {"http://localhost:8080/"s, 19}
+    , {"https://4everland.io/"s, 10}
+    , {"https://c4rex.co/"s, 10}
+    , {"https://cloudflare-ipfs.com/"s, 10}
+    , {"https://dweb.link/"s, 11}
+    , {"https://gateway.ipfs.io/"s, 11}
+    , {"https://gateway.pinata.cloud/"s, 10}
+    , {"https://ipfs.czip.it/"s, 11}
+    , {"https://ipfs.best-practice.se/"s, 11}
+    , {"https://ipfs-gateway.cloud/"s, 11}
+    , {"https://ipfs.io/"s, 11}
+    , {"https://ipfs.joaoleitao.org/"s, 12}
+    , {"https://ipfs.storry.tv/"s, 11}
+    , {"https://jorropo.net/"s, 11}
+    , {"https://ipfs.jpu.jp/"s, 11}
+    , {"https://ipfs.litnet.work/"s, 11}
+    , {"https://ipfs.runfission.com/"s, 10}
+    , {"https://jorropo.net/"s, 10}
+    , {"https://hardbin.com/"s, 10}
+    , {"https://nftstorage.link/"s, 10}
+    , {"https://video.oneloveipfs.com/"s, 10}
+    , {"https://cf-ipfs.com/"s, 10}
+    , {"https://storry.tv/"s, 11}
+    , {"https://via0.com/"s, 10}
+    , {"https://w3s.link/"s, 10}
 }
 , random_engine_{std::random_device{}()}
 , dist_{0.0625}

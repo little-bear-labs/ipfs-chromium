@@ -23,6 +23,7 @@ if(Python3_EXECUTABLE)
     conan_cmake_configure(
         REQUIRES
             abseil/20220623.1
+            gtest/1.13.0
         GENERATORS
             cmake_find_package
         OUTPUT_QUIET

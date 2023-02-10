@@ -6,28 +6,28 @@
 #include <string>
 
 namespace ipfs {
-    class Gateway {
-      std::string prefix_;
-      flat_set<std::string> failed_requests_;
-      unsigned priority_;
-      std::string tasked_with_;
+class Gateway {
+  std::string prefix_;
+  flat_set<std::string> failed_requests_;
+  unsigned priority_;
+  std::string tasked_with_;
 
-     public:
-      Gateway(std::string url_prefix, unsigned priority);
-      explicit Gateway(Gateway const&);
-      ~Gateway();
+ public:
+  Gateway(std::string url_prefix, unsigned priority);
+  explicit Gateway(Gateway const&);
+  ~Gateway();
 
-      std::string const& url_prefix() const;
-      std::string url() const;
-      std::string const& current_task() const;
+  std::string const& url_prefix() const;
+  std::string url() const;
+  std::string const& current_task() const;
 
-      bool accept(std::string const& suffix);
-      void make_available();
-      void failed();
+  bool accept(std::string const& suffix);
+  void make_available();
+  void failed();
 
-      bool operator<(Gateway const&) const;
-    };
+  bool operator<(Gateway const&) const;
+};
 
-}
+}  // namespace ipfs
 
-#endif //CHROMIUM_IPFS_GATEWAY_H_
+#endif  // CHROMIUM_IPFS_GATEWAY_H_

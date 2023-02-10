@@ -1,3 +1,4 @@
+import("//testing/test.gni")
 component("ipfs") {
   sources = [
   @gn_sources@]
@@ -14,6 +15,27 @@ component("ipfs") {
     "//services/network/public/cpp:cpp",
     "//services/network/public/mojom",
     "//services/network/public/mojom:url_loader_base",
+    "//url",
+  ]
+  defines = [ "IS_IPFS_IMPL" ]
+}
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+  @gn_test_sources@]
+}
+test("ipfs_unit_tests") {
+  include_dirs = [
+    "."
+  ]
+  sources = [ "//components/test/run_all_unittests.cc" ]
+  deps = [
+    ":unit_tests",
+    "//base/test:test_support",
+    "//services/network:network_service",
+    "//services/network/public/cpp:cpp",
+    "//services/network/public/mojom",
+    "//testing/gtest",
     "//url",
   ]
   defines = [ "IS_IPFS_IMPL" ]
