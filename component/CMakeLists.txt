@@ -101,19 +101,23 @@ add_custom_target(setup_component
     ALL
     DEPENDS local_shim_build
     COMMENT "Moving code over to ${target_dir} and setting up the build there."
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${srcs} ${hdrs} ${lib_srcs} ${test_srcs} ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn "${target_dir}"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${srcs} ${hdrs} ${lib_srcs} ${CMAKE_SOURCE_DIR}/library/pb_dag.proto ${test_srcs} ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn "${target_dir}"
     SOURCES ${srcs} ${hdrs} ${lib_srcs} ${lib_hdrs_abs}
 )
 
 foreach(hdr ${lib_hdrs_rel})
     get_filename_component(dir "${hdr}" DIRECTORY)
-    file(MAKE_DIRECTORY
-        "${target_dir}/${dir}"
-    )
-    add_custom_command(TARGET setup_component
-        PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/library/include/${hdr}" "${target_dir}/${dir}"
-    )
+    if (dir MATCHES .*/gen)
+        message(VERBOSE "Not including ${dir} in the include directories to sync with the Chromium tree. It should generate those files on its own.")
+    else()
+        file(MAKE_DIRECTORY
+            "${target_dir}/${dir}"
+        )
+        add_custom_command(TARGET setup_component
+            PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_SOURCE_DIR}/library/include/${hdr}" "${target_dir}/${dir}"
+        )
+    endif ()
 endforeach()
 if(GIT_EXECUTABLE)
     add_custom_command(

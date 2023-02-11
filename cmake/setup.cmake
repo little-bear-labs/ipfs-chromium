@@ -6,11 +6,13 @@ find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
 if(CLANG_TIDY_EXE)
     set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}" "--config-file=${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy")
 endif()
-find_package(Protobuf REQUIRED)
 find_package (Python3 COMPONENTS Interpreter)
 if(Python3_EXECUTABLE)
     set(CONAN_CMAKE_SILENT_OUTPUT 1)
-    execute_process(COMMAND ${Python3_EXECUTABLE} -m pip --quiet install --upgrade conan)
+    execute_process(
+        COMMAND ${Python3_EXECUTABLE} -m pip --quiet install --upgrade conan
+        COMMAND_ERROR_IS_FATAL ANY
+    )
     if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/conan.cmake")
         file(
             DOWNLOAD
@@ -24,6 +26,7 @@ if(Python3_EXECUTABLE)
         REQUIRES
             abseil/20220623.1
             gtest/1.13.0
+            protobuf/3.21.9
         GENERATORS
             cmake_find_package
         OUTPUT_QUIET
@@ -54,10 +57,13 @@ if(Python3_EXECUTABLE)
         message(STATUS "depot_tools found at ${DEPOT_TOOLS_DIRECTORY}")
         set(DEPOT_TOOLS_NINJA_PY "${DEPOT_TOOLS_DIRECTORY}/ninja.py")
     else()
-        message(WARNING "DEPOT_TOOLS_DIRECTORY(${DEPOT_TOOLS_DIRECTORY}) not properly leading to a ninja.py.py - will not be doing a proper build of the component inside the Chromium tree.")
+        message(WARNING "DEPOT_TOOLS_DIRECTORY(${DEPOT_TOOLS_DIRECTORY}) not properly leading to a ninja.py - will not be doing a proper build of the component inside the Chromium tree.")
     endif()
 else()
     message(WARNING "Could not find python 3. Can't use gn or conan. You're on your own for Chromium & dependencies.")
 endif()
+
+find_package(Protobuf REQUIRED)
+
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/library/base/debug")
 file(TOUCH          "${CMAKE_CURRENT_BINARY_DIR}/library/base/debug/debugging_buildflags.h")

@@ -50,7 +50,7 @@ index 0a338dd358391..f4ec6979fa9a0 100644
      "//components/keyed_service/content",
      "//components/language/content/browser",
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
-index febbb4791f6a2..a4e526f4b621c 100644
+index febbb4791f6a2..7e4b1153213fe 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
 @@ -212,6 +212,8 @@
@@ -67,7 +67,7 @@ index febbb4791f6a2..a4e526f4b621c 100644
      int frame_tree_node_id) {
    DCHECK_CURRENTLY_ON(BrowserThread::UI);
 -
-+  std::clog << "\n\t###\t" << __PRETTY_FUNCTION__ << "\t###\t" << request.url.spec() << "\t###\n\n";
++  // std::clog << "\n\t###\t" << __PRETTY_FUNCTION__ << "\t###\t" << request.url.spec() << "\t###\n\n";
    std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
  
    DCHECK(browser_context);
@@ -84,7 +84,7 @@ index febbb4791f6a2..a4e526f4b621c 100644
          NonNetworkURLLoaderFactoryMap* factories) {
    DCHECK(browser_context);
    DCHECK(factories);
-+  std::clog << __PRETTY_FUNCTION__ << '\n';
++  // std::clog << __PRETTY_FUNCTION__ << '\n';
 +  // factories->emplace("ipfs",ipfs::IpfsURLLoaderFactory::Create("ipfs RegisterNonNetworkWorkerMainResourceURLLoaderFactories"));
 +  // factories->emplace("ipns",ipfs::IpfsURLLoaderFactory::Create("ipns RegisterNonNetworkWorkerMainResourceURLLoaderFactories"));
  
@@ -94,7 +94,7 @@ index febbb4791f6a2..a4e526f4b621c 100644
          NonNetworkURLLoaderFactoryMap* factories) {
    DCHECK(browser_context);
    DCHECK(factories);
-+  std::clog << __PRETTY_FUNCTION__ << '\n';
++  // std::clog << __PRETTY_FUNCTION__ << '\n';
 +  // factories->emplace("ipfs",ipfs::IpfsURLLoaderFactory::Create("ipfs RegisterNonNetworkServiceWorkerUpdateURLLoaderFactories"));
 +  // factories->emplace("ipns",ipfs::IpfsURLLoaderFactory::Create("ipns RegisterNonNetworkServiceWorkerUpdateURLLoaderFactories"));
  
@@ -106,7 +106,7 @@ index febbb4791f6a2..a4e526f4b621c 100644
          NonNetworkURLLoaderFactoryMap* factories) {
 -#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS) || \
 -    !BUILDFLAG(IS_ANDROID)
-+  std::clog << "\n\t###\t" << __PRETTY_FUNCTION__ << "\t###\n";
++  // std::clog << "\n\t###\t" << __PRETTY_FUNCTION__ << "\t###\n";
    content::RenderFrameHost* frame_host =
        RenderFrameHost::FromID(render_process_id, render_frame_id);
    WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
@@ -123,9 +123,9 @@ index febbb4791f6a2..a4e526f4b621c 100644
      network::mojom::URLLoaderFactoryOverridePtr* factory_override) {
    bool use_proxy = false;
 -
-+  std::clog << "\n\n\t###\t" << __PRETTY_FUNCTION__ << "\t###\t" << static_cast<long>(type) << "\t###\n" << std::endl;
++  // std::clog << "\n\n\t###\t" << __PRETTY_FUNCTION__ << "\t###\t" << static_cast<long>(type) << "\t###\n" << std::endl;
 +  if ( type == URLLoaderFactoryType::kDocumentSubResource ) {
-+    std::clog << "document sub-resource!\n";
++    // std::clog << "document sub-resource!\n";
 +  }
  #if BUILDFLAG(ENABLE_EXTENSIONS)
    auto* web_request_api =
@@ -142,15 +142,3 @@ index febbb4791f6a2..a4e526f4b621c 100644
  #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
    interceptors.push_back(
        std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(
-diff --git a/url/url_util.cc b/url/url_util.cc
-index 3a3847d82698a..7eeae34be9622 100644
---- a/url/url_util.cc
-+++ b/url/url_util.cc
-@@ -96,6 +96,7 @@ struct SchemeRegistry {
-       kHttpsScheme,
-       kHttpScheme,
-       kDataScheme,
-+      "ipfs",
-   };
- 
-   // Schemes that can be used by web to store data (local storage, etc).

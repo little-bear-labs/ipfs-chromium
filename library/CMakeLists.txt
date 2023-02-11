@@ -38,7 +38,7 @@ target_include_directories(ipfs_client
 )
 target_link_libraries(ipfs_client
     PUBLIC
-        ${Protobuf_LIBRARIES}
+        protobuf::libprotobuf
 )
 
 find_package(absl)
@@ -62,14 +62,21 @@ if(Boost_FOUND)
     )
 endif()
 
+file(GLOB
+    protos
+    *.proto
+)
 protobuf_generate_cpp(
     pb_src
     pb_hdr
-    src/pb-dag.proto
+    ${protos}
 )
-add_custom_command(
-    TARGET ipfs_client
-    PRE_BUILD
+add_custom_target(update_pb_source_in_repo
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${pb_hdr}" "${CMAKE_CURRENT_LIST_DIR}/include/ipfs_client/gen"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${pb_src}" "${CMAKE_CURRENT_LIST_DIR}/src/gen"
+    COMMAND_EXPAND_LISTS
+    SOURCES
+        "${pb_src}"
+        "${pb_hdr}"
 )
+add_dependencies(ipfs_client update_pb_source_in_repo)

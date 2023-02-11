@@ -1,4 +1,6 @@
 syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+package ipfs.pb_dag;
 
 message PBLink {
   // binary CID (with no multibase prefix) of the target object
@@ -18,3 +20,4 @@ message PBNode {
   // opaque user data
   optional bytes Data = 1;
 }
+
