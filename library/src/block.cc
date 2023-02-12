@@ -42,9 +42,8 @@ bool ipfs::Block::is_file() const {
   return valid() && fs_node_ && fsdata_.type() == unix_fs::Data_DataType_File;
 }
 bool ipfs::Block::is_directory() const {
-  return valid()
-       && fs_node_
-       && fsdata_.type() == unix_fs::Data_DataType_Directory;
+  return valid() && fs_node_ &&
+         fsdata_.type() == unix_fs::Data_DataType_Directory;
 }
 std::uint64_t ipfs::Block::file_size() const {
   if (fs_node_ && fsdata_.has_filesize()) {
@@ -52,6 +51,12 @@ std::uint64_t ipfs::Block::file_size() const {
   } else {
     return 0UL;
   }
+}
+std::string const& ipfs::Block::chunk_data() const {
+  return fsdata_.data();
+}
+std::string const& ipfs::Block::unparsed() const {
+  return node_.data();
 }
 std::string ipfs::Block::LinkCid(std::string const& raw_hash) {
   return libp2p::multi::detail::encodeBase58(raw_hash);

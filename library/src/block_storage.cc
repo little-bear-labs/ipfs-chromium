@@ -1,12 +1,23 @@
 #include "ipfs_client/block_storage.h"
+#include "ipfs_client/unixfs_path_resolver.h"
 
 using Self = ipfs::BlockStorage;
-using Resolution = Self::Resolution;
 using Node = ipfs::Block;
 
-bool Self::Store(std::string&& cid, Node&& block) {
-  // TODO validate
-  cid2node_.emplace(std::move(cid), std::move(block));
+bool Self::Store(std::string const& cid, Node&& block) {
+  // TODO validate, return false if fail
+  if (cid2node_.emplace(cid, std::move(block)).second == false) {
+    return false;  // We've already seen this block
+  }
+  for (auto& ptr : listening_) {
+    if (ptr->waiting_on() == cid) {
+      ptr->Step(ptr);
+    }
+  }
+  auto new_end =
+      std::remove_if(listening_.begin(), listening_.end(),
+                     [](auto& p) { return p->waiting_on().empty(); });
+  listening_.erase(new_end, listening_.end());
   return true;
 }
 auto Self::Get(std::string const& cid) const -> Node const* {
@@ -16,32 +27,10 @@ auto Self::Get(std::string const& cid) const -> Node const* {
   }
   return &(it->second);
 }
-Resolution Self::AttemptResolve(std::string const& root,
-                                std::string_view path) const {
-  Resolution result;
-  AttemptResolveInner(result, root, path);
-  return result;  // TODO
-}
-void Self::AttemptResolveInner(Resolution& result,
-                               std::string const& root,
-                               std::string_view path) const {
-  Node const* node = Get(root);
-  if (!node) {
-    result.required_cids.push_back(root);
-    return;
-  }
-  auto slash_count = path.find_first_not_of("/");
-  if (slash_count <= path.size()) {
-    path.remove_prefix(slash_count);
-  }
-  auto slash = path.find('/');
-  auto path_element = path.substr(0, slash);
-  if (path_element.empty()) {
-    // TODO we're at the leaf of the path
-  }
+
+void ipfs::BlockStorage::AddListening(std::shared_ptr<UnixFsPathResolver> p) {
+  listening_.insert(p);
 }
 
 Self::BlockStorage() {}
 Self::~BlockStorage() noexcept {}
-Self::Resolution::Resolution() {}
-Self::Resolution::~Resolution() noexcept {}

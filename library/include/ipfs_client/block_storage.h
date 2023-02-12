@@ -9,33 +9,20 @@
 #include <vector>
 
 namespace ipfs {
+class UnixFsPathResolver;
+
 class BlockStorage {
  public:
   BlockStorage();
   ~BlockStorage() noexcept;
 
-  bool Store(std::string&& cid, Block&& block);
+  bool Store(std::string const& cid, Block&& block);
   Block const* Get(std::string const& cid) const;
-
-  struct Resolution {
-    Resolution();
-    ~Resolution() noexcept;
-    std::string contents;  // NOT NECESSARILY TEXT (just a sequence of bytes)
-    std::string mime_;
-    std::vector<std::string> required_cids;
-    std::vector<std::string> prefetch_cids;
-  };
-
-  //"root" CID may be a bit misleading. It's the block the path is relative to.
-  Resolution AttemptResolve(std::string const& root_cid,
-                            std::string_view unixfs_path) const;
+  void AddListening(std::shared_ptr<UnixFsPathResolver>);
 
  private:
   flat_map<std::string, Block> cid2node_;
-
-  void AttemptResolveInner(Resolution&,
-                           std::string const&,
-                           std::string_view) const;
+  flat_set<std::shared_ptr<UnixFsPathResolver>> listening_;
 };
 }  // namespace ipfs
 

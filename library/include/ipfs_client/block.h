@@ -36,14 +36,15 @@ class Block {
   bool is_file() const;
   bool is_directory() const;
   std::uint64_t file_size() const;
+  std::string const& chunk_data() const;
+  std::string const& unparsed() const;
 
   template <class Functor>
-  void List(Functor foo) {
-    if (!is_directory()) {
-      return;
-    }
+  void List(Functor foo) const {
     for (auto& link : node_.links()) {
-      foo(link.name(), LinkCid(link.hash()));
+      if (!foo(link.name(), LinkCid(link.hash()))) {
+        break;
+      }
     }
   }
 
