@@ -142,3 +142,18 @@ index febbb4791f6a2..7e4b1153213fe 100644
  #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
    interceptors.push_back(
        std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(
+diff --git a/content/browser/renderer_host/navigation_request.cc b/content/browser/renderer_host/navigation_request.cc
+index d66761d9e1030..ffd9e852f86e9 100644
+--- a/content/browser/renderer_host/navigation_request.cc
++++ b/content/browser/renderer_host/navigation_request.cc
+@@ -872,7 +872,9 @@ GetOriginForURLLoaderFactoryUncheckedWithDebugInfo(
+             url::Origin::Create(navigation_request->GetWebBundleURL())),
+         "web_bundle");
+   }
+-
++  if (common_params.url.SchemeIs("ipfs") || common_params.url.SchemeIs("ipns")) {
++    return std::make_pair(url::Origin::Create(common_params.url), "ca_uri");
++  }
+   // In cases not covered above, URLLoaderFactory should be associated with the
+   // origin of |common_params.url| and/or |common_params.initiator_origin|.
+   return std::make_pair(

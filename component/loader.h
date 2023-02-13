@@ -19,7 +19,8 @@ class SimpleURLLoader;
 namespace ipfs {
 class InterRequestState;
 
-class Loader final : public network::mojom::URLLoader {
+class Loader final : public network::mojom::URLLoader,
+                     public std::enable_shared_from_this<Loader> {
   void FollowRedirect(
       std::vector<std::string> const& removed_headers,
       net::HttpRequestHeaders const& modified_headers,
@@ -73,6 +74,7 @@ class Loader final : public network::mojom::URLLoader {
   bool handle_response(Gateway* gw,
                        network::SimpleURLLoader* gw_req,
                        std::string* body);
+  void CreateRequest(BusyGateway&&);
 };
 
 }  // namespace ipfs

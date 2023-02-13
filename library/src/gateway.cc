@@ -1,27 +1,23 @@
 #include "ipfs_client/gateway.h"
 
 ipfs::Gateway::Gateway(std::string url_prefix, unsigned int priority)
-    : prefix_{std::move(url_prefix)}
-      , priority_{priority}
-{}
+    : prefix_{std::move(url_prefix)}, priority_{priority} {}
 ipfs::Gateway::Gateway(Gateway const& other)
-    : prefix_{other.prefix_}
-      , priority_{other.priority_}
-{}
-ipfs::Gateway::~Gateway(){}
+    : prefix_{other.prefix_}, priority_{other.priority_} {}
+ipfs::Gateway::~Gateway() {}
 
-//Less means should-be-preferred
+// Less means should-be-preferred
 bool ipfs::Gateway::operator<(Gateway const& rhs) const {
-  if ( failed_requests_.size() != rhs.failed_requests_.size() ) {
+  if (failed_requests_.size() != rhs.failed_requests_.size()) {
     return failed_requests_.size() < rhs.failed_requests_.size();
   }
-  if ( priority_ != rhs.priority_ ) {
+  if (priority_ != rhs.priority_) {
     return priority_ > rhs.priority_;
   }
   return prefix_ < rhs.prefix_;
 }
 bool ipfs::Gateway::accept(std::string const& suffix) {
-  if ( tasked_with_.empty() && ! failed_requests_.contains(suffix) ) {
+  if (tasked_with_.empty() && !PreviouslyFailed(suffix)) {
     tasked_with_.assign(suffix);
     return true;
   }
@@ -30,7 +26,7 @@ bool ipfs::Gateway::accept(std::string const& suffix) {
 std::string const& ipfs::Gateway::url_prefix() const {
   return prefix_;
 }
-void ipfs::Gateway::make_available() {
+void ipfs::Gateway::MakeAvailable() {
   tasked_with_.clear();
   ++priority_;
 }
@@ -43,4 +39,7 @@ void ipfs::Gateway::failed() {
 }
 std::string const& ipfs::Gateway::current_task() const {
   return tasked_with_;
+}
+bool ipfs::Gateway::PreviouslyFailed(const std::string& suffix) const {
+  return failed_requests_.contains(suffix);
 }

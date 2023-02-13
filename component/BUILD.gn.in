@@ -25,5 +25,8 @@ component("ipfs") {
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("pb_dag") {
-  sources = [ "pb_dag.proto" ]
+  sources = [
+    "pb_dag.proto",
+    "unix_fs.proto",
+  ]
 }

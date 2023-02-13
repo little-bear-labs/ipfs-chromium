@@ -22,8 +22,9 @@ class Gateway {
   std::string const& current_task() const;
 
   bool accept(std::string const& suffix);
-  void make_available();
+  void MakeAvailable();
   void failed();
+  bool PreviouslyFailed(std::string const& suffix) const;
 
   bool operator<(Gateway const&) const;
 };

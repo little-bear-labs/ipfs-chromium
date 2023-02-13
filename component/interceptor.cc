@@ -18,8 +18,8 @@ using Interceptor = ipfs::Interceptor;
 Interceptor::Interceptor(network::mojom::URLLoaderFactory* handles_http)
     : loader_factory_{handles_http} {}
 
+#ifdef REDIRECT_THROUGH_HTTP
 namespace {
-
 void redirect(network::ResourceRequest const& req,
               mojo::PendingReceiver<network::mojom::URLLoader>,
               mojo::PendingRemote<network::mojom::URLLoaderClient> cpr) {
@@ -36,15 +36,18 @@ void redirect(network::ResourceRequest const& req,
   client->OnComplete(network::URLLoaderCompletionStatus{308});
 }
 }  // namespace
+#endif
 
 void Interceptor::MaybeCreateLoader(network::ResourceRequest const& req,
                                     content::BrowserContext* context,
                                     LoaderCallback loader_callback) {
   if (req.url.SchemeIs("ipfs") || req.url.SchemeIs("ipns")) {
+#ifdef REDIRECT_THROUGH_HTTP
     LOG(INFO) << req.url.spec() << " redirecting...";
     std::move(loader_callback).Run(base::BindOnce(redirect));
   } else if (req.url.spec().find(ipfs::IPFS_OVER_HTTP_DOMAIN) !=
              std::string::npos) {
+#endif
     LOG(INFO) << req.url.spec() << " getting intercepted!";
     DCHECK(context);
     std::move(loader_callback)

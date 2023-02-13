@@ -19,7 +19,8 @@ ipfs::Loader::Loader(network::mojom::URLLoaderFactory* handles_http,
                      InterRequestState& state)
     : state_{state},
       lower_loader_factory_{handles_http},
-      sched_{state_.gateways().GenerateList()} {}
+      sched_{state_.gateways().GenerateList(),
+             [this](auto&& bg) { this->CreateRequest(std::move(bg)); }} {}
 ipfs::Loader::~Loader() noexcept {}
 
 void ipfs::Loader::FollowRedirect(
@@ -64,15 +65,7 @@ void ipfs::Loader::StartRequest(
   } else {
     path = IpfsOverHttpUrl2IpfsGatewayPath(resource_request.url.spec());
   }
-  me->startup(me, path, 10);
-}
-
-void ipfs::Loader::startup(ptr me,
-                           std::string requested_path,
-                           unsigned concurrent) {
-  while (concurrent > 0 && start_gateway_request(me, requested_path)) {
-    --concurrent;
-  }
+  me->sched_.Enqueue(path, Scheduler::Priority::Required);
 }
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -91,34 +84,27 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         setting: "Currently, this feature cannot be disabled by settings. TODO"
       }
     )");
-bool ipfs::Loader::start_gateway_request(ptr me, std::string requested_path) {
-  auto [status, assigned] = sched_.schedule(requested_path);
-  if (status == Scheduler::Result::Failed) {
-    LOG(ERROR) << "Request completely failed: " << requested_path;
-    return false;
-  }
-  if (!assigned) {
-    DCHECK(status == Scheduler::Result::InProgress);
-    return true;
-  }
-  // TODO lots of things wrong with this function
+void ipfs::Loader::CreateRequest(BusyGateway&& assigned) {
   auto req = std::make_unique<network::ResourceRequest>();
   auto url = assigned->url();
   LOG(INFO) << "Starting a gateway request: " << url;
   req->url = GURL{url};
   auto idx = gateway_requests_.size();
+  auto url_suffix = assigned->current_task();
   gateway_requests_.emplace_back(
       std::move(assigned), network::SimpleURLLoader::Create(
                                std::move(req), kTrafficAnnotation, FROM_HERE));
-  auto cb = base::BindOnce(&ipfs::Loader::on_gateway_response,
-                           base::Unretained(this), me, requested_path, idx);
+  auto cb =
+      base::BindOnce(&ipfs::Loader::on_gateway_response, base::Unretained(this),
+                     shared_from_this(), url_suffix, idx);
+  // TODO - proper requesting with full features (pause, explict cancel, etc.).
+  // May require not using SimpleURLLoader
   gateway_requests_.back()
       .second->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
           lower_loader_factory_, std::move(cb));
-  return true;
 }
-void ipfs::Loader::on_gateway_response(ptr me,
-                                       std::string requested_path,
+void ipfs::Loader::on_gateway_response(ptr,
+                                       std::string,
                                        std::size_t req_idx,
                                        std::unique_ptr<std::string> body) {
   auto& gw = gateway_requests_.at(req_idx).first;
@@ -138,11 +124,12 @@ void ipfs::Loader::on_gateway_response(ptr me,
   } else {
     gw->failed();
     gw.reset();
-    if (start_gateway_request(me, requested_path)) {
-      LOG(INFO) << "Response failure for " << url << ", starting new request.";
-    } else if (http_loader->CompletionStatus().has_value()) {
-      LOG(ERROR) << "Complete failure on " << requested_path << '\n';
-      client_->OnComplete(http_loader->CompletionStatus().value());
+    auto failure = sched_.DetectCompleteFailure();
+    if (failure.empty()) {
+      sched_.IssueRequests();
+    } else {
+      // Creative reinterpretation of 'gateway' in 'bad gateway'
+      client_->OnComplete(network::URLLoaderCompletionStatus{502});
     }
     LOG(INFO) << "Demoting " << prefix;
     state_.gateways().demote(prefix);

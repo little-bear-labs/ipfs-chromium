@@ -73,15 +73,21 @@ elseif()
 endif()
 
 set(target_dir "${CHROMIUM_SOURCE_TREE}/components/ipfs/${basename}")
-file(GLOB lib_srcs ../library/src/*.cc)
+file(GLOB
+    lib_srcs
+        ../library/src/*.cc
+        ../library/src/multi/*/*/*.cc
+)
 file(GLOB_RECURSE
     lib_hdrs_rel
     RELATIVE "${CMAKE_SOURCE_DIR}/library/include"
     "${CMAKE_SOURCE_DIR}/library/include/*.h"
+    "${CMAKE_SOURCE_DIR}/library/include/*.hpp"
 )
 file(GLOB_RECURSE
     lib_hdrs_abs
     "${CMAKE_SOURCE_DIR}/library/include/*.h"
+    "${CMAKE_SOURCE_DIR}/library/include/*.hpp"
 )
 
 foreach(source ${srcs} ${lib_srcs})

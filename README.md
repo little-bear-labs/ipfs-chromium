@@ -4,6 +4,16 @@
 
 [vid](http://chomp:8080/ipfs/QmWvWKiCvknAYQ1v6h8DKysk18HWcHstNGoFb1wmSijjqe/c.mkv)
 
+### TODO
+* Unit tests for ipfs_client, using GTest
+* unixfs_path_resolver needs to return something reasonable for a directory
+* Plug resolver into Loader - request single blocks
+* https://orchestrator.strn.pl/nodes/nearby
+* Do real URLLoader management for gateway requests
+* Validation!!
+* ipns resolution
+* dnslink resolution
+
 ## Planned Design
 
 See [DESIGN.md](DESIGN.md)
