@@ -100,8 +100,8 @@ void resolve_unixfs_path(std::string cid, std::string path) {
     file_contents.append(s);
   };
   auto out_fn = std::filesystem::path{path}.filename().string();
-  auto on_complete = [out_fn]() {
-    std::clog << "Got whole file. File contents (" << file_contents.size()
+  auto on_complete = [out_fn](auto type) {
+    std::clog << "Got " << type << ". File contents (" << file_contents.size()
               << " B). Writing to " << out_fn << '\n';
     std::ofstream f{out_fn};
     f.write(file_contents.c_str(), file_contents.size());

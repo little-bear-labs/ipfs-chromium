@@ -5,14 +5,18 @@
 [vid](http://chomp:8080/ipfs/QmWvWKiCvknAYQ1v6h8DKysk18HWcHstNGoFb1wmSijjqe/c.mkv)
 
 ### TODO
-* Unit tests for ipfs_client, using GTest
+* DCHECK and redefine to analogues, in ipfs_client 
+* Unit tests coverage for ipfs_client, using GTest
 * unixfs_path_resolver needs to return something reasonable for a directory
+* cull hard-coded list to remove those that don't allow block-level access
 * Plug resolver into Loader - request single blocks
 * https://orchestrator.strn.pl/nodes/nearby
 * Do real URLLoader management for gateway requests
 * Validation!!
 * ipns resolution
 * dnslink resolution
+* User settings
+* https://orchestrator.strn.pl/nodes/nearby
 
 ## Planned Design
 

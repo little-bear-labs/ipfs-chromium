@@ -10,17 +10,17 @@
               << __LINE__ << '\n';                                          \
   }
 
-void ipfs::UnixFsPathResolver::Step(std::shared_ptr<UnixFsPathResolver> p) {
+void ipfs::UnixFsPathResolver::Step(std::shared_ptr<UnixFsPathResolver>) {
   Block const* block = storage_.Get(cid_);
   if (!block) {
-    storage_.AddListening(p);
+    storage_.AddListening(shared_from_this());
     request_required_(cid_);
     return;
   }
   if (block->is_directory()) {
     auto start = path_.find_first_not_of("/");
     if (start == std::string::npos) {
-      on_complete_();
+      CompleteDirectory(*block);
       return;
     }
     auto end = path_.find('/', start);
@@ -35,12 +35,12 @@ void ipfs::UnixFsPathResolver::Step(std::shared_ptr<UnixFsPathResolver> p) {
       return true;
     });
     // TODO 404
-    path_.erase(0, end);
     std::clog << "Descending path: " << next << " . " << path_ << '\n';
-    Step(p);
+    path_.erase(0, end);
+    Step(shared_from_this());
   } else if (block->type() == Block::Type::FileChunk) {
     receive_bytes_(block->chunk_data());
-    on_complete_();
+    on_complete_(force_type_dir_ ? Block::Type::Directory : block->type());
   } else if (block->is_file()) {
     std::clog << "Re-assembling file from chunks: " << cid_ << '\n';
     bool writing = false;
@@ -85,10 +85,49 @@ void ipfs::UnixFsPathResolver::Step(std::shared_ptr<UnixFsPathResolver> p) {
       return (writing = false);
     });
     if (writing) {
-      on_complete_();
+      on_complete_(force_type_dir_ ? Block::Type::Directory : block->type());
     }
   } else {
     TODO
+  }
+}
+
+void ipfs::UnixFsPathResolver::CompleteDirectory(Block const& block) {
+  auto has_index_html = false;
+  std::string generated_index{
+      "<html>\n"
+      "  <title>Directory Listing</title>\n"
+      "  <body>\n"
+      "    <ul>\n"};
+  block.List([&](auto& name, auto cid) {
+    if (name == "index.html") {
+      cid_ = cid;
+      path_.clear();
+      has_index_html = true;
+      force_type_dir_ = true;
+      return false;
+    } else {
+      generated_index.append("      <li>")
+          .append("        <a href='ipfs://>")  // TODO need to keep right dir
+                                                // level in case you follow
+                                                // relative links inside
+          .append(cid)
+          .append("'>")
+          .append(name)
+          .append("</a>\n")
+          .append("      </li>");
+    }
+    return true;
+  });
+  if (has_index_html) {
+    Step(shared_from_this());
+  } else {
+    generated_index.append(
+        "    </ul>\n"
+        "  </body>\n"
+        "</html>");
+    receive_bytes_(generated_index);
+    on_complete_(block.type());
   }
 }
 
@@ -98,7 +137,7 @@ ipfs::UnixFsPathResolver::UnixFsPathResolver(BlockStorage& store,
                                              RequestByCid request_required,
                                              RequestByCid request_prefetch,
                                              FileContentReceiver receive_bytes,
-                                             NullanaryHook on_complete)
+                                             CompetionHook on_complete)
     : storage_{store},
       cid_{cid},
       path_{path},

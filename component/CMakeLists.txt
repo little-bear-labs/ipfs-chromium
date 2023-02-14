@@ -78,6 +78,11 @@ file(GLOB
         ../library/src/*.cc
         ../library/src/multi/*/*/*.cc
 )
+list(FILTER
+    lib_srcs
+    EXCLUDE
+    REGEX .*test.cc
+)
 file(GLOB_RECURSE
     lib_hdrs_rel
     RELATIVE "${CMAKE_SOURCE_DIR}/library/include"

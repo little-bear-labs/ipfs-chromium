@@ -11,6 +11,11 @@ file(GLOB_RECURSE
     src/*.cc
     src/*.cpp
 )
+list(FILTER
+    sources
+    EXCLUDE
+    REGEX .*test.cc
+)
 file(GLOB_RECURSE
     headers
     include/*.h
@@ -80,3 +85,46 @@ add_custom_target(update_pb_source_in_repo
         "${pb_hdr}"
 )
 add_dependencies(ipfs_client update_pb_source_in_repo)
+
+file(GLOB_RECURSE
+    unit_test_sources
+    CONFIGURE_DEPENDS
+    src/*_unittest.cc
+)
+find_package(GTest)
+if(GTest_FOUND)
+if(absl_FOUND)
+    enable_testing()
+    foreach(unit_test_source ${unit_test_sources})
+        get_filename_component(name ${unit_test_source} NAME_WE)
+        add_executable(${name}_runner
+            ${unit_test_source}
+        )
+        target_link_libraries(${name}_runner
+            PUBLIC
+                ipfs_client
+                GTest::gtest
+                GTest::gtest_main
+                absl::statusor
+        )
+        add_test(
+            NAME ${name}_runner
+            COMMAND $<TARGET_FILE:${name}_runner>
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+        )
+        add_custom_command(
+            OUTPUT ${name}_cert
+            DEPENDS ${name}_runner
+            COMMAND $<TARGET_FILE:${name}_runner>
+            COMMAND "${CMAKE_COMMAND}" -E touch ${name}_cert
+            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+        )
+        list(APPEND test_certificates ${name}_cert)
+    endforeach()
+    add_custom_target(check_tests
+        ALL
+        SOURCES ${test_certificates}
+        COMMAND echo "Tests are up-to-date."
+    )
+endif()#absl_FOUND
+endif()#GTest_FOUND

@@ -15,8 +15,8 @@ using GatewayList = flat_set<Gateway>;
 
 class Gateways {
   flat_map<std::string, unsigned> known_gateways_;
-  mutable std::default_random_engine
-      random_engine_;  // TODO - no way mutable is allowed to slide
+  // TODO - no way mutable is allowed to slide
+  mutable std::default_random_engine random_engine_;
   mutable std::geometric_distribution<unsigned> dist_;
 
  public:
