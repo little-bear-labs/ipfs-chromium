@@ -9,6 +9,10 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
+namespace ipfs {
+class UnixFsPathResolver;
+}
+
 namespace network::mojom {
 class URLLoaderFactory;
 }
@@ -58,6 +62,8 @@ class Loader final : public network::mojom::URLLoader,
   Scheduler sched_;
   std::vector<std::pair<BusyGateway, RequestHandle>> gateway_requests_;
   std::string original_url_;
+  std::shared_ptr<ipfs::UnixFsPathResolver> resolver_;
+  std::string partial_block_;
 
   void startup(ptr,
                std::string requested_path,
@@ -67,14 +73,16 @@ class Loader final : public network::mojom::URLLoader,
                              GatewayList& free_gws,
                              GatewayList& busy_gws,
                              std::string requested_path);
-  void on_gateway_response(ptr,
-                           std::string requested_path,
-                           std::size_t,
-                           std::unique_ptr<std::string>);
+  void OnGatewayResponse(ptr,
+                         std::string requested_path,
+                         std::size_t,
+                         std::unique_ptr<std::string>);
   bool handle_response(Gateway* gw,
                        network::SimpleURLLoader* gw_req,
                        std::string* body);
   void CreateRequest(BusyGateway&&);
+  void CreateBlockRequest(std::string cid);
+  void BlocksComplete(std::string mime_type);
 };
 
 }  // namespace ipfs

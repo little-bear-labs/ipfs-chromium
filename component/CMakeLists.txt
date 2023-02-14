@@ -42,6 +42,7 @@ target_include_directories(local_shim_build
         "${CHROMIUM_SOURCE_TREE}/buildtools/third_party/libc++/"
         "${CHROMIUM_SOURCE_TREE}/third_party/abseil-cpp/"
         "${CHROMIUM_SOURCE_TREE}/third_party/boringssl/src/include/"
+        "${CHROMIUM_SOURCE_TREE}/third_party/protobuf/src/"
         "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/gen"
 )
 target_link_libraries(local_shim_build

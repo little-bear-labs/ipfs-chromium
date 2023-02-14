@@ -1,6 +1,7 @@
 #include "ipfs_client/unixfs_path_resolver.h"
 
 #include "ipfs_client/block_storage.h"
+#include "ipfs_client/content_type.h"
 
 #include <iostream>
 
@@ -40,7 +41,7 @@ void ipfs::UnixFsPathResolver::Step(std::shared_ptr<UnixFsPathResolver>) {
     Step(shared_from_this());
   } else if (block->type() == Block::Type::FileChunk) {
     receive_bytes_(block->chunk_data());
-    on_complete_(force_type_dir_ ? Block::Type::Directory : block->type());
+    on_complete_(GuessContentType(original_path_, block->chunk_data()));
   } else if (block->is_file()) {
     std::clog << "Re-assembling file from chunks: " << cid_ << '\n';
     bool writing = false;
@@ -85,7 +86,7 @@ void ipfs::UnixFsPathResolver::Step(std::shared_ptr<UnixFsPathResolver>) {
       return (writing = false);
     });
     if (writing) {
-      on_complete_(force_type_dir_ ? Block::Type::Directory : block->type());
+      on_complete_(GuessContentType(original_path_, "TODO"));
     }
   } else {
     TODO
@@ -105,6 +106,10 @@ void ipfs::UnixFsPathResolver::CompleteDirectory(Block const& block) {
       path_.clear();
       has_index_html = true;
       force_type_dir_ = true;
+      if (!original_path_.ends_with('/')) {
+        original_path_.push_back('/');
+      }
+      original_path_.append("index.html");
       return false;
     } else {
       generated_index.append("      <li>")
@@ -127,7 +132,7 @@ void ipfs::UnixFsPathResolver::CompleteDirectory(Block const& block) {
         "  </body>\n"
         "</html>");
     receive_bytes_(generated_index);
-    on_complete_(block.type());
+    on_complete_("text/html");
   }
 }
 

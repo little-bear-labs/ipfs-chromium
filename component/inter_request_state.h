@@ -1,6 +1,7 @@
 #ifndef IPFS_INTER_REQUEST_STATE_H_
 #define IPFS_INTER_REQUEST_STATE_H_
 
+#include "ipfs_client/block_storage.h"
 #include "ipfs_client/gateways.h"
 
 #include "base/supports_user_data.h"
@@ -12,9 +13,11 @@ class BrowserContext;
 namespace ipfs {
 class InterRequestState : public base::SupportsUserData::Data {
   Gateways gws_;
+  BlockStorage storage_;
 
  public:
   Gateways& gateways() { return gws_; }
+  BlockStorage& storage() { return storage_; }
 
   static InterRequestState& FromBrowserContext(content::BrowserContext*);
 };

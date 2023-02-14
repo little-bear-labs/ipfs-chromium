@@ -17,6 +17,8 @@
 * dnslink resolution
 * User settings
 * https://orchestrator.strn.pl/nodes/nearby
+* ChromiumStyle() (accessors_only())
+* Persist promote/demote (perhaps integrated with user settings)
 
 ## Planned Design
 

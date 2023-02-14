@@ -16,7 +16,7 @@ class UnixFsPathResolver
  public:
   using RequestByCid = std::function<void(std::string const&)>;
   using FileContentReceiver = std::function<void(std::string const&)>;
-  using CompetionHook = std::function<void(Block::Type)>;
+  using CompetionHook = std::function<void(std::string)>;
   UnixFsPathResolver(BlockStorage&,
                      std::string cid,
                      std::string path,

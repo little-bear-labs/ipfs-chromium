@@ -38,10 +38,8 @@ void ipfs::IpfsURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     net::MutableNetworkTrafficAnnotationTag const&  // traffic_annotation
 ) {
-  std::clog << "\n\n\t###\t" << __PRETTY_FUNCTION__
-            << " name=" << debugging_name_ << " url=" << request.url.spec()
-            << "\t###\n"
-            << std::endl;
+  LOG(INFO) << "IPFS subresource: case=" << debugging_name_
+            << " url=" << request.url.spec();
   auto ptr = std::make_shared<Loader>(
       default_factory_, InterRequestState::FromBrowserContext(context_));
   ptr->StartRequest(ptr, request, std::move(loader), std::move(client));

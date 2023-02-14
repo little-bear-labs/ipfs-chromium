@@ -22,7 +22,7 @@ TEST(UnixFsPathResolverTest, ResolveDirectoryToIndexHtml) {
   };
   bool is_done = false;
   auto done = [&is_done](auto t) {
-    EXPECT_EQ(t, ipfs::Block::Type::Directory);
+    EXPECT_EQ(t, "text/html");
     is_done = true;
   };
   auto index_html_recieved = [](auto file_contents) {
@@ -47,7 +47,7 @@ TEST(UnixFsPathResolverTest, ResolveDirectoryToGeneratedListing) {
   };
   bool is_done = false;
   auto done = [&is_done](auto t) {
-    EXPECT_EQ(t, ipfs::Block::Type::Directory);
+    EXPECT_EQ(t, "text/html");
     is_done = true;
   };
   std::string content;
