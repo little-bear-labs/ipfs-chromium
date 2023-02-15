@@ -59,6 +59,7 @@ class Loader final : public network::mojom::URLLoader,
   network::mojom::URLLoaderFactory* lower_loader_factory_;
   mojo::ScopedDataPipeProducerHandle pipe_prod_ = {};
   mojo::ScopedDataPipeConsumerHandle pipe_cons_ = {};
+  bool complete_ = false;
   Scheduler sched_;
   std::vector<std::pair<BusyGateway, RequestHandle>> gateway_requests_;
   std::string original_url_;

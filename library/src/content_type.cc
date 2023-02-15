@@ -5,6 +5,7 @@
 std::string ipfs::GuessContentType(
     std::string_view filename,
     std::string_view /*todo libmagic type stuff*/) {
+  std::clog << "GuessContentType(" << filename << ")\n";
   if (filename.empty() || filename.back() == '/') {
     return "text/directory";
   }
@@ -25,8 +26,7 @@ std::string ipfs::GuessContentType(
     return "text/javascript";
   }
   if (ext == "txt") {
-    //    return "text/plain";
-    return "text/html";
+    return "text/plain; charset=utf-8";
   }
   using namespace std::literals;
   for (auto txt : {"html"sv, "css"sv, "csv"sv}) {
@@ -35,12 +35,12 @@ std::string ipfs::GuessContentType(
       return result.append(txt);
     }
   }
-  for (auto img : {"png"sv, "jpeg"sv}) {
+  for (auto img : {"png"sv, "jpeg"sv, "gif"sv}) {
     if (img == ext) {
       std::string result{"image/"};
       return result.append(img);
     }
   }
   std::clog << "TODO: handle mime type for " << filename << std::endl;
-  std::exit(9);
+  return "text/html";
 }

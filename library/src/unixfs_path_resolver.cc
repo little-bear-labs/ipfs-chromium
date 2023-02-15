@@ -12,87 +12,82 @@
   }
 
 void ipfs::UnixFsPathResolver::Step(std::shared_ptr<UnixFsPathResolver>) {
+  std::clog << "Step(" << cid_ << ',' << path_ << ',' << original_path_
+            << ")\n";
   Block const* block = storage_.Get(cid_);
   if (!block) {
     storage_.AddListening(shared_from_this());
     request_required_(cid_);
     return;
   }
-  if (block->is_directory()) {
-    auto start = path_.find_first_not_of("/");
-    if (start == std::string::npos) {
-      CompleteDirectory(*block);
-      return;
-    }
-    auto end = path_.find('/', start);
-    std::string_view next = path_;
-    next = next.substr(start, end - start);
-    block->List([this, next](auto& name, auto cid) {
-      if (name == next) {
-        cid_ = cid;
-      } else if (!storage_.Get(cid)) {
-        request_prefetch_(cid);
+  std::clog << "Process block of type(" << block->type() << ")\n";
+  switch (block->type()) {
+    case Block::Type::Directory:
+      ProcessDirectory(*block);
+      break;
+    case Block::Type::FileChunk:
+      receive_bytes_(block->chunk_data());
+      on_complete_(GuessContentType(original_path_, block->chunk_data()));
+      break;
+    case Block::Type::File:
+      ProcessLargeFile(*block);
+      break;
+    case Block::Type::HAMTShard:
+      ProcessDirShard(*block);
+      break;
+    default:
+      std::clog << "TODO : Unhandled UnixFS node of type " << block->type()
+                << std::endl;
+      std::exit(42);
+  }
+}
+void ipfs::UnixFsPathResolver::ProcessLargeFile(Block const& block) {
+  std::clog << "Re-assembling file from chunks: " << cid_ << '\n';
+  bool writing = false;
+  if (written_through_.empty()) {
+    // First time here, probably
+    // Request any missing blocks
+    block.List([this](auto, auto child_cid) {
+      if (storage_.Get(child_cid) == nullptr) {
+        request_required_(child_cid);
       }
       return true;
     });
-    // TODO 404
-    std::clog << "Descending path: " << next << " . " << path_ << '\n';
-    path_.erase(0, end);
-    Step(shared_from_this());
-  } else if (block->type() == Block::Type::FileChunk) {
-    receive_bytes_(block->chunk_data());
-    on_complete_(GuessContentType(original_path_, block->chunk_data()));
-  } else if (block->is_file()) {
-    std::clog << "Re-assembling file from chunks: " << cid_ << '\n';
-    bool writing = false;
-    if (written_through_.empty()) {
-      // First time here, probably
-      // Request any missing blocks
-      block->List([this](auto, auto child_cid) {
-        if (storage_.Get(child_cid) == nullptr) {
-          request_required_(child_cid);
-        }
-        return true;
-      });
+    writing = true;
+  }
+  block.List([&writing, this](auto, auto child_cid) {
+    if (child_cid == written_through_) {
+      // Found written_through_
       writing = true;
+      return true;
     }
-    block->List([&writing, this](auto, auto child_cid) {
-      if (child_cid == written_through_) {
-        // Found written_through_
-        writing = true;
-        return true;
-      }
-      if (!writing) {
-        // Scanning, looking for written_through_
-        return true;
-      }
-      auto child = storage_.Get(child_cid);
-      std::clog << "Including file piece: " << child_cid << '\n';
-      if (child) {
-        switch (child->type()) {
-          case Block::Type::NonFs:
-            receive_bytes_(child->unparsed());
-            break;
-          case Block::Type::FileChunk:
-            receive_bytes_(child->chunk_data());
-            break;
-          default:
-            TODO
-        }
-        written_through_.assign(child_cid);
-        return true;
-      }
-      // This is the next block to be written, but we don't have it. Wait.
-      return (writing = false);
-    });
-    if (writing) {
-      on_complete_(GuessContentType(original_path_, "TODO"));
+    if (!writing) {
+      // Scanning, looking for written_through_
+      return true;
     }
-  } else {
-    TODO
+    auto child = storage_.Get(child_cid);
+    std::clog << "Including file piece: " << child_cid << '\n';
+    if (child) {
+      switch (child->type()) {
+        case Block::Type::NonFs:
+          receive_bytes_(child->unparsed());
+          break;
+        case Block::Type::FileChunk:
+          receive_bytes_(child->chunk_data());
+          break;
+        default:
+          TODO
+      }
+      written_through_.assign(child_cid);
+      return true;
+    }
+    // This is the next block to be written, but we don't have it. Wait.
+    return (writing = false);
+  });
+  if (writing) {
+    on_complete_(GuessContentType(original_path_, "TODO"));
   }
 }
-
 void ipfs::UnixFsPathResolver::CompleteDirectory(Block const& block) {
   auto has_index_html = false;
   // TODO implement ..
@@ -139,6 +134,32 @@ void ipfs::UnixFsPathResolver::CompleteDirectory(Block const& block) {
   }
 }
 
+void ipfs::UnixFsPathResolver::ProcessDirectory(Block const& block) {
+  auto start = path_.find_first_not_of("/");
+  if (start == std::string::npos) {
+    CompleteDirectory(block);
+    return;
+  }
+  auto end = path_.find('/', start);
+  std::string_view next = path_;
+  next = next.substr(start, end - start);
+  block.List([this, next](auto& name, auto cid) {
+    if (name == next) {
+      cid_ = cid;
+    } else if (!storage_.Get(cid)) {
+      request_prefetch_(cid);
+    }
+    return true;
+  });
+  // TODO 404
+  std::clog << "Descending path: " << next << " . " << path_ << '\n';
+  path_.erase(0, end);
+  Step(shared_from_this());
+}
+void ipfs::UnixFsPathResolver::ProcessDirShard(Block const& block) {
+  std::clog << "HAMTShard FANOUT = " << block.fsdata().fanout() << std::endl;
+}
+
 ipfs::UnixFsPathResolver::UnixFsPathResolver(BlockStorage& store,
                                              std::string cid,
                                              std::string path,
@@ -149,8 +170,19 @@ ipfs::UnixFsPathResolver::UnixFsPathResolver(BlockStorage& store,
     : storage_{store},
       cid_{cid},
       path_{path},
+      original_path_(path),
       request_required_(request_required),
       request_prefetch_(request_prefetch),
       receive_bytes_(receive_bytes),
-      on_complete_(on_complete) {}
+      on_complete_(on_complete) {
+  constexpr std::string_view filename_param{"filename="};
+  auto fn = original_path_.find(filename_param);
+  if (fn != std::string::npos) {
+    original_path_.erase(0, fn + filename_param.size());
+    auto amp = original_path_.find('&');
+    if (amp != std::string::npos) {
+      original_path_.erase(amp);
+    }
+  }
+}
 ipfs::UnixFsPathResolver::~UnixFsPathResolver() noexcept {}

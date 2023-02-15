@@ -115,7 +115,7 @@ file(GLOB
 )
 add_custom_target(setup_component
     ALL
-    DEPENDS local_shim_build
+#    DEPENDS local_shim_build
     COMMENT "Moving code over to ${target_dir} and setting up the build there."
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${srcs} ${hdrs} ${lib_srcs} ${test_srcs} ${protos} ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn "${target_dir}"
     SOURCES ${srcs} ${hdrs} ${lib_srcs} ${lib_hdrs_abs}

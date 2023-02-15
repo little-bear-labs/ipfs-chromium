@@ -5,6 +5,7 @@
 #include "gateway.h"
 #include "vocab/flat_mapset.h"
 
+#include <memory>
 #include <random>
 #include <string>
 #include <string_view>

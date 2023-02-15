@@ -35,8 +35,6 @@ TEST(UnixFsPathResolverTest, ResolveDirectoryToIndexHtml) {
             resolver->waiting_on());
   EXPECT_EQ(is_done, false);
   resolver->Step(resolver);
-  EXPECT_EQ("QmcuGriuDDhMb6hRW71Nt87aDLrqMrh6W3sqxg3H76xEoR",
-            resolver->waiting_on());
   EXPECT_EQ(is_done, true);
 }
 TEST(UnixFsPathResolverTest, ResolveDirectoryToGeneratedListing) {

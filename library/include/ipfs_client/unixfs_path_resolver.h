@@ -42,6 +42,9 @@ class UnixFsPathResolver
   bool force_type_dir_ = false;
 
   void CompleteDirectory(Block const&);
+  void ProcessDirectory(Block const&);
+  void ProcessLargeFile(Block const&);
+  void ProcessDirShard(Block const&);
 };
 }  // namespace ipfs
 #endif  // IPFS_UNIXFS_PATH_RESOLVER_H_

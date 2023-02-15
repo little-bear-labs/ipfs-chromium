@@ -38,6 +38,7 @@ class Block {
   std::uint64_t file_size() const;
   std::string const& chunk_data() const;
   std::string const& unparsed() const;
+  unix_fs::Data const& fsdata() const { return fsdata_; }
 
   template <class Functor>
   void List(Functor foo) const {

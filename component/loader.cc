@@ -69,22 +69,28 @@ void ipfs::Loader::StartRequest(
     path = IpfsOverHttpUrl2IpfsGatewayPath(resource_request.url.spec());
   }
   if (resource_request.url.SchemeIs("ipfs")) {
+    LOG(ERROR) << "Requesting " << resource_request.url.spec() << " by blocks!";
     auto second_slash = path.find_first_of("/?", 5);
     auto cid = path.substr(5, second_slash - 5);
     second_slash = path.find('/', 5);
+    auto qmark = path.find('?');
     std::string remainder{"/"};
     if (second_slash < path.size()) {
       remainder.assign(path.substr(second_slash + 1));
+    } else if (qmark && qmark < path.size()) {
+      remainder.append(path.substr(qmark));
     }
-    LOG(ERROR) << "cid=" << cid << " remainder=" << remainder;
+    LOG(INFO) << "cid=" << cid << " remainder=" << remainder;
     me->resolver_ = std::make_shared<UnixFsPathResolver>(
         me->state_.storage(), cid, remainder,
         [me](auto cid) { me->CreateBlockRequest(cid); },
-        [](auto c) { LOG(ERROR) << "TOOD prefetch cid" << c; },
+        [](auto c) { LOG(ERROR) << "TODO prefetch cid" << c; },
         [me](auto content) { me->partial_block_.append(content); },
         [me](auto mime_type) { me->BlocksComplete(mime_type); });
     me->resolver_->Step(me->resolver_);
   } else {
+    LOG(ERROR) << "Requesting " << resource_request.url.spec()
+               << " as a whole file.";
     me->sched_.Enqueue(path, Scheduler::Priority::Required);
   }
 }
@@ -132,7 +138,7 @@ void ipfs::Loader::OnGatewayResponse(ptr,
                                      std::string,
                                      std::size_t req_idx,
                                      std::unique_ptr<std::string> body) {
-  std::clog << "OnGatewayResponse(" << req_idx << ')' << std::endl;
+  LOG(INFO) << "OnGatewayResponse(" << req_idx << ')';
   auto& gw = gateway_requests_.at(req_idx).first;
   auto& http_loader = gateway_requests_.at(req_idx).second;
   if (!gw) {
@@ -149,6 +155,7 @@ void ipfs::Loader::OnGatewayResponse(ptr,
   // simplicity.
   auto prefix = gw->url_prefix();
   auto url = gw->url();
+  auto task = gw->current_task();
   if (handle_response(gw.get(), http_loader.get(), body.get())) {
     for (auto& gr : gateway_requests_) {
       if (!gr.first) {
@@ -157,10 +164,10 @@ void ipfs::Loader::OnGatewayResponse(ptr,
         gr.first.reset();
       } else if (gr.first == gw) {
         ;
-      } /*TODOelse if (gr.first->current_task() == gw->current_task()) {
+      } else if (task == gr.first->current_task()) {
         gr.first.reset();
         gr.second.reset();
-      }*/
+      }
     }
     LOG(INFO) << "Promoting " << prefix << " due to success of " << url;
     state_.gateways().promote(prefix);
@@ -170,11 +177,17 @@ void ipfs::Loader::OnGatewayResponse(ptr,
     auto failure = sched_.DetectCompleteFailure();
     if (failure.empty()) {
       LOG(INFO) << "Trying other gateways.";
+      if (resolver_) {
+        resolver_->Step(resolver_);
+      }
       sched_.IssueRequests();
+    } else if (complete_) {
+      LOG(ERROR) << "Already complete! Stop it!";
     } else {
       LOG(ERROR) << "Run out of gateways to try for " << failure;
       // Creative reinterpretation of 'gateway' in 'bad gateway'
       client_->OnComplete(network::URLLoaderCompletionStatus{502});
+      complete_ = true;
     }
     LOG(INFO) << "Demoting " << prefix;
     state_.gateways().demote(prefix);
@@ -204,6 +217,12 @@ bool ipfs::Loader::handle_response(Gateway* gw,
   if (gw->url().find("?format=raw") != std::string::npos) {
     return HandleBlockResponse(gw, *body, *head);
   }
+  LOG(INFO) << "Request for full file handle_response(" << gw->url()
+            << ", body has " << body->size() << " bytes.)";
+  if (complete_) {
+    LOG(ERROR) << "Already complete! Stop it!";
+    return true;
+  }
   auto result = mojo::CreateDataPipe(body->size(), pipe_prod_, pipe_cons_);
   if (result) {
     LOG(ERROR) << " ERROR: failed to create data pipe: " << result;
@@ -215,19 +234,24 @@ bool ipfs::Loader::handle_response(Gateway* gw,
 
   auto head_out = head->Clone();
 
-  head_out->mime_type = head->mime_type;  //"text/html";
+  head_out->mime_type = head->mime_type;
   head_out->content_length = write_size;
   head_out->headers->SetHeader("access-control-allow-origin", "*");
   head_out->headers->RemoveHeader("content-security-policy");
   head_out->headers->RemoveHeader("referrer-policy");
   head_out->headers->RemoveHeader("link");
+  if (original_url_.size() > 2 &&
+      original_url_.at(original_url_.size() - 2UL) == '2' &&
+      original_url_.back() == 'F') {
+    original_url_.append("index.html");  // TODO This isn't quite right.
+  }
   head_out->parsed_headers =
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});
   head_out->was_fetched_via_spdy = false;
-
   client_->OnReceiveResponse(std::move(head_out), std::move(pipe_cons_),
                              absl::nullopt);
   client_->OnComplete(network::URLLoaderCompletionStatus{});
+  complete_ = true;
   return true;
 }
 bool ipfs::Loader::HandleBlockResponse(
@@ -243,7 +267,7 @@ bool ipfs::Loader::HandleBlockResponse(
                << gw->url() << " reported a content type of "
                << reported_content_type
                << " strongly implying that it's a full request, not a single "
-                  "block. Remove "
+                  "block. TODO: Remove "
                << gw->url_prefix() << " from list of gateways?\n";
     state_.gateways().demote(gw->url_prefix());
     return false;
@@ -281,7 +305,12 @@ void ipfs::Loader::BlocksComplete(std::string mime_type) {
   head->parsed_headers =
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});
   head->was_fetched_via_spdy = false;
-  client_->OnReceiveResponse(std::move(head), std::move(pipe_cons_),
-                             absl::nullopt);
-  client_->OnComplete(network::URLLoaderCompletionStatus{});
+  if (complete_) {
+    LOG(ERROR) << "Already complete! Stop it!";
+  } else {
+    client_->OnReceiveResponse(std::move(head), std::move(pipe_cons_),
+                               absl::nullopt);
+    client_->OnComplete(network::URLLoaderCompletionStatus{});
+    complete_ = true;
+  }
 }

@@ -1,10 +1,14 @@
 #include "ipfs_client/gateway.h"
+#include <iostream>
 
 ipfs::Gateway::Gateway(std::string url_prefix, unsigned int priority)
     : prefix_{std::move(url_prefix)}, priority_{priority} {}
 ipfs::Gateway::Gateway(Gateway const& other)
     : prefix_{other.prefix_}, priority_{other.priority_} {}
-ipfs::Gateway::~Gateway() {}
+ipfs::Gateway::~Gateway() {
+  //  std::clog << "ipfs::Gateway dtor this=" << static_cast<void const*>(this)
+  //            << std::endl;
+}
 
 // Less means should-be-preferred
 bool ipfs::Gateway::operator<(Gateway const& rhs) const {
@@ -38,6 +42,8 @@ void ipfs::Gateway::failed() {
   priority_ /= 2;
 }
 std::string const& ipfs::Gateway::current_task() const {
+  //  std::clog << "ipfs::Gateway::current_task this="
+  //            << static_cast<void const*>(this) << std::endl;
   return tasked_with_;
 }
 bool ipfs::Gateway::PreviouslyFailed(const std::string& suffix) const {

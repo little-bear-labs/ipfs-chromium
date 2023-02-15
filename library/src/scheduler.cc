@@ -59,17 +59,20 @@ void ipfs::Scheduler::End(Gateway* p) {
       }
     }
   }
-  if (!p->PreviouslyFailed(p->current_task())) {
-    auto already_good = std::find_if(good_.begin(), good_.end(), [p](auto& g) {
-      return p->url_prefix() == p->url_prefix();
-    });
-    if (already_good == good_.end()) {
-      good_.push_back(*p);
-    }
-    std::sort(good_.begin(), good_.end());
-  } else {
-    std::sort(unproven_.begin(), unproven_.end());
-  }
+  //  if (!p->PreviouslyFailed(p->current_task())) {
+  //    auto already_good = std::find_if(good_.begin(), good_.end(), [p](auto&
+  //    g) {
+  //      return p->url_prefix() == p->url_prefix();
+  //    });
+  // TODO
+  //    if (already_good == good_.end()) {
+  //      good_.push_back(*p);
+  //    }
+  // TODO -
+  //     std::sort(good_.begin(), good_.end());
+  //  } else {
+  //    std::sort(unproven_.begin(), unproven_.end());
+  //  }
   p->MakeAvailable();
 }
 std::string ipfs::Scheduler::DetectCompleteFailure() const {
