@@ -133,28 +133,6 @@ void ipfs::Loader::OnGatewayResponse(ptr,
                                      std::size_t req_idx,
                                      std::unique_ptr<std::string> body) {
   auto& gw = gateway_requests_.at(req_idx).first;
-  auto ipfs_path = gw->current_task();
-  if (ipfs_path.ends_with("?format=raw")) {
-    LOG(INFO) << "Got a response to a block request from " << gw->url();
-    if (!body || body->empty()) {
-      LOG(ERROR) << "Except the body was empty, boo.";
-      gw->failed();
-      gw.reset();
-      sched_.IssueRequests();
-      resolver_->Step(resolver_);
-      sched_.IssueRequests();
-      return;
-    }
-    ipfs_path.erase(0, 5);  // ipfs/
-    ipfs_path.erase(ipfs_path.find('?'));
-    LOG(INFO) << "Storing CID=" << ipfs_path;
-    std::ofstream block_file_for_debug{ipfs_path};
-    block_file_for_debug.write(body->data(), body->size());
-    state_.storage().Store(ipfs_path, Block{*body});
-    resolver_->Step(resolver_);
-    sched_.IssueRequests();
-    return;
-  }
   auto& http_loader = gateway_requests_.at(req_idx).second;
   auto prefix =
       gw->url_prefix();  // Doing a deep copy to avoid reference invalidation
@@ -205,10 +183,20 @@ bool ipfs::Loader::handle_response(Gateway* gw,
               << ") gave us a non-ipfs response.\n";
     return false;
   }
-  if (gw->url().find(reported_path) == std::string::npos) {
-    LOG(INFO) << "Requested " << gw->url() << " but got a response to "
-              << reported_path
-              << ". Most likely this is just a different hash algo.\n";
+  if (gw->url().find("?format=raw") != std::string::npos) {
+    std::string reported_content_type;
+    head->headers->EnumerateHeader(nullptr, "Content-Type",
+                                   &reported_content_type);
+    if (reported_content_type != "application/vnd.ipld.raw") {
+      LOG(ERROR) << '\n'
+                 << gw->url() << " reported a content type of "
+                 << reported_content_type
+                 << " strongly implying that it's a full request, not a single "
+                    "block. Remove "
+                 << gw->url_prefix() << " from list of gateways?\n";
+      return false;
+    }
+    return HandleBlockResponse(gw, *body);
   }
   auto result = mojo::CreateDataPipe(body->size(), pipe_prod_, pipe_cons_);
   if (result) {
@@ -227,34 +215,27 @@ bool ipfs::Loader::handle_response(Gateway* gw,
   head_out->headers->RemoveHeader("content-security-policy");
   head_out->headers->RemoveHeader("referrer-policy");
   head_out->headers->RemoveHeader("link");
-  //    auto raw = head_out->headers->raw_headers();
-  //    std::replace(raw.begin(),raw.end(),'\0','\n');
-  //    std::clog << "headers:|" << raw << "|\n";
-  if (original_url_.ends_with("%2F")) {
-    original_url_.append("index.html");  // TODO This isn't quite right.
-  }
   head_out->parsed_headers =
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});
-  /*
-  std::clog << "ipfs_uri=" << ipfs_uri << " ... CSP: \n";
-  for ( auto& csp : head_out->parsed_headers->content_security_policy ) {
-      if ( csp ) {
-          std::clog << "  " << csp->header->header_value << '\n';
-      } else {
-          std::clog << "  null\n";
-      }
-  }
-   */
   head_out->was_fetched_via_spdy = false;
 
-  //  client_->OnReceiveResponse(std::move(head_out),
-  //                             std::move(pipe_cons_)  // Danger Will
-  //                             Robinson!d
-  //                             ,
-  //                             absl::nullopt);
-  //  client_->OnComplete(network::URLLoaderCompletionStatus{});
+  client_->OnReceiveResponse(std::move(head_out), std::move(pipe_cons_),
+                             absl::nullopt);
+  client_->OnComplete(network::URLLoaderCompletionStatus{});
   return true;
 }
+bool ipfs::Loader::HandleBlockResponse(Gateway* gw, std::string const& body) {
+  LOG(INFO) << "Got a response to a block request from " << gw->url();
+  auto cid = gw->current_task();
+  cid.erase(0, 5);  // ipfs/
+  cid.erase(cid.find('?'));
+  LOG(INFO) << "Storing CID=" << cid;
+  state_.storage().Store(cid, Block{body});
+  resolver_->Step(resolver_);
+  sched_.IssueRequests();
+  return true;
+}
+
 void ipfs::Loader::BlocksComplete(std::string mime_type) {
   auto result =
       mojo::CreateDataPipe(partial_block_.size(), pipe_prod_, pipe_cons_);

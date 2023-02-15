@@ -27,7 +27,7 @@ add_library(local_shim_build
 )
 target_compile_features(local_shim_build
     PRIVATE
-        cxx_std_20
+        cxx_std_17
 )
 target_compile_options(local_shim_build
     PUBLIC
@@ -177,6 +177,10 @@ if(ENABLE_OUTOFTREE_TESTING)
         )
         add_executable(${name}_runner
             ${test_src}
+        )
+        target_compile_features(${name}_runner
+            PUBLIC
+            cxx_std_17
         )
         target_include_directories(${name}_runner
             PUBLIC

@@ -83,6 +83,7 @@ class Loader final : public network::mojom::URLLoader,
   void CreateRequest(BusyGateway&&);
   void CreateBlockRequest(std::string cid);
   void BlocksComplete(std::string mime_type);
+  bool HandleBlockResponse(Gateway*, std::string const& body);
 };
 
 }  // namespace ipfs

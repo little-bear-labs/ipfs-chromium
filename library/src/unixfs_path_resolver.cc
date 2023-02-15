@@ -95,6 +95,7 @@ void ipfs::UnixFsPathResolver::Step(std::shared_ptr<UnixFsPathResolver>) {
 
 void ipfs::UnixFsPathResolver::CompleteDirectory(Block const& block) {
   auto has_index_html = false;
+  // TODO implement ..
   std::string generated_index{
       "<html>\n"
       "  <title>Directory Listing</title>\n"
@@ -106,16 +107,16 @@ void ipfs::UnixFsPathResolver::CompleteDirectory(Block const& block) {
       path_.clear();
       has_index_html = true;
       force_type_dir_ = true;
-      if (!original_path_.ends_with('/')) {
+      if (original_path_.empty() || original_path_.back() != '/') {
         original_path_.push_back('/');
       }
       original_path_.append("index.html");
       return false;
     } else {
       generated_index.append("      <li>")
-          .append("        <a href='ipfs://>")  // TODO need to keep right dir
-                                                // level in case you follow
-                                                // relative links inside
+          .append("        <a href='ipfs://")  // TODO need to keep right dir
+                                               // level in case you follow
+                                               // relative links inside
           .append(cid)
           .append("'>")
           .append(name)

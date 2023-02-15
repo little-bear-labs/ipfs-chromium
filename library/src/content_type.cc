@@ -5,7 +5,7 @@
 std::string ipfs::GuessContentType(
     std::string_view filename,
     std::string_view /*todo libmagic type stuff*/) {
-  if (filename.empty() || filename.ends_with('/')) {
+  if (filename.empty() || filename.back() == '/') {
     return "text/directory";
   }
   auto dot = filename.find_last_of(".");

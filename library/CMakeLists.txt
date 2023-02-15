@@ -26,7 +26,7 @@ add_library(ipfs_client
 )
 target_compile_features(ipfs_client
     PUBLIC
-        cxx_std_20
+        cxx_std_17
 )
 target_compile_options(ipfs_client
     PRIVATE
@@ -76,6 +76,21 @@ protobuf_generate_cpp(
     pb_hdr
     ${protos}
 )
+get_source_file_property(
+    check
+    "${CMAKE_CURRENT_BINARY_DIR}/library//pb_dag.pb.h"
+    GENERATED
+)
+set_source_files_properties(
+    ${pb_src}
+    ${pb_hdr}
+    PROPERTIES GENERATED ON
+)
+get_source_file_property(
+        check
+        /mnt/big/lbl/bld/chromium-ipfs/library//pb_dag.pb.cc
+        GENERATED
+)
 add_custom_target(update_pb_source_in_repo
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${pb_hdr}" "${CMAKE_CURRENT_LIST_DIR}/include/ipfs_client/gen"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${pb_src}" "${CMAKE_CURRENT_LIST_DIR}/src/gen"
@@ -99,6 +114,10 @@ if(absl_FOUND)
         get_filename_component(name ${unit_test_source} NAME_WE)
         add_executable(${name}_runner
             ${unit_test_source}
+        )
+        target_compile_features(${name}_runner
+            PUBLIC
+                cxx_std_17
         )
         target_link_libraries(${name}_runner
             PUBLIC
