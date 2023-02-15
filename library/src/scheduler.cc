@@ -1,6 +1,7 @@
 #include <ipfs_client/scheduler.h>
 
 #include <algorithm>
+#include <iostream>
 
 ipfs::Scheduler::Scheduler(GatewayList&& initial_list,
                            RequestCreator requester,
@@ -28,7 +29,7 @@ void ipfs::Scheduler::IssueRequests() {
   }
 }
 void ipfs::Scheduler::Issue(std::vector<Todo> todos, unsigned up_to) {
-  auto end_f = [this](auto p) { End(p); };
+  std::function<void(Gateway*)> end_f = [this](auto p) { End(p); };
   for (auto& todo : todos) {
     if (todo.dup_count_ <= up_to) {
       auto assign = [&todo](auto& gw) { return gw.accept(todo.suffix); };
@@ -47,14 +48,28 @@ void ipfs::Scheduler::Issue(std::vector<Todo> todos, unsigned up_to) {
   }
 }
 void ipfs::Scheduler::End(Gateway* p) {
+  ongoing_--;
+  std::clog << "ongoing: " << ongoing_ << ' ';
   for (auto& ts : todos_) {
     for (auto& t : ts) {
-      if (t.suffix == p->current_task()) {
+      if (t.suffix == p->current_task() && t.dup_count_ > 0) {
+        std::clog << "Decreasing dup_count on " << t.suffix << " to "
+                  << (t.dup_count_ - 1) << '\n';
         t.dup_count_--;
       }
     }
   }
-  ongoing_--;
+  if (!p->PreviouslyFailed(p->current_task())) {
+    auto already_good = std::find_if(good_.begin(), good_.end(), [p](auto& g) {
+      return p->url_prefix() == p->url_prefix();
+    });
+    if (already_good == good_.end()) {
+      good_.push_back(*p);
+    }
+    std::sort(good_.begin(), good_.end());
+  } else {
+    std::sort(unproven_.begin(), unproven_.end());
+  }
   p->MakeAvailable();
 }
 std::string ipfs::Scheduler::DetectCompleteFailure() const {

@@ -11,7 +11,7 @@
 #include <vector>
 
 namespace ipfs {
-using GatewayList = flat_set<Gateway>;
+using GatewayList = std::vector<Gateway>;
 
 class Gateways {
   flat_map<std::string, unsigned> known_gateways_;

@@ -1,10 +1,7 @@
 #include "ipfs_client/block_storage.h"
 #include "ipfs_client/unixfs_path_resolver.h"
 
-using Self = ipfs::BlockStorage;
-using Node = ipfs::Block;
-
-bool Self::Store(std::string const& cid, Node&& block) {
+bool ipfs::BlockStorage::Store(std::string const& cid, ipfs::Block&& block) {
   // TODO validate, return false if fail
   if (cid2node_.emplace(cid, std::move(block)).second == false) {
     return false;  // We've already seen this block
@@ -14,13 +11,10 @@ bool Self::Store(std::string const& cid, Node&& block) {
       ptr->Step(ptr);
     }
   }
-  auto new_end =
-      std::remove_if(listening_.begin(), listening_.end(),
-                     [](auto& p) { return p->waiting_on().empty(); });
-  listening_.erase(new_end, listening_.end());
+  CheckDoneListening();
   return true;
 }
-auto Self::Get(std::string const& cid) const -> Node const* {
+ipfs::Block const* ipfs::BlockStorage::Get(std::string const& cid) const {
   auto it = cid2node_.find(cid);
   if (it == cid2node_.end()) {
     return nullptr;
@@ -31,6 +25,19 @@ auto Self::Get(std::string const& cid) const -> Node const* {
 void ipfs::BlockStorage::AddListening(std::shared_ptr<UnixFsPathResolver> p) {
   listening_.insert(p);
 }
+void ipfs::BlockStorage::CheckDoneListening() {
+  while (true) {
+    auto done_it =
+        std::find_if(
+            listening_.begin(),
+            listening_.end(),
+         [](auto& p) { return p->waiting_on().empty(); });
+    if (done_it == listening_.end()) {
+      return;
+    }
+    listening_.erase(done_it);
+  }
+}
 
-Self::BlockStorage() {}
-Self::~BlockStorage() noexcept {}
+ipfs::BlockStorage::BlockStorage() {}
+ipfs::BlockStorage::~BlockStorage() noexcept {}

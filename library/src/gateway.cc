@@ -41,5 +41,5 @@ std::string const& ipfs::Gateway::current_task() const {
   return tasked_with_;
 }
 bool ipfs::Gateway::PreviouslyFailed(const std::string& suffix) const {
-  return failed_requests_.contains(suffix);
+  return failed_requests_.find(suffix) != failed_requests_.end();
 }

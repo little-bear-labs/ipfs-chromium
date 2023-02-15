@@ -15,7 +15,7 @@ class Scheduler {
   explicit Scheduler(GatewayList&& initial_list,
                      RequestCreator,
                      unsigned max_concurrent_requests = 10,
-                     unsigned duplication_waste_tolerance = 2);
+                     unsigned duplication_waste_tolerance = 3);
   ~Scheduler();
   enum Result { Scheduled, InProgress, Failed };
   enum class Priority { Required, Optional };

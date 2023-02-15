@@ -1,5 +1,6 @@
 #include "ipfs_client/gateways.h"
 
+#include <algorithm>
 #include <string>
 
 using namespace std::string_literals;
@@ -30,30 +31,26 @@ ipfs::Gateways::Gateways()
                       {"https://storry.tv/"s, 11},
                       {"https://via0.com/"s, 10},
                       {"https://w3s.link/"s, 10},
-                      {"https://138.199.2.57/"s, 88},
-                      {"https://172.93.54.119/"s, 88},
-                      {"https://92.119.16.163/"s, 88},
-                      {"https://172.93.54.59/"s, 88},
-                      {"https://92.119.16.151/"s, 88},
-                      {"https://92.119.16.147/"s, 88},
-                      {"https://92.119.16.134/"s, 88},
-                      {"https://92.119.16.150/"s, 88},
-                      {"https://92.119.16.153/"s, 88},
-                      {"https://67.21.32.23/"s, 88},
-                      {"https://192.158.233.116/"s, 88},
-                      {"https://192.158.233.120/"s, 88},
-                      {"https://192.158.233.119/"s, 88},
-                      {"https://192.158.233.122/"s, 88},
-                      {"https://192.158.233.117/"s, 88},
-                      {"https://192.158.233.114/"s, 88},
-                      {"https://192.158.233.121/"s, 88},
-                      {"https://192.158.233.115/"s, 88},
-                      {"https://192.158.233.118/"s, 88},
-                      {"https://191.96.101.86/"s, 88},
-                      {"https://191.96.101.87/"s, 88},
-                      {"https://64.44.166.184/"s, 88},
-                      {"https://38.92.47.51/"s, 88},
-                      {"https://38.92.47.56/"s, 88}
+                      {"https://138.199.2.57/"s, 12},
+                      {"https://92.119.16.163/"s, 12},
+                      {"https://92.119.16.151/"s, 12},
+                      {"https://92.119.16.147/"s, 12},
+                      {"https://92.119.16.134/"s, 12},
+                      {"https://92.119.16.150/"s, 12},
+                      {"https://92.119.16.153/"s, 12},
+                      {"https://67.21.32.23/"s, 12},
+                      {"https://192.158.233.116/"s, 12},
+                      {"https://192.158.233.119/"s, 12},
+                      {"https://192.158.233.122/"s, 12},
+                      {"https://192.158.233.117/"s, 12},
+                      {"https://192.158.233.121/"s, 12},
+                      {"https://192.158.233.115/"s, 12},
+                      {"https://192.158.233.118/"s, 12},
+                      {"https://191.96.101.86/"s, 12},
+                      {"https://191.96.101.87/"s, 12},
+                      {"https://64.44.166.184/"s, 12},
+                      {"https://38.92.47.51/"s, 12},
+                      {"https://38.92.47.56/"s, 12}
 
       },
       random_engine_{std::random_device{}()},
@@ -63,8 +60,9 @@ ipfs::Gateways::~Gateways() {}
 auto ipfs::Gateways::GenerateList() const -> GatewayList {
   GatewayList result;
   for (auto [k, v] : known_gateways_) {
-    result.emplace(k, v + dist_(random_engine_));
+    result.push_back({k, v + dist_(random_engine_)});
   }
+  std::sort(result.begin(), result.end());
   return result;
 }
 

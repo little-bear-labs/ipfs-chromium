@@ -14,7 +14,7 @@ class Gateway {
 
  public:
   Gateway(std::string url_prefix, unsigned priority);
-  explicit Gateway(Gateway const&);
+  Gateway(Gateway const&);
   ~Gateway();
 
   std::string const& url_prefix() const;

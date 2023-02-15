@@ -25,7 +25,8 @@ std::string ipfs::GuessContentType(
     return "text/javascript";
   }
   if (ext == "txt") {
-    return "text/plain";
+    //    return "text/plain";
+    return "text/html";
   }
   using namespace std::literals;
   for (auto txt : {"html"sv, "css"sv, "csv"sv}) {

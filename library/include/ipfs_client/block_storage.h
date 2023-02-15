@@ -23,6 +23,8 @@ class BlockStorage {
  private:
   flat_map<std::string, Block> cid2node_;
   flat_set<std::shared_ptr<UnixFsPathResolver>> listening_;
+
+  void CheckDoneListening();
 };
 }  // namespace ipfs
 

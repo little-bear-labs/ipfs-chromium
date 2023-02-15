@@ -98,7 +98,9 @@ void ipfs::UnixFsPathResolver::CompleteDirectory(Block const& block) {
   // TODO implement ..
   std::string generated_index{
       "<html>\n"
-      "  <title>Directory Listing</title>\n"
+      "  <title>" +
+      original_path_ +
+      " (directory listing)</title>\n"
       "  <body>\n"
       "    <ul>\n"};
   block.List([&](auto& name, auto cid) {

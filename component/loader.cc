@@ -132,19 +132,35 @@ void ipfs::Loader::OnGatewayResponse(ptr,
                                      std::string,
                                      std::size_t req_idx,
                                      std::unique_ptr<std::string> body) {
+  std::clog << "OnGatewayResponse(" << req_idx << ')' << std::endl;
   auto& gw = gateway_requests_.at(req_idx).first;
   auto& http_loader = gateway_requests_.at(req_idx).second;
-  auto prefix =
-      gw->url_prefix();  // Doing a deep copy to avoid reference invalidation
-                         // concerns below, for simplicity.
+  if (!gw) {
+    LOG(ERROR) << "Gateway null in response handling!";
+    sched_.IssueRequests();
+    return;
+  }
+  if (!http_loader) {
+    LOG(ERROR) << "http_loader null in response handling!";
+    sched_.IssueRequests();
+    return;
+  }
+  // Doing a deep copy to avoid reference invalidation concerns below, for
+  // simplicity.
+  auto prefix = gw->url_prefix();
   auto url = gw->url();
   if (handle_response(gw.get(), http_loader.get(), body.get())) {
     for (auto& gr : gateway_requests_) {
-      if (gr.first && gr.first != gw &&
-          gr.first->current_task() == gw->current_task()) {
+      if (!gr.first) {
+        gr.second.reset();
+      } else if (!gr.second) {
+        gr.first.reset();
+      } else if (gr.first == gw) {
+        ;
+      } /*TODOelse if (gr.first->current_task() == gw->current_task()) {
         gr.first.reset();
         gr.second.reset();
-      }
+      }*/
     }
     LOG(INFO) << "Promoting " << prefix << " due to success of " << url;
     state_.gateways().promote(prefix);
@@ -153,8 +169,10 @@ void ipfs::Loader::OnGatewayResponse(ptr,
     gw.reset();
     auto failure = sched_.DetectCompleteFailure();
     if (failure.empty()) {
+      LOG(INFO) << "Trying other gateways.";
       sched_.IssueRequests();
     } else {
+      LOG(ERROR) << "Run out of gateways to try for " << failure;
       // Creative reinterpretation of 'gateway' in 'bad gateway'
       client_->OnComplete(network::URLLoaderCompletionStatus{502});
     }
@@ -184,19 +202,7 @@ bool ipfs::Loader::handle_response(Gateway* gw,
     return false;
   }
   if (gw->url().find("?format=raw") != std::string::npos) {
-    std::string reported_content_type;
-    head->headers->EnumerateHeader(nullptr, "Content-Type",
-                                   &reported_content_type);
-    if (reported_content_type != "application/vnd.ipld.raw") {
-      LOG(ERROR) << '\n'
-                 << gw->url() << " reported a content type of "
-                 << reported_content_type
-                 << " strongly implying that it's a full request, not a single "
-                    "block. Remove "
-                 << gw->url_prefix() << " from list of gateways?\n";
-      return false;
-    }
-    return HandleBlockResponse(gw, *body);
+    return HandleBlockResponse(gw, *body, *head);
   }
   auto result = mojo::CreateDataPipe(body->size(), pipe_prod_, pipe_cons_);
   if (result) {
@@ -224,8 +230,24 @@ bool ipfs::Loader::handle_response(Gateway* gw,
   client_->OnComplete(network::URLLoaderCompletionStatus{});
   return true;
 }
-bool ipfs::Loader::HandleBlockResponse(Gateway* gw, std::string const& body) {
+bool ipfs::Loader::HandleBlockResponse(
+    Gateway* gw,
+    std::string const& body,
+    network::mojom::URLResponseHead const& head) {
   LOG(INFO) << "Got a response to a block request from " << gw->url();
+  std::string reported_content_type;
+  head.headers->EnumerateHeader(nullptr, "Content-Type",
+                                &reported_content_type);
+  if (reported_content_type != "application/vnd.ipld.raw") {
+    LOG(ERROR) << '\n'
+               << gw->url() << " reported a content type of "
+               << reported_content_type
+               << " strongly implying that it's a full request, not a single "
+                  "block. Remove "
+               << gw->url_prefix() << " from list of gateways?\n";
+    state_.gateways().demote(gw->url_prefix());
+    return false;
+  }
   auto cid = gw->current_task();
   cid.erase(0, 5);  // ipfs/
   cid.erase(cid.find('?'));
@@ -237,6 +259,8 @@ bool ipfs::Loader::HandleBlockResponse(Gateway* gw, std::string const& body) {
 }
 
 void ipfs::Loader::BlocksComplete(std::string mime_type) {
+  LOG(INFO) << "Resolved from unix-fs dag a file of type: " << mime_type
+            << " will report it as " << original_url_;
   auto result =
       mojo::CreateDataPipe(partial_block_.size(), pipe_prod_, pipe_cons_);
   if (result) {
