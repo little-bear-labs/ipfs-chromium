@@ -17,7 +17,7 @@ void ipfs::UnixFsPathResolver::Step(std::shared_ptr<UnixFsPathResolver>) {
   Block const* block = storage_.Get(cid_);
   if (!block) {
     storage_.AddListening(shared_from_this());
-    request_required_(cid_);
+    Request(cid_, Scheduler::Priority::Required);
     return;
   }
   std::clog << "Process block of type(" << block->type() << ")\n";
@@ -49,7 +49,7 @@ void ipfs::UnixFsPathResolver::ProcessLargeFile(Block const& block) {
     // Request any missing blocks
     block.List([this](auto, auto child_cid) {
       if (storage_.Get(child_cid) == nullptr) {
-        request_required_(child_cid);
+        Request(child_cid, Scheduler::Priority::Required);
       }
       return true;
     });
@@ -115,6 +115,8 @@ void ipfs::UnixFsPathResolver::CompleteDirectory(Block const& block) {
                                                // level in case you follow
                                                // relative links inside
           .append(cid)
+          .append("?filename=")
+          .append(name)  // TODO URL encode
           .append("'>")
           .append(name)
           .append("</a>\n")
@@ -135,6 +137,10 @@ void ipfs::UnixFsPathResolver::CompleteDirectory(Block const& block) {
 }
 
 void ipfs::UnixFsPathResolver::ProcessDirectory(Block const& block) {
+  block.List([this](auto&, auto cid) {
+    Request(cid, Scheduler::Priority::Optional);
+    return true;
+  });
   auto start = path_.find_first_not_of("/");
   if (start == std::string::npos) {
     CompleteDirectory(block);
@@ -146,8 +152,7 @@ void ipfs::UnixFsPathResolver::ProcessDirectory(Block const& block) {
   block.List([this, next](auto& name, auto cid) {
     if (name == next) {
       cid_ = cid;
-    } else if (!storage_.Get(cid)) {
-      request_prefetch_(cid);
+      return false;
     }
     return true;
   });
@@ -158,6 +163,22 @@ void ipfs::UnixFsPathResolver::ProcessDirectory(Block const& block) {
 }
 void ipfs::UnixFsPathResolver::ProcessDirShard(Block const& block) {
   std::clog << "HAMTShard FANOUT = " << block.fsdata().fanout() << std::endl;
+}
+void ipfs::UnixFsPathResolver::Request(const std::string& cid,
+                                       Scheduler::Priority prio) {
+  if (storage_.Get(cid)) {
+    return;
+  }
+  auto it = already_requested_.find(cid);
+  if (it == already_requested_.end()) {
+    already_requested_[cid] = prio;
+    (prio == Scheduler::Priority::Required ? request_required_
+                                           : request_prefetch_)(cid);
+  } else if (prio == Scheduler::Priority::Required &&
+             it->second == Scheduler::Priority::Optional) {
+    it->second = prio;
+    request_required_(cid);
+  }
 }
 
 ipfs::UnixFsPathResolver::UnixFsPathResolver(BlockStorage& store,

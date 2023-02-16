@@ -113,9 +113,16 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     )");
 void ipfs::Loader::CreateBlockRequest(std::string cid) {
   LOG(INFO) << __PRETTY_FUNCTION__ << " (" << cid << ").";
+  if (complete_) {
+    LOG(INFO) << "Not creating block request because we're completed.";
+    return;
+  }
   sched_.Enqueue("ipfs/" + cid + "?format=raw", Scheduler::Priority::Required);
 }
 void ipfs::Loader::CreateRequest(BusyGateway&& assigned) {
+  if (complete_) {
+    return;
+  }
   auto url_suffix = assigned->current_task();
   auto req = std::make_unique<network::ResourceRequest>();
   auto url = assigned->url();
@@ -138,9 +145,10 @@ void ipfs::Loader::OnGatewayResponse(ptr,
                                      std::string,
                                      std::size_t req_idx,
                                      std::unique_ptr<std::string> body) {
-  LOG(INFO) << "OnGatewayResponse(" << req_idx << ')';
-  auto& gw = gateway_requests_.at(req_idx).first;
-  auto& http_loader = gateway_requests_.at(req_idx).second;
+  auto it = std::next(gateway_requests_.begin(), req_idx);
+  auto& gw = it->first;
+  LOG(INFO) << "OnGatewayResponse(" << req_idx << ")=" << gw->url();
+  auto& http_loader = it->second;
   if (!gw) {
     LOG(ERROR) << "Gateway null in response handling!";
     sched_.IssueRequests();
@@ -156,68 +164,65 @@ void ipfs::Loader::OnGatewayResponse(ptr,
   auto prefix = gw->url_prefix();
   auto url = gw->url();
   auto task = gw->current_task();
-  if (handle_response(gw.get(), http_loader.get(), body.get())) {
+  if (handle_response(*gw, http_loader.get(), body.get())) {
+    LOG(INFO) << "Promoting " << prefix << " due to success of " << url;
+    gw.Success(state_.gateways());
+    LOG(INFO) << "Cancelling all other requests for " << task;
     for (auto& gr : gateway_requests_) {
       if (!gr.first) {
         gr.second.reset();
       } else if (!gr.second) {
         gr.first.reset();
-      } else if (gr.first == gw) {
-        ;
       } else if (task == gr.first->current_task()) {
         gr.first.reset();
         gr.second.reset();
       }
     }
-    LOG(INFO) << "Promoting " << prefix << " due to success of " << url;
-    state_.gateways().promote(prefix);
-  } else {
-    gw->failed();
-    gw.reset();
-    auto failure = sched_.DetectCompleteFailure();
-    if (failure.empty()) {
-      LOG(INFO) << "Trying other gateways.";
-      if (resolver_) {
-        resolver_->Step(resolver_);
-      }
+    if (!complete_) {
       sched_.IssueRequests();
-    } else if (complete_) {
+    }
+  } else {
+    LOG(INFO) << "Demoting " << prefix;
+    gw.Failure(state_.gateways());
+    auto failure = sched_.DetectCompleteFailure();
+    if (complete_) {
       LOG(ERROR) << "Already complete! Stop it!";
+    } else if (failure.empty()) {
+      LOG(INFO) << "Trying other gateways.";
+      sched_.IssueRequests();
     } else {
       LOG(ERROR) << "Run out of gateways to try for " << failure;
       // Creative reinterpretation of 'gateway' in 'bad gateway'
       client_->OnComplete(network::URLLoaderCompletionStatus{502});
       complete_ = true;
     }
-    LOG(INFO) << "Demoting " << prefix;
-    state_.gateways().demote(prefix);
-    // TODO http_loader.reset();
   }
 }
-bool ipfs::Loader::handle_response(Gateway* gw,
+bool ipfs::Loader::handle_response(Gateway& gw,
                                    network::SimpleURLLoader* gw_req,
                                    std::string* body) {
+  LOG(INFO) << "handle_response(" << gw.url() << ')';
   if (!body) {
-    LOG(INFO) << "handle_response(" << gw->url()
+    LOG(INFO) << "handle_response(" << gw.url()
               << ") Null body - presumably http error.\n";
     return false;
   }
   network::mojom::URLResponseHead const* head = gw_req->ResponseInfo();
   if (!head) {
-    LOG(INFO) << "handle_response(" << gw->url() << ") Null head.\n";
+    LOG(INFO) << "handle_response(" << gw.url() << ") Null head.\n";
     return false;
   }
   std::string reported_path;
   head->headers->EnumerateHeader(nullptr, "X-Ipfs-Path", &reported_path);
   if (reported_path.empty()) {
-    LOG(INFO) << "handle_response(" << gw->url()
+    LOG(INFO) << "handle_response(" << gw.url()
               << ") gave us a non-ipfs response.\n";
     return false;
   }
-  if (gw->url().find("?format=raw") != std::string::npos) {
+  if (gw.url().find("?format=raw") != std::string::npos) {
     return HandleBlockResponse(gw, *body, *head);
   }
-  LOG(INFO) << "Request for full file handle_response(" << gw->url()
+  LOG(INFO) << "Request for full file handle_response(" << gw.url()
             << ", body has " << body->size() << " bytes.)";
   if (complete_) {
     LOG(ERROR) << "Already complete! Stop it!";
@@ -225,7 +230,7 @@ bool ipfs::Loader::handle_response(Gateway* gw,
   }
   auto result = mojo::CreateDataPipe(body->size(), pipe_prod_, pipe_cons_);
   if (result) {
-    LOG(ERROR) << " ERROR: failed to create data pipe: " << result;
+    LOG(ERROR) << " ERROR: TaskFailed to create data pipe: " << result;
     return false;
   }
   std::uint32_t write_size = body->size();
@@ -255,24 +260,24 @@ bool ipfs::Loader::handle_response(Gateway* gw,
   return true;
 }
 bool ipfs::Loader::HandleBlockResponse(
-    Gateway* gw,
+    Gateway& gw,
     std::string const& body,
     network::mojom::URLResponseHead const& head) {
-  LOG(INFO) << "Got a response to a block request from " << gw->url();
+  LOG(INFO) << "Got a response to a block request from " << gw.url();
   std::string reported_content_type;
   head.headers->EnumerateHeader(nullptr, "Content-Type",
                                 &reported_content_type);
   if (reported_content_type != "application/vnd.ipld.raw") {
     LOG(ERROR) << '\n'
-               << gw->url() << " reported a content type of "
+               << gw.url() << " reported a content type of "
                << reported_content_type
                << " strongly implying that it's a full request, not a single "
                   "block. TODO: Remove "
-               << gw->url_prefix() << " from list of gateways?\n";
-    state_.gateways().demote(gw->url_prefix());
+               << gw.url_prefix() << " from list of gateways?\n";
+    state_.gateways().demote(gw.url_prefix());
     return false;
   }
-  auto cid = gw->current_task();
+  auto cid = gw.current_task();
   cid.erase(0, 5);  // ipfs/
   cid.erase(cid.find('?'));
   LOG(INFO) << "Storing CID=" << cid;
@@ -288,7 +293,7 @@ void ipfs::Loader::BlocksComplete(std::string mime_type) {
   auto result =
       mojo::CreateDataPipe(partial_block_.size(), pipe_prod_, pipe_cons_);
   if (result) {
-    LOG(ERROR) << " ERROR: failed to create data pipe: " << result;
+    LOG(ERROR) << " ERROR: TaskFailed to create data pipe: " << result;
     return;
   }
   auto head = network::mojom::URLResponseHead::New();

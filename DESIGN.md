@@ -79,7 +79,7 @@ The class maintains:
 * A list of gateways marked or segregated based on:
     * GOOD/BAD - whether the gateway has returned a successful http response during _this_ class's lifetime yet.
     * BUSY/FREE - whether an HTTP request to that gateway is outstanding
-* For each gateway, a set of failed requests (URL suffixes)
+* For each gateway, a set of TaskFailed requests (URL suffixes)
 
 ```mermaid
 graph TD;
@@ -87,10 +87,10 @@ graph TD;
     style start fill:#9CF,color:black
     add --> selreq["Select the pending request with the lowest dup count"] --> incdup["Increase its dup count"] 
     incdup --> goodfree{"Is there a gateway that is both GOOD and FREE"} 
-    goodfree --NO--> badfree{"Are there any FREE that have not already failed this request?"} 
+    goodfree --NO--> badfree{"Are there any FREE that have not already TaskFailed this request?"} 
     badfree --NO--> anybusy{"Are there any BUSY gateways?"} 
     anybusy --YES--> wait(("Wait for pending requests to finish (return flow control)"))
-    badfree --YES--> selbf["Select the one with the fewest failed requests, initial priority tiebreaks"] 
+    badfree --YES--> selbf["Select the one with the fewest TaskFailed requests, initial priority tiebreaks"] 
     selbf --> mark_busy["Mark the gateway as BUSY"]
     goodfree --YES--> selbf
     mark_busy --> send["Create and send an HTTP URLRequest"]
@@ -105,7 +105,7 @@ graph TD;
     style successed fill:#9CF,color:black
     success --NO--> addbad["Add the URL suffix to this gateway's set of failures."] 
     addbad --> decprio[Indicate to Gateways that this gateway's score/priority should be a bit lower] --> selreq
-    anybusy --NO---> all_failed(["As all gateways have failed on a given request, report that failure"])
+    anybusy --NO---> all_failed(["As all gateways have TaskFailed on a given request, report that failure"])
     style all_failed fill:#9CF,color:black
  ```
 

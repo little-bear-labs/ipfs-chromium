@@ -7,8 +7,32 @@
 #include <memory>
 
 namespace ipfs {
+class Gateway;
+class Scheduler;
+class BusyGateway {
+ public:
+  BusyGateway(BusyGateway const&) = delete;
+  BusyGateway(BusyGateway&&);
+  ~BusyGateway();
+  Gateway& operator*();
+  Gateway* operator->();
+  Gateway* get();
+  explicit operator bool() const;
+  void reset();
+  bool operator==(BusyGateway const&) const;
 
-using BusyGateway = std::unique_ptr<Gateway, std::function<void(Gateway*)>>;
+  void Success(Gateways&);
+  void Failure(Gateways&);
+
+ private:
+  friend class Scheduler;
+  BusyGateway(std::string, std::string, Scheduler*);
+
+  std::string prefix_;
+  std::string suffix_;
+  Scheduler* scheduler_;
+  std::size_t maybe_offset_;
+};
 class Scheduler {
  public:
   using RequestCreator = std::function<void(BusyGateway)>;
@@ -24,8 +48,8 @@ class Scheduler {
   std::string DetectCompleteFailure() const;
 
  private:
-  GatewayList good_ = {};
-  GatewayList unproven_;
+  friend class BusyGateway;
+  GatewayList gateways_;
   RequestCreator requester_;
   unsigned const max_conc_;
   unsigned const max_dup_;
@@ -37,7 +61,7 @@ class Scheduler {
   std::array<std::vector<Todo>, 2> todos_;
 
   void Issue(std::vector<Todo> todos, unsigned up_to);
-  void End(Gateway*);
+  void CheckSwap(std::size_t);
 };
 
 }  // namespace ipfs

@@ -14,7 +14,8 @@ std::string ipfs::GuessContentType(
     return "text/plain";  // TODO
   }
   auto ext = filename.substr(dot + 1);
-  for (auto [alias, normal] : {std::pair{"htm", "html"}, {"jpg", "jpeg"}}) {
+  for (auto [alias, normal] :
+       {std::pair{"htm", "html"}, {"faq", "txt"}, {"jpg", "jpeg"}}) {
     if (ext == alias) {
       ext = normal;
     }

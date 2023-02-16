@@ -12,6 +12,7 @@
 * Plug resolver into Loader - request single blocks
 * https://orchestrator.strn.pl/nodes/nearby
 * Do real URLLoader management for gateway requests
+* Proper CID library
 * Validation!!
 * ipns resolution
 * dnslink resolution
@@ -19,7 +20,7 @@
 * https://orchestrator.strn.pl/nodes/nearby
 * ChromiumStyle() (accessors_only())
 * Persist promote/demote (perhaps integrated with user settings)
-* CI
+* Build fresh without circular steps, CI to verify
 
 ## Planned Design
 

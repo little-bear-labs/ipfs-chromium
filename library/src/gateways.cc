@@ -1,6 +1,7 @@
 #include "ipfs_client/gateways.h"
 
 #include <algorithm>
+#include <iostream>
 #include <string>
 
 using namespace std::string_literals;
@@ -61,6 +62,7 @@ auto ipfs::Gateways::GenerateList() const -> GatewayList {
 }
 
 void ipfs::Gateways::promote(std::string const& key) {
+  std::clog << "promote(" << key << ")\n";
   known_gateways_.at(key)++;
 }
 void ipfs::Gateways::demote(std::string const& key) {

@@ -7,7 +7,7 @@ ipfs::Scheduler::Scheduler(GatewayList&& initial_list,
                            RequestCreator requester,
                            unsigned max_conc,
                            unsigned max_dup)
-    : unproven_{initial_list},
+    : gateways_{initial_list},
       requester_(requester),
       max_conc_(max_conc),
       max_dup_(max_dup) {}
@@ -29,59 +29,117 @@ void ipfs::Scheduler::IssueRequests() {
   }
 }
 void ipfs::Scheduler::Issue(std::vector<Todo> todos, unsigned up_to) {
-  std::function<void(Gateway*)> end_f = [this](auto p) { End(p); };
   for (auto& todo : todos) {
     if (todo.dup_count_ <= up_to) {
       auto assign = [&todo](auto& gw) { return gw.accept(todo.suffix); };
-      for (GatewayList* gws : {&good_, &unproven_}) {
-        auto it = std::find_if(gws->begin(), gws->end(), assign);
-        if (it != gws->end()) {
-          requester_({&*it, end_f});
-          if (++ongoing_ >= max_conc_) {
-            return;
-          } else {
-            break;
-          }
+      auto it = std::find_if(gateways_.begin(), gateways_.end(), assign);
+      if (it != gateways_.end()) {
+        todo.dup_count_++;
+        requester_({it->url_prefix(), todo.suffix, this});
+        if (++ongoing_ >= max_conc_) {
+          return;
+        } else {
+          break;
         }
       }
     }
   }
 }
-void ipfs::Scheduler::End(Gateway* p) {
-  ongoing_--;
-  std::clog << "ongoing: " << ongoing_ << ' ';
-  for (auto& ts : todos_) {
-    for (auto& t : ts) {
-      if (t.suffix == p->current_task() && t.dup_count_ > 0) {
-        std::clog << "Decreasing dup_count on " << t.suffix << " to "
-                  << (t.dup_count_ - 1) << '\n';
-        t.dup_count_--;
-      }
-    }
-  }
-  //  if (!p->PreviouslyFailed(p->current_task())) {
-  //    auto already_good = std::find_if(good_.begin(), good_.end(), [p](auto&
-  //    g) {
-  //      return p->url_prefix() == p->url_prefix();
-  //    });
-  // TODO
-  //    if (already_good == good_.end()) {
-  //      good_.push_back(*p);
-  //    }
-  // TODO -
-  //     std::sort(good_.begin(), good_.end());
-  //  } else {
-  //    std::sort(unproven_.begin(), unproven_.end());
-  //  }
-  p->MakeAvailable();
-}
 std::string ipfs::Scheduler::DetectCompleteFailure() const {
   for (auto& todo : todos_.at(0)) {
     auto tried = [&todo](auto& gw) { return gw.PreviouslyFailed(todo.suffix); };
-    if (std::all_of(good_.begin(), good_.end(), tried) &&
-        std::all_of(unproven_.begin(), unproven_.end(), tried)) {
+    if (std::all_of(gateways_.begin(), gateways_.end(), tried)) {
       return todo.suffix;
     }
   }
   return "";
+}
+void ipfs::Scheduler::CheckSwap(std::size_t index) {
+  if (index + 1UL < gateways_.size() &&
+      gateways_[index + 1UL] < gateways_[index]) {
+    std::clog << "Does this perform moves?\n";
+    std::swap(gateways_[index], gateways_[index + 1UL]);
+    std::clog << "Did it?\n";
+  }
+}
+
+ipfs::BusyGateway::BusyGateway(std::string pre,
+                               std::string suf,
+                               Scheduler* sched)
+    : prefix_(pre), suffix_(suf), scheduler_{sched}, maybe_offset_(0UL) {}
+ipfs::BusyGateway::BusyGateway(BusyGateway&& rhs)
+    : prefix_(rhs.prefix_),
+      suffix_(rhs.suffix_),
+      scheduler_(rhs.scheduler_),
+      maybe_offset_(0UL) {
+  std::clog << "Moving " << prefix_ << " ... " << suffix_ << '\n';
+  rhs.prefix_.clear();
+  rhs.suffix_.clear();
+  rhs.scheduler_ = nullptr;
+  rhs.maybe_offset_ = 0UL;
+}
+ipfs::BusyGateway::~BusyGateway() {
+  if (*this && get()) {
+    (*this)->TaskCancelled();
+  }
+}
+ipfs::Gateway* ipfs::BusyGateway::get() {
+  if (!scheduler_ || prefix_.empty() || suffix_.empty()) {
+    return nullptr;
+  }
+  auto& gws = scheduler_->gateways_;
+  std::string pre = prefix_;
+  auto match = [pre](auto& gw) { return gw.url_prefix() == pre; };
+  auto found = std::find_if(gws.begin() + maybe_offset_, gws.end(), match);
+  if (gws.end() != found) {
+    maybe_offset_ = std::distance(gws.begin(), gws.end());
+    return &*found;
+  } else if (maybe_offset_) {
+    maybe_offset_ = 0UL;
+    return get();
+  } else {
+    return nullptr;
+  }
+}
+ipfs::Gateway* ipfs::BusyGateway::operator->() {
+  return get();
+}
+ipfs::Gateway& ipfs::BusyGateway::operator*() {
+  assert(get());  // TODO DCHECK
+  return *get();
+}
+ipfs::BusyGateway::operator bool() const {
+  return scheduler_ && prefix_.size() && suffix_.size();
+}
+void ipfs::BusyGateway::reset() {
+  std::clog << prefix_ << suffix_ << " BusyGateway::reset()\n";
+  scheduler_->ongoing_--;
+  for (auto& todos : scheduler_->todos_) {
+    for (auto& todo : todos) {
+      if (todo.suffix == suffix_) {
+        todo.dup_count_--;
+        break;
+      }
+    }
+  }
+  prefix_.clear();
+  suffix_.clear();
+}
+void ipfs::BusyGateway::Success(Gateways& g) {
+  std::clog << "BusyGateway::Success(" << prefix_ << ',' << suffix_ << ")\n";
+  assert(prefix_.size() > 0);
+  g.promote(prefix_);
+  assert(get());
+  get()->TaskSuccess();
+  if (maybe_offset_) {
+    scheduler_->CheckSwap(--maybe_offset_);
+  }
+  reset();
+}
+void ipfs::BusyGateway::Failure(Gateways& g) {
+  std::clog << "BusyGateway::Failure(" << prefix_ << ',' << suffix_ << ")\n";
+  g.demote(prefix_);
+  get()->TaskFailed();
+  scheduler_->CheckSwap(maybe_offset_);
+  reset();
 }

@@ -1,6 +1,7 @@
 #include <ipfs_client/block_storage.h>
 #include <ipfs_client/ipfs_uri.h>
 #include <ipfs_client/unixfs_path_resolver.h>
+#include <libp2p/multi/multibase_codec/codecs/base58.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -14,6 +15,12 @@ void handle_arg(char const* arg) {
     auto slash = std::strchr(arg, '/');
     if (slash) {
       resolve_unixfs_path(std::string(arg, slash), std::string(slash + 1));
+    } else if (arg[0] == 'Q' && arg[1] == 'm') {
+      auto binary = libp2p::multi::detail::decodeBase58(arg + 4).value();
+      for (unsigned char byte : binary) {
+        std::clog << std::hex << static_cast<unsigned>(byte);
+      }
+      std::clog.put('\n');
     } else {
       std::clog << "Unrecognized arg: " << arg << '\n';
       std::exit(99);

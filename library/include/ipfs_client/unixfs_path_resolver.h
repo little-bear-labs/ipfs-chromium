@@ -2,6 +2,7 @@
 #define IPFS_UNIXFS_PATH_RESOLVER_H_
 
 #include "block.h"
+#include "scheduler.h"
 
 #include <functional>
 #include <memory>
@@ -40,11 +41,13 @@ class UnixFsPathResolver
   CompetionHook on_complete_;
   std::string written_through_ = {};
   bool force_type_dir_ = false;
+  std::unordered_map<std::string, Scheduler::Priority> already_requested_;
 
   void CompleteDirectory(Block const&);
   void ProcessDirectory(Block const&);
   void ProcessLargeFile(Block const&);
   void ProcessDirShard(Block const&);
+  void Request(std::string const& cid, Scheduler::Priority);
 };
 }  // namespace ipfs
 #endif  // IPFS_UNIXFS_PATH_RESOLVER_H_

@@ -1,5 +1,6 @@
 #include "ipfs_client/block.h"
 
+#include <libp2p/multi/multibase_codec/codecs/base32.hpp>
 #include <libp2p/multi/multibase_codec/codecs/base58.hpp>
 
 ipfs::Block::Block(std::istream& s) {
@@ -59,7 +60,10 @@ std::string const& ipfs::Block::unparsed() const {
   return node_.data();
 }
 std::string ipfs::Block::LinkCid(std::string const& raw_hash) {
-  return libp2p::multi::detail::encodeBase58(raw_hash);
+  std::string withmulti({'\x01', '\x70'});
+  withmulti.append(raw_hash);
+  //  return libp2p::multi::detail::encodeBase58(raw_hash);
+  return "b" + libp2p::multi::detail::encodeBase32Lower(withmulti);
 }
 
 std::ostream& operator<<(std::ostream& s, ipfs::Block::Type t) {
