@@ -34,6 +34,7 @@ class UnixFsPathResolver
   BlockStorage& storage_;
   std::string cid_;
   std::string path_;
+  std::string original_cid_;
   std::string original_path_;
   RequestByCid request_required_;
   RequestByCid request_prefetch_;

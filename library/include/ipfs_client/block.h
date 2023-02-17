@@ -5,8 +5,8 @@
 #include "components/ipfs/pb_dag.pb.h"   //inside Chromium build
 #include "components/ipfs/unix_fs.pb.h"  //inside Chromium build
 #else
-#include "gen/pb_dag.pb.h"
-#include "gen/unix_fs.pb.h"
+#include "pb_dag.pb.h"
+#include "unix_fs.pb.h"
 #endif
 
 #include <iosfwd>

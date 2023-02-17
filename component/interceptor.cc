@@ -48,7 +48,10 @@ void Interceptor::MaybeCreateLoader(network::ResourceRequest const& req,
   } else if (req.url.spec().find(ipfs::IPFS_OVER_HTTP_DOMAIN) !=
              std::string::npos) {
 #endif
-    LOG(INFO) << req.url.spec() << " getting intercepted!";
+    auto hdr_str = req.headers.ToString();
+    std::replace(hdr_str.begin(), hdr_str.end(), '\r', ' ');
+    LOG(INFO) << req.url.spec() << " getting intercepted! Headers: \n"
+              << hdr_str;
     DCHECK(context);
     std::move(loader_callback)
         .Run(base::BindOnce(

@@ -2,7 +2,20 @@
 
 ## Current state
 
-[vid](http://chomp:8080/ipfs/QmWvWKiCvknAYQ1v6h8DKysk18HWcHstNGoFb1wmSijjqe/c.mkv)
+### Basic demo
+![Demo Vid](https://human.mypinata.cloud/ipfs/QmPbxt1YiGMxnZhCrotpACi4n7Aov1ppwMoRgYjNYy3KTL/0.webm)
+
+### What works
+* Navigation ipfs://bafy... (CIDv1 ipfs links with host-legal lowercase charset), requested 1 block at a time
+    - Only if the pb-dag nodes are directores, whole file, chunked file.
+* ipns:// (requests whole files & resources from a gateway)
+* Subresources for ipfs, same restrictions as navigation.
+
+### Some important things that don't work
+* HAMTShard (and more exotic nodes, but Shard is important for e.g. Wikipedia)
+* CIDv0 navigation
+* Validation
+* Local resolution of IPNS & DNSLink
 
 ### TODO
 * DCHECK and redefine to analogues, in ipfs_client 
@@ -21,6 +34,9 @@
 * ChromiumStyle() (accessors_only())
 * Persist promote/demote (perhaps integrated with user settings)
 * Build fresh without circular steps, CI to verify
+* Documentation
+* Code cleanup
+* Robustness (all the other mimes, all the other hash algos, etc.)
 
 ## Planned Design
 
@@ -35,6 +51,7 @@ Found in the library/ directory, ipfs_client is a library with a fairly standard
 If you have python3 installed and findable, it will use [Conan](https://docs.conan.io/en/latest/introduction.html) to manage dependencies.
 
 #### Steps
+
 * `mkdir /your/build/dir`
 * `cd /your/build/dir`
 * `cmake -G Ninja -D CMAKE_BUILD_TYPE=Debug /path/to/ipfs-chromium`
@@ -45,20 +62,26 @@ If you have python3 installed and findable, it will use [Conan](https://docs.con
    - Or invoke your underlying build system directly. In my example that would be `ninja`
 
 ### The ipfs component in the Chromium source tree
+
+My apologies - there are some bootstrapping issues here, so some repetition is involved.
+
+#### Steps
 * Clone chromium and [get it set up](https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md)
-* Follow steps to build libipfs_client, except also set:
+* In Chromium source tree, run `gen gen` with arguments appropriate to your build.
+* autoninja -C out/${CHROMIUM_PROFILE} chrome
+  - You may want to specify a `-j`
+* Run `cmake` for ipfs-chromium as above, but also set:
   - CHROMIUM_SOURCE_TREE - points to the git checkout of chromium
   - CHROMIUM_PROFILE - the profile you're building. Defaults to `Default`. ${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE} should exist.
   - DEPOT_TOOLS_DIRECTORY - Path to scripts like gn, autoninja, and ninja.py. If these are executable and in your `PATH` environment variable, you can leave this as its default value which is "DETECT_FROM_PATH" and does what one might expect.
-* Example cmake configure command: `cmake -G Ninja -D CMAKE_BUILD_TYPE=Debug -D CHROMIUM_SOURCE_TREE=/code/chromium/src /path/to/ipfs-chromium`
+  - Example cmake configure command: `cmake -G Ninja -D CMAKE_BUILD_TYPE=Debug -D CHROMIUM_SOURCE_TREE=/code/chromium/src /path/to/ipfs-chromium`
   - If ipfs is not mentioned in //chrome/browser/BUILD.gn , this command will apply the patch file presumably adding //components/ipfs as a dependency to //chrome/browser
-* `cmake --build . --target setup_component`
-  - If you build the default target (`all`), that will work too, though it will likely report an error.
+* `cd /your/build/dir && cmake --build . --target setup_component`
 * Re-run your `gn gen` command again, with all the normal arguments.
-  - Previous run(s) will not have seen //components/ipfs and so you need to include that in your generation
+  - Previous run(s) will not have seen //components/ipfs . This one should pick it up.
 * Run a full build of ipfs-chromium
-  - `cmake --build . `
-  - The `all` target includes building //components/ipfs in the tree, just to check.
+  - `cd /your/build/dir && cmake --build . `
+  - The `all` target includes building //components/ipfs in the tree, libipfs_client, and various checks.
 * Build chrome
   - `cd /path/to/chromium/src`
   - `autoninja -j 9 -C out/Default chrome` (or however you like to do it)

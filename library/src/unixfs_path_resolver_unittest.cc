@@ -1,9 +1,9 @@
 #include <ipfs_client/unixfs_path_resolver.h>
 
 #include <ipfs_client/block_storage.h>
-#include <ipfs_client/gen/pb_dag.pb.h>
-#include <ipfs_client/gen/unix_fs.pb.h>
 #include <libp2p/multi/multibase_codec/codecs/base58.hpp>
+#include "pb_dag.pb.h"
+#include "unix_fs.pb.h"
 
 #include <gtest/gtest.h>
 

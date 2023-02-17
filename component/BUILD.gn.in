@@ -12,6 +12,7 @@ component("ipfs") {
     "//components/policy/core/common",
     "//mojo/public/cpp/bindings",
     "//net",
+    "//services/cert_verifier/public/mojom/",
     "//services/network:network_service",
     "//services/network/public/cpp:cpp",
     "//services/network/public/mojom",

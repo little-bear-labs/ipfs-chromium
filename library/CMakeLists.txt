@@ -20,9 +20,26 @@ file(GLOB_RECURSE
     headers
     include/*.h
 )
+file(GLOB
+        protos
+        *.proto
+        )
+protobuf_generate_cpp(
+        pb_src
+        pb_hdr
+        ${protos}
+)
+set_source_files_properties(
+        ${pb_src}
+        ${pb_hdr}
+        PROPERTIES GENERATED ON
+)
+
 add_library(ipfs_client
     ${sources}
     ${headers} #Mostly for IDEs' sake - this used to be considered bad practice but... generator expressions and such
+    ${pb_src}
+    ${pb_hdr}
 )
 target_compile_features(ipfs_client
     PUBLIC
@@ -35,6 +52,7 @@ target_compile_options(ipfs_client
 target_include_directories(ipfs_client
     PUBLIC
         include/
+        "${CMAKE_CURRENT_BINARY_DIR}"
 )
 target_include_directories(ipfs_client
     PRIVATE
@@ -66,40 +84,6 @@ if(Boost_FOUND)
             Boost::boost
     )
 endif()
-
-file(GLOB
-    protos
-    *.proto
-)
-protobuf_generate_cpp(
-    pb_src
-    pb_hdr
-    ${protos}
-)
-get_source_file_property(
-    check
-    "${CMAKE_CURRENT_BINARY_DIR}/library//pb_dag.pb.h"
-    GENERATED
-)
-set_source_files_properties(
-    ${pb_src}
-    ${pb_hdr}
-    PROPERTIES GENERATED ON
-)
-get_source_file_property(
-        check
-        /mnt/big/lbl/bld/chromium-ipfs/library//pb_dag.pb.cc
-        GENERATED
-)
-add_custom_target(update_pb_source_in_repo
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${pb_hdr}" "${CMAKE_CURRENT_LIST_DIR}/include/ipfs_client/gen"
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${pb_src}" "${CMAKE_CURRENT_LIST_DIR}/src/gen"
-    COMMAND_EXPAND_LISTS
-    SOURCES
-        "${pb_src}"
-        "${pb_hdr}"
-)
-add_dependencies(ipfs_client update_pb_source_in_repo)
 
 file(GLOB_RECURSE
     unit_test_sources

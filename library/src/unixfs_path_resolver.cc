@@ -98,6 +98,31 @@ void ipfs::UnixFsPathResolver::CompleteDirectory(Block const& block) {
       " (directory listing)</title>\n"
       "  <body>\n"
       "    <ul>\n"};
+  std::clog << "original: cid='" << original_cid_ << "' path='"
+            << original_path_ << "'\n";
+  if (original_path_.empty() || original_path_.at(0) != '/') {
+    original_path_.insert(0, "/");
+  }
+  if (original_path_.back() != '/') {
+    original_path_.push_back('/');
+  }
+  std::clog << "original: cid='" << original_cid_ << "' path='"
+            << original_path_ << "'\n";
+  if (original_path_.size() > 1UL) {
+    std::string_view dotdotpath{original_path_};
+    std::clog << ".. , " << dotdotpath;
+    dotdotpath.remove_suffix(1);
+    auto last_slash = dotdotpath.find_last_of("/");
+    std::clog << " , " << dotdotpath << " up through " << last_slash;
+    dotdotpath = dotdotpath.substr(0, dotdotpath.find_last_of("/") + 1UL);
+    std::clog << " , " << dotdotpath << '\n';
+    generated_index.append("      <li>")
+        .append("        <a href='ipfs://")
+        .append(original_cid_)
+        .append(dotdotpath)
+        .append("'>..</a>\n")
+        .append("      </li>\n");
+  }
   block.List([&](auto& name, auto cid) {
     if (name == "index.html") {
       cid_ = cid;
@@ -111,16 +136,14 @@ void ipfs::UnixFsPathResolver::CompleteDirectory(Block const& block) {
       return false;
     } else {
       generated_index.append("      <li>")
-          .append("        <a href='ipfs://")  // TODO need to keep right dir
-                                               // level in case you follow
-                                               // relative links inside
-          .append(cid)
-          .append("?filename=")
+          .append("        <a href='ipfs://")
+          .append(original_cid_)
+          .append(original_path_)
           .append(name)  // TODO URL encode
           .append("'>")
           .append(name)
           .append("</a>\n")
-          .append("      </li>");
+          .append("      </li>\n");
     }
     return true;
   });
@@ -191,6 +214,7 @@ ipfs::UnixFsPathResolver::UnixFsPathResolver(BlockStorage& store,
     : storage_{store},
       cid_{cid},
       path_{path},
+      original_cid_(cid),
       original_path_(path),
       request_required_(request_required),
       request_prefetch_(request_prefetch),
