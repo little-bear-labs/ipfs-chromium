@@ -3,7 +3,8 @@
 ## Current state
 
 ### Basic demo
-![Demo Vid](https://human.mypinata.cloud/ipfs/QmPbxt1YiGMxnZhCrotpACi4n7Aov1ppwMoRgYjNYy3KTL/0.webm)
+[0.webm](https://user-images.githubusercontent.com/97759690/219815679-735fb053-7e20-42de-819c-6057cedfefc5.webm)
+
 
 ### What works
 * Navigation ipfs://bafy... (CIDv1 ipfs links with host-legal lowercase charset), requested 1 block at a time
