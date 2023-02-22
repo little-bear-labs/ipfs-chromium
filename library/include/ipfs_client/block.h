@@ -17,6 +17,7 @@ class Block {
  public:
   Block(std::istream&);
   explicit Block(std::string const& binary_data);
+  Block(Block const&);
   ~Block() noexcept;
 
   bool valid() const;
@@ -39,6 +40,8 @@ class Block {
   std::string const& chunk_data() const;
   std::string const& unparsed() const;
   unix_fs::Data const& fsdata() const { return fsdata_; }
+  void mime_type(std::string_view);
+  std::string const& mime_type() const;
 
   template <class Functor>
   void List(Functor foo) const {
@@ -54,6 +57,7 @@ class Block {
   unix_fs::Data fsdata_;
   bool valid_;
   bool fs_node_ = false;
+  std::string mime_ = {};
 
   static std::string LinkCid(std::string const&);
 };

@@ -1,15 +1,15 @@
 #include "loader.h"
+
 #include "inter_request_state.h"
 
 #include "ipfs_client/gateways.h"
 #include "ipfs_client/unixfs_path_resolver.h"
 
 #include "base/notreached.h"
-#include "base/strings/escape.h"
 #include "base/threading/platform_thread.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/net/system_network_context_manager.h"
 #include "ipfs_client/ipfs_uri.h"
+#include "net/base/mime_sniffer.h"
+#include "net/base/mime_util.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -22,8 +22,7 @@ ipfs::Loader::Loader(network::mojom::URLLoaderFactory* handles_http,
                      InterRequestState& state)
     : state_{state},
       lower_loader_factory_{handles_http},
-      sched_{state_.gateways().GenerateList(),
-             [this](auto&& bg) { this->CreateRequest(std::move(bg)); }} {}
+      sched_(state_.gateways().GenerateList()) {}
 ipfs::Loader::~Loader() noexcept {}
 
 void ipfs::Loader::FollowRedirect(
@@ -37,9 +36,10 @@ void ipfs::Loader::FollowRedirect(
 ) {
   NOTIMPLEMENTED();
 }
-void ipfs::Loader::SetPriority(net::RequestPriority /*priority*/,
-                               int32_t /*intra_priority_value*/) {
-  NOTIMPLEMENTED();
+void ipfs::Loader::SetPriority(net::RequestPriority priority,
+                               int32_t intra_priority_value) {
+  LOG(INFO) << "TODO SetPriority(" << priority << ',' << intra_priority_value
+            << ')';
 }
 void ipfs::Loader::PauseReadingBodyFromNet() {
   NOTIMPLEMENTED();
@@ -81,17 +81,13 @@ void ipfs::Loader::StartRequest(
       remainder.append(path.substr(qmark));
     }
     LOG(INFO) << "cid=" << cid << " remainder=" << remainder;
-    me->resolver_ = std::make_shared<UnixFsPathResolver>(
-        me->state_.storage(), cid, remainder,
-        [me](auto cid) { me->CreateBlockRequest(cid); },
-        [](auto c) { LOG(ERROR) << "TODO prefetch cid" << c; },
-        [me](auto content) { me->partial_block_.append(content); },
-        [me](auto mime_type) { me->BlocksComplete(mime_type); });
-    me->resolver_->Step(me->resolver_);
+    me->resolver_ = std::make_shared<UnixFsPathResolver>(me->state_.storage(),
+                                                         cid, remainder);
+    me->resolver_->Step(me);
   } else {
     LOG(ERROR) << "Requesting " << resource_request.url.spec()
                << " as a whole file.";
-    me->sched_.Enqueue(path, Scheduler::Priority::Required);
+    me->sched_.Enqueue(me, path, Scheduler::Priority::Required);
   }
 }
 
@@ -111,15 +107,19 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         setting: "Currently, this feature cannot be disabled by settings. TODO"
       }
     )");
-void ipfs::Loader::CreateBlockRequest(std::string cid) {
-  LOG(INFO) << __PRETTY_FUNCTION__ << " (" << cid << ").";
+void ipfs::Loader::RequestByCid(std::string cid, Scheduler::Priority prio) {
+  LOG(INFO) << __PRETTY_FUNCTION__ << " (" << cid << ',' << prio << ").";
+  if (prio == Scheduler::Priority::Optional) {
+    LOG(ERROR) << "TODO : prefetch";
+  }
   if (complete_) {
     LOG(INFO) << "Not creating block request because we're completed.";
     return;
   }
-  sched_.Enqueue("ipfs/" + cid + "?format=raw", Scheduler::Priority::Required);
+  sched_.Enqueue(shared_from_this(), "ipfs/" + cid + "?format=raw",
+                 Scheduler::Priority::Required);
 }
-void ipfs::Loader::CreateRequest(BusyGateway&& assigned) {
+void ipfs::Loader::InitiateGatewayRequest(BusyGateway assigned) {
   if (complete_) {
     return;
   }
@@ -132,17 +132,15 @@ void ipfs::Loader::CreateRequest(BusyGateway&& assigned) {
   gateway_requests_.emplace_back(
       std::move(assigned), network::SimpleURLLoader::Create(
                                std::move(req), kTrafficAnnotation, FROM_HERE));
-  auto cb =
-      base::BindOnce(&ipfs::Loader::OnGatewayResponse, base::Unretained(this),
-                     shared_from_this(), url_suffix, idx);
+  auto cb = base::BindOnce(&ipfs::Loader::OnGatewayResponse,
+                           base::Unretained(this), shared_from_this(), idx);
   // TODO - proper requesting with full features (pause, explict cancel, etc.).
   // May require not using SimpleURLLoader
   gateway_requests_.back()
       .second->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
           lower_loader_factory_, std::move(cb));
 }
-void ipfs::Loader::OnGatewayResponse(ptr,
-                                     std::string,
+void ipfs::Loader::OnGatewayResponse(std::shared_ptr<ipfs::FrameworkApi>,
                                      std::size_t req_idx,
                                      std::unique_ptr<std::string> body) {
   auto it = std::next(gateway_requests_.begin(), req_idx);
@@ -151,12 +149,12 @@ void ipfs::Loader::OnGatewayResponse(ptr,
   auto& http_loader = it->second;
   if (!gw) {
     LOG(ERROR) << "Gateway null in response handling!";
-    sched_.IssueRequests();
+    sched_.IssueRequests(shared_from_this());
     return;
   }
   if (!http_loader) {
     LOG(ERROR) << "http_loader null in response handling!";
-    sched_.IssueRequests();
+    sched_.IssueRequests(shared_from_this());
     return;
   }
   // Doing a deep copy to avoid reference invalidation concerns below, for
@@ -179,7 +177,7 @@ void ipfs::Loader::OnGatewayResponse(ptr,
       }
     }
     if (!complete_) {
-      sched_.IssueRequests();
+      sched_.IssueRequests(shared_from_this());
     }
   } else {
     LOG(INFO) << "Demoting " << prefix;
@@ -189,7 +187,7 @@ void ipfs::Loader::OnGatewayResponse(ptr,
       LOG(ERROR) << "Already complete! Stop it!";
     } else if (failure.empty()) {
       LOG(INFO) << "Trying other gateways.";
-      sched_.IssueRequests();
+      sched_.IssueRequests(shared_from_this());
     } else {
       LOG(ERROR) << "Run out of gateways to try for " << failure;
       // Creative reinterpretation of 'gateway' in 'bad gateway'
@@ -281,15 +279,18 @@ bool ipfs::Loader::HandleBlockResponse(
   cid.erase(0, 5);  // ipfs/
   cid.erase(cid.find('?'));
   LOG(INFO) << "Storing CID=" << cid;
-  state_.storage().Store(cid, Block{body});
-  resolver_->Step(resolver_);
-  sched_.IssueRequests();
+  state_.storage().Store(shared_from_this(), cid, Block{body});
+  resolver_->Step(shared_from_this());
+  sched_.IssueRequests(shared_from_this());
   return true;
 }
 
 void ipfs::Loader::BlocksComplete(std::string mime_type) {
   LOG(INFO) << "Resolved from unix-fs dag a file of type: " << mime_type
             << " will report it as " << original_url_;
+  if (complete_) {
+    return;
+  }
   auto result =
       mojo::CreateDataPipe(partial_block_.size(), pipe_prod_, pipe_cons_);
   if (result) {
@@ -310,12 +311,31 @@ void ipfs::Loader::BlocksComplete(std::string mime_type) {
   head->parsed_headers =
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});
   head->was_fetched_via_spdy = false;
-  if (complete_) {
-    LOG(ERROR) << "Already complete! Stop it!";
-  } else {
-    client_->OnReceiveResponse(std::move(head), std::move(pipe_cons_),
-                               absl::nullopt);
-    client_->OnComplete(network::URLLoaderCompletionStatus{});
-    complete_ = true;
+  client_->OnReceiveResponse(std::move(head), std::move(pipe_cons_),
+                             absl::nullopt);
+  client_->OnComplete(network::URLLoaderCompletionStatus{});
+  complete_ = true;
+}
+std::string ipfs::Loader::MimeTypeFromExtension(std::string extension) const {
+  std::string result;
+  // Can't use this more-thorough function. It calls platform-specific code that
+  //   may introduce additional requirements at runtime, for example XDG
+  //   functions that assert you're in a context where blocking calls is OK.
+  // if (!net::GetMimeTypeFromExtension(extension, &result)) {
+  if (!net::GetWellKnownMimeTypeFromExtension(extension, &result)) {
+    result.clear();
   }
+  return result;
+}
+std::string ipfs::Loader::MimeTypeFromContent(std::string_view content,
+                                              std::string const& url) const {
+  std::string result;
+  if (!net::SniffMimeType({content.data(), content.size()}, GURL{url}, "",
+                          net::ForceSniffFileUrlsForHtml::kDisabled, &result)) {
+    result.clear();
+  }
+  return result;
+}
+void ipfs::Loader::ReceiveBlockBytes(std::string_view content) {
+  partial_block_.append(content);
 }

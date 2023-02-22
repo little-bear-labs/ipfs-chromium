@@ -11,24 +11,15 @@
 namespace ipfs {
 
 class BlockStorage;
+class FrameworkApi;
 
-class UnixFsPathResolver
-    : public std::enable_shared_from_this<UnixFsPathResolver> {
+class UnixFsPathResolver {
  public:
-  using RequestByCid = std::function<void(std::string const&)>;
-  using FileContentReceiver = std::function<void(std::string const&)>;
-  using CompetionHook = std::function<void(std::string)>;
-  UnixFsPathResolver(BlockStorage&,
-                     std::string cid,
-                     std::string path,
-                     RequestByCid request_required,
-                     RequestByCid request_prefetch,
-                     FileContentReceiver receive_bytes,
-                     CompetionHook on_complete);
+  UnixFsPathResolver(BlockStorage&, std::string cid, std::string path);
   ~UnixFsPathResolver() noexcept;
 
   std::string const& waiting_on() const { return cid_; }
-  void Step(std::shared_ptr<UnixFsPathResolver>);
+  void Step(std::shared_ptr<FrameworkApi>);
 
  private:
   BlockStorage& storage_;
@@ -36,19 +27,19 @@ class UnixFsPathResolver
   std::string path_;
   std::string original_cid_;
   std::string original_path_;
-  RequestByCid request_required_;
-  RequestByCid request_prefetch_;
-  FileContentReceiver receive_bytes_;
-  CompetionHook on_complete_;
   std::string written_through_ = {};
   bool force_type_dir_ = false;
   std::unordered_map<std::string, Scheduler::Priority> already_requested_;
 
-  void CompleteDirectory(Block const&);
-  void ProcessDirectory(Block const&);
-  void ProcessLargeFile(Block const&);
+  void CompleteDirectory(std::shared_ptr<FrameworkApi>&, Block const&);
+  void ProcessDirectory(std::shared_ptr<FrameworkApi>&, Block const&);
+  void ProcessLargeFile(std::shared_ptr<FrameworkApi>&, Block const&);
   void ProcessDirShard(Block const&);
-  void Request(std::string const& cid, Scheduler::Priority);
+  void Request(std::shared_ptr<FrameworkApi>&,
+               std::string const& cid,
+               Scheduler::Priority);
+  std::string GuessContentType(std::shared_ptr<FrameworkApi>& api,
+                               std::string_view content);
 };
 }  // namespace ipfs
 #endif  // IPFS_UNIXFS_PATH_RESOLVER_H_

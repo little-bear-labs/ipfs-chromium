@@ -15,6 +15,13 @@ ipfs::Block::Block(std::string const& s) {
     fs_node_ = fsdata_.ParseFromString(node_.data());
   }
 }
+ipfs::Block::Block(Block const& rhs)
+    : node_(rhs.node_),
+      fsdata_(rhs.fsdata_),
+      valid_(rhs.valid_),
+      fs_node_(rhs.fs_node_),
+      mime_(rhs.mime_) {}
+
 ipfs::Block::~Block() noexcept {}
 bool ipfs::Block::valid() const {
   return valid_;
@@ -58,6 +65,12 @@ std::string const& ipfs::Block::chunk_data() const {
 }
 std::string const& ipfs::Block::unparsed() const {
   return node_.data();
+}
+std::string const& ipfs::Block::mime_type() const {
+  return mime_;
+}
+void ipfs::Block::mime_type(std::string_view val) {
+  mime_.assign(val);
 }
 std::string ipfs::Block::LinkCid(std::string const& raw_hash) {
   std::string withmulti({'\x01', '\x70'});

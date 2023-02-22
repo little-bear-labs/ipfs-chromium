@@ -7,11 +7,12 @@
 using namespace std::string_literals;
 
 ipfs::Gateways::Gateways()
-    : known_gateways_{{"http://localhost:8080/"s, 99},
+    : known_gateways_{{"http://localhost:8080/"s, 98},
+                      {"https://jcsl.hopto.org/"s, 19},
                       {"https://dweb.link/"s, 11},
                       {"https://gateway.ipfs.io/"s, 11},
                       {"https://gateway.pinata.cloud/"s, 10},
-                      {"https://ipfs.best-practice.se/"s, 11},
+                      {"https://ipfs.best-practice.se/"s, 10},
                       {"https://ipfs-gateway.cloud/"s, 11},
                       {"https://ipfs.io/"s, 11},
                       {"https://ipfs.joaoleitao.org/"s, 12},
@@ -32,7 +33,7 @@ ipfs::Gateways::Gateways()
                       {"https://67.21.32.23/"s, 12},
                       {"https://192.158.233.116/"s, 12},
                       {"https://192.158.233.119/"s, 12},
-                      {"https://192.158.233.122/"s, 12},
+                      {"https://192.158.233.122/"s, 11},
                       {"https://192.158.233.117/"s, 12},
                       {"https://192.158.233.121/"s, 12},
                       {"https://192.158.233.115/"s, 12},

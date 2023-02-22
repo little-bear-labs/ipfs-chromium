@@ -4,9 +4,11 @@
 #include "gateways.h"
 
 #include <functional>
+#include <iosfwd>
 #include <memory>
 
 namespace ipfs {
+class FrameworkApi;
 class Gateway;
 class Scheduler;
 class BusyGateway {
@@ -35,22 +37,21 @@ class BusyGateway {
 };
 class Scheduler {
  public:
-  using RequestCreator = std::function<void(BusyGateway)>;
   explicit Scheduler(GatewayList&& initial_list,
-                     RequestCreator,
                      unsigned max_concurrent_requests = 10,
                      unsigned duplication_waste_tolerance = 3);
   ~Scheduler();
   enum Result { Scheduled, InProgress, Failed };
   enum class Priority { Required, Optional };
-  void Enqueue(std::string const& suffix, Priority);
-  void IssueRequests();
+  void Enqueue(std::shared_ptr<FrameworkApi>,
+               std::string const& suffix,
+               Priority);
+  void IssueRequests(std::shared_ptr<FrameworkApi>);
   std::string DetectCompleteFailure() const;
 
  private:
   friend class BusyGateway;
   GatewayList gateways_;
-  RequestCreator requester_;
   unsigned const max_conc_;
   unsigned const max_dup_;
   unsigned ongoing_ = 0;
@@ -60,10 +61,14 @@ class Scheduler {
   };
   std::array<std::vector<Todo>, 2> todos_;
 
-  void Issue(std::vector<Todo> todos, unsigned up_to);
+  void Issue(std::shared_ptr<FrameworkApi>,
+             std::vector<Todo> todos,
+             unsigned up_to);
   void CheckSwap(std::size_t);
 };
 
 }  // namespace ipfs
+
+std::ostream& operator<<(std::ostream&, ipfs::Scheduler::Priority);
 
 #endif  // IPFS_SCHEDULER_H_

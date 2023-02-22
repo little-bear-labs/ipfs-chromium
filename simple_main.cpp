@@ -85,7 +85,8 @@ void parse_block_file(char const* file_name) {
     std::clog << "  " << n << " => " << c << '\n';
     return true;
   });
-  blocks.Store(file_name, std::move(node));
+  // TODO
+  //  blocks.Store(file_name, std::move(node));
 }
 void resolve_unixfs_path(std::string cid, std::string path) {
   auto request_required = [](auto& c) {
@@ -113,8 +114,8 @@ void resolve_unixfs_path(std::string cid, std::string path) {
     std::ofstream f{out_fn};
     f.write(file_contents.c_str(), file_contents.size());
   };
-  auto resolver = std::make_shared<ipfs::UnixFsPathResolver>(
-      blocks, cid, path, request_required, request_prefetch, receive_bytes,
-      on_complete);
-  resolver->Step(resolver);
+  // TODO
+  //   auto resolver = std::make_shared<ipfs::UnixFsPathResolver>(blocks, cid,
+  //   path, request_required, request_prefetch, receive_bytes,on_complete);
+  //   resolver->Step(resolver);
 }

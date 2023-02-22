@@ -1,41 +1,42 @@
+#include <ipfs_client/framework_api.h>
 #include <ipfs_client/scheduler.h>
 
 #include <algorithm>
 #include <iostream>
 
 ipfs::Scheduler::Scheduler(GatewayList&& initial_list,
-                           RequestCreator requester,
                            unsigned max_conc,
                            unsigned max_dup)
-    : gateways_{initial_list},
-      requester_(requester),
-      max_conc_(max_conc),
-      max_dup_(max_dup) {}
+    : gateways_{initial_list}, max_conc_(max_conc), max_dup_(max_dup) {}
 
 ipfs::Scheduler::~Scheduler() {}
 
-void ipfs::Scheduler::Enqueue(std::string const& suffix, Priority p) {
+void ipfs::Scheduler::Enqueue(std::shared_ptr<FrameworkApi> api,
+                              std::string const& suffix,
+                              Priority p) {
   todos_.at(static_cast<unsigned>(p)).emplace_back(Todo{suffix, 0});
-  IssueRequests();
+  IssueRequests(api);
 }
-void ipfs::Scheduler::IssueRequests() {
-  Issue(todos_.at(0), 0);
+void ipfs::Scheduler::IssueRequests(std::shared_ptr<FrameworkApi> api) {
+  Issue(api, todos_.at(0), 0);
   if (ongoing_ >= max_conc_) {
     return;
   }
-  Issue(todos_.at(1), 0);
+  Issue(api, todos_.at(1), 0);
   for (auto i = 1U; i <= max_dup_ && ongoing_ < max_conc_; ++i) {
-    Issue(todos_.at(0), i);
+    Issue(api, todos_.at(0), i);
   }
 }
-void ipfs::Scheduler::Issue(std::vector<Todo> todos, unsigned up_to) {
+void ipfs::Scheduler::Issue(std::shared_ptr<FrameworkApi> api,
+                            std::vector<Todo> todos,
+                            unsigned up_to) {
   for (auto& todo : todos) {
     if (todo.dup_count_ <= up_to) {
       auto assign = [&todo](auto& gw) { return gw.accept(todo.suffix); };
       auto it = std::find_if(gateways_.begin(), gateways_.end(), assign);
       if (it != gateways_.end()) {
         todo.dup_count_++;
-        requester_({it->url_prefix(), todo.suffix, this});
+        api->InitiateGatewayRequest({it->url_prefix(), todo.suffix, this});
         if (++ongoing_ >= max_conc_) {
           return;
         } else {
@@ -142,4 +143,9 @@ void ipfs::BusyGateway::Failure(Gateways& g) {
   get()->TaskFailed();
   scheduler_->CheckSwap(maybe_offset_);
   reset();
+}
+
+std::ostream& operator<<(std::ostream& s, ipfs::Scheduler::Priority p) {
+  return s << (p == ipfs::Scheduler::Priority::Required ? "Required"
+                                                        : "Optional");
 }

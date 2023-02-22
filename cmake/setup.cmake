@@ -64,6 +64,3 @@ else()
 endif()
 
 find_package(Protobuf REQUIRED)
-
-file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/library/base/debug")
-file(TOUCH          "${CMAKE_CURRENT_BINARY_DIR}/library/base/debug/debugging_buildflags.h")
