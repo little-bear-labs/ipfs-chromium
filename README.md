@@ -19,8 +19,7 @@
 * Local resolution of IPNS & DNSLink
 
 ### TODO
-* HAMTShard directories
-* DCHECK and redefine to analogues, in ipfs_client 
+* Path resolution for HAMTShard directories
 * Unit tests coverage for ipfs_client, using GTest
 * cull hard-coded list to remove those that don't allow block-level access
 * Dynamically... https://orchestrator.strn.pl/nodes/nearby
@@ -87,17 +86,13 @@ My apologies - there are some bootstrapping issues here, so some repetition is i
   - `autoninja -j 9 -C out/Default chrome` (or however you like to do it)
 
 ## Outstanding Questions
- * Importance of what shows in the address bar when looking at an ipfs:// addressed html file
- * Handling of relative URLs
  * In what ways will be interact with browser cache? 
    - If you request 2 different paths within the same path, there is duplication higher on the root, etc..
    - If we send them to a different gateway, this fools browser cache.
    - Should we maintain our own cache? 
  * Changes needed to get the Omnibar to prefer treating ipfs://_ as a URL over a search term
- * Is there a better way to work around security checks on the response being passed back from an ipfs:// URLLoader
  * Chromium DNS TXT record access - may/should we use //net for TxtRecordRdata and the like?
  * Best way to steal from cpp-libp2p, while minimizing cross-maintenance
  * Is there existing C++ implementation for [UnixFS/PB-DAG](https://ipld.io/specs/codecs/dag-pb/spec/#implementations). 
    - Only a subset of functionality needed. And Chromium does have protobuf support available already.
    - Could be implemented as part of this effort, but better not to duplicate.
- * "Access to image at 'ipfs://bafybeifszd4wbkeekwzwitvgijrw6zkzijxutm4kdumkxnc6677drtslni/ipfs-logo-768px.png' from origin 'null' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, isolated-app, chrome-extension, chrome, https, chrome-untrusted.", source: ipfs://QmTCo5Q1pyLfw9NNcNeyxbF96ni1EpWXnAMBEviQWG2H9d (17)

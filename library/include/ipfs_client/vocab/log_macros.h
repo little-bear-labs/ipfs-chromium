@@ -58,4 +58,6 @@
 
 #endif
 
+#define L_VAR(X) L_INF(#X << std::dec << (X))
+
 #endif  // IPFS_LOG_MACROS_H_

@@ -75,10 +75,10 @@ elseif()
 endif()
 
 set(target_dir "${CHROMIUM_SOURCE_TREE}/components/ipfs/${basename}")
-file(GLOB
+file(GLOB_RECURSE
     lib_srcs
         ../library/src/*.cc
-        ../library/src/multi/*/*/*.cc
+        ../library/src/*.h #Private headers
 )
 list(FILTER
     lib_srcs
@@ -93,6 +93,7 @@ file(GLOB_RECURSE
 )
 file(GLOB_RECURSE
     lib_hdrs_abs
+    CONFIGURE_DEPENDS
     "${CMAKE_SOURCE_DIR}/library/include/*.h"
     "${CMAKE_SOURCE_DIR}/library/include/*.hpp"
 )

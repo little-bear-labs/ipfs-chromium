@@ -12,6 +12,7 @@ namespace ipfs {
 
 class BlockStorage;
 class FrameworkApi;
+class GeneratedDirectoryListing;
 
 class UnixFsPathResolver {
  public:
@@ -34,12 +35,23 @@ class UnixFsPathResolver {
   void CompleteDirectory(std::shared_ptr<FrameworkApi>&, Block const&);
   void ProcessDirectory(std::shared_ptr<FrameworkApi>&, Block const&);
   void ProcessLargeFile(std::shared_ptr<FrameworkApi>&, Block const&);
-  void ProcessDirShard(Block const&);
+  void ProcessDirShard(std::shared_ptr<FrameworkApi>&, Block const&);
   void Request(std::shared_ptr<FrameworkApi>&,
                std::string const& cid,
                Scheduler::Priority);
   std::string GuessContentType(std::shared_ptr<FrameworkApi>& api,
                                std::string_view content);
+
+  void RequestHamtDescendents(std::shared_ptr<FrameworkApi>&,
+                              bool&,
+                              std::string_view,
+                              Block const& block,
+                              unsigned,
+                              bool all_optional) const;
+  bool ListHamt(std::shared_ptr<FrameworkApi>&,
+                Block const&,
+                GeneratedDirectoryListing&,
+                unsigned);
 };
 }  // namespace ipfs
 #endif  // IPFS_UNIXFS_PATH_RESOLVER_H_

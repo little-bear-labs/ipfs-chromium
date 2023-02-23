@@ -6,6 +6,7 @@
 #include "ipfs_client/unixfs_path_resolver.h"
 
 #include "base/notreached.h"
+#include "base/strings/escape.h"
 #include "base/threading/platform_thread.h"
 #include "net/base/mime_sniffer.h"
 #include "net/base/mime_util.h"
@@ -66,7 +67,7 @@ void ipfs::Loader::StartRequest(
     LOG(FATAL) << "Removed support for ipfs-over-http?";
   }
   if (resource_request.url.SchemeIs("ipfs")) {
-    LOG(ERROR) << "Requesting " << resource_request.url.spec() << " by blocks!";
+    LOG(INFO) << "Requesting " << resource_request.url.spec() << " by blocks!";
     auto second_slash = path.find_first_of("/?", 5);
     auto cid = path.substr(5, second_slash - 5);
     second_slash = path.find('/', 5);
@@ -106,11 +107,12 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     )");
 void ipfs::Loader::RequestByCid(std::string cid, Scheduler::Priority prio) {
   LOG(INFO) << __PRETTY_FUNCTION__ << " (" << cid << ',' << prio << ").";
-  if (prio == Scheduler::Priority::Optional) {
-    LOG(ERROR) << "TODO : prefetch";
-  }
   if (complete_) {
     LOG(INFO) << "Not creating block request because we're completed.";
+    return;
+  }
+  if (prio == Scheduler::Priority::Optional) {
+    LOG(INFO) << "prefetch " << cid;
     return;
   }
   sched_.Enqueue(shared_from_this(), "ipfs/" + cid + "?format=raw",
@@ -332,4 +334,10 @@ std::string ipfs::Loader::MimeType(std::string extension,
 }
 void ipfs::Loader::ReceiveBlockBytes(std::string_view content) {
   partial_block_.append(content);
+}
+std::string ipfs::Loader::UnescapeUrlComponent(std::string_view comp) const {
+  using Rule = base::UnescapeRule;
+  auto rules = Rule::PATH_SEPARATORS |
+               Rule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS | Rule::SPACES;
+  return base::UnescapeURLComponent({comp.data(), comp.size()}, rules);
 }

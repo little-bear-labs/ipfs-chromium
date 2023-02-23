@@ -22,6 +22,8 @@ class FrameworkApi : public std::enable_shared_from_this<FrameworkApi> {
   virtual std::string MimeType(std::string extension,
                                std::string_view content,
                                std::string const& url) const = 0;
+
+  virtual std::string UnescapeUrlComponent(std::string_view) const = 0;
 };
 
 }  // namespace ipfs

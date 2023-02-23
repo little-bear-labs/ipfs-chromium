@@ -37,6 +37,9 @@ struct Api final : public ipfs::FrameworkApi {
   }
   bool is_done = false;
   void BlocksComplete(std::string) { is_done = true; }
+  std::string UnescapeUrlComponent(std::string_view s) const {
+    return std::string{s};
+  }
 };
 }  // namespace
 

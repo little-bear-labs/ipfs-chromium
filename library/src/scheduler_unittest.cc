@@ -25,6 +25,9 @@ struct Api final : public ipfs::FrameworkApi {
     EXPECT_EQ("not supposed to call", b);
   }
   void BlocksComplete(std::string) {}
+  std::string UnescapeUrlComponent(std::string_view s) const {
+    return std::string{s};
+  }
 };
 }  // namespace
 

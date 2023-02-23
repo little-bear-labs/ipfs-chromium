@@ -1,0 +1,6 @@
+FROM debian
+RUN echo TODO - probably wan't to setup /chromium/src/ here, before ipfs-chromium, as it might change less frequently
+ADD . /ipfs-chromium
+RUN mkdir /ipfs-chromium-Debug/
+RUN mkdir /ipfs-chromium-Release/
+RUN echo TODO - all the stuff

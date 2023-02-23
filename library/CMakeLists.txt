@@ -9,7 +9,6 @@ file(GLOB_RECURSE
     sources
     CONFIGURE_DEPENDS
     src/*.cc
-    src/*.cpp
 )
 list(FILTER
     sources
