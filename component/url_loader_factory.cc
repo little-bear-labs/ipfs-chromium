@@ -3,8 +3,6 @@
 #include "inter_request_state.h"
 #include "loader.h"
 
-#include <iostream>
-
 void ipfs::IpfsURLLoaderFactory::Create(NonNetworkURLLoaderFactoryMap* in_out,
                                         std::string from,
                                         content::BrowserContext* context,

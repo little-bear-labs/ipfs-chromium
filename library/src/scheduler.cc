@@ -58,9 +58,7 @@ std::string ipfs::Scheduler::DetectCompleteFailure() const {
 void ipfs::Scheduler::CheckSwap(std::size_t index) {
   if (index + 1UL < gateways_.size() &&
       gateways_[index + 1UL] < gateways_[index]) {
-    std::clog << "Does this perform moves?\n";
     std::swap(gateways_[index], gateways_[index + 1UL]);
-    std::clog << "Did it?\n";
   }
 }
 
@@ -73,7 +71,6 @@ ipfs::BusyGateway::BusyGateway(BusyGateway&& rhs)
       suffix_(rhs.suffix_),
       scheduler_(rhs.scheduler_),
       maybe_offset_(0UL) {
-  std::clog << "Moving " << prefix_ << " ... " << suffix_ << '\n';
   rhs.prefix_.clear();
   rhs.suffix_.clear();
   rhs.scheduler_ = nullptr;
@@ -113,7 +110,6 @@ ipfs::BusyGateway::operator bool() const {
   return scheduler_ && prefix_.size() && suffix_.size();
 }
 void ipfs::BusyGateway::reset() {
-  std::clog << prefix_ << suffix_ << " BusyGateway::reset()\n";
   scheduler_->ongoing_--;
   for (auto& todos : scheduler_->todos_) {
     for (auto& todo : todos) {
@@ -127,7 +123,6 @@ void ipfs::BusyGateway::reset() {
   suffix_.clear();
 }
 void ipfs::BusyGateway::Success(Gateways& g) {
-  std::clog << "BusyGateway::Success(" << prefix_ << ',' << suffix_ << ")\n";
   assert(prefix_.size() > 0);
   g.promote(prefix_);
   assert(get());
@@ -138,7 +133,6 @@ void ipfs::BusyGateway::Success(Gateways& g) {
   reset();
 }
 void ipfs::BusyGateway::Failure(Gateways& g) {
-  std::clog << "BusyGateway::Failure(" << prefix_ << ',' << suffix_ << ")\n";
   g.demote(prefix_);
   get()->TaskFailed();
   scheduler_->CheckSwap(maybe_offset_);

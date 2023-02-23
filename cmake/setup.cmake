@@ -1,4 +1,4 @@
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR};${CMAKE_CURRENT_BINARY_DIR};${CMAKE_MODULE_PATH})
 include(${CMAKE_CXX_COMPILER_ID})
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(Git)
@@ -28,7 +28,7 @@ if(Python3_EXECUTABLE)
             gtest/1.13.0
             protobuf/3.21.9
         GENERATORS
-            cmake_find_package
+            CMakeDeps
         OUTPUT_QUIET
     )
     conan_cmake_autodetect(settings)

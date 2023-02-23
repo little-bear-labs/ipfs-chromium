@@ -2,19 +2,17 @@
 
 #include "ipfs_client/block_storage.h"
 #include "ipfs_client/framework_api.h"
-
-#include <iostream>
+#include "ipfs_client/vocab/log_macros.h"
 
 void ipfs::UnixFsPathResolver::Step(std::shared_ptr<FrameworkApi> api) {
-  std::clog << "Step(" << cid_ << ',' << path_ << ',' << original_path_
-            << ")\n";
+  L_INF("Step(" << cid_ << ',' << path_ << ',' << original_path_ << ')');
   Block const* block = storage_.Get(cid_);
   if (!block) {
     storage_.AddListening(this);
     Request(api, cid_, Scheduler::Priority::Required);
     return;
   }
-  std::clog << "Process block of type(" << block->type() << ")\n";
+  L_INF("Process block of type " << block->type());
   switch (block->type()) {
     case Block::Type::Directory:
       ProcessDirectory(api, *block);
@@ -30,15 +28,12 @@ void ipfs::UnixFsPathResolver::Step(std::shared_ptr<FrameworkApi> api) {
       ProcessDirShard(*block);
       break;
     default:
-      std::clog << "TODO : Unhandled UnixFS node of type " << block->type()
-                << std::endl;
-      std::exit(42);
+      L_DIE("TODO : Unhandled UnixFS node of type " << block->type());
   }
 }
 void ipfs::UnixFsPathResolver::ProcessLargeFile(
     std::shared_ptr<FrameworkApi>& api,
     Block const& block) {
-  std::clog << "Re-assembling file from chunks: " << cid_ << '\n';
   bool writing = false;
   if (written_through_.empty()) {
     // First time here, probably
@@ -62,7 +57,6 @@ void ipfs::UnixFsPathResolver::ProcessLargeFile(
       return true;
     }
     auto child = storage_.Get(child_cid);
-    std::clog << "Including file piece: " << child_cid << '\n';
     if (child) {
       switch (child->type()) {
         case Block::Type::NonFs:
@@ -72,8 +66,7 @@ void ipfs::UnixFsPathResolver::ProcessLargeFile(
           api->ReceiveBlockBytes(child->chunk_data());
           break;
         default:
-          std::clog << "ERROR: unhandled child-of-file block type:"
-                    << child->type() << '\n';
+          L_DIE(" unhandled child-of-file block type: " << child->type());
       }
       written_through_.assign(child_cid);
       return true;
@@ -97,24 +90,17 @@ void ipfs::UnixFsPathResolver::CompleteDirectory(
       " (directory listing)</title>\n"
       "  <body>\n"
       "    <ul>\n"};
-  std::clog << "original: cid='" << original_cid_ << "' path='"
-            << original_path_ << "'\n";
   if (original_path_.empty() || original_path_.at(0) != '/') {
     original_path_.insert(0, "/");
   }
   if (original_path_.back() != '/') {
     original_path_.push_back('/');
   }
-  std::clog << "original: cid='" << original_cid_ << "' path='"
-            << original_path_ << "'\n";
   if (original_path_.size() > 1UL) {
     std::string_view dotdotpath{original_path_};
-    std::clog << ".. , " << dotdotpath;
     dotdotpath.remove_suffix(1);
     auto last_slash = dotdotpath.find_last_of("/");
-    std::clog << " , " << dotdotpath << " up through " << last_slash;
-    dotdotpath = dotdotpath.substr(0, dotdotpath.find_last_of("/") + 1UL);
-    std::clog << " , " << dotdotpath << '\n';
+    dotdotpath = dotdotpath.substr(0, last_slash + 1UL);
     generated_index.append("      <li>")
         .append("        <a href='ipfs://")
         .append(original_cid_)
@@ -181,12 +167,12 @@ void ipfs::UnixFsPathResolver::ProcessDirectory(
     return true;
   });
   // TODO 404
-  std::clog << "Descending path: " << next << " . " << path_ << '\n';
+  L_INF("Descending path: " << next << " . " << path_);
   path_.erase(0, end);
   Step(api);
 }
 void ipfs::UnixFsPathResolver::ProcessDirShard(Block const& block) {
-  std::clog << "HAMTShard FANOUT = " << block.fsdata().fanout() << std::endl;
+  L_DIE("HAMTShard FANOUT = " << block.fsdata().fanout());
 }
 void ipfs::UnixFsPathResolver::Request(std::shared_ptr<FrameworkApi>& api,
                                        std::string const& cid,
@@ -228,28 +214,23 @@ ipfs::UnixFsPathResolver::~UnixFsPathResolver() noexcept {}
 std::string ipfs::UnixFsPathResolver::GuessContentType(
     std::shared_ptr<FrameworkApi>& api,
     std::string_view content) {
-  std::clog << "Looking up Content-Type for " << original_path_ << '\n';
   auto dot = original_path_.rfind('.');
   auto slash = original_path_.rfind('/');
+  std::string ext;
   if (dot < original_path_.size() &&
       (slash < dot || slash == std::string::npos)) {
-    auto ext = original_path_.substr(dot + 1);
-    auto mime = api->MimeTypeFromExtension(ext);
-    if (mime.size()) {
-      std::clog << "Assuming " << original_path_ << " is of type " << mime
-                << " due to extension " << ext << '\n';
-      return mime;  // TODO store the mime in the block
-    }
+    ext = original_path_.substr(dot + 1);
   }
-  // TODO sniff mime type from content
-  auto mime = api->MimeTypeFromContent(content, "ipfs://" + original_path_);
+  auto mime = api->MimeType(ext, content, "ipfs://" + original_path_);
   if (mime.size()) {
-    std::clog << "Detected mime " << mime << " for " << original_path_
-              << " based on the file contents (likely magic number).\n";
+    // TODO, store mime in block
+    L_INF("Detected mime "
+          << mime << " for " << original_path_
+          << " based on the file contents (likely magic number).");
     return mime;
   }
   // TODO fetch the mime from block if available
-  std::clog << "\n\t###\tTODO:\tCould not determine mime type for '"
-            << original_path_ << "'.\t###\n\n";
+  L_ERR("\n\t###\tTODO:\tCould not determine mime type for '" << original_path_
+                                                              << "'.\t###\n\n");
   return "TODO";
 }

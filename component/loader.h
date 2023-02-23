@@ -93,9 +93,9 @@ class Loader final : public network::mojom::URLLoader,
   bool HandleBlockResponse(Gateway&,
                            std::string const&,
                            network::mojom::URLResponseHead const&);
-  std::string MimeTypeFromExtension(std::string extension) const override;
-  std::string MimeTypeFromContent(std::string_view content,
-                                  std::string const& url) const override;
+  std::string MimeType(std::string extension,
+                       std::string_view content,
+                       std::string const& url) const override;
   void ReceiveBlockBytes(std::string_view) override;
   void BlocksComplete(std::string mime_type) override;
 };

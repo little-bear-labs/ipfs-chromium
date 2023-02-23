@@ -30,6 +30,11 @@ struct Api final : public ipfs::FrameworkApi {
                                   std::string const& url) const {
     throw 8;
   }
+  std::string MimeType(std::string,
+                       std::string_view,
+                       std::string const&) const {
+    return "text/html";
+  }
   bool is_done = false;
   void BlocksComplete(std::string) { is_done = true; }
 };

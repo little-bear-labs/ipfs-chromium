@@ -7,7 +7,6 @@
 
 #include "base/notreached.h"
 #include "base/threading/platform_thread.h"
-#include "ipfs_client/ipfs_uri.h"
 #include "net/base/mime_sniffer.h"
 #include "net/base/mime_util.h"
 #include "services/network/public/cpp/parsed_headers.h"
@@ -53,8 +52,6 @@ void ipfs::Loader::StartRequest(
     network::ResourceRequest const& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  std::clog << __PRETTY_FUNCTION__ << " got " << resource_request.url.spec()
-            << std::endl;
   DCHECK(!me->receiver_.is_bound());
   DCHECK(!me->client_.is_bound());
   me->receiver_.Bind(std::move(receiver));
@@ -66,7 +63,7 @@ void ipfs::Loader::StartRequest(
     path = resource_request.url.spec();
     path.erase(4, 2);
   } else {
-    path = IpfsOverHttpUrl2IpfsGatewayPath(resource_request.url.spec());
+    LOG(FATAL) << "Removed support for ipfs-over-http?";
   }
   if (resource_request.url.SchemeIs("ipfs")) {
     LOG(ERROR) << "Requesting " << resource_request.url.spec() << " by blocks!";
@@ -316,23 +313,20 @@ void ipfs::Loader::BlocksComplete(std::string mime_type) {
   client_->OnComplete(network::URLLoaderCompletionStatus{});
   complete_ = true;
 }
-std::string ipfs::Loader::MimeTypeFromExtension(std::string extension) const {
+std::string ipfs::Loader::MimeType(std::string extension,
+                                   std::string_view content,
+                                   std::string const& url) const {
   std::string result;
-  // Can't use this more-thorough function. It calls platform-specific code that
-  //   may introduce additional requirements at runtime, for example XDG
-  //   functions that assert you're in a context where blocking calls is OK.
-  // if (!net::GetMimeTypeFromExtension(extension, &result)) {
-  if (!net::GetWellKnownMimeTypeFromExtension(extension, &result)) {
+  if (extension.size() &&
+      net::GetWellKnownMimeTypeFromExtension(extension, &result)) {
+    LOG(INFO) << "Got " << result << " from extension " << extension << " for "
+              << url;
+  } else {
     result.clear();
   }
-  return result;
-}
-std::string ipfs::Loader::MimeTypeFromContent(std::string_view content,
-                                              std::string const& url) const {
-  std::string result;
-  if (!net::SniffMimeType({content.data(), content.size()}, GURL{url}, "",
-                          net::ForceSniffFileUrlsForHtml::kDisabled, &result)) {
-    result.clear();
+  if (net::SniffMimeType({content.data(), content.size()}, GURL{url}, result,
+                         net::ForceSniffFileUrlsForHtml::kDisabled, &result)) {
+    LOG(INFO) << "Got " << result << " from content of " << url;
   }
   return result;
 }

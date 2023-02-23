@@ -16,6 +16,11 @@ struct Api final : public ipfs::FrameworkApi {
                                   std::string const& url) const {
     throw 8;
   }
+  std::string MimeType(std::string,
+                       std::string_view,
+                       std::string const&) const {
+    throw 7;
+  }
   void ReceiveBlockBytes(std::string_view b) {
     EXPECT_EQ("not supposed to call", b);
   }

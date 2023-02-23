@@ -37,6 +37,7 @@ target_compile_options(local_shim_build
 target_include_directories(local_shim_build
     SYSTEM
     PUBLIC
+        ../library/include/
         "${CHROMIUM_SOURCE_TREE}"
         "${CHROMIUM_SOURCE_TREE}/buildtools/third_party/libc++/trunk/include/"
         "${CHROMIUM_SOURCE_TREE}/buildtools/third_party/libc++/"

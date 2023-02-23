@@ -73,6 +73,15 @@ if(absl_FOUND)
             absl::statusor
     )
 endif()
+message(WARNING "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}")
+message(WARNING "CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}")
+find_package(spdlog)
+if(spdlog_FOUND)
+    target_link_libraries(ipfs_client
+        PRIVATE
+            spdlog::spdlog
+    )
+endif()
 
 find_package(Boost
     COMPONENTS

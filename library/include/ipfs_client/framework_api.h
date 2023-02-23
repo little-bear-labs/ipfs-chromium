@@ -19,9 +19,9 @@ class FrameworkApi : public std::enable_shared_from_this<FrameworkApi> {
   virtual void ReceiveBlockBytes(std::string_view) = 0;
   virtual void BlocksComplete(std::string mime_type) = 0;
 
-  virtual std::string MimeTypeFromExtension(std::string extension) const = 0;
-  virtual std::string MimeTypeFromContent(std::string_view content,
-                                          std::string const& url) const = 0;
+  virtual std::string MimeType(std::string extension,
+                               std::string_view content,
+                               std::string const& url) const = 0;
 };
 
 }  // namespace ipfs
