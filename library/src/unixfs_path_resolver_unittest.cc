@@ -40,6 +40,7 @@ struct Api final : public ipfs::FrameworkApi {
   std::string UnescapeUrlComponent(std::string_view s) const {
     return std::string{s};
   }
+  void FourOhFour(std::string_view, std::string_view) {}
 };
 }  // namespace
 
@@ -114,7 +115,8 @@ ipfs::Block mock_directory(std::vector<entry> entries) {
   ipfs::unix_fs::Data dir_data;
   dir_data.set_type(ipfs::unix_fs::Data_DataType_Directory);
   node.set_data(dir_data.SerializeAsString());
-  return ipfs::Block{node.SerializeAsString()};
+  return ipfs::Block{libp2p::multi::MulticodecType::Code::DAG_PB,
+                     node.SerializeAsString()};
 }
 ipfs::Block mock_file(std::string content) {
   ipfs::pb_dag::PBNode node;
@@ -122,6 +124,7 @@ ipfs::Block mock_file(std::string content) {
   file_data.set_type(ipfs::unix_fs::Data_DataType_File);
   file_data.set_data(content);
   node.set_data(file_data.SerializeAsString());
-  return ipfs::Block{node.SerializeAsString()};
+  return ipfs::Block{libp2p::multi::MulticodecType::Code::DAG_PB,
+                     node.SerializeAsString()};
 }
 }  // namespace

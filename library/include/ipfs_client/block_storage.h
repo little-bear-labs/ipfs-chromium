@@ -22,6 +22,7 @@ class BlockStorage {
              Block&& block);
   Block const* Get(std::string const& cid) const;
   void AddListening(UnixFsPathResolver*);
+  void StopListening(UnixFsPathResolver*);
 
  private:
   flat_map<std::string, Block> cid2node_;

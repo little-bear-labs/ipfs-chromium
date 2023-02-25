@@ -24,6 +24,7 @@ class FrameworkApi : public std::enable_shared_from_this<FrameworkApi> {
                                std::string const& url) const = 0;
 
   virtual std::string UnescapeUrlComponent(std::string_view) const = 0;
+  virtual void FourOhFour(std::string_view, std::string_view) = 0;
 };
 
 }  // namespace ipfs

@@ -1,5 +1,5 @@
 #include "ipfs_client/gateway.h"
-#include "ipfs_client/vocab/log_macros.h"
+#include "vocab/log_macros.h"
 
 ipfs::Gateway::Gateway(std::string url_prefix, unsigned int priority)
     : prefix_{std::move(url_prefix)}, priority_{priority} {}

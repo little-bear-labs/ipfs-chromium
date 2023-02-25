@@ -1,6 +1,22 @@
 FROM debian
-RUN echo TODO - probably wan't to setup /chromium/src/ here, before ipfs-chromium, as it might change less frequently
+RUN apt-get update
+RUN apt-get install --yes apt-utils
+RUN apt-get install --yes g++ python3 python3-pip git ninja-build wget
+RUN wget 'https://github.com/Kitware/CMake/releases/download/v3.25.2/cmake-3.25.2-linux-x86_64.tar.gz'
+# Debian version of cmake is weirdly old. I could try to support it, but some of my dependencies don't.
+# Alternatively, one could get cmake from conan. But then we wouldn't be adequately testing the cmake code that installs conan.
+RUN tar --extract --verbose --strip-components=1 --file cmake*.tar.gz
+
+RUN for c in cmake ninja;do which ${c};${c} --version;done
+
+RUN echo "alias ll='/bin/ls -lrth --color=auto '" >> /root/.bashrc
+
+RUN echo "TODO - probably wan't to setup /chromium/src/ here, before ipfs-chromium, as it might change less frequently"
+
 ADD . /ipfs-chromium
-RUN mkdir /ipfs-chromium-Debug/
-RUN mkdir /ipfs-chromium-Release/
-RUN echo TODO - all the stuff
+RUN mkdir -p /ipfs-chromium-{Debug,Release}/
+RUN cmake -G Ninja -D CMAKE_BUILD_TYPE=Debug -S /ipfs-chromium -B /ipfs-chromium-Debug
+RUN ninja -C /ipfs-chromium-Debug -j 1 -k 0
+RUN cmake -G Ninja -D CMAKE_BUILD_TYPE=Release -S /ipfs-chromium -B /ipfs-chromium-Release
+RUN ninja -C /ipfs-chromium-Release -j 1 -k 0
+RUN echo TODO Chromium component build

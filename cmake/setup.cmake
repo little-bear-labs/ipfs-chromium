@@ -1,4 +1,5 @@
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR};${CMAKE_CURRENT_BINARY_DIR};${CMAKE_MODULE_PATH})
+list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 include(${CMAKE_CXX_COMPILER_ID})
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(Git)
@@ -9,10 +10,9 @@ endif()
 find_package (Python3 COMPONENTS Interpreter)
 if(Python3_EXECUTABLE)
     set(CONAN_CMAKE_SILENT_OUTPUT 1)
-    execute_process(
-        COMMAND ${Python3_EXECUTABLE} -m pip --quiet install --upgrade conan
-        COMMAND_ERROR_IS_FATAL ANY
-    )
+    execute_process(COMMAND ${Python3_EXECUTABLE} -m pip install --upgrade conan)
+    execute_process(COMMAND ${Python3_EXECUTABLE} -m pip --quiet install --upgrade conan)
+    execute_process(COMMAND conan profile detect)
     if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/conan.cmake")
         file(
             DOWNLOAD
@@ -25,11 +25,15 @@ if(Python3_EXECUTABLE)
     conan_cmake_configure(
         REQUIRES
             abseil/20220623.1
+            boost/1.81.0
             gtest/1.13.0
             protobuf/3.21.9
+        OPTIONS
+            boost/1.81.0:header_only=True
         GENERATORS
             CMakeDeps
         OUTPUT_QUIET
+        PROFILE_AUTO ALL
     )
     conan_cmake_autodetect(settings)
     conan_cmake_install(

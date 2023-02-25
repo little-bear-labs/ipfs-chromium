@@ -1,5 +1,5 @@
 #include "ipfs_client/gateways.h"
-#include "ipfs_client/vocab/log_macros.h"
+#include "vocab/log_macros.h"
 
 #include <algorithm>
 #include <string>
@@ -30,7 +30,6 @@ ipfs::Gateways::Gateways()
                       {"https://92.119.16.134/"s, 12},
                       {"https://92.119.16.150/"s, 12},
                       {"https://92.119.16.153/"s, 10},
-                      {"https://67.21.32.23/"s, 12},
                       {"https://192.158.233.116/"s, 12},
                       {"https://192.158.233.119/"s, 12},
                       {"https://192.158.233.122/"s, 11},

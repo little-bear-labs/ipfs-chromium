@@ -28,6 +28,7 @@ struct Api final : public ipfs::FrameworkApi {
   std::string UnescapeUrlComponent(std::string_view s) const {
     return std::string{s};
   }
+  void FourOhFour(std::string_view, std::string_view) {}
 };
 }  // namespace
 

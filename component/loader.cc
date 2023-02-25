@@ -2,6 +2,7 @@
 
 #include "inter_request_state.h"
 
+#include "ipfs_client/cid_util.h"
 #include "ipfs_client/gateways.h"
 #include "ipfs_client/unixfs_path_resolver.h"
 
@@ -111,12 +112,11 @@ void ipfs::Loader::RequestByCid(std::string cid, Scheduler::Priority prio) {
     LOG(INFO) << "Not creating block request because we're completed.";
     return;
   }
-  if (prio == Scheduler::Priority::Optional) {
-    LOG(INFO) << "prefetch " << cid;
-    return;
-  }
-  sched_.Enqueue(shared_from_this(), "ipfs/" + cid + "?format=raw",
-                 Scheduler::Priority::Required);
+  //  if (prio == Scheduler::Priority::Optional) {
+  //    LOG(INFO) << "prefetch " << cid;
+  //    return;
+  //  }
+  sched_.Enqueue(shared_from_this(), "ipfs/" + cid + "?format=raw", prio);
 }
 void ipfs::Loader::InitiateGatewayRequest(BusyGateway assigned) {
   if (complete_) {
@@ -170,6 +170,8 @@ void ipfs::Loader::OnGatewayResponse(std::shared_ptr<ipfs::FrameworkApi>,
         gr.second.reset();
       } else if (!gr.second) {
         gr.first.reset();
+      } else if (url == gr.first->url()) {
+        LOG(INFO) << "Skip self";
       } else if (task == gr.first->current_task()) {
         gr.first.reset();
         gr.second.reset();
@@ -278,7 +280,9 @@ bool ipfs::Loader::HandleBlockResponse(
   cid.erase(0, 5);  // ipfs/
   cid.erase(cid.find('?'));
   LOG(INFO) << "Storing CID=" << cid;
-  state_.storage().Store(shared_from_this(), cid, Block{body});
+  state_.storage().Store(
+      shared_from_this(), cid,
+      Block{cid::bin::get_multicodec(cid::mb::to_bin(cid)), body});
   resolver_->Step(shared_from_this());
   sched_.IssueRequests(shared_from_this());
   return true;
@@ -315,6 +319,12 @@ void ipfs::Loader::BlocksComplete(std::string mime_type) {
   client_->OnComplete(network::URLLoaderCompletionStatus{});
   complete_ = true;
 }
+void ipfs::Loader::FourOhFour(std::string_view cid, std::string_view path) {
+  LOG(ERROR) << "Immutable data 404 for " << cid << '/' << path;
+  complete_ = true;
+  client_->OnComplete(network::URLLoaderCompletionStatus{404});
+  gateway_requests_.clear();
+}
 std::string ipfs::Loader::MimeType(std::string extension,
                                    std::string_view content,
                                    std::string const& url) const {
@@ -333,11 +343,14 @@ std::string ipfs::Loader::MimeType(std::string extension,
   return result;
 }
 void ipfs::Loader::ReceiveBlockBytes(std::string_view content) {
+  // TODO - cid? We may have more than one block in flight at the same time
   partial_block_.append(content);
 }
 std::string ipfs::Loader::UnescapeUrlComponent(std::string_view comp) const {
   using Rule = base::UnescapeRule;
   auto rules = Rule::PATH_SEPARATORS |
                Rule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS | Rule::SPACES;
-  return base::UnescapeURLComponent({comp.data(), comp.size()}, rules);
+  auto result = base::UnescapeURLComponent({comp.data(), comp.size()}, rules);
+  LOG(INFO) << "UnescapeUrlComponent(" << comp << ")->'" << result << "'";
+  return result;
 }

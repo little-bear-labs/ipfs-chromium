@@ -19,7 +19,7 @@ class UnixFsPathResolver {
   UnixFsPathResolver(BlockStorage&, std::string cid, std::string path);
   ~UnixFsPathResolver() noexcept;
 
-  std::string const& waiting_on() const { return cid_; }
+  std::string const& waiting_on() const;
   void Step(std::shared_ptr<FrameworkApi>);
 
  private:
@@ -29,8 +29,12 @@ class UnixFsPathResolver {
   std::string original_cid_;
   std::string original_path_;
   std::string written_through_ = {};
+  std::string awaiting_;  // TODO dehack
   bool force_type_dir_ = false;
-  std::unordered_map<std::string, Scheduler::Priority> already_requested_;
+  std::unordered_map<std::string, std::pair<Scheduler::Priority, std::time_t>>
+      already_requested_;
+  std::vector<std::string> hamt_hexs_;
+  std::string head_;
 
   void CompleteDirectory(std::shared_ptr<FrameworkApi>&, Block const&);
   void ProcessDirectory(std::shared_ptr<FrameworkApi>&, Block const&);
@@ -44,14 +48,18 @@ class UnixFsPathResolver {
 
   void RequestHamtDescendents(std::shared_ptr<FrameworkApi>&,
                               bool&,
-                              std::string_view,
                               Block const& block,
-                              unsigned,
-                              bool all_optional) const;
+                              unsigned) const;
   bool ListHamt(std::shared_ptr<FrameworkApi>&,
                 Block const&,
                 GeneratedDirectoryListing&,
                 unsigned);
+  void ResolveByHashBits(Block const&,
+                         std::uint64_t,
+                         unsigned,
+                         std::string_view,
+                         unsigned,
+                         std::shared_ptr<FrameworkApi>&);
 };
 }  // namespace ipfs
 #endif  // IPFS_UNIXFS_PATH_RESOLVER_H_

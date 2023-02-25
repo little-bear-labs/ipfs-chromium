@@ -1,6 +1,10 @@
 #include <ipfs_client/framework_api.h>
 #include <ipfs_client/scheduler.h>
 
+#include <vocab/log_macros.h>
+
+#include <cassert>
+
 #include <algorithm>
 #include <iostream>
 
@@ -14,14 +18,26 @@ ipfs::Scheduler::~Scheduler() {}
 void ipfs::Scheduler::Enqueue(std::shared_ptr<FrameworkApi> api,
                               std::string const& suffix,
                               Priority p) {
-  todos_.at(static_cast<unsigned>(p)).emplace_back(Todo{suffix, 0});
+  auto& todos = todos_.at(static_cast<unsigned>(p));
+  auto pred = [suffix](auto& t) { return t.suffix == suffix; };
+  if (std::none_of(todos.begin(), todos.end(), pred)) {
+    todos.emplace_back(Todo{suffix, 0});
+  }
   IssueRequests(api);
 }
 void ipfs::Scheduler::IssueRequests(std::shared_ptr<FrameworkApi> api) {
   Issue(api, todos_.at(0), 0);
   if (ongoing_ >= max_conc_) {
-    return;
+    auto t = std::time(nullptr);
+    if (!fudge_) {
+      fudge_ = t;
+      return;
+    } else if (t - fudge_ < 9) {
+      return;
+    }
+    L_INF("Overtime " << ongoing_ << " " << max_conc_ << " " << (t - fudge_));
   }
+  fudge_ = 0;
   Issue(api, todos_.at(1), 0);
   for (auto i = 1U; i <= max_dup_ && ongoing_ < max_conc_; ++i) {
     Issue(api, todos_.at(0), i);
@@ -39,12 +55,11 @@ void ipfs::Scheduler::Issue(std::shared_ptr<FrameworkApi> api,
         api->InitiateGatewayRequest({it->url_prefix(), todo.suffix, this});
         if (++ongoing_ >= max_conc_) {
           return;
-        } else {
-          break;
         }
       }
     }
   }
+  //  L_INF("No pending request has fewer than " << up_to << " requests.");
 }
 std::string ipfs::Scheduler::DetectCompleteFailure() const {
   for (auto& todo : todos_.at(0)) {
@@ -79,6 +94,9 @@ ipfs::BusyGateway::BusyGateway(BusyGateway&& rhs)
 ipfs::BusyGateway::~BusyGateway() {
   if (*this && get()) {
     (*this)->TaskCancelled();
+    if (scheduler_ && scheduler_->ongoing_) {
+      scheduler_->ongoing_--;
+    }
   }
 }
 ipfs::Gateway* ipfs::BusyGateway::get() {
@@ -125,6 +143,13 @@ void ipfs::BusyGateway::reset() {
 void ipfs::BusyGateway::Success(Gateways& g) {
   assert(prefix_.size() > 0);
   g.promote(prefix_);
+  for (auto& todos : scheduler_->todos_) {
+    auto it = std::find_if(todos.begin(), todos.end(),
+                           [this](auto& t) { return t.suffix == suffix_; });
+    if (it != todos.end()) {
+      todos.erase(it);
+    }
+  }
   assert(get());
   get()->TaskSuccess();
   if (maybe_offset_) {

@@ -3,6 +3,7 @@
 
 #include "gateways.h"
 
+#include <ctime>
 #include <functional>
 #include <iosfwd>
 #include <memory>
@@ -38,7 +39,7 @@ class BusyGateway {
 class Scheduler {
  public:
   explicit Scheduler(GatewayList&& initial_list,
-                     unsigned max_concurrent_requests = 10,
+                     unsigned max_concurrent_requests = 20,
                      unsigned duplication_waste_tolerance = 3);
   ~Scheduler();
   enum Result { Scheduled, InProgress, Failed };
@@ -55,6 +56,7 @@ class Scheduler {
   unsigned const max_conc_;
   unsigned const max_dup_;
   unsigned ongoing_ = 0;
+  std::time_t fudge_ = 0;
   struct Todo {
     std::string suffix;
     unsigned dup_count_ = 0;

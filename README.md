@@ -19,11 +19,13 @@
 * Local resolution of IPNS & DNSLink
 
 ### TODO
-* Path resolution for HAMTShard directories
+* Blog
+* Scan all known nodes of a HAMT for index.html before deciding to require everything for a listing
 * Unit tests coverage for ipfs_client, using GTest
 * cull hard-coded list to remove those that don't allow block-level access
 * Dynamically... https://orchestrator.strn.pl/nodes/nearby
 * Do real URLLoader management for gateway requests (SetPriority, pause, etc.)
+* Use SetPriority to modify Scheduler parameters
 * Proper CID library
 * Validation!!
 * ipns resolution
@@ -36,6 +38,8 @@
 * Code cleanup
 * Robustness (all the other hash algos, etc.)
 * ifps_client logging
+* prefetch
+* frecency to GC block cache
 
 ## Planned Design
 

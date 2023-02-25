@@ -99,6 +99,7 @@ class Loader final : public network::mojom::URLLoader,
   void ReceiveBlockBytes(std::string_view) override;
   void BlocksComplete(std::string mime_type) override;
   std::string UnescapeUrlComponent(std::string_view) const override;
+  void FourOhFour(std::string_view cid, std::string_view path) override;
 };
 
 }  // namespace ipfs

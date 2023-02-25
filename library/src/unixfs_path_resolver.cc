@@ -4,18 +4,46 @@
 
 #include "ipfs_client/block_storage.h"
 #include "ipfs_client/framework_api.h"
-#include "ipfs_client/vocab/log_macros.h"
 #include "smhasher/MurmurHash3.h"
+#include "vocab/log_macros.h"
 
 #include "absl/numeric/int128.h"
 
 #include <endian.h>
 
+#include <iomanip>
+
+namespace {
+bool starts_with(std::string_view a, std::string_view b) {
+  if (a.size() < b.size()) {
+    return false;
+  }
+  return a.substr(0, b.size()) == b;
+}
+bool ends_with(std::string_view a, std::string_view b) {
+  if (a.size() < b.size()) {
+    return false;
+  }
+  a.remove_prefix(a.size() - b.size());
+  return a == b;
+}
+}  // namespace
+
 void ipfs::UnixFsPathResolver::Step(std::shared_ptr<FrameworkApi> api) {
   L_INF("Step(" << cid_ << ',' << path_ << ',' << original_path_ << ')');
+  if (awaiting_.size() && storage_.Get(awaiting_)) {
+    awaiting_.clear();
+  }
+  if (cid_.empty()) {
+    L_ERR("No CID?");
+    return;
+  }
+  if (hamt_hexs_.size()) {
+    L_INF("Appear to be mid-Hamt traversal: " << hamt_hexs_.front());
+  }
   Block const* block = storage_.Get(cid_);
   if (!block) {
-    storage_.AddListening(this);
+    L_INF("Current block " << cid_ << " not found.");
     Request(api, cid_, Scheduler::Priority::Required);
     return;
   }
@@ -68,9 +96,15 @@ void ipfs::UnixFsPathResolver::ProcessLargeFile(
     if (child) {
       switch (child->type()) {
         case Block::Type::NonFs:
+          if (head_.empty()) {
+            head_ = child->unparsed();
+          }
           api->ReceiveBlockBytes(child->unparsed());
           break;
         case Block::Type::FileChunk:
+          if (head_.empty()) {
+            head_ = child->chunk_data();
+          }
           api->ReceiveBlockBytes(child->chunk_data());
           break;
         default:
@@ -83,7 +117,7 @@ void ipfs::UnixFsPathResolver::ProcessLargeFile(
     return (writing = false);
   });
   if (writing) {
-    api->BlocksComplete(GuessContentType(api, "TODO"));
+    api->BlocksComplete(GuessContentType(api, head_));
   }
 }
 void ipfs::UnixFsPathResolver::CompleteDirectory(
@@ -131,14 +165,18 @@ void ipfs::UnixFsPathResolver::ProcessDirectory(
   auto end = path_.find('/', start);
   std::string_view next_comp = path_;
   auto next = api->UnescapeUrlComponent(next_comp.substr(start, end - start));
-  block.List([this, next](auto& name, auto cid) {
+  auto found = false;
+  block.List([&found, this, next](auto& name, auto cid) {
     if (name == next) {
       cid_ = cid;
+      found = true;
       return false;
     }
     return true;
   });
-  // TODO 404
+  if (!found) {
+    api->FourOhFour(cid_, path_);
+  }
   L_INF("Descending path: " << next << " . " << path_);
   path_.erase(0, end);
   Step(api);
@@ -158,104 +196,128 @@ void ipfs::UnixFsPathResolver::ProcessDirShard(
   for (auto x = fanout; (x >>= 4); ++hex_width)
     ;
   L_VAR(hex_width);
-
+  if (path_.empty()) {
+    // TODO - there could one day be a HAMT directory with no index.html
+    path_ = "index.html";
+  }
   /* stolen from spec
    * ####### Path resolution on HAMTs
    * Steps:
    * 1. Take the current path component...
    */
   auto non_slash = path_.find_first_not_of("/");
-  auto next = non_slash == std::string::npos
-                  ? std::string_view{}
-                  : std::string_view{path_}.substr(0, non_slash);
+  if (non_slash && non_slash < path_.size()) {
+    L_INF("Removing " << non_slash << " leading slashes from " << path_);
+    path_.erase(0, non_slash);
+  }
+  auto slash = path_.find('/');
+  L_VAR(slash);
+  auto next = path_.substr(0, slash);
   bool missing_descendents = false;
-  RequestHamtDescendents(api, missing_descendents, next, block, hex_width,
-                         false);
+  //  RequestHamtDescendents(api, missing_descendents, block, hex_width);
   if (missing_descendents) {
     L_WRN("Waiting on more blocks before dealing with this HAMT node.");
     return;
   }
+  L_VAR(next)
+  L_VAR(path_)
   if (next.empty()) {
     GeneratedDirectoryListing listing{original_path_};
     if (ListHamt(api, block, listing, hex_width)) {
-      //      L_INF("Will return an index.html from a HAMT upon the next
-      //      Step()");
-      //    } else {
       L_INF("Returning generated listing for a HAMT");
       api->ReceiveBlockBytes(listing.Finish());
       api->BlocksComplete("text/html");
       this->cid_.clear();
     }
     return;
-  } else if (non_slash) {
-    path_.erase(0, non_slash);
   }
-  auto slash = path_.find('/');
-  auto current_path_component = std::string_view{path_}.substr(0, slash);
-  L_INF("current_path_component=" << current_path_component);
-
-  // ...  then hash it using the multihash id provided in Data.hashType.
-  //  absl::uint128 digest{};
-  std::array<std::uint64_t, 2> digest = {0U, 0U};
-  // Rust's fastmurmur3 also passes 0 for seed, and iroh uses that.
-  MurmurHash3_x64_128(current_path_component.data(),
-                      current_path_component.size(), 0, digest.data()
-                      //                      &digest
-  );
-  auto bug_compatible_digest = htobe64(digest[0]);
-  L_INF("Hash: " << std::hex << digest[0] << ' ' << digest[1] << " -> "
-                 << bug_compatible_digest);
-
-  /* node.Data.fanout MUST be a power of two. This encode the number of hash
-   *   permutations that will be used on each resolution step. The log base 2 of
-   *   the fanout indicate how wide the bitmask will be on the hash at for that
-   *   step. fanout MUST be between 8 and probably 65536.
-   */
-  // 2. Pop the log2(fanout) lowest bits from the path component hash digest,...
-  auto popped = bug_compatible_digest % fanout;
-  bug_compatible_digest /= fanout;
-  L_INF("popped=" << std::hex << popped
-                  << " remaining digest=" << bug_compatible_digest);
-
-  /* ... then hex encode (using 0-F) thoses bits using little endian thoses bits
-and find the link that starts with this hex encoded path.
- 3. If the link name is exactly as long as the hex encoded representation,
-follow the link and repeat step 2 with the child node and the remaining bit
-stack. The child node MUST be a hamt directory else the directory is invalid,
-else continue.
- 4. Compare the remaining part of the last name you found, if it match the
-original name you were trying to resolve you successfully resolved a path
-component, everything past the hex encoded prefix is the name of that element
-(usefull when listing childs of this directory).
-  */
+  auto component = api->UnescapeUrlComponent(next);
+  L_VAR(component);
+  if (hamt_hexs_.empty()) {
+    // ...  then hash it using the multihash id provided in Data.hashType.
+    //  absl::uint128 digest{};
+    std::array<std::uint64_t, 2> digest = {0U, 0U};
+    // Rust's fastmurmur3 also passes 0 for seed, and iroh uses that.
+    MurmurHash3_x64_128(component.data(), component.size(), 0, digest.data());
+    auto bug_compatible_digest = htobe64(digest[0]);
+    L_INF("Hash: " << std::hex << digest[0] << ' ' << digest[1] << " -> "
+                   << bug_compatible_digest);
+    for (auto d : digest) {
+      auto hash_bits = htobe64(d);
+      while (hash_bits) {
+        // 2. Pop the log2(fanout) lowest bits from the path component hash
+        // digest,...
+        auto popped = hash_bits % fanout;
+        hash_bits /= fanout;
+        L_INF("popped=" << std::hex << popped
+                        << " remaining digest=" << hash_bits);
+        std::ostringstream oss;
+        // ... then hex encode (using 0-F) using little endian thoses bits ...
+        oss << std::setfill('0') << std::setw(hex_width) << std::uppercase
+            << std::hex << popped;
+        hamt_hexs_.push_back(oss.str());
+      }
+    }
+    Step(api);
+  } else {
+    bool found = false;
+    block.List([&](auto& name, auto cid) {
+      // Fun fact: there is a spec-defined sort order to these children.
+      // We *could* do a binary search.
+      if (!starts_with(name, hamt_hexs_.front())) {
+        //        L_INF(name << " isn't the right child for " <<
+        //        hamt_hexs_.front());
+        return true;
+      }
+      found = true;
+      L_INF("As we move down a Hamt, "
+            << cid_ << " -> " << name << " / " << cid
+            << " fanout=" << block.fsdata().fanout());
+      cid_ = cid;
+      if (ends_with(name, component)) {
+        L_INF("Found our calling! Leaving the Hamt");
+        hamt_hexs_.clear();
+        auto slash = path_.find('/');
+        if (slash == std::string::npos) {
+          path_.clear();
+        } else {
+          path_.erase(0, slash + 1);
+        }
+      } else if (hamt_hexs_.front() == name) {
+        L_INF("One more level down the Hamt");
+        hamt_hexs_.erase(hamt_hexs_.begin());
+      } else {
+        L_ERR("Was looking for "
+              << cid_ << '/' << path_ << " and got as far as HAMT hash bits "
+              << hamt_hexs_.front() << " but the corresponding link is " << name
+              << " and does not end with " << component);
+        api->FourOhFour(cid_, hamt_hexs_.front() + component);
+      }
+      return false;
+    });
+    if (found) {
+      Step(api);
+    } else {
+      api->FourOhFour(cid_, path_);
+    }
+  }
 }
+
 void ipfs::UnixFsPathResolver::RequestHamtDescendents(
     std::shared_ptr<FrameworkApi>& api,
     bool& missing_children,
-    std::string_view next,
     Block const& block,
-    unsigned hex_width,
-    bool all_optional) const {
-  block.List([this, all_optional, next, hex_width, &missing_children, &api](
-                 std::string const& name, auto cid) {
+    unsigned hex_width) const {
+  block.List([this, hex_width, &missing_children, &api](std::string const& name,
+                                                        auto cid) {
     GOOGLE_DCHECK_GE(name.size(), hex_width);
     auto block = storage_.Get(cid);
     if (block) {
       if (name.size() == hex_width) {
-        this->RequestHamtDescendents(api, missing_children, next, *block,
-                                     hex_width, true);
+        this->RequestHamtDescendents(api, missing_children, *block, hex_width);
       }
     } else {
-      auto name_matches =
-          0 == name.compare(hex_width, name.size() - hex_width, next);
-      if (all_optional) {
-        api->RequestByCid(cid, Scheduler::Priority::Optional);
-      } else if (name_matches || (next.empty() && name == "index.html")) {
-        api->RequestByCid(cid, Scheduler::Priority::Required);
-        missing_children = true;
-      } else {
-        api->RequestByCid(cid, Scheduler::Priority::Optional);
-      }
+      api->RequestByCid(cid, Scheduler::Priority::Optional);
     }
     return true;
   });
@@ -264,42 +326,73 @@ bool ipfs::UnixFsPathResolver::ListHamt(std::shared_ptr<FrameworkApi>& api,
                                         Block const& block,
                                         GeneratedDirectoryListing& out,
                                         unsigned hex_width) {
-  bool doing_index_html = false;
+  L_INF(hex_width);
+  bool got_all = true;
   block.List([&](std::string const& link_name, auto cid) {
     if (link_name.size() > hex_width) {
       auto entry_name = std::string_view{link_name}.substr(hex_width);
       if (entry_name == "index.html") {
+        Request(api, cid, Scheduler::Priority::Required);
         this->cid_ = cid;
         this->path_.clear();
-        doing_index_html = true;
-        return false;
+        return got_all = false;
       } else {
         out.AddEntry(entry_name);
       }
-    } else {
-      if (this->ListHamt(api, *(storage_.Get(cid)), out, hex_width)) {
-        doing_index_html = true;
-        return false;
+    } else if (auto child = storage_.Get(cid)) {
+      if (!this->ListHamt(api, *child, out, hex_width)) {
+        got_all = false;
       }
+    } else {
+      // TODO - can't do an independent listing (no index.html) of a Hamt
+      // without this node
+      //       Request(api, cid, Scheduler::Priority::Optional);
+      got_all = false;
     }
     return true;
   });
-  return doing_index_html;
+  return got_all;
 }
+
 void ipfs::UnixFsPathResolver::Request(std::shared_ptr<FrameworkApi>& api,
                                        std::string const& cid,
                                        Scheduler::Priority prio) {
   if (storage_.Get(cid)) {
     return;
   }
+  if (prio == Scheduler::Priority::Required) {
+    storage_.AddListening(this);
+    if (cid_ != cid) {
+      awaiting_ = cid;
+    } else {
+      awaiting_.clear();
+    }
+  }
   auto it = already_requested_.find(cid);
+  auto t = std::time(nullptr);
   if (it == already_requested_.end()) {
-    already_requested_[cid] = prio;
+    already_requested_[cid] = {prio, t};
     api->RequestByCid(cid, prio);
   } else if (prio == Scheduler::Priority::Required &&
-             it->second == Scheduler::Priority::Optional) {
-    it->second = Scheduler::Priority::Required;
+             it->second.first == Scheduler::Priority::Optional) {
+    it->second.first = Scheduler::Priority::Required;
+    it->second.second = t;
     api->RequestByCid(cid, Scheduler::Priority::Required);
+  } else if (t - it->second.second > 2) {
+    if (it->second.first == Scheduler::Priority::Required) {
+      it->second.first = Scheduler::Priority::Optional;
+      it->second.second = t;
+    } else {
+      already_requested_.erase(it);
+    }
+  }
+}
+
+const std::string& ipfs::UnixFsPathResolver::waiting_on() const {
+  if (awaiting_.empty()) {
+    return cid_;
+  } else {
+    return awaiting_;
   }
 }
 
@@ -321,7 +414,9 @@ ipfs::UnixFsPathResolver::UnixFsPathResolver(BlockStorage& store,
     }
   }
 }
-ipfs::UnixFsPathResolver::~UnixFsPathResolver() noexcept {}
+ipfs::UnixFsPathResolver::~UnixFsPathResolver() noexcept {
+  storage_.StopListening(this);
+}
 
 std::string ipfs::UnixFsPathResolver::GuessContentType(
     std::shared_ptr<FrameworkApi>& api,

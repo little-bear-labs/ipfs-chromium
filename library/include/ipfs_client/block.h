@@ -9,14 +9,17 @@
 #include "unix_fs.pb.h"
 #endif
 
+#include <libp2p/multi/multicodec_type.hpp>
+
 #include <iosfwd>
 
 namespace ipfs {
 
 class Block {
  public:
-  Block(std::istream&);
-  explicit Block(std::string const& binary_data);
+  using Multicodec = libp2p::multi::MulticodecType::Code;
+  Block(Multicodec, std::istream&);
+  Block(Multicodec, std::string const& binary_data);
   Block(Block const&);
   ~Block() noexcept;
 
@@ -60,6 +63,7 @@ class Block {
   std::string mime_ = {};
 
   static std::string LinkCid(std::string const&);
+  void InitFromRaw(std::string const& content_bytes);
 };
 
 }  // namespace ipfs
