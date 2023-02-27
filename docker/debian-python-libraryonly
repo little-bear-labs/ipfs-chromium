@@ -14,9 +14,11 @@ RUN echo "alias ll='/bin/ls -lrth --color=auto '" >> /root/.bashrc
 RUN echo "TODO - probably wan't to setup /chromium/src/ here, before ipfs-chromium, as it might change less frequently"
 
 ADD . /ipfs-chromium
-RUN mkdir -p /ipfs-chromium-{Debug,Release}/
-RUN cmake -G Ninja -D CMAKE_BUILD_TYPE=Debug -S /ipfs-chromium -B /ipfs-chromium-Debug
-RUN ninja -C /ipfs-chromium-Debug -j 1 -k 0
-RUN cmake -G Ninja -D CMAKE_BUILD_TYPE=Release -S /ipfs-chromium -B /ipfs-chromium-Release
-RUN ninja -C /ipfs-chromium-Release -j 1 -k 0
+
+ARG PROFILE=Debug
+
+RUN mkdir -p /ipfs-chromium-${PROFILE}
+RUN cmake -G Ninja -D CMAKE_BUILD_TYPE=${PROFILE} -S /ipfs-chromium -B /ipfs-chromium-${PROFILE}
+RUN ninja -C /ipfs-chromium-${PROFILE} -j 1
+
 RUN echo TODO Chromium component build

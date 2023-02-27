@@ -6,6 +6,7 @@
 #ifndef LIBP2P_MULTIHASH_HPP
 #define LIBP2P_MULTIHASH_HPP
 
+#include "vocab/byte_view.h"
 #include "vocab/expected.h"
 
 #include <cstdint>
@@ -13,7 +14,7 @@
 #include <utility>
 
 #include <libp2p/common/types.hpp>
-// #include <libp2p/multi/hash_type.hpp>
+#include <libp2p/multi/hash_type.hpp>
 
 namespace libp2p::multi {
 
@@ -24,13 +25,11 @@ namespace libp2p::multi {
  */
 class Multihash {
  public:
-  Multihash(const Multihash& other) = default;
+  Multihash(const Multihash& other);
   Multihash& operator=(const Multihash& other) = default;
-  Multihash(Multihash&& other) noexcept = default;
+  Multihash(Multihash&& other) noexcept;
   Multihash& operator=(Multihash&& other) noexcept = default;
-  ~Multihash() = default;
-
-  using Buffer = common::ByteArray;
+  ~Multihash() noexcept;
 
   static constexpr uint8_t kMaxHashLength = 127;
 
@@ -38,7 +37,8 @@ class Multihash {
     ZERO_INPUT_LENGTH = 1,
     INPUT_TOO_LONG,
     INPUT_TOO_SHORT,
-    INCONSISTENT_LENGTH
+    INCONSISTENT_LENGTH,
+    INVALID_HEXADECIMAL_INPUT
   };
 
   /**
@@ -49,7 +49,7 @@ class Multihash {
    * @return result with the multihash in case of success
    */
   static ipfs::expected<Multihash, Error> create(HashType type,
-                                                 gsl::span<const uint8_t> hash);
+                                                 ipfs::ByteView hash);
 
   /**
    * @brief Creates a multihash from a string, which represents a binary
@@ -59,7 +59,7 @@ class Multihash {
    * @param hex - the string with hexadecimal representation of the multihash
    * @return result with the multihash in case of success
    */
-  static outcome::result<Multihash> createFromHex(std::string_view hex);
+  static ipfs::expected<Multihash, Error> createFromHex(std::string_view hex);
 
   /**
    * @brief Creates a multihash from a binary
@@ -69,7 +69,7 @@ class Multihash {
    * @param b - the buffer with the multihash
    * @return result with the multihash in case of success
    */
-  static outcome::result<Multihash> createFromBytes(gsl::span<const uint8_t> b);
+  static ipfs::expected<Multihash, Error> createFromBytes(ipfs::ByteView b);
 
   /**
    * @return the info about hash type
@@ -79,7 +79,7 @@ class Multihash {
   /**
    * @return the hash stored in this multihash
    */
-  gsl::span<const uint8_t> getHash() const;
+  ipfs::ByteView getHash() const;
 
   /**
    * @return a string with hexadecimal representation of the multihash
@@ -89,7 +89,7 @@ class Multihash {
   /**
    * @return a buffer with the multihash, including its type, length and hash
    */
-  const Buffer& toBuffer() const;
+  ipfs::ByteView toBuffer() const;
 
   /**
    * @return Pre-calculated hash for std containers
@@ -114,7 +114,7 @@ class Multihash {
    * @param type - the info about the hash type
    * @param hash - a binary buffer with the hash
    */
-  Multihash(HashType type, gsl::span<const uint8_t> hash);
+  Multihash(HashType type, ipfs::ByteView hash);
 
   /**
    * Contains a one byte hash type, a one byte hash length, and the stored
@@ -123,12 +123,13 @@ class Multihash {
   struct Data {
     // TODO(artem): move to small_vector<const uint8_t, some_size>
     // as soon as toBuffer() -> span<const uint8_t> is acceptable
-    std::vector<uint8_t> bytes;
+    std::vector<ipfs::Byte> bytes;
     uint8_t hash_offset{};  ///< size of non-hash data from the beginning
     HashType type;
     size_t std_hash;  ///< Hash for unordered containers
 
-    Data(HashType t, gsl::span<const uint8_t> h);
+    Data(HashType t, ipfs::ByteView h);
+    ~Data() noexcept;
   };
 
   const Data& data() const;
@@ -146,7 +147,5 @@ struct hash<libp2p::multi::Multihash> {
   }
 };
 }  // namespace std
-
-OUTCOME_HPP_DECLARE_ERROR(libp2p::multi, Multihash::Error);
 
 #endif  // LIBP2P_MULTIHASH_HPP

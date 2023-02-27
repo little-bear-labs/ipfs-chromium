@@ -2,8 +2,12 @@
 #define IPFS_BLOCK_H_
 
 #if __has_include("components/ipfs/pb_dag.pb.h")
-#include "components/ipfs/pb_dag.pb.h"   //inside Chromium build
-#include "components/ipfs/unix_fs.pb.h"  //inside Chromium build
+//inside Chromium build
+#include "components/ipfs/pb_dag.pb.h"
+#include "components/ipfs/unix_fs.pb.h"
+#elif __has_include("library/pb_dag.pb.h")
+#include "library/pb_dag.pb.h"
+#include "library/unix_fs.pb.h"
 #else
 #include "pb_dag.pb.h"
 #include "unix_fs.pb.h"

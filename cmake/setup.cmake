@@ -30,6 +30,34 @@ if(Python3_EXECUTABLE)
             protobuf/3.21.9
         OPTIONS
             boost/1.81.0:header_only=True
+            boost/1.81.0:without_container=False #ipfs_client may use boost
+            boost/1.81.0:without_filesystem=False #container uses filesystem
+            boost/1.81.0:without_atomic=False #filesystem uses atomic
+            boost/1.81.0:without_system=False #filesystem uses system
+            boost/1.81.0:without_math=True
+            boost/1.81.0:without_wave=True
+            boost/1.81.0:without_contract=True
+            boost/1.81.0:without_exception=True
+            boost/1.81.0:without_graph=True
+            boost/1.81.0:without_iostreams=True
+            boost/1.81.0:without_locale=True
+            boost/1.81.0:without_log=True
+            boost/1.81.0:without_program_options=True
+            boost/1.81.0:without_random=True
+            boost/1.81.0:without_regex=True
+            boost/1.81.0:without_mpi=True
+            boost/1.81.0:without_serialization=True
+            boost/1.81.0:without_coroutine=True
+            boost/1.81.0:without_fiber=True
+            boost/1.81.0:without_context=True
+            boost/1.81.0:without_timer=True
+            boost/1.81.0:without_thread=True
+            boost/1.81.0:without_chrono=True
+            boost/1.81.0:without_date_time=True
+            boost/1.81.0:without_graph_parallel=True
+            boost/1.81.0:without_stacktrace=True
+            boost/1.81.0:without_test=True
+            boost/1.81.0:without_type_erasure=True
         GENERATORS
             CMakeDeps
         OUTPUT_QUIET
@@ -67,4 +95,41 @@ else()
     message(WARNING "Could not find python 3. Can't use gn or conan. You're on your own for Chromium & dependencies.")
 endif()
 
-find_package(Protobuf REQUIRED)
+function(with_vocab target)
+    target_include_directories(${target}
+        BEFORE
+        PRIVATE
+            "${CMAKE_CURRENT_BINARY_DIR}"
+    )
+    find_package(Protobuf)
+    if(Protobuf_FOUND)
+        target_link_libraries(${target}
+            PRIVATE
+                protobuf::libprotobuf
+        )
+        target_include_directories(${target}
+            SYSTEM
+            BEFORE
+            PRIVATE
+                ${protobuf_INCLUDE_DIR}
+        )
+    endif()
+    find_package(absl)
+    if(absl_FOUND)
+        target_link_libraries(${target}
+            PRIVATE # Can't allow these to propagate to component
+                absl::statusor
+        )
+    else()
+        message(WARNING "Not pulling vocab/ dependencies for ${target} from Abseil")
+    endif()
+    find_package(Boost)
+    if(Boost_FOUND)
+        target_link_libraries(${target}
+            PRIVATE
+                Boost::headers
+        )
+    else()
+        message(WARNING "Not pulling vocab/ dependencies for ${target} from Boost")
+    endif()
+endfunction()

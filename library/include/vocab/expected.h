@@ -11,14 +11,21 @@
 namespace ipfs {
 template <class Value, class Error>
 using expected = base::expected<Value, Error>;
-}
+template <class Error>
+using unexpected = base::unexpected<Error>;
+}  // namespace ipfs
 #elif __has_cpp_attribute(__cpp_lib_expected)
+
 #include <expected>
 namespace ipfs {
 template <class Value, class Error>
 using expected = std::expected<Value, Error>;
-}
+template <class Error>
+using unexpected = std::unexpected<Error>;
+}  // namespace ipfs
+
 #elif __has_include(<boost/outcome.hpp>)
+
 // If the API differences between std::expected and boost::outcome::checked
 // become a problem, consider wrapping as proposed in the FAQ:
 // https://www.boost.org/doc/libs/master/libs/outcome/doc/html/faq.html#how-far-away-from-the-proposed-std-expected-t-e-is-outcome-s-checked-t-e
@@ -26,7 +33,10 @@ using expected = std::expected<Value, Error>;
 namespace ipfs {
 template <class Value, class Error>
 using expected = boost::outcome_v2::checked<Value, Error>;
-}
+template <class Error>
+using unexpected = Error;
+}  // namespace ipfs
+
 #else
 #error Get an expected implementation
 #endif

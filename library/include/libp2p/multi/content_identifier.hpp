@@ -8,7 +8,6 @@
 
 #include <vector>
 
-#include <boost/operators.hpp>
 #include <libp2p/multi/multibase_codec.hpp>
 #include <libp2p/multi/multicodec_type.hpp>
 #include <libp2p/multi/multihash.hpp>
@@ -27,8 +26,7 @@ namespace libp2p::multi {
  * needed only for CIDs serialized to a string, so it is not present in this
  * structure
  */
-struct ContentIdentifier
-    : public boost::equality_comparable<ContentIdentifier> {
+struct ContentIdentifier {
   enum class Version { V0 = 0, V1 = 1 };
 
   ContentIdentifier(Version version,

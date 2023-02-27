@@ -23,6 +23,7 @@ file(GLOB
         protos
         *.proto
         )
+find_package(Protobuf REQUIRED)
 protobuf_generate_cpp(
         pb_src
         pb_hdr
@@ -42,58 +43,18 @@ add_library(ipfs_client
 )
 target_compile_features(ipfs_client
     PUBLIC
-        cxx_std_17
+        cxx_std_${CXX_VERSION}
 )
 target_compile_options(ipfs_client
     PRIVATE
         ${WARNING_FLAGS}
 )
 target_include_directories(ipfs_client
+    BEFORE
     PUBLIC
         include/
-        "${CMAKE_CURRENT_BINARY_DIR}"
 )
-target_include_directories(ipfs_client
-    PRIVATE
-    SYSTEM
-        include/ipfs_client/gen/
-)
-target_link_libraries(ipfs_client
-    PUBLIC
-        protobuf::libprotobuf
-)
-
-find_package(absl)
-if(absl_FOUND)
-    target_link_libraries(ipfs_client
-        PRIVATE # It is conceptually public, that is to say clients need abseil, but ../component can't use *this* abseil
-            absl::flat_hash_map
-            absl::flat_hash_set
-            absl::statusor
-    )
-endif()
-message(WARNING "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}")
-message(WARNING "CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}")
-find_package(Boost
-    COMPONENTS container
-)
-if(Boost_FOUND)
-    target_link_libraries(ipfs_client
-        private
-            Boost::container
-    )
-endif()
-
-find_package(Boost
-    COMPONENTS
-        container
-)
-if(Boost_FOUND)
-    target_link_libraries(ipfs_client
-        PUBLIC
-            Boost::boost
-    )
-endif()
+with_vocab(ipfs_client)
 
 file(GLOB_RECURSE
     unit_test_sources
@@ -111,15 +72,15 @@ if(absl_FOUND)
         )
         target_compile_features(${name}_runner
             PUBLIC
-                cxx_std_17
+                cxx_std_${CXX_VERSION}
         )
         target_link_libraries(${name}_runner
             PUBLIC
                 ipfs_client
                 GTest::gtest
                 GTest::gtest_main
-                absl::statusor
         )
+        with_vocab(${name}_runner)
         add_test(
             NAME ${name}_runner
             COMMAND $<TARGET_FILE:${name}_runner>
