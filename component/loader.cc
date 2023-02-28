@@ -2,7 +2,6 @@
 
 #include "inter_request_state.h"
 
-#include "ipfs_client/cid_util.h"
 #include "ipfs_client/gateways.h"
 #include "ipfs_client/unixfs_path_resolver.h"
 
@@ -16,6 +15,8 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/url_loader_factory.h"
+
+#include <libp2p/multi/content_identifier_codec.hpp>
 
 #include <fstream>
 
@@ -276,13 +277,16 @@ bool ipfs::Loader::HandleBlockResponse(
     state_.gateways().demote(gw.url_prefix());
     return false;
   }
-  auto cid = gw.current_task();
-  cid.erase(0, 5);  // ipfs/
-  cid.erase(cid.find('?'));
-  LOG(INFO) << "Storing CID=" << cid;
-  state_.storage().Store(
-      shared_from_this(), cid,
-      Block{cid::bin::get_multicodec(cid::mb::to_bin(cid)), body});
+  auto cid_str = gw.current_task();
+  cid_str.erase(0, 5);  // ipfs/
+  cid_str.erase(cid_str.find('?'));
+  auto cid = libp2p::multi::ContentIdentifierCodec::fromString(cid_str);
+  if (!cid.has_value()) {
+    LOG(ERROR) << "Invalid CID '" << cid_str << "'.";
+    return false;
+  }
+  LOG(INFO) << "Storing CID=" << cid_str;
+  state_.storage().Store(shared_from_this(), cid_str, Block{cid.value(), body});
   resolver_->Step(shared_from_this());
   sched_.IssueRequests(shared_from_this());
   return true;

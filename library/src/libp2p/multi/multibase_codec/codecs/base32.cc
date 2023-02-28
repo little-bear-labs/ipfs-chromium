@@ -27,8 +27,8 @@
  * THE SOFTWARE.
  **/
 
-#include <libp2p/multi/multibase_codec/codecs/base32.hpp>
-#include <libp2p/multi/multibase_codec/codecs/base_error.hpp>
+#include "libp2p/multi/multibase_codec/codecs/base32.hpp"
+#include "libp2p/multi/multibase_codec/codecs/base_error.hpp"
 
 #include <absl/types/span.h>
 
@@ -137,9 +137,9 @@ int decode_char(unsigned char c, Base32Mode mode) {
   return decoded_ch;
 }
 
-absl::StatusOr<int> decode_sequence(absl::Span<const char> coded,
-                                    absl::Span<uint8_t> plain,
-                                    Base32Mode mode) {
+ipfs::expected<int, BaseError> decode_sequence(absl::Span<const char> coded,
+                                               absl::Span<uint8_t> plain,
+                                               Base32Mode mode) {
   plain[0] = 0;
   for (int block = 0; block < 8; block++) {
     int bit = get_bit(block);
@@ -150,8 +150,8 @@ absl::StatusOr<int> decode_sequence(absl::Span<const char> coded,
     }
     int c = decode_char(coded[block], mode);
     if (c < 0) {
-      return absl::InvalidArgumentError("INVALID_BASE32_INPUT");
-      //      return BaseError::INVALID_BASE32_INPUT;
+      //      return absl::InvalidArgumentError("INVALID_BASE32_INPUT");
+      return ipfs::unexpected<BaseError>{BaseError::INVALID_BASE32_INPUT};
     }
 
     plain[byte] |= shift_left(c, bit);
@@ -162,21 +162,22 @@ absl::StatusOr<int> decode_sequence(absl::Span<const char> coded,
   return 5;
 }
 
-absl::StatusOr<common::ByteArray> decodeBase32(std::string_view string,
-                                               Base32Mode mode) {
+ipfs::expected<common::ByteArray, BaseError> decodeBase32(
+    std::string_view string,
+    Base32Mode mode) {
   common::ByteArray result;
   if (string.size() % 8 == 0) {
-    result = common::ByteArray(string.size() / 8 * 5, '\0');
+    result = common::ByteArray(string.size() / 8 * 5, ipfs::Byte{0});
   } else {
-    result = common::ByteArray((string.size() / 8 + 1) * 5, '\0');
+    result = common::ByteArray((string.size() / 8 + 1) * 5, ipfs::Byte{0});
   }
 
   for (size_t i = 0, j = 0; i < string.size(); i += 8, j += 5) {
     auto n = decode_sequence(
         absl::MakeSpan(&string[i], std::min<size_t>(string.size() - i, 8)),
         absl::MakeSpan(reinterpret_cast<uint8_t*>(&result[j]), 5), mode);
-    if (!n.ok()) {
-      return n.status();
+    if (!n.has_value()) {
+      return ipfs::unexpected<BaseError>{n.error()};
     }
     if (n.value() < 5) {
       result.erase(result.end() - (5 - n.value()), result.end());
@@ -185,11 +186,13 @@ absl::StatusOr<common::ByteArray> decodeBase32(std::string_view string,
   return result;
 }
 
-absl::StatusOr<common::ByteArray> decodeBase32Upper(std::string_view string) {
+ipfs::expected<common::ByteArray, BaseError> decodeBase32Upper(
+    std::string_view string) {
   return decodeBase32(string, Base32Mode::UPPER);
 }
 
-absl::StatusOr<common::ByteArray> decodeBase32Lower(std::string_view string) {
+ipfs::expected<common::ByteArray, BaseError> decodeBase32Lower(
+    std::string_view string) {
   return decodeBase32(string, Base32Mode::LOWER);
 }
 

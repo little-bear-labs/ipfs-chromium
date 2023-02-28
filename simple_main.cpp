@@ -1,8 +1,8 @@
 #include <ipfs_client/block_storage.h>
-#include <ipfs_client/cid_util.h>
 #include <ipfs_client/framework_api.h>
 #include <ipfs_client/unixfs_path_resolver.h>
 
+#include <libp2p/multi/content_identifier_codec.hpp>
 #include <libp2p/multi/multibase_codec/codecs/base58.hpp>
 
 #include <smhasher/MurmurHash3.h>
@@ -21,8 +21,8 @@ void handle_arg(char const* arg) {
       resolve_unixfs_path(std::string(arg, slash), std::string(slash + 1));
     } else if (arg[0] == 'Q' && arg[1] == 'm') {
       auto binary = libp2p::multi::detail::decodeBase58(arg + 4).value();
-      for (unsigned char byte : binary) {
-        std::clog << std::hex << static_cast<unsigned>(byte);
+      for (auto byte : binary) {
+        std::clog << byte;
       }
       std::clog.put('\n');
     } else {
@@ -114,7 +114,12 @@ auto api = std::make_shared<StubbedApi>();
 void parse_block_file(char const* file_name) {
   std::clog << "Will attempt to load from file " << file_name << '\n';
   std::ifstream file{file_name};
-  ipfs::Block node{cid::bin::get_multicodec(cid::mb::to_bin(file_name)), file};
+  auto as_cid = libp2p::multi::ContentIdentifierCodec::fromString(file_name);
+  if (!as_cid.has_value()) {
+    std::clog << file_name << " does not appear to be a CID.\n";
+    return;
+  }
+  ipfs::Block node{as_cid.value(), file};
   if (!node.valid()) {
     std::clog << "Failed to parse '" << file_name << "'\n";
     return;

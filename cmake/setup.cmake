@@ -27,6 +27,7 @@ if(Python3_EXECUTABLE)
             abseil/20220623.1
             boost/1.81.0
             gtest/1.13.0
+            openssl/1.1.1t
             protobuf/3.21.9
         OPTIONS
             boost/1.81.0:header_only=True
@@ -131,5 +132,16 @@ function(with_vocab target)
         )
     else()
         message(WARNING "Not pulling vocab/ dependencies for ${target} from Boost")
+    endif()
+    #TODO - from Conan? If not available at all... maybe just turn off sha support?
+    find_package(OpenSSL
+        COMPONENTS
+            Crypto
+    )
+    if(OpenSSL_FOUND)
+        target_link_libraries(${target}
+            PRIVATE
+                OpenSSL::Crypto
+        )
     endif()
 endfunction()

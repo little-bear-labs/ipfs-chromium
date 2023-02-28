@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <libp2p/multi/content_identifier.hpp>
-#include <libp2p/common/hexutil.hpp>
+#include "libp2p/multi/content_identifier.hpp"
+#include "libp2p/common/hexutil.hpp"
 
 #include <sstream>
 
@@ -27,7 +27,8 @@ std::string ContentIdentifier::toPrettyString(const std::string& base) const {
       std::to_string(content_address.getHash().size() * 8);
   std::string v = "cidv" + std::to_string(static_cast<uint64_t>(version));
   std::ostringstream oss;
-  oss << base << " - " << v << " - " << MulticodecType::getName(content_type) << " - " << hash_type << '-' << hash_length << '-' <<  hash_hex;
+  oss << base << " - " << v << " - " << MulticodecType::getName(content_type)
+      << " - " << hash_type << '-' << hash_length << '-' << hash_hex;
   return oss.str();
 }
 

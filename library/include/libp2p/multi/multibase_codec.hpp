@@ -21,7 +21,7 @@ namespace libp2p::multi {
  */
 class MultibaseCodec {
  public:
-  enum class Error { UNSUPPORTED_BASE = 1, INPUT_TOO_SHORT };
+  enum class Error { UNSUPPORTED_BASE = 1, INPUT_TOO_SHORT, BASE_CODEC_ERROR };
 
   using ByteBuffer = common::ByteArray;
   using FactoryResult = ipfs::expected<ByteBuffer, Error>;

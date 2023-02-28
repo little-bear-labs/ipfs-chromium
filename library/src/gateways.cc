@@ -7,7 +7,7 @@
 using namespace std::string_literals;
 
 ipfs::Gateways::Gateways()
-    : known_gateways_{{"http://localhost:8080/"s, 91},
+    : known_gateways_{{"http://localhost:8080/"s, 90},
                       {"https://jcsl.hopto.org/"s, 15},
                       {"https://dweb.link/"s, 11},
                       {"https://gateway.ipfs.io/"s, 11},
@@ -16,19 +16,15 @@ ipfs::Gateways::Gateways()
                       {"https://ipfs-gateway.cloud/"s, 1},
                       {"https://ipfs.io/"s, 11},
                       {"https://ipfs.joaoleitao.org/"s, 12},
-                      {"https://ipfs.storry.tv/"s, 11},
+                      {"https://ipfs.storry.tv/"s, 12},
+                      {"https://storry.tv/"s, 12},
                       {"https://jorropo.net/"s, 11},
                       {"https://ipfs.jpu.jp/"s, 11},
-                      {"https://ipfs.litnet.work/"s, 5},
                       {"https://ipfs.runfission.com/"s, 8},
                       {"https://jorropo.net/"s, 10},
                       {"https://video.oneloveipfs.com/"s, 10},
-                      {"https://storry.tv/"s, 11},
-                      {"https://138.199.2.57/"s, 11},
-                      {"https://92.119.16.147/"s, 10},
                       {"https://92.119.16.134/"s, 12},
                       {"https://92.119.16.150/"s, 12},
-                      {"https://92.119.16.153/"s, 10},
                       {"https://192.158.233.116/"s, 12},
                       {"https://192.158.233.119/"s, 12},
                       {"https://192.158.233.122/"s, 11},
@@ -39,7 +35,10 @@ ipfs::Gateways::Gateways()
                       {"https://191.96.101.86/"s, 12},
                       {"https://191.96.101.87/"s, 11},
                       {"https://64.44.166.184/"s, 12},
-                      {"https://38.92.47.56/"s, 12}
+                      {"https://38.92.47.56/"s, 12},
+                      {"https://92.119.16.147/"s, 9},
+                      {"https://92.119.16.153/"s, 9},
+                      {"https://ipfs.litnet.work/"s, 4}
 
       },
       random_engine_{std::random_device{}()},

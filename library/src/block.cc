@@ -2,6 +2,7 @@
 
 #include <vocab/log_macros.h>
 
+#include <libp2p/multi/content_identifier_codec.hpp>
 #include <libp2p/multi/multibase_codec/codecs/base32.hpp>
 #include <libp2p/multi/multibase_codec/codecs/base58.hpp>
 
@@ -13,6 +14,7 @@ std::string read_stream(std::istream& is) {
 }
 }  // namespace
 
+ipfs::Block::Block(Cid const& c, std::istream& s) : Block(c.content_type, s) {}
 ipfs::Block::Block(Multicodec c, std::istream& s) {
   switch (c) {
     case Multicodec::DAG_PB:
@@ -29,6 +31,8 @@ ipfs::Block::Block(Multicodec c, std::istream& s) {
             << static_cast<unsigned>(c) << '(' << MC::getName(c) << ')');
   }
 }
+ipfs::Block::Block(Cid const& c, std::string const& s)
+    : Block(c.content_type, s) {}
 ipfs::Block::Block(Multicodec c, std::string const& s) {
   switch (c) {
     case Multicodec::DAG_PB:
@@ -111,24 +115,17 @@ std::string const& ipfs::Block::mime_type() const {
 void ipfs::Block::mime_type(std::string_view val) {
   mime_.assign(val);
 }
-std::string ipfs::Block::LinkCid(std::string const& raw_hash) {
-  // If it's 34 bytes long... leading bytes [0x12, 0x20, ...], it's a
-  // CIDv0
-  if (raw_hash.size() == 34 && raw_hash[0] == 0x12 && raw_hash[1] == 0x20) {
-    std::string withmulti({'\x01', '\x70'});
-    withmulti.append(raw_hash);
-    return "b" + libp2p::multi::detail::encodeBase32Lower(withmulti);
-  } else if (raw_hash[0] == 0x01) {
-    // let N be the first varint in cid. This is the CID's version
-    // The CID's multicodec is the second varint in cid
-    //    L_VAR(static_cast<int>(raw_hash[1]));
-    return "b" + libp2p::multi::detail::encodeBase32Lower(raw_hash);
-  } else if (raw_hash[0] > 1) {
-    L_DIE("We don't support CIDv" << std::dec << static_cast<int>(raw_hash[0]));
-  } else {
-    L_DIE("Invalid binary CID");
+std::string ipfs::Block::LinkCid(ipfs::ByteView binary_link_hash) {
+  using Codec = libp2p::multi::ContentIdentifierCodec;
+  auto result = Codec::decode(binary_link_hash);
+  if (!result.has_value()) {
+    L_DIE(result.error());
   }
-  return "TODO";
+  auto str_res = Codec::toString(result.value());
+  if (!str_res.has_value()) {
+    L_DIE(str_res.error());
+  }
+  return str_res.value();
 }
 
 std::ostream& operator<<(std::ostream& s, ipfs::Block::Type t) {

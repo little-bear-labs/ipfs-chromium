@@ -6,9 +6,10 @@
 #ifndef LIBP2P_BASE32_HPP
 #define LIBP2P_BASE32_HPP
 
-#include <libp2p/common/types.hpp>
+#include "base_error.hpp"
 
-#include <absl/status/statusor.h>
+#include <vocab/expected.h>
+#include <libp2p/common/types.hpp>
 
 /**
  * Encode/decode to/from base32 format
@@ -35,14 +36,16 @@ std::string encodeBase32Lower(const common::ByteArray& bytes);
  * @param string to be decoded
  * @return decoded bytes in case of success
  */
-absl::StatusOr<common::ByteArray> decodeBase32Upper(std::string_view string);
+ipfs::expected<common::ByteArray, BaseError> decodeBase32Upper(
+    std::string_view string);
 
 /**
  * Decode base32 lowercase string to bytes
  * @param string to be decoded
  * @return decoded bytes in case of success
  */
-absl::StatusOr<common::ByteArray> decodeBase32Lower(std::string_view string);
+ipfs::expected<common::ByteArray, BaseError> decodeBase32Lower(
+    std::string_view string);
 
 }  // namespace libp2p::multi::detail
 

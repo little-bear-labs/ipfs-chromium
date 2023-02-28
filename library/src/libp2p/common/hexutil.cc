@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <vocab/byte_view.h>
+#include "vocab/byte_view.h"
 
-#include <libp2p/common/hexutil.hpp>
+#include "libp2p/common/hexutil.hpp"
 
 #include <sstream>
 

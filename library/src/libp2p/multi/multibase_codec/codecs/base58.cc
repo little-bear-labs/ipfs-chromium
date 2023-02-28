@@ -3,13 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <libp2p/multi/multibase_codec/codecs/base58.hpp>
+#include "libp2p/multi/multibase_codec/codecs/base58.hpp"
 
 #include <array>
 #include <cstring>
 
 // #include <boost/optional.hpp>
-#include <libp2p/multi/multibase_codec/codecs/base_error.hpp>
+#include "libp2p/multi/multibase_codec/codecs/base_error.hpp"
 
 namespace {
 // All alphanumeric characters except for "0", "I", "O", and "l"
@@ -171,15 +171,17 @@ std::string encodeBase58(const common::ByteArray& bytes) {
   return encodeImpl(ptr, ptr + bytes.size());
 }
 
-absl::StatusOr<common::ByteArray> decodeBase58(std::string_view string) {
+ipfs::expected<common::ByteArray, BaseError> decodeBase58(
+    std::string_view string) {
   auto decoded_bytes = decodeImpl(string.data());
   if (decoded_bytes) {
-    return common::ByteArray(
-        reinterpret_cast<char const*>(decoded_bytes->data()),
-        decoded_bytes->size());
+    ipfs::Byte const* b =
+        reinterpret_cast<ipfs::Byte const*>(decoded_bytes->data());
+    ipfs::Byte const* e = std::next(b, decoded_bytes->size());
+    return common::ByteArray(b, e);
   }
-  return absl::InvalidArgumentError("INVALID_BASE58_INPUT");
-  //    return BaseError::INVALID_BASE58_INPUT;
+  //  return absl::InvalidArgumentError("INVALID_BASE58_INPUT");
+  return ipfs::unexpected<BaseError>(BaseError::INVALID_BASE58_INPUT);
 }
 
 }  // namespace libp2p::multi::detail
