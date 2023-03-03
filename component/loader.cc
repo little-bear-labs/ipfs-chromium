@@ -25,7 +25,9 @@ ipfs::Loader::Loader(network::mojom::URLLoaderFactory* handles_http,
     : state_{state},
       lower_loader_factory_{handles_http},
       sched_(state_.gateways().GenerateList()) {}
-ipfs::Loader::~Loader() noexcept {}
+ipfs::Loader::~Loader() noexcept {
+  LOG(INFO) << "loader go bye-bye";
+}
 
 void ipfs::Loader::FollowRedirect(
     std::vector<std::string> const&  // removed_headers
@@ -52,6 +54,7 @@ void ipfs::Loader::ResumeReadingBodyFromNet() {
 
 void ipfs::Loader::StartRequest(
     std::shared_ptr<Loader> me,
+    network::mojom::NetworkContext* network_context,
     network::ResourceRequest const& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
@@ -60,35 +63,56 @@ void ipfs::Loader::StartRequest(
   me->receiver_.Bind(std::move(receiver));
   me->client_.Bind(std::move(client));
   me->original_url_ = resource_request.url.spec();
-  std::string path;
-  if (resource_request.url.SchemeIs("ipfs") ||
-      resource_request.url.SchemeIs("ipns")) {
-    path = resource_request.url.spec();
-    path.erase(4, 2);
-  } else {
-    LOG(FATAL) << "Removed support for ipfs-over-http?";
-  }
   if (resource_request.url.SchemeIs("ipfs")) {
-    LOG(INFO) << "Requesting " << resource_request.url.spec() << " by blocks!";
-    auto second_slash = path.find_first_of("/?", 5);
-    auto cid = path.substr(5, second_slash - 5);
-    second_slash = path.find('/', 5);
-    auto qmark = path.find('?');
-    std::string remainder{"/"};
-    if (second_slash < path.size()) {
-      remainder.assign(path.substr(second_slash + 1));
-    } else if (qmark && qmark < path.size()) {
-      remainder.append(path.substr(qmark));
+    auto ref = me->original_url_;
+    DCHECK_EQ(ref.substr(0, 7), "ipfs://");
+    ref.erase(4, 2);
+    me->StartUnixFsProc(me, ref);
+  } else if (resource_request.url.SchemeIs("ipns")) {
+    LOG(INFO) << "Doing DNSLink stuff.";
+    auto name_it = me->state_.names_.find(resource_request.url.host());
+    if (me->state_.names_.end() == name_it) {
+      auto params = network::mojom::ResolveHostParameters::New();
+      params->dns_query_type = net::DnsQueryType::TXT;
+      params->initial_priority = net::RequestPriority::HIGHEST;
+      params->source = net::HostResolverSource::ANY;
+      params->cache_usage =
+          network::mojom::ResolveHostParameters_CacheUsage::DISALLOWED;
+      params->secure_dns_policy =
+          network::mojom::SecureDnsPolicy::DISABLE;  // TODO
+      params->purpose =
+          network::mojom::ResolveHostParameters::Purpose::kUnspecified;
+      network_context->ResolveHost(
+          network::mojom::HostResolverHost::NewHostPortPair(
+              //          net::HostPortPair("google.com", 0)),
+              net::HostPortPair("_dnslink." + resource_request.url.host(), 0)),
+          net::NetworkAnonymizationKey::CreateTransient(), std::move(params),
+          me->resolve_host_client_receiver_.BindNewPipeAndPassRemote());
+      me->mortal_danger_ = me;
+    } else {
+      me->StartUnixFsProc(me, me->GetIpfsRefFromIpnsUri(name_it->second));
     }
-    LOG(INFO) << "cid=" << cid << " remainder=" << remainder;
-    me->resolver_ = std::make_shared<UnixFsPathResolver>(me->state_.storage(),
-                                                         cid, remainder);
-    me->resolver_->Step(me);
   } else {
-    LOG(ERROR) << "Requesting " << resource_request.url.spec()
-               << " as a whole file.";
-    me->sched_.Enqueue(me, path, Scheduler::Priority::Required);
+    LOG(ERROR) << "Wrong scheme: " << resource_request.url.scheme();
   }
+}
+void ipfs::Loader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
+  LOG(INFO) << "Requesting " << ipfs_ref << " by blocks.";
+  DCHECK_EQ(ipfs_ref.substr(0, 5), "ipfs/");
+  auto second_slash = ipfs_ref.find_first_of("/?", 5);
+  auto cid = ipfs_ref.substr(5, second_slash - 5);
+  second_slash = ipfs_ref.find('/', 5);
+  auto qmark = ipfs_ref.find('?');
+  std::string remainder{"/"};
+  if (second_slash < ipfs_ref.size()) {
+    remainder.assign(ipfs_ref.substr(second_slash + 1));
+  } else if (qmark && qmark < ipfs_ref.size()) {
+    remainder.append(ipfs_ref.substr(qmark));
+  }
+  LOG(INFO) << "cid=" << cid << " remainder=" << remainder;
+  me->resolver_ = std::make_shared<UnixFsPathResolver>(
+      me->state_.storage(), std::string{cid}, remainder);
+  me->resolver_->Step(me);
 }
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -357,4 +381,69 @@ std::string ipfs::Loader::UnescapeUrlComponent(std::string_view comp) const {
   auto result = base::UnescapeURLComponent({comp.data(), comp.size()}, rules);
   LOG(INFO) << "UnescapeUrlComponent(" << comp << ")->'" << result << "'";
   return result;
+}
+std::string ipfs::Loader::GetIpfsRefFromIpnsUri(
+    std::string_view replacement) const {
+  auto spec = original_url_;
+  // https://docs.ipfs.tech/concepts/dnslink/
+  // The rest can be an /ipfs/ link (as in the example below), or /ipns/, or
+  // even a link to another DNSLink.
+  // ... right, but sane people would go directly to ipfs/
+  DCHECK_EQ(spec.substr(0, 7), "ipns://");
+  auto end_of_name = spec.find('/', 8);
+  LOG(INFO) << "IPNS name part of URL extends through " << end_of_name;
+  if (end_of_name < spec.size()) {
+    spec.replace(0, end_of_name, replacement);
+    
+    return spec;
+  } else {
+    return std::string{replacement};
+  }
+}
+
+void ipfs::Loader::OnTextResults(std::vector<std::string> const& text_results) {
+  LOG(ERROR) << "OnTextResults(" << text_results.size() << ") results.";
+  constexpr std::string_view prefix{"dnslink=/"};
+  for (auto& txt : text_results) {
+    if (txt.compare(0, prefix.size(), prefix)) {
+      LOG(INFO) << "irrelevant TXT(" << txt << ")";
+    } else {
+      auto replacement = std::string_view{txt}.substr(prefix.size());
+      LOG(INFO) << "TXT(" << txt
+                << ") -> Replacing scheme && DNSLink host with '" << replacement
+                << "'.";
+      state_.names_[GURL{original_url_}.host()] = std::string{replacement};
+      StartUnixFsProc(mortal_danger_, GetIpfsRefFromIpnsUri(replacement));
+    }
+  }
+}
+void ipfs::Loader::OnComplete(
+    int32_t result,
+    ::net::ResolveErrorInfo const& resolve_error_info,
+    absl::optional<::net::AddressList> const& al,
+    absl::optional<std::vector<::net::HostResolverEndpointResult>> const& er) {
+  LOG(ERROR) << "TODO : deal with errors. result=" << result
+             << " resolve_error=" << resolve_error_info.error;
+  if (al) {
+    for (auto& a : al.value()) {
+      LOG(INFO) << "Addr: " << a;
+    }
+  }
+  if (er) {
+    for (auto& e : er.value()) {
+      for (auto& ep : e.ip_endpoints) {
+        LOG(INFO) << "ER ep: " << ep;
+      }
+      LOG(INFO) << "ER meta: " << e.metadata.supported_protocol_alpns.size()
+                << ' ' << e.metadata.ech_config_list.size() << ' '
+                << e.metadata.target_name;
+    }
+  }
+  mortal_danger_.reset();
+}
+void ipfs::Loader::OnHostnameResults(
+    std::vector<::net::HostPortPair> const& res) {
+  for (auto p : res) {
+    LOG(INFO) << "Ignoring hostname resolution result: " << p;
+  }
 }

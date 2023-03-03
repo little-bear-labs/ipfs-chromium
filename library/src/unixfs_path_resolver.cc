@@ -7,8 +7,6 @@
 #include "smhasher/MurmurHash3.h"
 #include "vocab/log_macros.h"
 
-#include "absl/numeric/int128.h"
-
 #include <endian.h>
 
 #include <iomanip>

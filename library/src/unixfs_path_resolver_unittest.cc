@@ -110,7 +110,8 @@ ipfs::Block mock_directory(std::vector<entry> entries) {
   for (auto& entry : entries) {
     auto link = node.add_links();
     link->set_name(entry.first);
-    link->set_hash(libp2p::multi::detail::decodeBase58(entry.second).value());
+    auto bytes = libp2p::multi::detail::decodeBase58(entry.second).value();
+    link->set_hash(bytes.data(), bytes.size());
   }
   ipfs::unix_fs::Data dir_data;
   dir_data.set_type(ipfs::unix_fs::Data_DataType_Directory);

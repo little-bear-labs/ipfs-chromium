@@ -12,8 +12,9 @@
 
 using Interceptor = ipfs::Interceptor;
 
-Interceptor::Interceptor(network::mojom::URLLoaderFactory* handles_http)
-    : loader_factory_{handles_http} {}
+Interceptor::Interceptor(network::mojom::URLLoaderFactory* handles_http,
+                         network::mojom::NetworkContext* network_context)
+    : loader_factory_{handles_http}, network_context_{network_context} {}
 
 void Interceptor::MaybeCreateLoader(network::ResourceRequest const& req,
                                     content::BrowserContext* context,
@@ -25,11 +26,11 @@ void Interceptor::MaybeCreateLoader(network::ResourceRequest const& req,
               << hdr_str;
     DCHECK(context);
     std::move(loader_callback)
-        .Run(base::BindOnce(
-            &ipfs::Loader::StartRequest,
-            std::make_shared<ipfs::Loader>(
-                loader_factory_,
-                InterRequestState::FromBrowserContext(context))));
+        .Run(base::BindOnce(&ipfs::Loader::StartRequest,
+                            std::make_shared<ipfs::Loader>(
+                                loader_factory_,
+                                InterRequestState::FromBrowserContext(context)),
+                            network_context_));
   } else {
     LOG(INFO) << req.url.spec() << " has host '" << req.url.host()
               << "' and is not being intercepted.";

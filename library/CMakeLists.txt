@@ -63,7 +63,6 @@ file(GLOB_RECURSE
 )
 find_package(GTest)
 if(GTest_FOUND)
-if(absl_FOUND)
     enable_testing()
     foreach(unit_test_source ${unit_test_sources})
         get_filename_component(name ${unit_test_source} NAME_WE)
@@ -81,6 +80,7 @@ if(absl_FOUND)
                 GTest::gtest_main
         )
         with_vocab(${name}_runner)
+        message(STATUS "add_test(${name})")
         add_test(
             NAME ${name}_runner
             COMMAND $<TARGET_FILE:${name}_runner>
@@ -100,5 +100,6 @@ if(absl_FOUND)
         SOURCES ${test_certificates}
         COMMAND echo "Tests are up-to-date."
     )
-endif()#absl_FOUND
+else()
+    message(WARNING "Not running tests - no gtest available.")
 endif()#GTest_FOUND

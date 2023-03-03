@@ -7,6 +7,7 @@
 #include "base/debug/debugging_buildflags.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
@@ -18,7 +19,9 @@ class UnixFsPathResolver;
 
 namespace network::mojom {
 class URLLoaderFactory;
-}
+class HostResolver;
+class NetworkContext;
+}  // namespace network::mojom
 namespace network {
 class SimpleURLLoader;
 }
@@ -27,9 +30,8 @@ namespace ipfs {
 class InterRequestState;
 
 class Loader final : public network::mojom::URLLoader,
-                     public FrameworkApi
-//                     ,public std::enable_shared_from_this<Loader>
-{
+                     public FrameworkApi,
+                     public network::ResolveHostClientBase {
   void FollowRedirect(
       std::vector<std::string> const& removed_headers,
       net::HttpRequestHeaders const& modified_headers,
@@ -51,6 +53,15 @@ class Loader final : public network::mojom::URLLoader,
   // Interceptor::MaybeCreateLoader.
   static void StartRequest(
       ptr,
+      network::mojom::NetworkContext*,
+      network::ResourceRequest const& resource_request,
+      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client);
+
+  static void ResolveIpns(
+      ptr,
+      //      mojo::Remote<network::mojom::HostResolver>,
+      network::mojom::NetworkContext*,
       network::ResourceRequest const& resource_request,
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);
@@ -70,6 +81,9 @@ class Loader final : public network::mojom::URLLoader,
   std::string original_url_;
   std::shared_ptr<ipfs::UnixFsPathResolver> resolver_;
   std::string partial_block_;
+  mojo::Receiver<network::mojom::ResolveHostClient>
+      resolve_host_client_receiver_{this};
+  ptr mortal_danger_;
 
   void RequestByCid(std::string cid, Scheduler::Priority) override;
   void CreateBlockRequest(std::string cid);
@@ -100,6 +114,20 @@ class Loader final : public network::mojom::URLLoader,
   void BlocksComplete(std::string mime_type) override;
   std::string UnescapeUrlComponent(std::string_view) const override;
   void FourOhFour(std::string_view cid, std::string_view path) override;
+
+  void StartUnixFsProc(ptr, std::string_view);
+  std::string GetIpfsRefFromIpnsUri(std::string_view) const;
+
+  // TODO ipns resolution in separate class?
+  void OnTextResults(std::vector<std::string> const& text_results) override;
+  void OnComplete(
+      int32_t result,
+      const ::net::ResolveErrorInfo& resolve_error_info,
+      const absl::optional<::net::AddressList>& resolved_addresses,
+      const absl::optional<std::vector<::net::HostResolverEndpointResult>>&
+          endpoint_results_with_metadata) override;
+  void OnHostnameResults(
+      const std::vector<::net::HostPortPair>& hosts) override;
 };
 
 }  // namespace ipfs

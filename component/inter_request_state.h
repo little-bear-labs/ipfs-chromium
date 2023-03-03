@@ -16,8 +16,12 @@ class InterRequestState : public base::SupportsUserData::Data {
   BlockStorage storage_;
 
  public:
+  InterRequestState();
+  ~InterRequestState() noexcept override;
+
   Gateways& gateways() { return gws_; }
   BlockStorage& storage() { return storage_; }
+  flat_map<std::string, std::string> names_;
 
   static InterRequestState& FromBrowserContext(content::BrowserContext*);
 };

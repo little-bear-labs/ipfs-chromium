@@ -10,9 +10,26 @@ endif()
 find_package (Python3 COMPONENTS Interpreter)
 if(Python3_EXECUTABLE)
     set(CONAN_CMAKE_SILENT_OUTPUT 1)
-    execute_process(COMMAND ${Python3_EXECUTABLE} -m pip install --upgrade conan)
-    execute_process(COMMAND ${Python3_EXECUTABLE} -m pip --quiet install --upgrade conan)
-    execute_process(COMMAND conan profile detect)
+    execute_process(
+        COMMAND conan config home
+        OUTPUT_VARIABLE conan_home
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        RESULT_VARIABLE conan_result
+    )
+    if(NOT conan_result EQUAL 0)
+        execute_process(COMMAND ${Python3_EXECUTABLE} -m pip --quiet install --upgrade conan)
+        execute_process(COMMAND conan profile detect)
+        execute_process(
+            COMMAND conan config home
+            OUTPUT_VARIABLE conan_home
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            COMMAND_ERROR_IS_FATAL ANY
+        )
+    endif()
+    if(DEFINED ENV{CONAN_REQUEST_TIMEOUT} AND NOT EXISTS "${conan_home}/global.conf")
+        #How incredibly obnoxious is it that conan 2 dropped support for these envs?
+        file(WRITE "${conan_home}/global.conf" core.net.http:timeout=$ENV{CONAN_REQUEST_TIMEOUT})
+    endif()
     if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/conan.cmake")
         file(
             DOWNLOAD
@@ -102,20 +119,24 @@ function(with_vocab target)
         PRIVATE
             "${CMAKE_CURRENT_BINARY_DIR}"
     )
-    find_package(Protobuf)
-    if(Protobuf_FOUND)
-        target_link_libraries(${target}
-            PRIVATE
-                protobuf::libprotobuf
-        )
-        target_include_directories(${target}
-            SYSTEM
-            BEFORE
-            PRIVATE
-                ${protobuf_INCLUDE_DIR}
-        )
-    endif()
+    find_package(Protobuf REQUIRED)
+    target_link_libraries(${target}
+        PRIVATE
+            protobuf::libprotobuf
+    )
+    target_include_directories(${target}
+        SYSTEM
+        BEFORE
+        PRIVATE
+            ${protobuf_INCLUDE_DIR}
+    )
     find_package(absl)
+    find_package(Boost)
+    #TODO If not available at all... maybe just turn off sha support?
+    find_package(OpenSSL
+            COMPONENTS
+            Crypto
+            )
     if(absl_FOUND)
         target_link_libraries(${target}
             PRIVATE # Can't allow these to propagate to component
@@ -124,7 +145,6 @@ function(with_vocab target)
     else()
         message(WARNING "Not pulling vocab/ dependencies for ${target} from Abseil")
     endif()
-    find_package(Boost)
     if(Boost_FOUND)
         target_link_libraries(${target}
             PRIVATE
@@ -133,11 +153,6 @@ function(with_vocab target)
     else()
         message(WARNING "Not pulling vocab/ dependencies for ${target} from Boost")
     endif()
-    #TODO - from Conan? If not available at all... maybe just turn off sha support?
-    find_package(OpenSSL
-        COMPONENTS
-            Crypto
-    )
     if(OpenSSL_FOUND)
         target_link_libraries(${target}
             PRIVATE

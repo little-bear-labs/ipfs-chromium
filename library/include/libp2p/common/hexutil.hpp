@@ -61,7 +61,7 @@ ipfs::expected<std::vector<ipfs::Byte>, UnhexError> unhex(std::string_view hex);
  */
 inline ipfs::ByteView sv2span(const std::string_view& str) {
   return ipfs::ByteView((ipfs::Byte*)str.data(),  // NOLINT
-                        (ssize_t)str.size());     // NOLINT
+                        str.size());              // NOLINT
 }
 
 /**

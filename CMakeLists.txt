@@ -13,8 +13,11 @@ else()
 endif()
 include(cmake/setup.cmake)
 
+enable_testing()
+
 add_subdirectory(library)
 add_executable(simple simple_main.cpp)
+
 target_compile_features(simple
     PUBLIC
     cxx_std_${CXX_VERSION}

@@ -68,8 +68,8 @@ unsigned char shift_left(uint8_t byte, int8_t offset) {
   return shift_right(byte, -offset);
 }
 
-int encode_sequence(absl::Span<const uint8_t> plain,
-                    absl::Span<char> coded,
+int encode_sequence(ipfs::span<const uint8_t> plain,
+                    ipfs::span<char> coded,
                     Base32Mode mode) {
   for (int block = 0; block < 8; block++) {
     int byte = get_byte(block);
@@ -98,10 +98,10 @@ std::string encodeBase32(const common::ByteArray& bytes, Base32Mode mode) {
   }
 
   for (size_t i = 0, j = 0; i < bytes.size(); i += 5, j += 8) {
-    int n =
-        encode_sequence(absl::Span(reinterpret_cast<const uint8_t*>(&bytes[i]),
-                                   std::min<size_t>(bytes.size() - i, 5)),
-                        absl::Span(&result[j], 8), mode);
+    int n = encode_sequence(
+        ipfs::span<uint8_t const>(reinterpret_cast<const uint8_t*>(&bytes[i]),
+                                  std::min<size_t>(bytes.size() - i, 5)),
+        ipfs::span<char>(&result[j], 8), mode);
     if (n < 8) {
       result.erase(result.end() - (8 - n), result.end());
     }
@@ -137,8 +137,8 @@ int decode_char(unsigned char c, Base32Mode mode) {
   return decoded_ch;
 }
 
-ipfs::expected<int, BaseError> decode_sequence(absl::Span<const char> coded,
-                                               absl::Span<uint8_t> plain,
+ipfs::expected<int, BaseError> decode_sequence(ipfs::span<const char> coded,
+                                               ipfs::span<uint8_t> plain,
                                                Base32Mode mode) {
   plain[0] = 0;
   for (int block = 0; block < 8; block++) {
@@ -174,8 +174,9 @@ ipfs::expected<common::ByteArray, BaseError> decodeBase32(
 
   for (size_t i = 0, j = 0; i < string.size(); i += 8, j += 5) {
     auto n = decode_sequence(
-        absl::MakeSpan(&string[i], std::min<size_t>(string.size() - i, 8)),
-        absl::MakeSpan(reinterpret_cast<uint8_t*>(&result[j]), 5), mode);
+        ipfs::span<char const>(&string[i],
+                               std::min<size_t>(string.size() - i, 8)),
+        ipfs::span<uint8_t>(reinterpret_cast<uint8_t*>(&result[j]), 5), mode);
     if (!n.has_value()) {
       return ipfs::unexpected<BaseError>{n.error()};
     }

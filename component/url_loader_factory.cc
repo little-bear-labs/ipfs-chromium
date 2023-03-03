@@ -40,5 +40,8 @@ void ipfs::IpfsURLLoaderFactory::CreateLoaderAndStart(
             << " url=" << request.url.spec();
   auto ptr = std::make_shared<Loader>(
       default_factory_, InterRequestState::FromBrowserContext(context_));
-  ptr->StartRequest(ptr, request, std::move(loader), std::move(client));
+
+  ptr->StartRequest(ptr
+                    , nullptr //TODO network_context
+                    , request, std::move(loader), std::move(client));
 }
