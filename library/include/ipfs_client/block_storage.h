@@ -15,6 +15,7 @@ class UnixFsPathResolver;
 class BlockStorage {
  public:
   BlockStorage();
+  BlockStorage(BlockStorage const&) = delete;
   ~BlockStorage() noexcept;
 
   bool Store(std::shared_ptr<FrameworkApi>,

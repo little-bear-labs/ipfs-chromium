@@ -77,14 +77,12 @@ void ipfs::Loader::StartRequest(
       params->initial_priority = net::RequestPriority::HIGHEST;
       params->source = net::HostResolverSource::ANY;
       params->cache_usage =
-          network::mojom::ResolveHostParameters_CacheUsage::DISALLOWED;
-      params->secure_dns_policy =
-          network::mojom::SecureDnsPolicy::DISABLE;  // TODO
+          network::mojom::ResolveHostParameters_CacheUsage::STALE_ALLOWED;
+      params->secure_dns_policy = network::mojom::SecureDnsPolicy::ALLOW;
       params->purpose =
           network::mojom::ResolveHostParameters::Purpose::kUnspecified;
       network_context->ResolveHost(
           network::mojom::HostResolverHost::NewHostPortPair(
-              //          net::HostPortPair("google.com", 0)),
               net::HostPortPair("_dnslink." + resource_request.url.host(), 0)),
           net::NetworkAnonymizationKey::CreateTransient(), std::move(params),
           me->resolve_host_client_receiver_.BindNewPipeAndPassRemote());
@@ -388,13 +386,12 @@ std::string ipfs::Loader::GetIpfsRefFromIpnsUri(
   // https://docs.ipfs.tech/concepts/dnslink/
   // The rest can be an /ipfs/ link (as in the example below), or /ipns/, or
   // even a link to another DNSLink.
-  // ... right, but sane people would go directly to ipfs/
   DCHECK_EQ(spec.substr(0, 7), "ipns://");
   auto end_of_name = spec.find('/', 8);
   LOG(INFO) << "IPNS name part of URL extends through " << end_of_name;
   if (end_of_name < spec.size()) {
     spec.replace(0, end_of_name, replacement);
-    
+
     return spec;
   } else {
     return std::string{replacement};

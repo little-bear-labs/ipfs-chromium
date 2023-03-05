@@ -1,8 +1,15 @@
 FROM debian
+
 RUN apt-get update
 RUN apt-get install --yes apt-utils
-RUN apt-get install --yes g++ git ninja-build wget
+RUN apt-get install --yes wget
+
 RUN wget 'https://github.com/Kitware/CMake/releases/download/v3.25.2/cmake-3.25.2-linux-x86_64.tar.gz'
 # Debian version of cmake is weirdly old. I could try to support it, but some of my dependencies don't.
 # Alternatively, one could get cmake from conan. But then we wouldn't be adequately testing the cmake code that installs conan.
 RUN tar --extract --verbose --strip-components=1 --file cmake*.tar.gz
+
+RUN apt-get install --yes curl g++ git lsb-base lsb-release ninja-build sudo wget
+
+# ... you will need to make sure that the following tools are available:
+RUN for tool in curl git lsb_release sudo ; do echo ${tool} ; ${tool} --version || exit 1; done

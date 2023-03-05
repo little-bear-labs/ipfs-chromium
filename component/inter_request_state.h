@@ -21,7 +21,10 @@ class InterRequestState : public base::SupportsUserData::Data {
 
   Gateways& gateways() { return gws_; }
   BlockStorage& storage() { return storage_; }
-  flat_map<std::string, std::string> names_;
+  std::string_view NameResolvedTo(std::string const& name) const;
+  void AssignName(std::string const&, std::string);
+
+  flat_map<std::string, std::string> names_;  // TODO private
 
   static InterRequestState& FromBrowserContext(content::BrowserContext*);
 };

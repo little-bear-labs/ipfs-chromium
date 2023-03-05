@@ -1,6 +1,5 @@
 * Decompose UnixFsPathResolver
 * Shared Scheduler
-* Proper CID library
 * Scan all known nodes of a HAMT for index.html before deciding to require everything for a listing
 * Unit tests coverage for ipfs_client, using GTest
 * cull hard-coded list to remove those that don't allow block-level access
