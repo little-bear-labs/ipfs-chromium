@@ -9,6 +9,7 @@
 #include <vector>
 
 namespace ipfs {
+class FrameworkApi;
 class UnixFsPathResolver;
 
 class BlockStorage {
@@ -16,13 +17,16 @@ class BlockStorage {
   BlockStorage();
   ~BlockStorage() noexcept;
 
-  bool Store(std::string const& cid, Block&& block);
+  bool Store(std::shared_ptr<FrameworkApi>,
+             std::string const& cid,
+             Block&& block);
   Block const* Get(std::string const& cid) const;
-  void AddListening(std::shared_ptr<UnixFsPathResolver>);
+  void AddListening(UnixFsPathResolver*);
+  void StopListening(UnixFsPathResolver*);
 
  private:
   flat_map<std::string, Block> cid2node_;
-  flat_set<std::shared_ptr<UnixFsPathResolver>> listening_;
+  flat_set<UnixFsPathResolver*> listening_;
 
   void CheckDoneListening();
 };

@@ -6,10 +6,10 @@
 #ifndef LIBP2P_BASE58_HPP
 #define LIBP2P_BASE58_HPP
 
+#include "base_error.hpp"
 
+#include <vocab/expected.h>
 #include <libp2p/common/types.hpp>
-
-#include <absl/status/statusor.h>
 
 #include <optional>
 #include <string>
@@ -21,19 +21,20 @@
  */
 namespace libp2p::multi::detail {
 
-  /**
-   * Encode bytes to base58 string
-   * @param bytes to be encoded
-   * @return encoded string
-   */
-  std::string encodeBase58(const common::ByteArray &bytes);
+/**
+ * Encode bytes to base58 string
+ * @param bytes to be encoded
+ * @return encoded string
+ */
+std::string encodeBase58(const common::ByteArray& bytes);
 
-  /**
-   * Decode base58 string to bytes
-   * @param string to be decoded
-   * @return decoded bytes in case of success
-   */
-  absl::StatusOr<common::ByteArray> decodeBase58(std::string_view string);
+/**
+ * Decode base58 string to bytes
+ * @param string to be decoded
+ * @return decoded bytes in case of success
+ */
+ipfs::expected<common::ByteArray, BaseError> decodeBase58(
+    std::string_view string);
 }  // namespace libp2p::multi::detail
 
 #endif  // LIBP2P_BASE58_HPP

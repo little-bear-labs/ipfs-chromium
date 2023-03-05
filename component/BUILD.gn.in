@@ -8,6 +8,7 @@ component("ipfs") {
   ]
   deps = [
     "//components/ipfs:pb_dag",
+    "//content",
     "//base",
     "//components/policy/core/common",
     "//mojo/public/cpp/bindings",

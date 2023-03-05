@@ -1,0 +1,18 @@
+FROM ipfs-chromium-debian-base
+
+RUN apt-get install --yes protobuf-compiler libprotobuf-dev libssl-dev libgtest-dev libgmock-dev
+RUN apt-get install --yes libboost-dev
+
+RUN for c in cmake ninja;do which ${c};${c} --version;done
+
+RUN echo "alias ll='/bin/ls -lrth --color=auto '" >> /root/.bashrc
+
+RUN echo "TODO - probably wan't to setup /chromium/src/ here, before ipfs-chromium, as it might change less frequently"
+
+ADD . /ipfs-chromium
+
+ARG PROFILE=Debug
+
+RUN ./ipfs-chromium/docker/cmake-build.sh
+
+RUN echo TODO Chromium component build

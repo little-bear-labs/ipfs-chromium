@@ -9,7 +9,6 @@ file(GLOB_RECURSE
     sources
     CONFIGURE_DEPENDS
     src/*.cc
-    src/*.cpp
 )
 list(FILTER
     sources
@@ -24,6 +23,7 @@ file(GLOB
         protos
         *.proto
         )
+find_package(Protobuf REQUIRED)
 protobuf_generate_cpp(
         pb_src
         pb_hdr
@@ -43,47 +43,18 @@ add_library(ipfs_client
 )
 target_compile_features(ipfs_client
     PUBLIC
-        cxx_std_17
+        cxx_std_${CXX_VERSION}
 )
 target_compile_options(ipfs_client
     PRIVATE
         ${WARNING_FLAGS}
 )
 target_include_directories(ipfs_client
+    BEFORE
     PUBLIC
         include/
-        "${CMAKE_CURRENT_BINARY_DIR}"
 )
-target_include_directories(ipfs_client
-    PRIVATE
-    SYSTEM
-        include/ipfs_client/gen/
-)
-target_link_libraries(ipfs_client
-    PUBLIC
-        protobuf::libprotobuf
-)
-
-find_package(absl)
-if(absl_FOUND)
-    target_link_libraries(ipfs_client
-        PRIVATE # It is conceptually public, that is to say clients need abseil, but ../component can't use *this* abseil
-            absl::flat_hash_map
-            absl::flat_hash_set
-            absl::statusor
-    )
-endif()
-
-find_package(Boost
-    COMPONENTS
-        container
-)
-if(Boost_FOUND)
-    target_link_libraries(ipfs_client
-        PUBLIC
-            Boost::boost
-    )
-endif()
+with_vocab(ipfs_client)
 
 file(GLOB_RECURSE
     unit_test_sources
@@ -92,7 +63,6 @@ file(GLOB_RECURSE
 )
 find_package(GTest)
 if(GTest_FOUND)
-if(absl_FOUND)
     enable_testing()
     foreach(unit_test_source ${unit_test_sources})
         get_filename_component(name ${unit_test_source} NAME_WE)
@@ -101,15 +71,16 @@ if(absl_FOUND)
         )
         target_compile_features(${name}_runner
             PUBLIC
-                cxx_std_17
+                cxx_std_${CXX_VERSION}
         )
         target_link_libraries(${name}_runner
             PUBLIC
                 ipfs_client
                 GTest::gtest
                 GTest::gtest_main
-                absl::statusor
         )
+        with_vocab(${name}_runner)
+        message(STATUS "add_test(${name})")
         add_test(
             NAME ${name}_runner
             COMMAND $<TARGET_FILE:${name}_runner>
@@ -129,5 +100,6 @@ if(absl_FOUND)
         SOURCES ${test_certificates}
         COMMAND echo "Tests are up-to-date."
     )
-endif()#absl_FOUND
+else()
+    message(WARNING "Not running tests - no gtest available.")
 endif()#GTest_FOUND

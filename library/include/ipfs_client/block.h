@@ -2,21 +2,39 @@
 #define IPFS_BLOCK_H_
 
 #if __has_include("components/ipfs/pb_dag.pb.h")
-#include "components/ipfs/pb_dag.pb.h"   //inside Chromium build
-#include "components/ipfs/unix_fs.pb.h"  //inside Chromium build
+// inside Chromium build
+#include "components/ipfs/pb_dag.pb.h"
+#include "components/ipfs/unix_fs.pb.h"
+#elif __has_include("library/pb_dag.pb.h")
+#include "library/pb_dag.pb.h"
+#include "library/unix_fs.pb.h"
 #else
 #include "pb_dag.pb.h"
 #include "unix_fs.pb.h"
 #endif
 
+#include <libp2p/multi/multicodec_type.hpp>
+
+#include <vocab/byte_view.h>
+
 #include <iosfwd>
+
+namespace libp2p::multi {
+struct ContentIdentifier;
+}
 
 namespace ipfs {
 
+using Cid = libp2p::multi::ContentIdentifier;
+
 class Block {
  public:
-  Block(std::istream&);
-  explicit Block(std::string const& binary_data);
+  using Multicodec = libp2p::multi::MulticodecType::Code;
+  Block(Multicodec, std::istream&);
+  Block(Multicodec, std::string const& binary_data);
+  Block(Cid const&, std::istream&);
+  Block(Cid const&, std::string const&);
+  Block(Block const&);
   ~Block() noexcept;
 
   bool valid() const;
@@ -39,11 +57,17 @@ class Block {
   std::string const& chunk_data() const;
   std::string const& unparsed() const;
   unix_fs::Data const& fsdata() const { return fsdata_; }
+  void mime_type(std::string_view);
+  std::string const& mime_type() const;
 
   template <class Functor>
   void List(Functor foo) const {
     for (auto& link : node_.links()) {
-      if (!foo(link.name(), LinkCid(link.hash()))) {
+      // protobuf uses string for binary data, too
+      auto hash = ipfs::ByteView{
+          reinterpret_cast<ipfs::Byte const*>(link.hash().data()),
+          link.hash().size()};
+      if (!foo(link.name(), LinkCid(hash))) {
         break;
       }
     }
@@ -54,8 +78,10 @@ class Block {
   unix_fs::Data fsdata_;
   bool valid_;
   bool fs_node_ = false;
+  std::string mime_ = {};
 
-  static std::string LinkCid(std::string const&);
+  static std::string LinkCid(ipfs::ByteView);
+  void InitFromRaw(std::string const& content_bytes);
 };
 
 }  // namespace ipfs

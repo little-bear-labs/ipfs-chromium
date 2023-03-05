@@ -27,7 +27,7 @@ add_library(local_shim_build
 )
 target_compile_features(local_shim_build
     PRIVATE
-        cxx_std_17
+        cxx_std_${CXX_VERSION}
 )
 target_compile_options(local_shim_build
     PUBLIC
@@ -37,6 +37,7 @@ target_compile_options(local_shim_build
 target_include_directories(local_shim_build
     SYSTEM
     PUBLIC
+        ../library/include/
         "${CHROMIUM_SOURCE_TREE}"
         "${CHROMIUM_SOURCE_TREE}/buildtools/third_party/libc++/trunk/include/"
         "${CHROMIUM_SOURCE_TREE}/buildtools/third_party/libc++/"
@@ -44,6 +45,7 @@ target_include_directories(local_shim_build
         "${CHROMIUM_SOURCE_TREE}/third_party/boringssl/src/include/"
         "${CHROMIUM_SOURCE_TREE}/third_party/protobuf/src/"
         "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/gen"
+        "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/gen/components/ipfs/"
 )
 target_link_libraries(local_shim_build
     PUBLIC
@@ -74,10 +76,10 @@ elseif()
 endif()
 
 set(target_dir "${CHROMIUM_SOURCE_TREE}/components/ipfs/${basename}")
-file(GLOB
+file(GLOB_RECURSE
     lib_srcs
         ../library/src/*.cc
-        ../library/src/multi/*/*/*.cc
+        ../library/src/*.h #Private headers
 )
 list(FILTER
     lib_srcs
@@ -92,6 +94,7 @@ file(GLOB_RECURSE
 )
 file(GLOB_RECURSE
     lib_hdrs_abs
+    CONFIGURE_DEPENDS
     "${CMAKE_SOURCE_DIR}/library/include/*.h"
     "${CMAKE_SOURCE_DIR}/library/include/*.hpp"
 )
@@ -180,7 +183,7 @@ if(ENABLE_OUTOFTREE_TESTING)
         )
         target_compile_features(${name}_runner
             PUBLIC
-            cxx_std_17
+            cxx_std_${CXX_VERSION}
         )
         target_include_directories(${name}_runner
             PUBLIC

@@ -1,7 +1,11 @@
 #include <ipfs_client/block_storage.h>
-#include <ipfs_client/ipfs_uri.h>
+#include <ipfs_client/framework_api.h>
 #include <ipfs_client/unixfs_path_resolver.h>
+
+#include <libp2p/multi/content_identifier_codec.hpp>
 #include <libp2p/multi/multibase_codec/codecs/base58.hpp>
+
+#include <smhasher/MurmurHash3.h>
 
 #include <filesystem>
 #include <fstream>
@@ -17,8 +21,8 @@ void handle_arg(char const* arg) {
       resolve_unixfs_path(std::string(arg, slash), std::string(slash + 1));
     } else if (arg[0] == 'Q' && arg[1] == 'm') {
       auto binary = libp2p::multi::detail::decodeBase58(arg + 4).value();
-      for (unsigned char byte : binary) {
-        std::clog << std::hex << static_cast<unsigned>(byte);
+      for (auto byte : binary) {
+        std::clog << byte;
       }
       std::clog.put('\n');
     } else {
@@ -28,67 +32,28 @@ void handle_arg(char const* arg) {
   }
 }
 
+void show_hash(std::string_view next) {
+  std::array<std::uint64_t, 2> digest = {0U, 0U};
+  // Rust's fastmurmur3 also passes 0 for seed, and iroh uses that.
+  MurmurHash3_x64_128(next.data(), next.size(), 0, digest.data());
+  auto bug_compatible_digest = htobe64(digest[0]);
+  std::clog << next << " Hash: " << std::hex << digest[0] << ' ' << digest[1]
+            << " -> " << bug_compatible_digest << '\n';
+}
+
 int main(int argc, char const* const argv[]) {
   std::for_each(std::next(argv), std::next(argv, argc), handle_arg);
-
-  // TODO: these obviously should be unit tests.
-#define CHECK                                                 \
-  if (actual != expected) {                                   \
-    std::clog << "'" << actual << "'!='" << expected << '\n'; \
-    return 1;                                                 \
-  }
-  auto actual = ipfs::IpfsUri2IpfsOverHttpUrl(
-      "ipfs://bafybeifszd4wbkeekwzwitvgijrw6zkzijxutm4kdumkxnc6677drtslni");
-  std::string expected =
-      "http://"
-      "bafybeifszd4wbkeekwzwitvgijrw6zkzijxutm4kdumkxnc6677drtslni.ipfs.ipfs-"
-      "over-http.localhost/";
-  CHECK
-  actual = ipfs::IpfsOverHttpUrl2IpfsGatewayPath(actual);
-  expected =
-      "ipfs/bafybeifszd4wbkeekwzwitvgijrw6zkzijxutm4kdumkxnc6677drtslni/";
-  CHECK
-  actual = ipfs::IpfsOverHttpUrl2IpfsGatewayPath(
-      "http://"
-      "k51qzi5uqu5dijv526o4z2z10ejylnel0bfvrtw53itcmsecffo8yf0zb4g9gi.ipns."
-      "ipfs-over-http.localhost/");
-  expected =
-      "ipns/k51qzi5uqu5dijv526o4z2z10ejylnel0bfvrtw53itcmsecffo8yf0zb4g9gi/";
-  CHECK
-  actual = ipfs::IpfsOverHttpUrl2IpfsGatewayPath(
-      "http://"
-      "k51qzi5uqu5dijv526o4z2z10ejylnel0bfvrtw53itcmsecffo8yf0zb4g9gi.ipns."
-      "ipfs-over-http.localhost/path/to/file.html");
-  expected =
-      "ipns/k51qzi5uqu5dijv526o4z2z10ejylnel0bfvrtw53itcmsecffo8yf0zb4g9gi/"
-      "path/to/file.html";
-  CHECK
-  actual = ipfs::IpfsOverHttpUrl2IpfsGatewayPath(
-      "http://en.wikipedia-on-ipfs.org.ipns.ipfs-over-http.localhost/wiki/");
-  expected = "ipns/en.wikipedia-on-ipfs.org/wiki/";
-  CHECK
 }
 namespace {
 ipfs::BlockStorage blocks;
 std::string file_contents;
-}  // namespace
-void parse_block_file(char const* file_name) {
-  std::ifstream file{file_name};
-  ipfs::Block node{file};
-  if (!node.valid()) {
-    std::clog << "Failed to parse '" << file_name << "'\n";
-    return;
-  }
-  std::clog << "Loaded: " << file_name << ' ' << node.type() << ' '
-            << node.file_size() << ' ' << '\n';
-  node.List([](auto n, auto c) {
-    std::clog << "  " << n << " => " << c << '\n';
-    return true;
-  });
-  blocks.Store(file_name, std::move(node));
-}
-void resolve_unixfs_path(std::string cid, std::string path) {
-  auto request_required = [](auto& c) {
+class StubbedApi : public ipfs::FrameworkApi {
+ public:
+  void RequestByCid(std::string c, ipfs::Scheduler::Priority p) {
+    if (p == ipfs::Scheduler::Priority::Optional) {
+      std::clog << "Consider prefetching " << c << '\n';
+      return;
+    }
     std::clog << "Unsatisfied required CID: " << c << ' ';
     if (std::filesystem::is_regular_file(c)) {
       std::clog << "It exists on-disk. Load it next time.\n";
@@ -98,23 +63,102 @@ void resolve_unixfs_path(std::string cid, std::string path) {
       cmd.append("?format=raw' > ").append(c);
       std::system(cmd.c_str());
     }
-  };
-  auto request_prefetch = [](auto& c) {
-    std::clog << "Consider prefetching " << c << '\n';
-  };
-  auto receive_bytes = [](auto& s) {
+  }
+
+  void InitiateGatewayRequest(ipfs::BusyGateway) {}
+  void ReceiveBlockBytes(std::string_view s) {
     std::clog << "Receiving " << s.size() << " bytes.\n";
     file_contents.append(s);
-  };
-  auto out_fn = std::filesystem::path{path}.filename().string();
-  auto on_complete = [out_fn](auto type) {
+  }
+  std::string out_fn;
+  bool got_ = false;
+  void BlocksComplete(std::string type) {
     std::clog << "Got " << type << ". File contents (" << file_contents.size()
               << " B). Writing to " << out_fn << '\n';
     std::ofstream f{out_fn};
     f.write(file_contents.c_str(), file_contents.size());
-  };
-  auto resolver = std::make_shared<ipfs::UnixFsPathResolver>(
-      blocks, cid, path, request_required, request_prefetch, receive_bytes,
-      on_complete);
-  resolver->Step(resolver);
+    file_contents.clear();
+    got_ = true;
+  }
+
+  std::string MimeType(std::string extension,
+                       std::string_view content,
+                       std::string const& url) const {
+    if (content.find("<html>")) {
+      return "text/html";
+    }
+    return "";
+  }
+  std::string UnescapeUrlComponent(std::string_view s) const {
+    std::string t{s};
+    for (auto i = 0;
+         i < t.size() && (i = t.find('%', i)) != std::string::npos;) {
+      auto cp = 0U;
+      std::istringstream iss{t.substr(i + 1, 2)};
+      iss >> std::hex >> cp;
+      std::clog << t.substr(i, 3) << " becomes codepoint "
+                << static_cast<unsigned>(cp) << '\n';
+      t.erase(i + 1, 2);
+      t[i] = cp;
+      ++i;
+    }
+    return t;
+  }
+  void FourOhFour(std::string_view cid, std::string_view path) {
+    std::clog << "DAG 404 on " << cid << " , " << path << '\n';
+    std::exit(9);
+  }
+};
+auto api = std::make_shared<StubbedApi>();
+}  // namespace
+void parse_block_file(char const* file_name) {
+  std::clog << "Will attempt to load from file " << file_name << '\n';
+  std::ifstream file{file_name};
+  auto as_cid = libp2p::multi::ContentIdentifierCodec::fromString(file_name);
+  if (!as_cid.has_value()) {
+    std::clog << file_name << " does not appear to be a CID.\n";
+    return;
+  }
+  ipfs::Block node{as_cid.value(), file};
+  if (!node.valid()) {
+    std::clog << "Failed to parse '" << file_name << "'\n";
+    return;
+  }
+  std::clog << "Loaded: " << file_name << ' ' << node.type() << ' '
+            << node.file_size() << "\n  data:";
+  auto i = 0;
+  for (auto byte : node.fsdata().data()) {
+    if (std::isgraph(byte) || byte == ' ') {
+      std::clog.put(byte);
+    } else {
+      std::clog << '<' << std::setw(2) << std::setfill('0') << std::hex
+                << static_cast<unsigned>(byte) << '>';
+    }
+    if (i++ > 999) {
+      break;
+    }
+  }
+  std::clog.put('\n');
+  node.List([](auto n, auto c) {
+    std::clog << "  " << n << " => " << c << '\n';
+    return true;
+  });
+  blocks.Store(api, file_name, std::move(node));
+}
+void resolve_unixfs_path(std::string cid, std::string path) {
+  api->out_fn = path;
+  file_contents.clear();
+  api->got_ = false;
+  std::replace(api->out_fn.begin(), api->out_fn.end(), '/', '_');
+  auto resolver = std::make_shared<ipfs::UnixFsPathResolver>(blocks, cid, path);
+  resolver->Step(api);
+  if (resolver->waiting_on().size()) {
+    resolver->Step(api);
+  }
+  if (file_contents.empty()) {
+    resolver->Step(api);
+  }
+  if (!api->got_) {
+    resolver->Step(api);
+  }
 }

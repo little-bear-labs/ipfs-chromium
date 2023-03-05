@@ -1,21 +1,71 @@
 #include "ipfs_client/block.h"
 
+#include <vocab/log_macros.h>
+
+#include <libp2p/multi/content_identifier_codec.hpp>
 #include <libp2p/multi/multibase_codec/codecs/base32.hpp>
 #include <libp2p/multi/multibase_codec/codecs/base58.hpp>
 
-ipfs::Block::Block(std::istream& s) {
-  valid_ = node_.ParseFromIstream(&s);
-  if (valid_) {
-    fs_node_ = fsdata_.ParseFromString(node_.data());
+using MC = libp2p::multi::MulticodecType;
+
+namespace {
+std::string read_stream(std::istream& is) {
+  return std::string(std::istreambuf_iterator<char>(is), {});
+}
+}  // namespace
+
+ipfs::Block::Block(Cid const& c, std::istream& s) : Block(c.content_type, s) {}
+ipfs::Block::Block(Multicodec c, std::istream& s) {
+  switch (c) {
+    case Multicodec::DAG_PB:
+      valid_ = node_.ParseFromIstream(&s);
+      if (valid_) {
+        fs_node_ = fsdata_.ParseFromString(node_.data());
+      }
+      break;
+    case Multicodec::RAW:
+      InitFromRaw(read_stream(s));
+      break;
+    default:
+      L_DIE("Stream-initialization unsupported for multicodec: "
+            << static_cast<unsigned>(c) << '(' << MC::getName(c) << ')');
   }
 }
-ipfs::Block::Block(std::string const& s) {
-  valid_ = node_.ParseFromString(s);
-  if (valid_) {
-    fs_node_ = fsdata_.ParseFromString(node_.data());
+ipfs::Block::Block(Cid const& c, std::string const& s)
+    : Block(c.content_type, s) {}
+ipfs::Block::Block(Multicodec c, std::string const& s) {
+  switch (c) {
+    case Multicodec::DAG_PB:
+      valid_ = node_.ParseFromString(s);
+      if (valid_) {
+        fs_node_ = fsdata_.ParseFromString(node_.data());
+      }
+      break;
+    case Multicodec::RAW:
+      InitFromRaw(s);
+      break;
+    default:
+      L_DIE("Unsupported multicodec: " << static_cast<unsigned>(c) << '('
+                                       << MC::getName(c) << ')');
   }
 }
+ipfs::Block::Block(Block const& rhs)
+    : node_(rhs.node_),
+      fsdata_(rhs.fsdata_),
+      valid_(rhs.valid_),
+      fs_node_(rhs.fs_node_),
+      mime_(rhs.mime_) {}
 ipfs::Block::~Block() noexcept {}
+
+void ipfs::Block::InitFromRaw(std::string const& content_bytes) {
+  fsdata_.set_type(unix_fs::Data_DataType_File);
+  fsdata_.set_data(content_bytes);
+  fsdata_.set_filesize(content_bytes.size());
+  node_.set_data(fsdata_.SerializeAsString());
+  valid_ = true;
+  fs_node_ = true;
+}
+
 bool ipfs::Block::valid() const {
   return valid_;
 }
@@ -59,11 +109,23 @@ std::string const& ipfs::Block::chunk_data() const {
 std::string const& ipfs::Block::unparsed() const {
   return node_.data();
 }
-std::string ipfs::Block::LinkCid(std::string const& raw_hash) {
-  std::string withmulti({'\x01', '\x70'});
-  withmulti.append(raw_hash);
-  //  return libp2p::multi::detail::encodeBase58(raw_hash);
-  return "b" + libp2p::multi::detail::encodeBase32Lower(withmulti);
+std::string const& ipfs::Block::mime_type() const {
+  return mime_;
+}
+void ipfs::Block::mime_type(std::string_view val) {
+  mime_.assign(val);
+}
+std::string ipfs::Block::LinkCid(ipfs::ByteView binary_link_hash) {
+  using Codec = libp2p::multi::ContentIdentifierCodec;
+  auto result = Codec::decode(binary_link_hash);
+  if (!result.has_value()) {
+    L_DIE(result.error());
+  }
+  auto str_res = Codec::toString(result.value());
+  if (!str_res.has_value()) {
+    L_DIE(str_res.error());
+  }
+  return str_res.value();
 }
 
 std::ostream& operator<<(std::ostream& s, ipfs::Block::Type t) {

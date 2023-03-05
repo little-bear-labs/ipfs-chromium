@@ -25,3 +25,6 @@ auto ipfs::InterRequestState::FromBrowserContext(
   context->SetUserData(user_data_key, std::move(owned));
   return *raw;
 }
+
+ipfs::InterRequestState::InterRequestState() {}
+ipfs::InterRequestState::~InterRequestState() noexcept {}

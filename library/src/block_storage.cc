@@ -1,14 +1,20 @@
 #include "ipfs_client/block_storage.h"
 #include "ipfs_client/unixfs_path_resolver.h"
 
-bool ipfs::BlockStorage::Store(std::string const& cid, ipfs::Block&& block) {
+#include "vocab/log_macros.h"
+
+bool ipfs::BlockStorage::Store(std::shared_ptr<FrameworkApi> api,
+                               std::string const& cid,
+                               ipfs::Block&& block) {
   // TODO validate, return false if fail
   if (cid2node_.emplace(cid, std::move(block)).second == false) {
     return false;  // We've already seen this block
   }
-  for (auto& ptr : listening_) {
+  L_INF("Stored a block of type: " << block.type() << ' ' << cid);
+  for (UnixFsPathResolver* ptr : listening_) {
+    L_INF("A resolver was waiting on " << ptr->waiting_on());
     if (ptr->waiting_on() == cid) {
-      ptr->Step(ptr);
+      ptr->Step(api);
     }
   }
   CheckDoneListening();
@@ -17,21 +23,24 @@ bool ipfs::BlockStorage::Store(std::string const& cid, ipfs::Block&& block) {
 ipfs::Block const* ipfs::BlockStorage::Get(std::string const& cid) const {
   auto it = cid2node_.find(cid);
   if (it == cid2node_.end()) {
+    //    L_WRN("Sorry, I don't have " << cid << " already stored.");
     return nullptr;
   }
   return &(it->second);
 }
 
-void ipfs::BlockStorage::AddListening(std::shared_ptr<UnixFsPathResolver> p) {
+void ipfs::BlockStorage::AddListening(UnixFsPathResolver* p) {
   listening_.insert(p);
+}
+void ipfs::BlockStorage::StopListening(UnixFsPathResolver* p) {
+  auto e = std::remove(listening_.begin(), listening_.end(), p);
+  listening_.erase(e, listening_.end());
 }
 void ipfs::BlockStorage::CheckDoneListening() {
   while (true) {
     auto done_it =
-        std::find_if(
-            listening_.begin(),
-            listening_.end(),
-         [](auto& p) { return p->waiting_on().empty(); });
+        std::find_if(listening_.begin(), listening_.end(),
+                     [](auto& p) { return p->waiting_on().empty(); });
     if (done_it == listening_.end()) {
       return;
     }

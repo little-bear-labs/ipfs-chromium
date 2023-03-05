@@ -3,8 +3,6 @@
 #include "inter_request_state.h"
 #include "loader.h"
 
-#include <iostream>
-
 void ipfs::IpfsURLLoaderFactory::Create(NonNetworkURLLoaderFactoryMap* in_out,
                                         std::string from,
                                         content::BrowserContext* context,
@@ -42,5 +40,8 @@ void ipfs::IpfsURLLoaderFactory::CreateLoaderAndStart(
             << " url=" << request.url.spec();
   auto ptr = std::make_shared<Loader>(
       default_factory_, InterRequestState::FromBrowserContext(context_));
-  ptr->StartRequest(ptr, request, std::move(loader), std::move(client));
+
+  ptr->StartRequest(ptr
+                    , nullptr //TODO network_context
+                    , request, std::move(loader), std::move(client));
 }
