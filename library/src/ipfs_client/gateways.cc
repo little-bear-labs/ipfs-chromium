@@ -7,33 +7,32 @@
 using namespace std::string_literals;
 
 ipfs::Gateways::Gateways()
-    : known_gateways_{{"http://localhost:8080/"s, 88},
+    : known_gateways_{{"http://localhost:8080/"s, 87},
                       {"https://ipfs.io/"s, 66},
                       {"https://gateway.ipfs.io/"s, 43},
                       {"https://jcsl.hopto.org/"s, 22},
                       {"https://ipfs.joaoleitao.org/"s, 19},
                       {"https://dweb.link/"s, 18},
-                      {"https://ipfs.best-practice.se/"s, 13},
-                      {"https://ipfs.jpu.jp/"s, 12},
-                      {"https://92.119.16.150/"s, 12},
+                      {"https://ipfs.best-practice.se/"s, 14},
+                      {"https://92.119.16.150/"s, 13},
                       {"https://192.158.233.119/"s, 12},
-                      {"https://192.158.233.121/"s, 12},
-                      {"https://jorropo.net/"s, 11},
                       {"https://192.158.233.115/"s, 12},
                       {"https://191.96.101.86/"s, 12},
-                      {"https://92.119.16.134/"s, 11},
-                      {"https://64.44.166.184/"s, 12},
                       {"https://38.92.47.56/"s, 12},
+                      {"https://192.158.233.121/"s, 11},
+                      {"https://ipfs.jpu.jp/"s, 11},
+                      {"https://64.44.166.184/"s, 11},
+                      {"https://jorropo.net/"s, 11},
+                      {"https://92.119.16.134/"s, 11},
                       {"https://192.158.233.122/"s, 11},
                       {"https://192.158.233.118/"s, 11},
-                      {"https://191.96.101.87/"s, 11},
                       {"https://192.158.233.117/"s, 11},
-                      {"https://192.158.233.116/"s, 11},
-                      {"https://storry.tv/"s, 10},
-                      {"https://ipfs.storry.tv/"s, 9},
-                      {"https://video.oneloveipfs.com/"s, 9},
-                      {"https://ipfs.runfission.com/"s, 6},
-                      {"https://gateway.pinata.cloud/"s, 5},
+                      {"https://192.158.233.116/"s, 10},
+                      {"https://storry.tv/"s, 9},
+                      {"https://video.oneloveipfs.com/"s, 8},
+                      {"https://ipfs.storry.tv/"s, 7},
+                      {"https://ipfs.runfission.com/"s, 5},
+                      {"https://gateway.pinata.cloud/"s, 4},
                       {"https://ipfs.litnet.work/"s, 2},
                       {"https://ipfs-gateway.cloud/"s, 1}
 
@@ -56,11 +55,11 @@ auto ipfs::Gateways::GenerateList() const -> GatewayList {
 }
 
 void ipfs::Gateways::promote(std::string const& key) {
-  L_INF("promote(" << key << ")");
+  LOG(INFO) << "promote(" << key << ")";
   known_gateways_.at(key)++;
 }
 void ipfs::Gateways::demote(std::string const& key) {
-  L_INF("demote(" << key << ")");
+  LOG(INFO) << "demote(" << key << ")";
   auto prio = known_gateways_.at(key);
   if (prio > 1) {
     --prio;

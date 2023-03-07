@@ -1,10 +1,8 @@
 #include "ipfs_client/block.h"
 
-#include <vocab/log_macros.h>
-
 #include <libp2p/multi/content_identifier_codec.hpp>
-#include <libp2p/multi/multibase_codec/codecs/base32.hpp>
-#include <libp2p/multi/multibase_codec/codecs/base58.hpp>
+
+#include <vocab/log_macros.h>
 
 using MC = libp2p::multi::MulticodecType;
 
@@ -27,8 +25,8 @@ ipfs::Block::Block(Multicodec c, std::istream& s) {
       InitFromRaw(read_stream(s));
       break;
     default:
-      L_DIE("Stream-initialization unsupported for multicodec: "
-            << static_cast<unsigned>(c) << '(' << MC::getName(c) << ')');
+      LOG(FATAL) << "Stream-initialization unsupported for multicodec: "
+                 << static_cast<unsigned>(c) << '(' << MC::getName(c) << ')';
   }
 }
 ipfs::Block::Block(Cid const& c, std::string const& s)
@@ -45,8 +43,8 @@ ipfs::Block::Block(Multicodec c, std::string const& s) {
       InitFromRaw(s);
       break;
     default:
-      L_DIE("Unsupported multicodec: " << static_cast<unsigned>(c) << '('
-                                       << MC::getName(c) << ')');
+      LOG(FATAL) << "Unsupported multicodec: " << static_cast<unsigned>(c)
+                 << '(' << MC::getName(c) << ')';
   }
 }
 ipfs::Block::Block(Block const& rhs)
@@ -119,11 +117,11 @@ std::string ipfs::Block::LinkCid(ipfs::ByteView binary_link_hash) {
   using Codec = libp2p::multi::ContentIdentifierCodec;
   auto result = Codec::decode(binary_link_hash);
   if (!result.has_value()) {
-    L_DIE(result.error());
+    LOG(FATAL) << Stringify(result.error());
   }
   auto str_res = Codec::toString(result.value());
   if (!str_res.has_value()) {
-    L_DIE(str_res.error());
+    LOG(FATAL) << Stringify(str_res.error());
   }
   return str_res.value();
 }

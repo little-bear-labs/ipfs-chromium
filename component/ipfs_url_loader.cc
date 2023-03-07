@@ -1,4 +1,4 @@
-#include "loader.h"
+#include "ipfs_url_loader.h"
 
 #include "inter_request_state.h"
 
@@ -20,16 +20,17 @@
 
 #include <fstream>
 
-ipfs::Loader::Loader(network::mojom::URLLoaderFactory* handles_http,
-                     InterRequestState& state)
+ipfs::IpfsUrlLoader::IpfsUrlLoader(
+    network::mojom::URLLoaderFactory& handles_http,
+    InterRequestState& state)
     : state_{state},
       lower_loader_factory_{handles_http},
       sched_(state_.gateways().GenerateList()) {}
-ipfs::Loader::~Loader() noexcept {
+ipfs::IpfsUrlLoader::~IpfsUrlLoader() noexcept {
   LOG(INFO) << "loader go bye-bye";
 }
 
-void ipfs::Loader::FollowRedirect(
+void ipfs::IpfsUrlLoader::FollowRedirect(
     std::vector<std::string> const&  // removed_headers
     ,
     net::HttpRequestHeaders const&  // modified_headers
@@ -40,21 +41,20 @@ void ipfs::Loader::FollowRedirect(
 ) {
   NOTIMPLEMENTED();
 }
-void ipfs::Loader::SetPriority(net::RequestPriority priority,
-                               int32_t intra_priority_value) {
+void ipfs::IpfsUrlLoader::SetPriority(net::RequestPriority priority,
+                                      int32_t intra_priority_value) {
   LOG(INFO) << "TODO SetPriority(" << priority << ',' << intra_priority_value
             << ')';
 }
-void ipfs::Loader::PauseReadingBodyFromNet() {
+void ipfs::IpfsUrlLoader::PauseReadingBodyFromNet() {
   NOTIMPLEMENTED();
 }
-void ipfs::Loader::ResumeReadingBodyFromNet() {
+void ipfs::IpfsUrlLoader::ResumeReadingBodyFromNet() {
   NOTIMPLEMENTED();
 }
 
-void ipfs::Loader::StartRequest(
-    std::shared_ptr<Loader> me,
-    network::mojom::NetworkContext* network_context,
+void ipfs::IpfsUrlLoader::StartRequest(
+    std::shared_ptr<IpfsUrlLoader> me,
     network::ResourceRequest const& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
@@ -62,39 +62,20 @@ void ipfs::Loader::StartRequest(
   DCHECK(!me->client_.is_bound());
   me->receiver_.Bind(std::move(receiver));
   me->client_.Bind(std::move(client));
-  me->original_url_ = resource_request.url.spec();
+  if (me->original_url_.empty()) {
+    me->original_url_ = resource_request.url.spec();
+  }
   if (resource_request.url.SchemeIs("ipfs")) {
-    auto ref = me->original_url_;
+    auto ref = resource_request.url.spec();
     DCHECK_EQ(ref.substr(0, 7), "ipfs://");
+    // TODO these kinds of shenanigans should have their own special utils file
     ref.erase(4, 2);
     me->StartUnixFsProc(me, ref);
-  } else if (resource_request.url.SchemeIs("ipns")) {
-    LOG(INFO) << "Doing DNSLink stuff.";
-    auto name_it = me->state_.names_.find(resource_request.url.host());
-    if (me->state_.names_.end() == name_it) {
-      auto params = network::mojom::ResolveHostParameters::New();
-      params->dns_query_type = net::DnsQueryType::TXT;
-      params->initial_priority = net::RequestPriority::HIGHEST;
-      params->source = net::HostResolverSource::ANY;
-      params->cache_usage =
-          network::mojom::ResolveHostParameters_CacheUsage::STALE_ALLOWED;
-      params->secure_dns_policy = network::mojom::SecureDnsPolicy::ALLOW;
-      params->purpose =
-          network::mojom::ResolveHostParameters::Purpose::kUnspecified;
-      network_context->ResolveHost(
-          network::mojom::HostResolverHost::NewHostPortPair(
-              net::HostPortPair("_dnslink." + resource_request.url.host(), 0)),
-          net::NetworkAnonymizationKey::CreateTransient(), std::move(params),
-          me->resolve_host_client_receiver_.BindNewPipeAndPassRemote());
-      me->mortal_danger_ = me;
-    } else {
-      me->StartUnixFsProc(me, me->GetIpfsRefFromIpnsUri(name_it->second));
-    }
   } else {
     LOG(ERROR) << "Wrong scheme: " << resource_request.url.scheme();
   }
 }
-void ipfs::Loader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
+void ipfs::IpfsUrlLoader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
   LOG(INFO) << "Requesting " << ipfs_ref << " by blocks.";
   DCHECK_EQ(ipfs_ref.substr(0, 5), "ipfs/");
   auto second_slash = ipfs_ref.find_first_of("/?", 5);
@@ -112,7 +93,9 @@ void ipfs::Loader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
       me->state_.storage(), std::string{cid}, remainder);
   me->resolver_->Step(me);
 }
-
+void ipfs::IpfsUrlLoader::OverrideUrl(GURL u) {
+  original_url_ = u.spec();
+}
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("ipfs_gateway_request", R"(
       semantics {
@@ -129,19 +112,16 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         setting: "Currently, this feature cannot be disabled by settings. TODO"
       }
     )");
-void ipfs::Loader::RequestByCid(std::string cid, Scheduler::Priority prio) {
+void ipfs::IpfsUrlLoader::RequestByCid(std::string cid,
+                                       Scheduler::Priority prio) {
   LOG(INFO) << __PRETTY_FUNCTION__ << " (" << cid << ',' << prio << ").";
   if (complete_) {
     LOG(INFO) << "Not creating block request because we're completed.";
     return;
   }
-  //  if (prio == Scheduler::Priority::Optional) {
-  //    LOG(INFO) << "prefetch " << cid;
-  //    return;
-  //  }
   sched_.Enqueue(shared_from_this(), "ipfs/" + cid + "?format=raw", prio);
 }
-void ipfs::Loader::InitiateGatewayRequest(BusyGateway assigned) {
+void ipfs::IpfsUrlLoader::InitiateGatewayRequest(BusyGateway assigned) {
   if (complete_) {
     return;
   }
@@ -154,37 +134,28 @@ void ipfs::Loader::InitiateGatewayRequest(BusyGateway assigned) {
   gateway_requests_.emplace_back(
       std::move(assigned), network::SimpleURLLoader::Create(
                                std::move(req), kTrafficAnnotation, FROM_HERE));
-  auto cb = base::BindOnce(&ipfs::Loader::OnGatewayResponse,
+  auto cb = base::BindOnce(&ipfs::IpfsUrlLoader::OnGatewayResponse,
                            base::Unretained(this), shared_from_this(), idx);
   // TODO - proper requesting with full features (pause, explict cancel, etc.).
   // May require not using SimpleURLLoader
   gateway_requests_.back()
       .second->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-          lower_loader_factory_, std::move(cb));
+          &lower_loader_factory_, std::move(cb));
 }
-void ipfs::Loader::OnGatewayResponse(std::shared_ptr<ipfs::FrameworkApi>,
-                                     std::size_t req_idx,
-                                     std::unique_ptr<std::string> body) {
+void ipfs::IpfsUrlLoader::OnGatewayResponse(std::shared_ptr<ipfs::FrameworkApi>,
+                                            std::size_t req_idx,
+                                            std::unique_ptr<std::string> body) {
   auto it = std::next(gateway_requests_.begin(), req_idx);
   auto& gw = it->first;
   LOG(INFO) << "OnGatewayResponse(" << req_idx << ")=" << gw->url();
   auto& http_loader = it->second;
-  if (!gw) {
-    LOG(ERROR) << "Gateway null in response handling!";
-    sched_.IssueRequests(shared_from_this());
-    return;
-  }
-  if (!http_loader) {
-    LOG(ERROR) << "http_loader null in response handling!";
-    sched_.IssueRequests(shared_from_this());
-    return;
-  }
-  // Doing a deep copy to avoid reference invalidation concerns below, for
-  // simplicity.
+  CHECK(gw);
+  CHECK(http_loader);
+  // Doing a deep copy to avoid reference invalidation concerns below
   auto prefix = gw->url_prefix();
   auto url = gw->url();
   auto task = gw->current_task();
-  if (handle_response(*gw, http_loader.get(), body.get())) {
+  if (ProcessBlockResponse(*gw, http_loader.get(), body.get())) {
     LOG(INFO) << "Promoting " << prefix << " due to success of " << url;
     gw.Success(state_.gateways());
     LOG(INFO) << "Cancelling all other requests for " << task;
@@ -220,31 +191,31 @@ void ipfs::Loader::OnGatewayResponse(std::shared_ptr<ipfs::FrameworkApi>,
     }
   }
 }
-bool ipfs::Loader::handle_response(Gateway& gw,
-                                   network::SimpleURLLoader* gw_req,
-                                   std::string* body) {
-  LOG(INFO) << "handle_response(" << gw.url() << ')';
+bool ipfs::IpfsUrlLoader::ProcessBlockResponse(Gateway& gw,
+                                               network::SimpleURLLoader* gw_req,
+                                               std::string* body) {
+  LOG(INFO) << "ProcessBlockResponse(" << gw.url() << ')';
   if (!body) {
-    LOG(INFO) << "handle_response(" << gw.url()
+    LOG(INFO) << "ProcessBlockResponse(" << gw.url()
               << ") Null body - presumably http error.\n";
     return false;
   }
   network::mojom::URLResponseHead const* head = gw_req->ResponseInfo();
   if (!head) {
-    LOG(INFO) << "handle_response(" << gw.url() << ") Null head.\n";
+    LOG(INFO) << "ProcessBlockResponse(" << gw.url() << ") Null head.\n";
     return false;
   }
   std::string reported_path;
   head->headers->EnumerateHeader(nullptr, "X-Ipfs-Path", &reported_path);
   if (reported_path.empty()) {
-    LOG(INFO) << "handle_response(" << gw.url()
+    LOG(INFO) << "ProcessBlockResponse(" << gw.url()
               << ") gave us a non-ipfs response.\n";
     return false;
   }
   if (gw.url().find("?format=raw") != std::string::npos) {
     return HandleBlockResponse(gw, *body, *head);
   }
-  LOG(INFO) << "Request for full file handle_response(" << gw.url()
+  LOG(INFO) << "Request for full file ProcessBlockResponse(" << gw.url()
             << ", body has " << body->size() << " bytes.)";
   if (complete_) {
     LOG(ERROR) << "Already complete! Stop it!";
@@ -281,7 +252,7 @@ bool ipfs::Loader::handle_response(Gateway& gw,
   complete_ = true;
   return true;
 }
-bool ipfs::Loader::HandleBlockResponse(
+bool ipfs::IpfsUrlLoader::HandleBlockResponse(
     Gateway& gw,
     std::string const& body,
     network::mojom::URLResponseHead const& head) {
@@ -314,7 +285,7 @@ bool ipfs::Loader::HandleBlockResponse(
   return true;
 }
 
-void ipfs::Loader::BlocksComplete(std::string mime_type) {
+void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   LOG(INFO) << "Resolved from unix-fs dag a file of type: " << mime_type
             << " will report it as " << original_url_;
   if (complete_) {
@@ -345,15 +316,16 @@ void ipfs::Loader::BlocksComplete(std::string mime_type) {
   client_->OnComplete(network::URLLoaderCompletionStatus{});
   complete_ = true;
 }
-void ipfs::Loader::FourOhFour(std::string_view cid, std::string_view path) {
+void ipfs::IpfsUrlLoader::FourOhFour(std::string_view cid,
+                                     std::string_view path) {
   LOG(ERROR) << "Immutable data 404 for " << cid << '/' << path;
   complete_ = true;
   client_->OnComplete(network::URLLoaderCompletionStatus{404});
   gateway_requests_.clear();
 }
-std::string ipfs::Loader::MimeType(std::string extension,
-                                   std::string_view content,
-                                   std::string const& url) const {
+std::string ipfs::IpfsUrlLoader::MimeType(std::string extension,
+                                          std::string_view content,
+                                          std::string const& url) const {
   std::string result;
   if (extension.size() &&
       net::GetWellKnownMimeTypeFromExtension(extension, &result)) {
@@ -368,11 +340,12 @@ std::string ipfs::Loader::MimeType(std::string extension,
   }
   return result;
 }
-void ipfs::Loader::ReceiveBlockBytes(std::string_view content) {
+void ipfs::IpfsUrlLoader::ReceiveBlockBytes(std::string_view content) {
   // TODO - cid? We may have more than one block in flight at the same time
   partial_block_.append(content);
 }
-std::string ipfs::Loader::UnescapeUrlComponent(std::string_view comp) const {
+std::string ipfs::IpfsUrlLoader::UnescapeUrlComponent(
+    std::string_view comp) const {
   using Rule = base::UnescapeRule;
   auto rules = Rule::PATH_SEPARATORS |
                Rule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS | Rule::SPACES;
@@ -380,7 +353,7 @@ std::string ipfs::Loader::UnescapeUrlComponent(std::string_view comp) const {
   LOG(INFO) << "UnescapeUrlComponent(" << comp << ")->'" << result << "'";
   return result;
 }
-std::string ipfs::Loader::GetIpfsRefFromIpnsUri(
+std::string ipfs::IpfsUrlLoader::GetIpfsRefFromIpnsUri(
     std::string_view replacement) const {
   auto spec = original_url_;
   // https://docs.ipfs.tech/concepts/dnslink/
@@ -395,52 +368,5 @@ std::string ipfs::Loader::GetIpfsRefFromIpnsUri(
     return spec;
   } else {
     return std::string{replacement};
-  }
-}
-
-void ipfs::Loader::OnTextResults(std::vector<std::string> const& text_results) {
-  LOG(ERROR) << "OnTextResults(" << text_results.size() << ") results.";
-  constexpr std::string_view prefix{"dnslink=/"};
-  for (auto& txt : text_results) {
-    if (txt.compare(0, prefix.size(), prefix)) {
-      LOG(INFO) << "irrelevant TXT(" << txt << ")";
-    } else {
-      auto replacement = std::string_view{txt}.substr(prefix.size());
-      LOG(INFO) << "TXT(" << txt
-                << ") -> Replacing scheme && DNSLink host with '" << replacement
-                << "'.";
-      state_.names_[GURL{original_url_}.host()] = std::string{replacement};
-      StartUnixFsProc(mortal_danger_, GetIpfsRefFromIpnsUri(replacement));
-    }
-  }
-}
-void ipfs::Loader::OnComplete(
-    int32_t result,
-    ::net::ResolveErrorInfo const& resolve_error_info,
-    absl::optional<::net::AddressList> const& al,
-    absl::optional<std::vector<::net::HostResolverEndpointResult>> const& er) {
-  LOG(ERROR) << "TODO : deal with errors. result=" << result
-             << " resolve_error=" << resolve_error_info.error;
-  if (al) {
-    for (auto& a : al.value()) {
-      LOG(INFO) << "Addr: " << a;
-    }
-  }
-  if (er) {
-    for (auto& e : er.value()) {
-      for (auto& ep : e.ip_endpoints) {
-        LOG(INFO) << "ER ep: " << ep;
-      }
-      LOG(INFO) << "ER meta: " << e.metadata.supported_protocol_alpns.size()
-                << ' ' << e.metadata.ech_config_list.size() << ' '
-                << e.metadata.target_name;
-    }
-  }
-  mortal_danger_.reset();
-}
-void ipfs::Loader::OnHostnameResults(
-    std::vector<::net::HostPortPair> const& res) {
-  for (auto p : res) {
-    LOG(INFO) << "Ignoring hostname resolution result: " << p;
   }
 }

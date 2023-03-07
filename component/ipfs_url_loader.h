@@ -29,9 +29,8 @@ class SimpleURLLoader;
 namespace ipfs {
 class InterRequestState;
 
-class Loader final : public network::mojom::URLLoader,
-                     public FrameworkApi,
-                     public network::ResolveHostClientBase {
+class IpfsUrlLoader final : public network::mojom::URLLoader,
+                            public FrameworkApi {
   void FollowRedirect(
       std::vector<std::string> const& removed_headers,
       net::HttpRequestHeaders const& modified_headers,
@@ -43,28 +42,22 @@ class Loader final : public network::mojom::URLLoader,
   void ResumeReadingBodyFromNet() override;
 
  public:
-  explicit Loader(network::mojom::URLLoaderFactory* handles_http,
-                  InterRequestState& state);
-  ~Loader() noexcept override;
+  explicit IpfsUrlLoader(network::mojom::URLLoaderFactory& handles_http,
+                         InterRequestState& state);
+  ~IpfsUrlLoader() noexcept override;
 
-  using ptr = std::shared_ptr<Loader>;
+  using ptr = std::shared_ptr<IpfsUrlLoader>;
 
   // Passed as the RequestHandler for
   // Interceptor::MaybeCreateLoader.
   static void StartRequest(
       ptr,
-      network::mojom::NetworkContext*,
       network::ResourceRequest const& resource_request,
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
-  static void ResolveIpns(
-      ptr,
-      //      mojo::Remote<network::mojom::HostResolver>,
-      network::mojom::NetworkContext*,
-      network::ResourceRequest const& resource_request,
-      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client);
+  void OverrideUrl(GURL);
+  void extra(std::shared_ptr<network::mojom::URLLoader> xtra) { extra_ = xtra; }
 
  private:
   using RequestHandle = std::unique_ptr<network::SimpleURLLoader>;
@@ -72,7 +65,7 @@ class Loader final : public network::mojom::URLLoader,
   InterRequestState& state_;
   mojo::Receiver<network::mojom::URLLoader> receiver_{this};
   mojo::Remote<network::mojom::URLLoaderClient> client_;
-  network::mojom::URLLoaderFactory* lower_loader_factory_;
+  network::mojom::URLLoaderFactory& lower_loader_factory_;
   mojo::ScopedDataPipeProducerHandle pipe_prod_ = {};
   mojo::ScopedDataPipeConsumerHandle pipe_cons_ = {};
   bool complete_ = false;
@@ -81,9 +74,7 @@ class Loader final : public network::mojom::URLLoader,
   std::string original_url_;
   std::shared_ptr<ipfs::UnixFsPathResolver> resolver_;
   std::string partial_block_;
-  mojo::Receiver<network::mojom::ResolveHostClient>
-      resolve_host_client_receiver_{this};
-  ptr mortal_danger_;
+  std::shared_ptr<network::mojom::URLLoader> extra_;
 
   void RequestByCid(std::string cid, Scheduler::Priority) override;
   void CreateBlockRequest(std::string cid);
@@ -100,9 +91,9 @@ class Loader final : public network::mojom::URLLoader,
   void OnGatewayResponse(std::shared_ptr<ipfs::FrameworkApi>,
                          std::size_t,
                          std::unique_ptr<std::string>);
-  bool handle_response(Gateway& gw,
-                       network::SimpleURLLoader* gw_req,
-                       std::string* body);
+  bool ProcessBlockResponse(Gateway& gw,
+                            network::SimpleURLLoader* gw_req,
+                            std::string* body);
 
   bool HandleBlockResponse(Gateway&,
                            std::string const&,
@@ -117,17 +108,6 @@ class Loader final : public network::mojom::URLLoader,
 
   void StartUnixFsProc(ptr, std::string_view);
   std::string GetIpfsRefFromIpnsUri(std::string_view) const;
-
-  // TODO ipns resolution in separate class?
-  void OnTextResults(std::vector<std::string> const& text_results) override;
-  void OnComplete(
-      int32_t result,
-      const ::net::ResolveErrorInfo& resolve_error_info,
-      const absl::optional<::net::AddressList>& resolved_addresses,
-      const absl::optional<std::vector<::net::HostResolverEndpointResult>>&
-          endpoint_results_with_metadata) override;
-  void OnHostnameResults(
-      const std::vector<::net::HostPortPair>& hosts) override;
 };
 
 }  // namespace ipfs

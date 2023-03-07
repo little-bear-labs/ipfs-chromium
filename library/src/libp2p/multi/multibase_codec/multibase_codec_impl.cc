@@ -54,12 +54,12 @@ struct CodecFunctions {
 
 namespace {
 std::string todo_encode(libp2p::common::ByteArray const&) {
-  L_DIE("TODO implement encode for this multibase encoding");
+  LOG(FATAL) << "TODO implement encode for this multibase encoding";
   return "TODO";
 }
 ipfs::expected<libp2p::common::ByteArray, BaseError> todo_decode(
     std::string_view string) {
-  L_DIE("TODO implement encode for this multibase encoding " << string);
+  LOG(FATAL) << "TODO implement encode for this multibase encoding " << string;
   return ipfs::unexpected<BaseError>{BaseError::INVALID_BASE32_INPUT};
 }
 }  // namespace

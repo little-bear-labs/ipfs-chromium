@@ -16,7 +16,6 @@
 * Documentation
 * Code cleanup
 * Robustness (all the other hash algos, etc.)
-* ifps_client logging
 * prefetch
 * frecency to GC block cache
 * Blog

@@ -10,6 +10,17 @@ RUN wget 'https://github.com/Kitware/CMake/releases/download/v3.25.2/cmake-3.25.
 RUN tar --extract --verbose --strip-components=1 --file cmake*.tar.gz
 
 RUN apt-get install --yes curl g++ git lsb-base lsb-release ninja-build sudo wget
+RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git /depot_tools
+RUN apt-get install --yes curl g++ git lsb-base lsb-release ninja-build sudo wget
 
-# ... you will need to make sure that the following tools are available:
-RUN for tool in curl git lsb_release sudo ; do echo ${tool} ; ${tool} --version || exit 1; done
+ENV PATH=/usr/bin:/bin:/depot_tools
+RUN mkdir /chromium
+RUN cd /chromium && fetch --nohooks --no-history chromium
+
+ADD . /ipfs-chromium
+
+RUN echo 'source /ipfs-chromium/docker/shared.env'
+RUN echo 'source /ipfs-chromium/docker/shared.env' >> /root/.bash_profile
+
+RUN ifconfig
+RUN ping -c 9 -w 9 host.docker.internal

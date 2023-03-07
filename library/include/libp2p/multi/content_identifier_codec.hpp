@@ -86,6 +86,8 @@ std::ostream& operator<<(std::ostream&,
                          libp2p::multi::ContentIdentifierCodec::EncodeError);
 std::ostream& operator<<(std::ostream&,
                          libp2p::multi::ContentIdentifierCodec::DecodeError);
+
+#include <vocab/stringify.h>
 // OUTCOME_HPP_DECLARE_ERROR(libp2p::multi,
 // ContentIdentifierCodec::EncodeError);
 // OUTCOME_HPP_DECLARE_ERROR(libp2p::multi,

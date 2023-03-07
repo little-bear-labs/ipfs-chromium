@@ -2,6 +2,7 @@
 #include "ipfs_client/unixfs_path_resolver.h"
 
 #include "vocab/log_macros.h"
+#include "vocab/stringify.h"
 
 bool ipfs::BlockStorage::Store(std::shared_ptr<FrameworkApi> api,
                                std::string const& cid,
@@ -10,9 +11,10 @@ bool ipfs::BlockStorage::Store(std::shared_ptr<FrameworkApi> api,
   if (cid2node_.emplace(cid, std::move(block)).second == false) {
     return false;  // We've already seen this block
   }
-  L_INF("Stored a block of type: " << block.type() << ' ' << cid);
+  LOG(INFO) << "Stored a block of type: " << ipfs::Stringify(block.type())
+            << ' ' << cid;
   for (UnixFsPathResolver* ptr : listening_) {
-    L_INF("A resolver was waiting on " << ptr->waiting_on());
+    LOG(INFO) << "A resolver was waiting on " << ptr->waiting_on();
     if (ptr->waiting_on() == cid) {
       ptr->Step(api);
     }

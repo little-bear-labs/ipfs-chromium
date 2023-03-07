@@ -1,7 +1,7 @@
 #include "url_loader_factory.h"
 
 #include "inter_request_state.h"
-#include "loader.h"
+#include "ipfs_url_loader.h"
 
 void ipfs::IpfsURLLoaderFactory::Create(NonNetworkURLLoaderFactoryMap* in_out,
                                         std::string from,
@@ -38,10 +38,9 @@ void ipfs::IpfsURLLoaderFactory::CreateLoaderAndStart(
 ) {
   LOG(INFO) << "IPFS subresource: case=" << debugging_name_
             << " url=" << request.url.spec();
-  auto ptr = std::make_shared<Loader>(
-      default_factory_, InterRequestState::FromBrowserContext(context_));
+  DCHECK(default_factory_);
+  auto ptr = std::make_shared<IpfsUrlLoader>(
+      *default_factory_, InterRequestState::FromBrowserContext(context_));
 
-  ptr->StartRequest(ptr
-                    , nullptr //TODO network_context
-                    , request, std::move(loader), std::move(client));
+  ptr->StartRequest(ptr, request, std::move(loader), std::move(client));
 }

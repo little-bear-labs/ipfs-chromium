@@ -29,7 +29,8 @@ std::ostream& operator<<(std::ostream& str,
     case E::VERSION_UNSUPPORTED:
       return str << "Content identifier version unsupported";
     default:
-      L_DIE("Invalid EncodeError: " << static_cast<unsigned>(e));
+      LOG(FATAL) << "Invalid EncodeError: " << static_cast<unsigned>(e);
+      return str << "invalid error";
   }
 }
 std::ostream& operator<<(std::ostream& str,
@@ -51,7 +52,8 @@ std::ostream& operator<<(std::ostream& str,
     case E::BAD_MULTIBASE:
       return str << "Bad multibase input";
     default:
-      L_DIE("Invalid decode error " << static_cast<unsigned>(e));
+      LOG(FATAL) << "Invalid decode error " << static_cast<unsigned>(e);
+      return str << "invalid error";
   }
 }
 namespace libp2p::multi {

@@ -3,6 +3,7 @@
 
 #include "ipfs_client/block_storage.h"
 #include "ipfs_client/gateways.h"
+#include "ipfs_client/ipns_names.h"
 
 #include "base/supports_user_data.h"
 
@@ -14,6 +15,7 @@ namespace ipfs {
 class InterRequestState : public base::SupportsUserData::Data {
   Gateways gws_;
   BlockStorage storage_;
+  IpnsNames names_;
 
  public:
   InterRequestState();
@@ -21,10 +23,7 @@ class InterRequestState : public base::SupportsUserData::Data {
 
   Gateways& gateways() { return gws_; }
   BlockStorage& storage() { return storage_; }
-  std::string_view NameResolvedTo(std::string const& name) const;
-  void AssignName(std::string const&, std::string);
-
-  flat_map<std::string, std::string> names_;  // TODO private
+  IpnsNames& names() { return names_; }
 
   static InterRequestState& FromBrowserContext(content::BrowserContext*);
 };
