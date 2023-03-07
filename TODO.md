@@ -8,7 +8,6 @@
 * Use SetPriority to modify Scheduler parameters
 * Validation!!
 * ipns resolution
-* dnslink resolution
 * User settings
 * ChromiumStyle() (accessors_only())
 * Persist promote/demote (perhaps integrated with user settings)

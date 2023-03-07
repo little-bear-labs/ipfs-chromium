@@ -21,13 +21,25 @@ else
   iceccd --daemonize --max-processes $[ `count_cpus` / 9 + 1 ]
 fi
 cd `dirname "${0}"`/..
-docker build -f docker/debian-base -t ipfs-chromium-debian-base .
+docker build --file docker/debian-base --network=host --add-host=host.docker.internal:host-gateway --tag ipfs-chromium-debian-base .
+tag() {
+  tr '[:upper:]' '[:lower:]' <<< "debian-${variant}-${profile}"
+}
 for variant in python boost
 do
   for profile in Debug Release
   do
-    echo -e "\n   ###   ${variant}/${profile}   ###"
+    echo -e "\n   ###   BUILDING IMAGE   ###   $(tag)   ###   ${variant}/${profile}   ###"
     sleep 3
-    docker build -f docker/debian-${variant} --network=host --add-host=host.docker.internal:host-gateway --build-arg "PROFILE=${profile}" .
+    docker build --file docker/debian-${variant} --network=host --add-host=host.docker.internal:host-gateway --build-arg "PROFILE=${profile}" --tag `tag` .
+  done
+done
+for variant in python boost
+do
+  for profile in Debug Release
+  do
+    echo -e "\n   ###   BUILDING LIBRARY   ###   $(tag)   ###   ${variant}/${profile}   ###"
+    sleep 3
+    docker run --network=host --add-host=host.docker.internal:host-gateway `tag` /ipfs-chromium/docker/cmake-build.sh
   done
 done

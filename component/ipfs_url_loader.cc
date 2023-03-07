@@ -25,7 +25,7 @@ ipfs::IpfsUrlLoader::IpfsUrlLoader(
     InterRequestState& state)
     : state_{state},
       lower_loader_factory_{handles_http},
-      sched_(state_.gateways().GenerateList()) {}
+      sched_(state_.scheduler()) {}
 ipfs::IpfsUrlLoader::~IpfsUrlLoader() noexcept {
   LOG(INFO) << "loader go bye-bye";
 }
@@ -119,7 +119,7 @@ void ipfs::IpfsUrlLoader::RequestByCid(std::string cid,
     LOG(INFO) << "Not creating block request because we're completed.";
     return;
   }
-  sched_.Enqueue(shared_from_this(), "ipfs/" + cid + "?format=raw", prio);
+  sched_->Enqueue(shared_from_this(), "ipfs/" + cid + "?format=raw", prio);
 }
 void ipfs::IpfsUrlLoader::InitiateGatewayRequest(BusyGateway assigned) {
   if (complete_) {
@@ -172,17 +172,17 @@ void ipfs::IpfsUrlLoader::OnGatewayResponse(std::shared_ptr<ipfs::FrameworkApi>,
       }
     }
     if (!complete_) {
-      sched_.IssueRequests(shared_from_this());
+      sched_->IssueRequests(shared_from_this());
     }
   } else {
     LOG(INFO) << "Demoting " << prefix;
     gw.Failure(state_.gateways());
-    auto failure = sched_.DetectCompleteFailure();
+    auto failure = sched_->DetectCompleteFailure();
     if (complete_) {
       LOG(ERROR) << "Already complete! Stop it!";
     } else if (failure.empty()) {
       LOG(INFO) << "Trying other gateways.";
-      sched_.IssueRequests(shared_from_this());
+      sched_->IssueRequests(shared_from_this());
     } else {
       LOG(ERROR) << "Run out of gateways to try for " << failure;
       // Creative reinterpretation of 'gateway' in 'bad gateway'
@@ -281,7 +281,7 @@ bool ipfs::IpfsUrlLoader::HandleBlockResponse(
   LOG(INFO) << "Storing CID=" << cid_str;
   state_.storage().Store(shared_from_this(), cid_str, Block{cid.value(), body});
   resolver_->Step(shared_from_this());
-  sched_.IssueRequests(shared_from_this());
+  sched_->IssueRequests(shared_from_this());
   return true;
 }
 

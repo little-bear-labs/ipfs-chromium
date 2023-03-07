@@ -9,18 +9,17 @@ RUN wget 'https://github.com/Kitware/CMake/releases/download/v3.25.2/cmake-3.25.
 # Alternatively, one could get cmake from conan. But then we wouldn't be adequately testing the cmake code that installs conan.
 RUN tar --extract --verbose --strip-components=1 --file cmake*.tar.gz
 
-RUN apt-get install --yes curl g++ git lsb-base lsb-release ninja-build sudo wget
+RUN apt-get install --yes curl g++ git lsb-base lsb-release ninja-build sudo
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git /depot_tools
-RUN apt-get install --yes curl g++ git lsb-base lsb-release ninja-build sudo wget
 
 ENV PATH=/usr/bin:/bin:/depot_tools
 RUN mkdir /chromium
-RUN cd /chromium && fetch --nohooks --no-history chromium
+
+RUN echo 'test -f /ipfs-chromium/docker/shared.env && source /ipfs-chromium/docker/shared.env' >> /root/.bash_profile
+
+RUN apt-get install --yes iproute2
+RUN ip addr
+RUN apt-get install --yes iputils-ping
+RUN ping -c 1 -w 1 host.docker.internal
 
 ADD . /ipfs-chromium
-
-RUN echo 'source /ipfs-chromium/docker/shared.env'
-RUN echo 'source /ipfs-chromium/docker/shared.env' >> /root/.bash_profile
-
-RUN ifconfig
-RUN ping -c 9 -w 9 host.docker.internal

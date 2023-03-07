@@ -74,19 +74,23 @@ void ipfs::IpnsUrlLoader::OnComplete(
     ::net::ResolveErrorInfo const&,
     absl::optional<::net::AddressList> const&,
     absl::optional<std::vector<::net::HostResolverEndpointResult>> const&) {
-  if (result != net::Error::OK) {
-    LOG(ERROR) << "Error resolving _dnslink." << host_ << " : " << result;
-    // TODO - create http error response
-  }
   LOG(INFO) << "Done with a DNS request.";
   auto _ = recv_.Unbind();
-  Next();
+  if (result == net::Error::OK) {
+    Next();
+  } else {
+    LOG(ERROR) << "Error resolving _dnslink." << host_ << " : " << result;
+    mojo::Remote<network::mojom::URLLoaderClient> client;
+    client.Bind(std::move(client_remote_));
+    client->OnComplete(
+        network::URLLoaderCompletionStatus(net::ERR_NAME_NOT_RESOLVED));
+  }
 }
 void ipfs::IpnsUrlLoader::Next() {
   auto resolved = state_.names().NameResolvedTo(host_);
   if (resolved.empty()) {
     QueryDns(host_);
-  } else if (resolved.substr(0, 5) == "ipfs/") {
+  } else if (request_ && resolved.substr(0, 5) == "ipfs/") {
     DoIpfs();
   } else if (resolved.substr(0, 5) == "ipns/") {
     LOG(INFO) << "Moving an indirection down from " << host_ << " to "

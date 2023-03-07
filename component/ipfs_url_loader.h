@@ -69,7 +69,7 @@ class IpfsUrlLoader final : public network::mojom::URLLoader,
   mojo::ScopedDataPipeProducerHandle pipe_prod_ = {};
   mojo::ScopedDataPipeConsumerHandle pipe_cons_ = {};
   bool complete_ = false;
-  Scheduler sched_;
+  std::shared_ptr<Scheduler> sched_;
   std::list<std::pair<BusyGateway, RequestHandle>> gateway_requests_;
   std::string original_url_;
   std::shared_ptr<ipfs::UnixFsPathResolver> resolver_;

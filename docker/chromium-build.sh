@@ -7,3 +7,6 @@ for tool in curl git lsb_release sudo
 do
   echo ${tool} ; ${tool} --version
 done
+
+cd /chromium
+fetch --nohooks --no-history chromium

@@ -3,6 +3,8 @@
 #include "base/logging.h"
 #include "content/public/browser/browser_context.h"
 
+#include <ipfs_client/scheduler.h>
+
 namespace {
 constexpr char user_data_key[] = "ipfs_request_userdata";
 }
@@ -24,6 +26,15 @@ auto ipfs::InterRequestState::FromBrowserContext(
   ipfs::InterRequestState* raw = owned.get();
   context->SetUserData(user_data_key, std::move(owned));
   return *raw;
+}
+std::shared_ptr<ipfs::Scheduler> ipfs::InterRequestState::scheduler() {
+  //  auto existing = existing_scheduler_.lock();
+  //  if (existing) {
+  //    return existing;
+  //  }
+  auto created = std::make_shared<ipfs::Scheduler>(gateways().GenerateList());
+  //  existing_scheduler_ = created;
+  return created;
 }
 
 ipfs::InterRequestState::InterRequestState() {}
