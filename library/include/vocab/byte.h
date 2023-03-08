@@ -22,7 +22,8 @@ enum class Byte : std::uint_least8_t {};
 
 namespace {
 [[maybe_unused]] std::ostream& operator<<(std::ostream& str, ipfs::Byte b) {
-  return str << std::hex << static_cast<unsigned>(b);
+  return str << std::hex << std::setw(2) << std::setfill('0')
+             << static_cast<unsigned>(b);
 }
 }  // namespace
 

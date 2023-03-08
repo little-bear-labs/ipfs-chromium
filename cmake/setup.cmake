@@ -43,15 +43,15 @@ if(HAVE_PIP)
         #How incredibly obnoxious is it that conan 2 dropped support for these envs?
         file(WRITE "${conan_home}/global.conf" core.net.http:timeout=$ENV{CONAN_REQUEST_TIMEOUT})
     endif()
-    if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/conan.cmake")
+    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/conan.cmake")
         file(
             DOWNLOAD
                 "https://raw.githubusercontent.com/conan-io/cmake-conan/0.18.1/conan.cmake"
-                "${CMAKE_CURRENT_LIST_DIR}/conan.cmake"
+                "${CMAKE_CURRENT_BINARY_DIR}/conan.cmake"
             TLS_VERIFY ON
         )
     endif()
-    include(${CMAKE_CURRENT_LIST_DIR}/conan.cmake)
+    include(${CMAKE_CURRENT_BINARY_DIR}/conan.cmake)
     conan_cmake_configure(
         REQUIRES
             abseil/20220623.1

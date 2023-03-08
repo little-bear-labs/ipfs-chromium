@@ -7,11 +7,11 @@
 using namespace std::string_literals;
 
 ipfs::Gateways::Gateways()
-    : known_gateways_{{"http://localhost:8080/"s, 86},
-                      {"https://ipfs.io/"s, 67},
+    : known_gateways_{{"http://localhost:8080/"s, 85},
+                      {"https://ipfs.io/"s, 68},
                       {"https://gateway.ipfs.io/"s, 43},
+                      {"https://dweb.link/"s, 33},
                       {"https://jcsl.hopto.org/"s, 23},
-                      {"https://dweb.link/"s, 22},
                       {"https://ipfs.joaoleitao.org/"s, 19},
                       {"https://ipfs.best-practice.se/"s, 18},
                       {"https://92.119.16.150/"s, 17},
@@ -25,11 +25,10 @@ ipfs::Gateways::Gateways()
                       {"https://192.158.233.122/"s, 11},
                       {"https://192.158.233.118/"s, 11},
                       {"https://192.158.233.117/"s, 10},
-                      {"https://192.158.233.116/"s, 9},
-                      {"https://storry.tv/"s, 8},
+                      {"https://storry.tv/"s, 7},
                       {"https://video.oneloveipfs.com/"s, 7},
                       {"https://ipfs.runfission.com/"s, 5},
-                      {"https://ipfs.storry.tv/"s, 4},
+                      {"https://ipfs.storry.tv/"s, 3},
                       {"https://gateway.pinata.cloud/"s, 3},
                       {"https://ipfs-gateway.cloud/"s, 1},
                       {"https://ipfs.litnet.work/"s, 0}
@@ -53,8 +52,14 @@ auto ipfs::Gateways::GenerateList() const -> GatewayList {
 }
 
 void ipfs::Gateways::promote(std::string const& key) {
-  LOG(INFO) << "promote(" << key << ")";
-  known_gateways_.at(key)++;
+  auto it = known_gateways_.find(key);
+  if (known_gateways_.end() == it) {
+    LOG(ERROR) << "Can't promote (" << key
+               << ") because I don't know that one.";
+  } else {
+    LOG(INFO) << "promote(" << key << ")";
+    known_gateways_.at(key)++;
+  }
 }
 void ipfs::Gateways::demote(std::string const& key) {
   LOG(INFO) << "demote(" << key << ")";

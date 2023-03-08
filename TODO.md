@@ -6,7 +6,9 @@
 * Dynamically... https://orchestrator.strn.pl/nodes/nearby
 * Do real URLLoader management for gateway requests (SetPriority, pause, etc.)
 * Use SetPriority to modify Scheduler parameters
-* Validation!!
+* Validation
+    - Other hashes for blocks
+    - IPNS signatures
 * ipns resolution
 * User settings
 * ChromiumStyle() (accessors_only())

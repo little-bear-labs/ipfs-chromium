@@ -3,9 +3,12 @@
     <Objective-C>
       <option name="HEADER_GUARD_STYLE_PATTERN" value="IPFS_${FILE_NAME}_${EXT}_" />
     </Objective-C>
+    <clangFormatSettings>
+      <option name="ENABLED" value="true" />
+    </clangFormatSettings>
     <files>
       <extensions>
-        <pair source="cpp" header="h" fileNamingConvention="SNAKE_CASE" />
+        <pair source="cc" header="h" fileNamingConvention="SNAKE_CASE" />
         <pair source="c" header="h" fileNamingConvention="NONE" />
         <pair source="cu" header="cuh" fileNamingConvention="NONE" />
       </extensions>
