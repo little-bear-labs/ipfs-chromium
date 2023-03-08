@@ -62,13 +62,14 @@ file(GLOB_RECURSE
     src/*_unittest.cc
 )
 find_package(GTest)
+
 if(GTest_FOUND)
     enable_testing()
     foreach(unit_test_source ${unit_test_sources})
         get_filename_component(name ${unit_test_source} NAME_WE)
         add_executable(${name}_runner
             ${unit_test_source}
-                src/ipfs_client/ipns_names.cc)
+        )
         target_compile_features(${name}_runner
             PUBLIC
                 cxx_std_${CXX_VERSION}

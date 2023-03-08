@@ -464,46 +464,6 @@ index a93e7cd74d2a9..bfed2d9e6a157 100644
      dns_config.unhandled_options = true;
      return dns_config;
    }
-diff --git a/net/dns/dns_query.cc b/net/dns/dns_query.cc
-index 1a898f90af429..7dba2548ad88c 100644
---- a/net/dns/dns_query.cc
-+++ b/net/dns/dns_query.cc
-@@ -106,6 +106,16 @@ DnsQuery::DnsQuery(uint16_t id,
-                    const OptRecordRdata* opt_rdata,
-                    PaddingStrategy padding_strategy)
-     : qname_size_(qname.size()) {
-+      std::string q;
-+      for (auto c : qname) {
-+        if (std::isgraph(c)) {
-+          q.push_back(c);
-+        }
-+      }
-+      LOG(ERROR) << "DnsQuery(" << id << ','
-+        << "qname(" << qname.size() << ")=" << q
-+        << ',' << qtype << ','
-+        << static_cast<void const*>(opt_rdata) << ',' << static_cast<long>(padding_strategy) << ')';
- #if DCHECK_IS_ON()
-   absl::optional<std::string> dotted_name =
-       dns_names_util::NetworkToDottedName(qname);
-@@ -156,7 +166,9 @@ DnsQuery::DnsQuery(uint16_t id,
- }
- 
- DnsQuery::DnsQuery(scoped_refptr<IOBufferWithSize> buffer)
--    : io_buffer_(std::move(buffer)) {}
-+    : io_buffer_(std::move(buffer)) {
-+      LOG(ERROR) << " ctor from io buffer";
-+    }
- 
- DnsQuery::DnsQuery(const DnsQuery& query) {
-   CopyFrom(query);
-@@ -228,6 +240,7 @@ uint16_t DnsQuery::qtype() const {
-   base::ReadBigEndian(reinterpret_cast<const uint8_t*>(
-                           io_buffer_->data() + kHeaderSize + qname_size_),
-                       &type);
-+  LOG(ERROR) << "type=" << type;
-   return type;
- }
- 
 diff --git a/net/dns/dns_response_result_extractor.cc b/net/dns/dns_response_result_extractor.cc
 index 644b88f9715de..f0d6fb81c8c27 100644
 --- a/net/dns/dns_response_result_extractor.cc

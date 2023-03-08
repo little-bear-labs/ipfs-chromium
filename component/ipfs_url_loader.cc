@@ -26,6 +26,7 @@ ipfs::IpfsUrlLoader::IpfsUrlLoader(
     : state_{state},
       lower_loader_factory_{handles_http},
       sched_(state_.scheduler()) {}
+
 ipfs::IpfsUrlLoader::~IpfsUrlLoader() noexcept {
   LOG(INFO) << "loader go bye-bye";
 }
@@ -41,14 +42,17 @@ void ipfs::IpfsUrlLoader::FollowRedirect(
 ) {
   NOTIMPLEMENTED();
 }
+
 void ipfs::IpfsUrlLoader::SetPriority(net::RequestPriority priority,
                                       int32_t intra_priority_value) {
   LOG(INFO) << "TODO SetPriority(" << priority << ',' << intra_priority_value
             << ')';
 }
+
 void ipfs::IpfsUrlLoader::PauseReadingBodyFromNet() {
   NOTIMPLEMENTED();
 }
+
 void ipfs::IpfsUrlLoader::ResumeReadingBodyFromNet() {
   NOTIMPLEMENTED();
 }
@@ -75,6 +79,7 @@ void ipfs::IpfsUrlLoader::StartRequest(
     LOG(ERROR) << "Wrong scheme: " << resource_request.url.scheme();
   }
 }
+
 void ipfs::IpfsUrlLoader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
   LOG(INFO) << "Requesting " << ipfs_ref << " by blocks.";
   DCHECK_EQ(ipfs_ref.substr(0, 5), "ipfs/");
@@ -93,9 +98,11 @@ void ipfs::IpfsUrlLoader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
       me->state_.storage(), std::string{cid}, remainder);
   me->resolver_->Step(me);
 }
+
 void ipfs::IpfsUrlLoader::OverrideUrl(GURL u) {
   original_url_ = u.spec();
 }
+
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("ipfs_gateway_request", R"(
       semantics {
@@ -112,6 +119,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         setting: "Currently, this feature cannot be disabled by settings. TODO"
       }
     )");
+
 void ipfs::IpfsUrlLoader::RequestByCid(std::string cid,
                                        Scheduler::Priority prio) {
   LOG(INFO) << __PRETTY_FUNCTION__ << " (" << cid << ',' << prio << ").";
@@ -121,6 +129,7 @@ void ipfs::IpfsUrlLoader::RequestByCid(std::string cid,
   }
   sched_->Enqueue(shared_from_this(), "ipfs/" + cid + "?format=raw", prio);
 }
+
 void ipfs::IpfsUrlLoader::InitiateGatewayRequest(BusyGateway assigned) {
   if (complete_) {
     return;
@@ -142,6 +151,7 @@ void ipfs::IpfsUrlLoader::InitiateGatewayRequest(BusyGateway assigned) {
       .second->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
           &lower_loader_factory_, std::move(cb));
 }
+
 void ipfs::IpfsUrlLoader::OnGatewayResponse(std::shared_ptr<ipfs::FrameworkApi>,
                                             std::size_t req_idx,
                                             std::unique_ptr<std::string> body) {
@@ -191,6 +201,7 @@ void ipfs::IpfsUrlLoader::OnGatewayResponse(std::shared_ptr<ipfs::FrameworkApi>,
     }
   }
 }
+
 bool ipfs::IpfsUrlLoader::ProcessBlockResponse(Gateway& gw,
                                                network::SimpleURLLoader* gw_req,
                                                std::string* body) {
@@ -215,6 +226,7 @@ bool ipfs::IpfsUrlLoader::ProcessBlockResponse(Gateway& gw,
   if (gw.url().find("?format=raw") != std::string::npos) {
     return HandleBlockResponse(gw, *body, *head);
   }
+  ABSL_UNREACHABLE();  // TODO - if this remains true, remove dead code.
   LOG(INFO) << "Request for full file ProcessBlockResponse(" << gw.url()
             << ", body has " << body->size() << " bytes.)";
   if (complete_) {
@@ -252,6 +264,7 @@ bool ipfs::IpfsUrlLoader::ProcessBlockResponse(Gateway& gw,
   complete_ = true;
   return true;
 }
+
 bool ipfs::IpfsUrlLoader::HandleBlockResponse(
     Gateway& gw,
     std::string const& body,
@@ -278,11 +291,19 @@ bool ipfs::IpfsUrlLoader::HandleBlockResponse(
     LOG(ERROR) << "Invalid CID '" << cid_str << "'.";
     return false;
   }
-  LOG(INFO) << "Storing CID=" << cid_str;
-  state_.storage().Store(shared_from_this(), cid_str, Block{cid.value(), body});
-  resolver_->Step(shared_from_this());
-  sched_->IssueRequests(shared_from_this());
-  return true;
+  Block block{cid.value(), body};
+  if (block.cid_matches_data()) {
+    LOG(INFO) << "Storing CID=" << cid_str;
+    state_.storage().Store(shared_from_this(), cid_str, std::move(block));
+    resolver_->Step(shared_from_this());
+    sched_->IssueRequests(shared_from_this());
+    return true;
+  } else {
+    LOG(ERROR) << "You tried to store some bytes as a block for a CID ("
+               << cid_str << ") that does not correspond to those bytes!";
+    // TODO ban the gateway outright
+    return false;
+  }
 }
 
 void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
@@ -316,6 +337,7 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   client_->OnComplete(network::URLLoaderCompletionStatus{});
   complete_ = true;
 }
+
 void ipfs::IpfsUrlLoader::FourOhFour(std::string_view cid,
                                      std::string_view path) {
   LOG(ERROR) << "Immutable data 404 for " << cid << '/' << path;
@@ -323,6 +345,7 @@ void ipfs::IpfsUrlLoader::FourOhFour(std::string_view cid,
   client_->OnComplete(network::URLLoaderCompletionStatus{404});
   gateway_requests_.clear();
 }
+
 std::string ipfs::IpfsUrlLoader::MimeType(std::string extension,
                                           std::string_view content,
                                           std::string const& url) const {
@@ -340,10 +363,12 @@ std::string ipfs::IpfsUrlLoader::MimeType(std::string extension,
   }
   return result;
 }
+
 void ipfs::IpfsUrlLoader::ReceiveBlockBytes(std::string_view content) {
   // TODO - cid? We may have more than one block in flight at the same time
   partial_block_.append(content);
 }
+
 std::string ipfs::IpfsUrlLoader::UnescapeUrlComponent(
     std::string_view comp) const {
   using Rule = base::UnescapeRule;
@@ -353,6 +378,7 @@ std::string ipfs::IpfsUrlLoader::UnescapeUrlComponent(
   LOG(INFO) << "UnescapeUrlComponent(" << comp << ")->'" << result << "'";
   return result;
 }
+
 std::string ipfs::IpfsUrlLoader::GetIpfsRefFromIpnsUri(
     std::string_view replacement) const {
   auto spec = original_url_;
