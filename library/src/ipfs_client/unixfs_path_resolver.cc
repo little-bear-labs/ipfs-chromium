@@ -398,9 +398,11 @@ const std::string& ipfs::UnixFsPathResolver::waiting_on() const {
 }
 
 ipfs::UnixFsPathResolver::UnixFsPathResolver(BlockStorage& store,
+                                             std::shared_ptr<Scheduler> sched,
                                              std::string cid,
                                              std::string path)
     : storage_{store},
+      sched_(sched),
       cid_{cid},
       path_{path},
       original_cid_(cid),

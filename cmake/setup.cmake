@@ -7,20 +7,7 @@ find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
 if(CLANG_TIDY_EXE)
 #    set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}" "--config-file=${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy")
 endif()
-find_package (Python3 COMPONENTS Interpreter)
-if(Python3_EXECUTABLE)
-    execute_process(
-        COMMAND ${Python3_EXECUTABLE} -m pip --version
-        RESULT_VARIABLE pip_result
-    )
-    if(pip_result EQUAL 0)
-        set(HAVE_PIP TRUE)
-    else()
-        set(HAVE_PIP FALSE)
-    endif()
-else()
-    set(HAVE_PIP FALSE)
-endif()
+include("${CMAKE_CURRENT_LIST_DIR}/python.cmake")
 if(HAVE_PIP)
     set(CONAN_CMAKE_SILENT_OUTPUT 1)
     execute_process(
@@ -102,26 +89,6 @@ if(HAVE_PIP)
         OUTPUT_QUIET
     )
 
-    if("${DEPOT_TOOLS_DIRECTORY}" STREQUAL "DETECT_FROM_PATH")
-        find_program(
-            tool_path
-            NAMES autoninja.py autoninja autoninja.bat gn.py gn gn.bat #Not all of these may be marked as executable, which is OK but makes them unfindable.
-            NO_CACHE
-        )
-        if(tool_path)
-            get_filename_component(
-                DEPOT_TOOLS_DIRECTORY
-                "${tool_path}"
-                DIRECTORY
-            )
-        endif()
-    endif()
-    if(EXISTS "${DEPOT_TOOLS_DIRECTORY}/ninja.py")
-        message(STATUS "depot_tools found at ${DEPOT_TOOLS_DIRECTORY}")
-        set(DEPOT_TOOLS_NINJA_PY "${DEPOT_TOOLS_DIRECTORY}/ninja.py")
-    else()
-        message(WARNING "DEPOT_TOOLS_DIRECTORY(${DEPOT_TOOLS_DIRECTORY}) not properly leading to a ninja.py - will not be doing a proper build of the component inside the Chromium tree.")
-    endif()
 else()
     message(WARNING "Could not find python 3. Can't use gn or conan. You're on your own for Chromium & dependencies.")
 endif()

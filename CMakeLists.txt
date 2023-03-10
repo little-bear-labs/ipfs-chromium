@@ -1,10 +1,27 @@
 cmake_minimum_required(VERSION 3.24)
 project(chromium-ipfs)
 
-set(CHROMIUM_SOURCE_TREE "/mnt/big/lbl/code/chromium/src" CACHE PATH "Path to chromium/src")
+#The cache variables in all-caps are meant for you to customize the build.
+#They are all here, so you don't need to hunt.
+set(DOWNLOAD_CHROMIUM FALSE CACHE BOOL
+    "Whether you prefer this cmake run to fetch its own private copy of Chromium stuff. Takes a very long time."
+)
+set(CHROMIUM_SOURCE_TREE "${CMAKE_CURRENT_BINARY_DIR}/chromium/src" CACHE PATH
+    "Path to chromium/src. If DOWNLOAD_CHROMIUM=TRUE, and it does not exist, it will be created."
+)
+if(DOWNLOAD_CHROMIUM)
+    set(default_dt "${CMAKE_CURRENT_BINARY_DIR}/depot_tools")
+else()
+    set(default_dt "DETECT_FROM_PATH")
+endif()
+set(DEPOT_TOOLS_DIRECTORY "${default_dt}" CACHE PATH
+    "Where to find depot_tools, e.g. DEPOT_TOOLS_DIRECTORY/gn.py should exist. Setting this to DETECT_FROM_PATH implies the directory is in your PATH and always will be."
+)
 set(CHROMIUM_PROFILE "Default" CACHE STRING "The profile of the current Chromium build.")
-set(DEPOT_TOOLS_DIRECTORY "DETECT_FROM_PATH" CACHE PATH "Where to find depot_tools, in particular DEPOT_TOOLS_DIRECTORY/gn.py should exist")
 set(CXX_VERSION "17" CACHE STRING "The numeric part (year % 100) of the version of the C++ standard to be used. Must be at least 17 (for C++17). Must be one CMake knows about.")
+#End of user-configuration cache variables.
+
+include(cmake/chrome.cmake)
 
 if(CXX_VERSION GREATER_EQUAL 17)
     message(STATUS "Building for C++${CXX_VERSION}")
