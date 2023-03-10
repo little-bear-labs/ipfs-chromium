@@ -1,16 +1,3 @@
-diff --git a/base/allocator/partition_allocator/pointers/raw_ptr.h b/base/allocator/partition_allocator/pointers/raw_ptr.h
-index ac91c41a57a8a..3636be8e95465 100644
---- a/base/allocator/partition_allocator/pointers/raw_ptr.h
-+++ b/base/allocator/partition_allocator/pointers/raw_ptr.h
-@@ -715,7 +715,7 @@ struct TraitsToImpl {
- // compiler. We have not managed to construct such an example in Chromium yet.
- template <typename T, RawPtrTraits Traits = RawPtrTraits::kEmpty>
- class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
--  using RawPtrTraits = RawPtrTraits;
-+//  using RawPtrTraits = RawPtrTraits;
-   // Type to return from ExtractAsDangling(), which is identical except
-   // kMayDangle trait is added (if one isn't there already).
-   using DanglingRawPtrType = raw_ptr<T, Traits | RawPtrTraits::kMayDangle>;
 diff --git a/base/memory/ref_counted.h b/base/memory/ref_counted.h
 index 9ef94d84769df..f70e30748a389 100644
 --- a/base/memory/ref_counted.h
@@ -38,10 +25,10 @@ index ed99410ea8a31..d89d48ba981ab 100644
        const CheckedThreadLocalOwnedPointer<T>&) = delete;
  
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index 0a338dd358391..f4ec6979fa9a0 100644
+index 0ac02bfdf8c98..c9564b4fd3915 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -2154,6 +2154,7 @@ static_library("browser") {
+@@ -2159,6 +2159,7 @@ static_library("browser") {
      "//components/infobars/content",
      "//components/infobars/core",
      "//components/invalidation/impl",
@@ -50,10 +37,10 @@ index 0a338dd358391..f4ec6979fa9a0 100644
      "//components/keyed_service/content",
      "//components/language/content/browser",
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
-index febbb4791f6a2..840cee7bdbab5 100644
+index 3515af3d893d1..e5ca1dfa7c19a 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -212,6 +212,8 @@
+@@ -215,6 +215,8 @@
  #include "components/error_page/common/localized_error.h"
  #include "components/error_page/content/browser/net_error_auto_reloader.h"
  #include "components/google/core/common/google_switches.h"
@@ -62,7 +49,7 @@ index febbb4791f6a2..840cee7bdbab5 100644
  #include "components/keep_alive_registry/keep_alive_types.h"
  #include "components/keep_alive_registry/scoped_keep_alive.h"
  #include "components/language/core/browser/pref_names.h"
-@@ -5735,13 +5737,17 @@ void ChromeContentBrowserClient::
+@@ -5780,13 +5782,17 @@ void ChromeContentBrowserClient::
          int render_frame_id,
          const absl::optional<url::Origin>& request_initiator_origin,
          NonNetworkURLLoaderFactoryMap* factories) {
@@ -84,7 +71,7 @@ index febbb4791f6a2..840cee7bdbab5 100644
  
  #if BUILDFLAG(IS_CHROMEOS_ASH)
    if (web_contents) {
-@@ -5886,8 +5892,8 @@ std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+@@ -5931,8 +5937,8 @@ std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
  ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
      content::NavigationUIData* navigation_ui_data,
      int frame_tree_node_id) {
@@ -354,61 +341,6 @@ index 6d9dcd3bc325d..a8e21efaf6d82 100644
  }  // namespace
  
  }  // namespace net
-diff --git a/net/dns/dns_config.cc b/net/dns/dns_config.cc
-index c099f05d8dc7a..b50265220a070 100644
---- a/net/dns/dns_config.cc
-+++ b/net/dns/dns_config.cc
-@@ -7,7 +7,9 @@
- #include <utility>
- 
- #include "base/numerics/safe_conversions.h"
-+#include "base/logging.h"
- #include "base/values.h"
-+#include "base/debug/stack_trace.h"
- #include "net/dns/public/dns_over_https_config.h"
- 
- namespace net {
-@@ -104,4 +106,13 @@ base::Value DnsConfig::ToValue() const {
-   return base::Value(std::move(dict));
- }
- 
-+Boolmon& Boolmon::operator=(bool v) {
-+  if (v != value) {
-+    base::debug::StackTrace t;
-+    LOG(ERROR) << "Value changing from " << value << " to " << v << ' ' << t.ToString();
-+    value = v;
-+  }
-+  return *this;
-+}
-+
- }  // namespace net
-diff --git a/net/dns/dns_config.h b/net/dns/dns_config.h
-index fffb31ce5427f..38aa2ebd3839f 100644
---- a/net/dns/dns_config.h
-+++ b/net/dns/dns_config.h
-@@ -23,7 +23,11 @@ class Value;
- namespace net {
- 
- constexpr base::TimeDelta kDnsDefaultFallbackPeriod = base::Seconds(1);
--
-+struct Boolmon {
-+  bool value = false;
-+  operator bool() const { return value; }
-+  Boolmon& operator=(bool v);
-+};
- // DnsConfig stores configuration of the system resolver.
- struct NET_EXPORT DnsConfig {
-   DnsConfig();
-@@ -66,7 +70,8 @@ struct NET_EXPORT DnsConfig {
- 
-   // True if there are options set in the system configuration that are not yet
-   // supported by DnsClient.
--  bool unhandled_options = false;
-+  // bool unhandled_options = false;
-+  Boolmon unhandled_options;
- 
-   // AppendToMultiLabelName: is suffix search performed for multi-label names?
-   // True, except on Windows where it can be configured.
 diff --git a/net/dns/dns_config_service_linux.cc b/net/dns/dns_config_service_linux.cc
 index 5273da5190277..d95544c64d213 100644
 --- a/net/dns/dns_config_service_linux.cc
@@ -500,18 +432,6 @@ index 351685813aad7..723a0e246323a 100644
  
  DnsSession::~DnsSession() = default;
  
-diff --git a/net/dns/dns_util.cc b/net/dns/dns_util.cc
-index 534d3c3d6196c..55502bad55ed6 100644
---- a/net/dns/dns_util.cc
-+++ b/net/dns/dns_util.cc
-@@ -124,6 +124,7 @@ uint16_t DnsQueryTypeToQtype(DnsQueryType dns_query_type) {
-     case DnsQueryType::AAAA:
-       return dns_protocol::kTypeAAAA;
-     case DnsQueryType::TXT:
-+      LOG(ERROR) << "TXT=>kTypeTXT";
-       return dns_protocol::kTypeTXT;
-     case DnsQueryType::PTR:
-       return dns_protocol::kTypePTR;
 diff --git a/net/dns/host_cache.h b/net/dns/host_cache.h
 index f077893d071df..10ef0cea2078e 100644
 --- a/net/dns/host_cache.h
@@ -541,44 +461,8 @@ index f077893d071df..10ef0cea2078e 100644
        text_records_ = std::move(text_records);
      }
      void SetResult(std::vector<HostPortPair> hostnames) {
-diff --git a/net/dns/host_resolver.cc b/net/dns/host_resolver.cc
-index 951730bfd5994..d072de57211a1 100644
---- a/net/dns/host_resolver.cc
-+++ b/net/dns/host_resolver.cc
-@@ -199,6 +199,7 @@ const url::SchemeHostPort& HostResolver::Host::AsSchemeHostPort() const {
-   const url::SchemeHostPort* scheme_host_port =
-       absl::get_if<url::SchemeHostPort>(&host_);
-   DCHECK(scheme_host_port);
-+  LOG(INFO) << scheme_host_port;
-   return *scheme_host_port;
- }
- 
-diff --git a/net/dns/host_resolver_manager.cc b/net/dns/host_resolver_manager.cc
-index 7adb6931cd2c1..be73275f5b1e4 100644
---- a/net/dns/host_resolver_manager.cc
-+++ b/net/dns/host_resolver_manager.cc
-@@ -2938,6 +2938,7 @@ void HostResolverManager::SetInsecureDnsClientEnabled(
-       (dns_client_->CanUseInsecureDnsTransactions() &&
-        dns_client_->CanQueryAdditionalTypesViaInsecureDns() !=
-            additional_types_before)) {
-+    LOG(ERROR) << "Don't do an insecure DNS.";
-     AbortInsecureDnsTasks(ERR_NETWORK_CHANGED, false /* fallback_only */);
-   }
- }
-@@ -3919,6 +3920,11 @@ void HostResolverManager::OnConnectionTypeChanged(
- void HostResolverManager::OnSystemDnsConfigChanged(
-     absl::optional<DnsConfig> config) {
-   DCHECK(!IsBoundToNetwork());
-+  if (config) {
-+    LOG(INFO) << "OnSystemDnsConfigChanged(" << config->unhandled_options;
-+  } else {
-+    LOG(INFO) << "OnSystemDnsConfigChanged(nullopt)";
-+  }
-   // If tests have provided a catch-all DNS block and then disabled it, check
-   // that we are not at risk of sending queries beyond the local network.
-   if (HostResolverProc::GetDefault() && system_resolver_disabled_for_testing_ &&
 diff --git a/net/dns/system_dns_config_change_notifier.cc b/net/dns/system_dns_config_change_notifier.cc
-index 48f62e2a686a1..02026e60fc491 100644
+index ddff4e00059a5..4a34765da956f 100644
 --- a/net/dns/system_dns_config_change_notifier.cc
 +++ b/net/dns/system_dns_config_change_notifier.cc
 @@ -17,6 +17,7 @@
@@ -589,7 +473,7 @@ index 48f62e2a686a1..02026e60fc491 100644
  #include "net/dns/dns_config_service.h"
  
  namespace net {
-@@ -158,8 +159,17 @@ class SystemDnsConfigChangeNotifier::Core {
+@@ -166,8 +167,17 @@ class SystemDnsConfigChangeNotifier::Core {
  
      if (config_ == new_config)
        return;

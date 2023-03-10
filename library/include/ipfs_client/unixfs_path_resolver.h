@@ -13,10 +13,14 @@ namespace ipfs {
 class BlockStorage;
 class FrameworkApi;
 class GeneratedDirectoryListing;
+class Scheduler;
 
 class UnixFsPathResolver {
  public:
-  UnixFsPathResolver(BlockStorage&, std::string cid, std::string path);
+  UnixFsPathResolver(BlockStorage&,
+                     std::shared_ptr<Scheduler>,
+                     std::string cid,
+                     std::string path);
   ~UnixFsPathResolver() noexcept;
 
   std::string const& waiting_on() const;
@@ -24,6 +28,7 @@ class UnixFsPathResolver {
 
  private:
   BlockStorage& storage_;
+  std::shared_ptr<Scheduler> sched_;
   std::string cid_;
   std::string path_;
   std::string original_cid_;

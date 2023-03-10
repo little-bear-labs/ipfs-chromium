@@ -95,7 +95,7 @@ void ipfs::IpfsUrlLoader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
   }
   LOG(INFO) << "cid=" << cid << " remainder=" << remainder;
   me->resolver_ = std::make_shared<UnixFsPathResolver>(
-      me->state_.storage(), std::string{cid}, remainder);
+      me->state_.storage(), me->sched_, std::string{cid}, remainder);
   me->resolver_->Step(me);
 }
 

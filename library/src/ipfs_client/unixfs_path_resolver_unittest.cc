@@ -49,12 +49,12 @@ TEST(UnixFsPathResolverTest, ResolveDirectoryToIndexHtml) {
   auto api = std::make_shared<Api>();
   ipfs::BlockStorage storage;
   setup(api, storage);
-  auto resolver = std::make_shared<ipfs::UnixFsPathResolver>(
-      storage, "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH", "/adir/");
+  ipfs::UnixFsPathResolver resolver(
+      storage, {}, "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH", "/adir/");
   EXPECT_EQ("QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH",
-            resolver->waiting_on());
+            resolver.waiting_on());
   EXPECT_EQ(api->is_done, false);
-  resolver->Step(api);
+  resolver.Step(api);
   EXPECT_EQ(api->is_done, true);
   EXPECT_EQ(api->bytes_received, "<html><body><p>Hello</p></body></html>\n");
 }
@@ -62,12 +62,12 @@ TEST(UnixFsPathResolverTest, ResolveDirectoryToGeneratedListing) {
   auto api = std::make_shared<Api>();
   ipfs::BlockStorage storage;
   setup(api, storage);
-  auto resolver = std::make_shared<ipfs::UnixFsPathResolver>(
-      storage, "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH", "/");
+  auto resolver = ipfs::UnixFsPathResolver(
+      storage, {}, "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH", "/");
   EXPECT_EQ("QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH",
-            resolver->waiting_on());
+            resolver.waiting_on());
   EXPECT_EQ(api->is_done, false);
-  resolver->Step(api);
+  resolver.Step(api);
   EXPECT_EQ(api->is_done, true);
   EXPECT_TRUE(api->bytes_received.find(">adir</") < api->bytes_received.size())
       << api->bytes_received;
