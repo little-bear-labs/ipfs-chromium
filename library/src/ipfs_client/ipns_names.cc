@@ -45,11 +45,11 @@ std::string_view ipfs::IpnsNames::NameResolvedTo(
     auto it = names_.find(name);
     if (names_.end() == it) {
       LOG(WARNING) << "Host not already cached: " << name << " ("
-                   << original_name << ')';
+                   << std::string{original_name} << ')';
       return prev;
     } else if (it == trailer) {
-      LOG(ERROR) << "Host cycle found in IPNS: " << original_name << ' '
-                 << name;
+      LOG(ERROR) << "Host cycle found in IPNS: " << std::string{original_name}
+                 << ' ' << name;
       return "";
     }
     if (it->second.at(2) == 'f') {

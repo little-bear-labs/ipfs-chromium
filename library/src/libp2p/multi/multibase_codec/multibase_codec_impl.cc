@@ -59,7 +59,8 @@ std::string todo_encode(libp2p::common::ByteArray const&) {
 }
 ipfs::expected<libp2p::common::ByteArray, BaseError> todo_decode(
     std::string_view string) {
-  LOG(FATAL) << "TODO implement encode for this multibase encoding " << string;
+  LOG(FATAL) << "TODO implement encode for this multibase encoding "
+             << std::string{string};
   return ipfs::unexpected<BaseError>{BaseError::INVALID_BASE32_INPUT};
 }
 }  // namespace
