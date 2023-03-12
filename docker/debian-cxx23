@@ -1,0 +1,8 @@
+FROM ipfs-chromium-debian-base-bookworm
+
+RUN apt-get install --yes protobuf-compiler libprotobuf-dev libssl-dev libgtest-dev libgmock-dev
+
+ARG PROFILE=Debug
+git -C /ipfs-chromium pull
+RUN echo "export PROFILE=${PROFILE}" >> /ipfs-chromium/docker/shared.env
+RUN echo "export CXX_STD=23" >> /ipfs-chromium/docker/shared.env
