@@ -98,6 +98,7 @@ function(with_vocab target)
         BEFORE
         PRIVATE
             "${CMAKE_CURRENT_BINARY_DIR}"
+            "${CMAKE_CURRENT_BINARY_DIR}/library"
     )
     find_package(Protobuf REQUIRED)
     target_link_libraries(${target}

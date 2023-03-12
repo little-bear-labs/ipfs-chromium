@@ -1,5 +1,5 @@
 diff --git a/base/memory/ref_counted.h b/base/memory/ref_counted.h
-index 9ef94d84769df..f70e30748a389 100644
+index 9ef94d8476..f70e30748a 100644
 --- a/base/memory/ref_counted.h
 +++ b/base/memory/ref_counted.h
 @@ -7,6 +7,7 @@
@@ -10,8 +10,30 @@ index 9ef94d84769df..f70e30748a389 100644
  #include <utility>
  
  #include "base/atomic_ref_count.h"
+diff --git a/base/strings/string_util.h b/base/strings/string_util.h
+index 120ffb20be..d2d92baed5 100644
+--- a/base/strings/string_util.h
++++ b/base/strings/string_util.h
+@@ -193,7 +193,7 @@ struct ToStringHelper<T,
+     ToStringHelper<UT>::Stringify(static_cast<UT>(v), ss);
+   }
+ };
+-
++/* remove_cvref_t doesn't show up until C++20
+ template <typename... Ts>
+ std::string ToString(const Ts&... values) {
+   std::ostringstream ss;
+@@ -202,7 +202,7 @@ std::string ToString(const Ts&... values) {
+    ...);
+   return ss.str();
+ }
+-
++*/
+ // ASCII-specific tolower.  The standard library's tolower is locale sensitive,
+ // so we don't want to use it here.
+ template <typename CharT,
 diff --git a/base/threading/thread_local_internal.h b/base/threading/thread_local_internal.h
-index ed99410ea8a31..d89d48ba981ab 100644
+index ed99410ea8..d89d48ba98 100644
 --- a/base/threading/thread_local_internal.h
 +++ b/base/threading/thread_local_internal.h
 @@ -30,8 +30,7 @@ class CheckedThreadLocalOwnedPointer {
@@ -25,7 +47,7 @@ index ed99410ea8a31..d89d48ba981ab 100644
        const CheckedThreadLocalOwnedPointer<T>&) = delete;
  
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index 0ac02bfdf8c98..c9564b4fd3915 100644
+index 123c9b677e..c380a46c7c 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
 @@ -2159,6 +2159,7 @@ static_library("browser") {
@@ -37,7 +59,7 @@ index 0ac02bfdf8c98..c9564b4fd3915 100644
      "//components/keyed_service/content",
      "//components/language/content/browser",
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
-index 3515af3d893d1..e5ca1dfa7c19a 100644
+index a9723a1cba..b2fa56780b 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
 @@ -215,6 +215,8 @@
@@ -83,7 +105,7 @@ index 3515af3d893d1..e5ca1dfa7c19a 100644
    interceptors.push_back(
        std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(
 diff --git a/chrome/common/chrome_content_client.cc b/chrome/common/chrome_content_client.cc
-index db08f6151229e..e63c004ec6398 100644
+index db08f61512..e63c004ec6 100644
 --- a/chrome/common/chrome_content_client.cc
 +++ b/chrome/common/chrome_content_client.cc
 @@ -292,6 +292,12 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
@@ -99,250 +121,8 @@ index db08f6151229e..e63c004ec6398 100644
  }
  
  std::u16string ChromeContentClient::GetLocalizedString(int message_id) {
-diff --git a/net/dns/dns_client_unittest.cc b/net/dns/dns_client_unittest.cc
-index 6d9dcd3bc325d..a8e21efaf6d82 100644
---- a/net/dns/dns_client_unittest.cc
-+++ b/net/dns/dns_client_unittest.cc
-@@ -168,237 +168,6 @@ TEST_F(DnsClientTest, RespectsAdditionalTypesDisabled) {
-   EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
- }
- 
--TEST_F(DnsClientTest, UnhandledOptions) {
--  client_->SetInsecureEnabled(/*enabled=*/true,
--                              /*additional_types_enabled=*/true);
--  DnsConfig config = ValidConfigWithDoh(false /* doh_only */);
--  config.unhandled_options = true;
--  client_->SetSystemConfig(config);
--
--  EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
--  EXPECT_TRUE(
--      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
--  EXPECT_FALSE(client_->CanUseInsecureDnsTransactions());
--  EXPECT_TRUE(client_->FallbackFromInsecureTransactionPreferred());
--
--  DnsConfig expected_config = config;
--  expected_config.nameservers.clear();
--  EXPECT_THAT(client_->GetEffectiveConfig(), testing::Pointee(expected_config));
--  EXPECT_TRUE(client_->GetHosts());
--  EXPECT_TRUE(client_->GetTransactionFactory());
--  EXPECT_EQ(client_->GetCurrentSession()->config(), expected_config);
--}
--
--TEST_F(DnsClientTest, CanUseSecureDnsTransactions_ProbeSuccess) {
--  client_->SetSystemConfig(ValidConfigWithDoh(true /* doh_only */));
--  resolve_context_->InvalidateCachesAndPerSessionData(
--      client_->GetCurrentSession(), true /* network_change */);
--
--  EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
--  EXPECT_TRUE(
--      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
--
--  resolve_context_->RecordServerSuccess(0u /* server_index */,
--                                        true /* is_doh_server */,
--                                        client_->GetCurrentSession());
--  EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
--  EXPECT_FALSE(
--      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
--}
--
--TEST_F(DnsClientTest, DnsOverTlsActive) {
--  client_->SetInsecureEnabled(/*enabled=*/true,
--                              /*additional_types_enabled=*/true);
--  DnsConfig config = ValidConfigWithDoh(false /* doh_only */);
--  config.dns_over_tls_active = true;
--  client_->SetSystemConfig(config);
--
--  EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
--  EXPECT_TRUE(
--      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
--  EXPECT_FALSE(client_->CanUseInsecureDnsTransactions());
--  EXPECT_TRUE(client_->FallbackFromInsecureTransactionPreferred());
--
--  EXPECT_THAT(client_->GetEffectiveConfig(), testing::Pointee(config));
--  EXPECT_TRUE(client_->GetHosts());
--  EXPECT_TRUE(client_->GetTransactionFactory());
--  EXPECT_EQ(client_->GetCurrentSession()->config(), config);
--}
--
--TEST_F(DnsClientTest, AllAllowed) {
--  client_->SetInsecureEnabled(/*enabled=*/true,
--                              /*additional_types_enabled=*/true);
--  client_->SetSystemConfig(ValidConfigWithDoh(false /* doh_only */));
--  resolve_context_->InvalidateCachesAndPerSessionData(
--      client_->GetCurrentSession(), false /* network_change */);
--  resolve_context_->RecordServerSuccess(0u /* server_index */,
--                                        true /* is_doh_server */,
--                                        client_->GetCurrentSession());
--
--  EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
--  EXPECT_FALSE(
--      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
--  EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
--  EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
--  EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
--
--  EXPECT_THAT(client_->GetEffectiveConfig(),
--              testing::Pointee(ValidConfigWithDoh(false /* doh_only */)));
--  EXPECT_TRUE(client_->GetHosts());
--  EXPECT_TRUE(client_->GetTransactionFactory());
--  EXPECT_EQ(client_->GetCurrentSession()->config(),
--            ValidConfigWithDoh(false /* doh_only */));
--}
--
--TEST_F(DnsClientTest, FallbackFromInsecureTransactionPreferred_Failures) {
--  client_->SetInsecureEnabled(/*enabled=*/true,
--                              /*additional_types_enabled=*/true);
--  client_->SetSystemConfig(ValidConfigWithDoh(false /* doh_only */));
--
--  for (int i = 0; i < DnsClient::kMaxInsecureFallbackFailures; ++i) {
--    EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
--    EXPECT_TRUE(client_->FallbackFromSecureTransactionPreferred(
--        resolve_context_.get()));
--    EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
--    EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
--    EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
--
--    client_->IncrementInsecureFallbackFailures();
--  }
--
--  EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
--  EXPECT_TRUE(
--      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
--  EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
--  EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
--  EXPECT_TRUE(client_->FallbackFromInsecureTransactionPreferred());
--
--  client_->ClearInsecureFallbackFailures();
--
--  EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
--  EXPECT_TRUE(
--      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
--  EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
--  EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
--  EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
--}
--
--TEST_F(DnsClientTest, GetPresetAddrs) {
--  DnsConfig config;
--  config.doh_config = *net::DnsOverHttpsConfig::FromString(R"(
--    {
--      "servers": [{
--        "template": "https://www.doh.com/",
--        "endpoints": [{
--          "ips": ["4.3.2.1"]
--        }, {
--          "ips": ["4.3.2.2"]
--        }]
--      }]
--    }
--  )");
--  client_->SetSystemConfig(config);
--
--  EXPECT_FALSE(client_->GetPresetAddrs(
--      url::SchemeHostPort("https", "otherdomain.com", 443)));
--  EXPECT_FALSE(
--      client_->GetPresetAddrs(url::SchemeHostPort("http", "www.doh.com", 443)));
--  EXPECT_FALSE(client_->GetPresetAddrs(
--      url::SchemeHostPort("https", "www.doh.com", 9999)));
--
--  std::vector<IPEndPoint> expected({{{4, 3, 2, 1}, 443}, {{4, 3, 2, 2}, 443}});
--
--  EXPECT_THAT(
--      client_->GetPresetAddrs(url::SchemeHostPort("https", "www.doh.com", 443)),
--      testing::Optional(expected));
--}
--
--TEST_F(DnsClientTest, Override) {
--  client_->SetSystemConfig(BasicValidConfig());
--  EXPECT_THAT(client_->GetEffectiveConfig(),
--              testing::Pointee(BasicValidConfig()));
--  EXPECT_EQ(client_->GetCurrentSession()->config(), BasicValidConfig());
--
--  client_->SetConfigOverrides(BasicValidOverrides());
--  EXPECT_THAT(client_->GetEffectiveConfig(),
--              testing::Pointee(
--                  BasicValidOverrides().ApplyOverrides(BasicValidConfig())));
--  EXPECT_EQ(client_->GetCurrentSession()->config(),
--            BasicValidOverrides().ApplyOverrides(BasicValidConfig()));
--
--  client_->SetConfigOverrides(DnsConfigOverrides());
--  EXPECT_THAT(client_->GetEffectiveConfig(),
--              testing::Pointee(BasicValidConfig()));
--  EXPECT_EQ(client_->GetCurrentSession()->config(), BasicValidConfig());
--}
--
--// Cannot apply overrides without a system config unless everything is
--// overridden
--TEST_F(DnsClientTest, OverrideNoConfig) {
--  client_->SetConfigOverrides(BasicValidOverrides());
--  EXPECT_FALSE(client_->GetEffectiveConfig());
--  EXPECT_FALSE(client_->GetCurrentSession());
--
--  auto override_everything =
--      DnsConfigOverrides::CreateOverridingEverythingWithDefaults();
--  override_everything.nameservers.emplace(
--      {IPEndPoint(IPAddress(1, 2, 3, 4), 123)});
--  client_->SetConfigOverrides(override_everything);
--  EXPECT_THAT(
--      client_->GetEffectiveConfig(),
--      testing::Pointee(override_everything.ApplyOverrides(DnsConfig())));
--  EXPECT_EQ(client_->GetCurrentSession()->config(),
--            override_everything.ApplyOverrides(DnsConfig()));
--}
--
--TEST_F(DnsClientTest, OverrideInvalidConfig) {
--  client_->SetSystemConfig(DnsConfig());
--  EXPECT_FALSE(client_->GetEffectiveConfig());
--  EXPECT_FALSE(client_->GetCurrentSession());
--
--  client_->SetConfigOverrides(BasicValidOverrides());
--  EXPECT_THAT(client_->GetEffectiveConfig(),
--              testing::Pointee(
--                  BasicValidOverrides().ApplyOverrides(BasicValidConfig())));
--  EXPECT_EQ(client_->GetCurrentSession()->config(),
--            BasicValidOverrides().ApplyOverrides(DnsConfig()));
--}
--
--TEST_F(DnsClientTest, OverrideToInvalid) {
--  client_->SetSystemConfig(BasicValidConfig());
--  EXPECT_THAT(client_->GetEffectiveConfig(),
--              testing::Pointee(BasicValidConfig()));
--  EXPECT_EQ(client_->GetCurrentSession()->config(), BasicValidConfig());
--
--  DnsConfigOverrides overrides;
--  overrides.nameservers.emplace();
--  client_->SetConfigOverrides(std::move(overrides));
--
--  EXPECT_FALSE(client_->GetEffectiveConfig());
--  EXPECT_FALSE(client_->GetCurrentSession());
--}
--
--TEST_F(DnsClientTest, ReplaceCurrentSession) {
--  client_->SetSystemConfig(BasicValidConfig());
--
--  base::WeakPtr<DnsSession> session_before =
--      client_->GetCurrentSession()->GetWeakPtr();
--  ASSERT_TRUE(session_before);
--
--  client_->ReplaceCurrentSession();
--
--  EXPECT_FALSE(session_before);
--  EXPECT_TRUE(client_->GetCurrentSession());
--}
--
--TEST_F(DnsClientTest, ReplaceCurrentSession_NoSession) {
--  ASSERT_FALSE(client_->GetCurrentSession());
--
--  client_->ReplaceCurrentSession();
--
--  EXPECT_FALSE(client_->GetCurrentSession());
--}
--
- }  // namespace
- 
- }  // namespace net
 diff --git a/net/dns/dns_config_service_linux.cc b/net/dns/dns_config_service_linux.cc
-index 5273da5190277..d95544c64d213 100644
+index 5273da5190..d95544c64d 100644
 --- a/net/dns/dns_config_service_linux.cc
 +++ b/net/dns/dns_config_service_linux.cc
 @@ -93,6 +93,9 @@ absl::optional<DnsConfig> ConvertResStateToDnsConfig(
@@ -383,7 +163,7 @@ index 5273da5190277..d95544c64d213 100644
          RecordIncompatibleNsswitchReason(
              IncompatibleNsswitchReason::kIncompatibleService,
 diff --git a/net/dns/dns_config_service_posix.cc b/net/dns/dns_config_service_posix.cc
-index a93e7cd74d2a9..bfed2d9e6a157 100644
+index a93e7cd74d..bfed2d9e6a 100644
 --- a/net/dns/dns_config_service_posix.cc
 +++ b/net/dns/dns_config_service_posix.cc
 @@ -283,6 +283,9 @@ absl::optional<DnsConfig> ConvertResStateToDnsConfig(
@@ -397,7 +177,7 @@ index a93e7cd74d2a9..bfed2d9e6a157 100644
      return dns_config;
    }
 diff --git a/net/dns/dns_response_result_extractor.cc b/net/dns/dns_response_result_extractor.cc
-index 644b88f9715de..f0d6fb81c8c27 100644
+index 644b88f971..f0d6fb81c8 100644
 --- a/net/dns/dns_response_result_extractor.cc
 +++ b/net/dns/dns_response_result_extractor.cc
 @@ -349,7 +349,7 @@ ExtractionError ExtractTxtResults(const DnsResponse& response,
@@ -410,7 +190,7 @@ index 644b88f9715de..f0d6fb81c8c27 100644
      *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
                                      HostCache::Entry::SOURCE_DNS);
 diff --git a/net/dns/dns_session.cc b/net/dns/dns_session.cc
-index 351685813aad7..723a0e246323a 100644
+index 351685813a..723a0e2463 100644
 --- a/net/dns/dns_session.cc
 +++ b/net/dns/dns_session.cc
 @@ -3,6 +3,7 @@
@@ -433,7 +213,7 @@ index 351685813aad7..723a0e246323a 100644
  DnsSession::~DnsSession() = default;
  
 diff --git a/net/dns/host_cache.h b/net/dns/host_cache.h
-index f077893d071df..10ef0cea2078e 100644
+index f077893d07..10ef0cea20 100644
 --- a/net/dns/host_cache.h
 +++ b/net/dns/host_cache.h
 @@ -212,10 +212,16 @@ class NET_EXPORT HostCache {
@@ -462,7 +242,7 @@ index f077893d071df..10ef0cea2078e 100644
      }
      void SetResult(std::vector<HostPortPair> hostnames) {
 diff --git a/net/dns/system_dns_config_change_notifier.cc b/net/dns/system_dns_config_change_notifier.cc
-index ddff4e00059a5..4a34765da956f 100644
+index ddff4e0005..4a34765da9 100644
 --- a/net/dns/system_dns_config_change_notifier.cc
 +++ b/net/dns/system_dns_config_change_notifier.cc
 @@ -17,6 +17,7 @@

@@ -20,38 +20,6 @@ file(GLOB
     *test.cc
 )
 
-#Mostly for the sake of IDEs, though it also serves a purpose here.
-add_library(local_shim_build
-    ${srcs}
-    ${hdrs} #Some IDEs like you to indicate header association this way. Otherwise they're "external"
-)
-target_compile_features(local_shim_build
-    PRIVATE
-        cxx_std_${CXX_VERSION}
-)
-target_compile_options(local_shim_build
-    PUBLIC
-        ${CHROMIUM_COMPILER_FLAGS}
-        ${WARNING_FLAGS}
-)
-target_include_directories(local_shim_build
-    SYSTEM
-    PUBLIC
-        ../library/include/
-        "${CHROMIUM_SOURCE_TREE}"
-        "${CHROMIUM_SOURCE_TREE}/buildtools/third_party/libc++/trunk/include/"
-        "${CHROMIUM_SOURCE_TREE}/buildtools/third_party/libc++/"
-        "${CHROMIUM_SOURCE_TREE}/third_party/abseil-cpp/"
-        "${CHROMIUM_SOURCE_TREE}/third_party/boringssl/src/include/"
-        "${CHROMIUM_SOURCE_TREE}/third_party/protobuf/src/"
-        "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/gen"
-        "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/gen/components/ipfs/"
-)
-target_link_libraries(local_shim_build
-    PUBLIC
-        ipfs_client
-)
-
 file(
     READ "${CHROMIUM_SOURCE_TREE}/chrome/browser/BUILD.gn"
     browser_build
@@ -75,7 +43,7 @@ elseif()
     message(FATAL_ERROR "It would appear your Chromium source tree is unpatched, and I don't have access to git.")
 endif()
 
-set(target_dir "${CHROMIUM_SOURCE_TREE}/components/ipfs/${basename}")
+set(target_dir "${CHROMIUM_SOURCE_TREE}/components/ipfs")
 file(GLOB_RECURSE
     lib_srcs
         ../library/src/*.cc
@@ -120,8 +88,10 @@ add_custom_target(setup_component
     ALL
 #    DEPENDS local_shim_build
     COMMENT "Moving code over to ${target_dir} and setting up the build there."
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${target_dir}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${srcs} ${hdrs} ${lib_srcs} ${test_srcs} ${protos} ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn "${target_dir}"
     SOURCES ${srcs} ${hdrs} ${lib_srcs} ${lib_hdrs_abs}
+    BYPRODUCTS "${target_dir}/BUILD.gn"
 )
 
 foreach(hdr ${lib_hdrs_rel})
@@ -148,21 +118,76 @@ if(GIT_EXECUTABLE)
 else()
     message(WARNING "git not in path - will not be creating the patch file to save your changes.")
 endif()
-if(Python3_EXECUTABLE)
-    if(DEPOT_TOOLS_NINJA_PY)
-        add_custom_target(in_tree_build
-            ALL
-            DEPENDS setup_component
-            WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
-            COMMENT "Building component in Chromium source tree ${target_dir}, output in out/${CHROMIUM_PROFILE}"
-            COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 9 components/ipfs:ipfs
-#            COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 9 components/ipfs:ipfs_unit_tests
-        )
-    else()
-        message(WARNING "No depot_tools")
-    endif()
+add_custom_command(
+  COMMENT "Generating build files including //components/ipfs"
+  OUTPUT "${chromium_build_dir}/obj/components/ipfs/ipfs.ninja"
+  COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GN_PY}" gen "--args= ${gnargs} " "out/${CHROMIUM_PROFILE}"
+  MAIN_DEPENDENCY "${target_dir}/BUILD.gn"
+  WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
+  VERBATIM
+)
+add_custom_command(
+  COMMENT "Building targets necessary to have generated headers used by //components/ipfs"
+  OUTPUT "${chromium_build_dir}/gen/components/ipfs/pb_dag.pb.h"
+  COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 9 components/ipfs:ipfs_generated_code
+  MAIN_DEPENDENCY "${chromium_build_dir}/obj/components/ipfs/ipfs.ninja"
+  WORKING_DIRECTORY "${chromium_build_dir}"
+)
+add_custom_target(generate_in_tree_headers
+  ALL
+  COMMENT "Checking that the headers are generated via gn-generated Ninja build."
+  SOURCES "${chromium_build_dir}/gen/components/ipfs/pb_dag.pb.h"
+)
+
+#Mostly for the sake of IDEs, though it also serves a purpose here.
+add_library(local_shim_build
+  ${srcs}
+  ${hdrs} #Some IDEs like you to indicate header association this way. Otherwise they're "external"
+  )
+add_dependencies(local_shim_build generate_in_tree_headers)
+target_compile_features(local_shim_build
+  PRIVATE
+  cxx_std_17 # Always target C++17 when using Chromium headers exclusively
+  )
+target_compile_options(local_shim_build
+  PUBLIC
+  ${CHROMIUM_COMPILER_FLAGS}
+  ${WARNING_FLAGS}
+  )
+target_include_directories(local_shim_build
+  SYSTEM
+  PUBLIC
+  ../library/include/
+  "${CHROMIUM_SOURCE_TREE}"
+  "${CHROMIUM_SOURCE_TREE}/buildtools/third_party/libc++/trunk/include/"
+  "${CHROMIUM_SOURCE_TREE}/buildtools/third_party/libc++/"
+  "${CHROMIUM_SOURCE_TREE}/third_party/abseil-cpp/"
+  "${CHROMIUM_SOURCE_TREE}/third_party/boringssl/src/include/"
+  "${CHROMIUM_SOURCE_TREE}/third_party/protobuf/src/"
+  "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/gen"
+  "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/gen/components/ipfs/"
+  )
+target_link_libraries(local_shim_build
+  PUBLIC
+  ipfs_client
+  )
+
+if(DEPOT_TOOLS_NINJA_PY)
+    add_custom_target(in_tree_build
+        ALL
+        DEPENDS setup_component
+        WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
+        COMMENT "Building component in Chromium source tree ${target_dir}, output in out/${CHROMIUM_PROFILE}"
+        COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 9 components/ipfs:ipfs
+    )
+    add_custom_target(chrome_browser
+      DEPENDS in_tree_build
+      WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
+      COMMENT "Building 'chrome' in Chromium source tree, output in out/${CHROMIUM_PROFILE}"
+      COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 9 chrome
+    )
 else()
-    message(WARNING "No python3")
+    message(WARNING "No depot_tools")
 endif()
 
 file(GLOB
