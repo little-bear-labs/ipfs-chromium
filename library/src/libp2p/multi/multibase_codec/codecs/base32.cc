@@ -101,7 +101,7 @@ std::string encodeBase32(const common::ByteArray& bytes, Base32Mode mode) {
     int n = encode_sequence(
         ipfs::span<uint8_t const>(reinterpret_cast<const uint8_t*>(&bytes[i]),
                                   std::min<size_t>(bytes.size() - i, 5)),
-        ipfs::span<char>(&result[j], 8), mode);
+        ipfs::span<char>(&result[j], 8U), mode);
     if (n < 8) {
       result.erase(result.end() - (8 - n), result.end());
     }
@@ -176,7 +176,7 @@ ipfs::expected<common::ByteArray, BaseError> decodeBase32(
     auto n = decode_sequence(
         ipfs::span<char const>(&string[i],
                                std::min<size_t>(string.size() - i, 8)),
-        ipfs::span<uint8_t>(reinterpret_cast<uint8_t*>(&result[j]), 5), mode);
+        ipfs::span<uint8_t>(reinterpret_cast<uint8_t*>(&result[j]), 5U), mode);
     if (!n.has_value()) {
       return ipfs::unexpected<BaseError>{n.error()};
     }

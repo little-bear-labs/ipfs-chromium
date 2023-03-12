@@ -17,7 +17,7 @@ endif()
 set(DEPOT_TOOLS_DIRECTORY "${default_dt}" CACHE PATH
     "Where to find depot_tools, e.g. DEPOT_TOOLS_DIRECTORY/gn.py should exist. Setting this to DETECT_FROM_PATH implies the directory is in your PATH and always will be."
 )
-set(CHROMIUM_PROFILE "Default" CACHE STRING "The profile of the current Chromium build.")
+set(CHROMIUM_PROFILE "${CMAKE_BUILD_TYPE}" CACHE STRING "The profile of the current Chromium build.")
 set(CXX_VERSION "17" CACHE STRING "The numeric part (year % 100) of the version of the C++ standard to be used. Must be at least 17 (for C++17). Must be one CMake knows about.")
 #End of user-configuration cache variables.
 
@@ -35,6 +35,9 @@ enable_testing()
 add_subdirectory(library)
 
 if(IS_DIRECTORY "${CHROMIUM_SOURCE_TREE}")
+    add_subdirectory(component)
+elseif(CHROMIUM_SOURCE_TREE AND DOWNLOAD_CHROMIUM)
+    message(STATUS "In download mode.")
     add_subdirectory(component)
 else()
     message(WARNING "CHROMIUM_SOURCE_TREE not pointing to source tree.")

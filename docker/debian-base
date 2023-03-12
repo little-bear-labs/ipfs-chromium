@@ -1,13 +1,15 @@
-FROM debian
+ARG DEBIAN_TAG=stable
+FROM debian:${DEBIAN_TAG}
 
 RUN apt-get update
 RUN apt-get install --yes apt-utils
-RUN apt-get install --yes wget ccache curl g++ git lsb-base lsb-release ninja-build sudo python3 iproute2 iputils-ping
+RUN apt-get install --yes ccache curl g++ git iproute2 iputils-ping lsb-base lsb-release ninja-build procps python3 sudo wget
 
-RUN wget 'https://github.com/Kitware/CMake/releases/download/v3.25.2/cmake-3.25.2-linux-x86_64.tar.gz'
-# Debian version of cmake is weirdly old. I could try to support it, but some of my dependencies don't.
+# Debian stable version of cmake is weirdly old. I could try to support it, but some of my dependencies don't.
 # Alternatively, one could get cmake from conan. But then we wouldn't be adequately testing the cmake code that installs conan.
-RUN tar --extract --verbose --strip-components=1 --file cmake*.tar.gz
+RUN wget 'https://github.com/Kitware/CMake/releases/download/v3.25.2/cmake-3.25.2-linux-x86_64.tar.gz'
+RUN tar --extract --file cmake*.tar.gz
+RUN ln -s /cmake-3.25.2-linux-x86_64/ /cmake
 
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git /depot_tools
 ENV PATH=/usr/bin:/bin:/depot_tools
@@ -20,4 +22,6 @@ RUN echo 'test -f /ipfs-chromium/docker/shared.env && source /ipfs-chromium/dock
 RUN ip addr
 RUN ping -c 1 -w 1 host.docker.internal
 RUN ln -s /cache/ccache /root/.ccache
-ADD . /ipfs-chromium
+
+ARG GIT_REF=main
+RUN git clone --branch "${GIT_REF}" https://github.com/little-bear-labs/ipfs-chromium.git /ipfs-chromium
