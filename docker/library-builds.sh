@@ -4,6 +4,7 @@ uname | grep Linux # Portability is untested. Would not surprise me if other Uni
 cd `dirname "${0}"`/..
 branch=`git rev-parse --abbrev-ref HEAD`
 docker build --file docker/debian-base --network=host --add-host=host.docker.internal:host-gateway --build-arg "GIT_REF=${branch}" --tag ipfs-chromium-debian-base .
+docker build --file docker/debian-base --network=host --add-host=host.docker.internal:host-gateway --build-arg "DEBIAN_TAG=bookworm" --build-arg "GIT_REF=${branch}" --tag ipfs-chromium-debian-base-bookworm .
 tag() {
   tr '[:upper:]' '[:lower:]' <<< "debian-${variant}-${profile}"
 }

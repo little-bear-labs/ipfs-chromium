@@ -1,4 +1,4 @@
-FROM ipfs-chromium-debian-base
+FROM ipfs-chromium-debian-base-bookworm
 
 RUN apt-get install --yes protobuf-compiler libprotobuf-dev libssl-dev libgtest-dev libgmock-dev
 

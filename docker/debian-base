@@ -1,4 +1,5 @@
-FROM debian
+ARG DEBIAN_TAG=stable
+FROM debian:${DEBIAN_TAG}
 
 RUN apt-get update
 RUN apt-get install --yes apt-utils
