@@ -9,6 +9,11 @@
 namespace content {
 class BrowserContext;
 }
+namespace network {
+namespace mojom {
+class NetworkContext;
+}
+}  // namespace network
 
 namespace ipfs {
 using NonNetworkURLLoaderFactoryMap =
@@ -19,13 +24,16 @@ class COMPONENT_EXPORT(IPFS) IpfsURLLoaderFactory
     : public network::SelfDeletingURLLoaderFactory {
  public:
   static void Create(NonNetworkURLLoaderFactoryMap* in_out,
-                     std::string from,
                      content::BrowserContext*,
-                     URLLoaderFactory*);
+                     URLLoaderFactory*,
+                     network::mojom::NetworkContext*);
+
+ private:
   IpfsURLLoaderFactory(std::string,
                        mojo::PendingReceiver<network::mojom::URLLoaderFactory>,
                        content::BrowserContext*,
-                       network::mojom::URLLoaderFactory*);
+                       network::mojom::URLLoaderFactory*,
+                       network::mojom::NetworkContext*);
   ~IpfsURLLoaderFactory() noexcept override;
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
@@ -36,10 +44,10 @@ class COMPONENT_EXPORT(IPFS) IpfsURLLoaderFactory
       net::MutableNetworkTrafficAnnotationTag const& traffic_annotation)
       override;
 
- private:
-  std::string debugging_name_;
+  std::string scheme_;
   content::BrowserContext* context_;
   network::mojom::URLLoaderFactory* default_factory_;
+  network::mojom::NetworkContext* network_context_;
 };
 }  // namespace ipfs
 

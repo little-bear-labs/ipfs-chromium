@@ -35,7 +35,8 @@ void ipfs::Scheduler::IssueRequests(std::shared_ptr<FrameworkApi> api) {
     } else if (t - fudge_ < 9) {
       return;
     }
-    L_INF("Overtime " << ongoing_ << " " << max_conc_ << " " << (t - fudge_));
+    LOG(INFO) << "Overtime " << ongoing_ << " " << max_conc_ << " "
+              << (t - fudge_);
   }
   fudge_ = 0;
   Issue(api, todos_.at(1), 0);
@@ -59,7 +60,8 @@ void ipfs::Scheduler::Issue(std::shared_ptr<FrameworkApi> api,
       }
     }
   }
-  //  L_INF("No pending request has fewer than " << up_to << " requests.");
+  //  LOG(INFO) << "No pending request has fewer than " << up_to << " requests."
+  //  ;
 }
 std::string ipfs::Scheduler::DetectCompleteFailure() const {
   for (auto& todo : todos_.at(0)) {

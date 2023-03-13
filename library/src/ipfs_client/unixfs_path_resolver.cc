@@ -2,10 +2,12 @@
 
 #include "generated_directory_listing.h"
 
+#include "ipfs_client/block.h"
 #include "ipfs_client/block_storage.h"
 #include "ipfs_client/framework_api.h"
 #include "smhasher/MurmurHash3.h"
 #include "vocab/log_macros.h"
+#include "vocab/stringify.h"
 
 #include <endian.h>
 
@@ -28,24 +30,24 @@ bool ends_with(std::string_view a, std::string_view b) {
 }  // namespace
 
 void ipfs::UnixFsPathResolver::Step(std::shared_ptr<FrameworkApi> api) {
-  L_INF("Step(" << cid_ << ',' << path_ << ',' << original_path_ << ')');
+  LOG(INFO) << "Step(" << cid_ << ',' << path_ << ',' << original_path_ << ')';
   if (awaiting_.size() && storage_.Get(awaiting_)) {
     awaiting_.clear();
   }
   if (cid_.empty()) {
-    L_ERR("No CID?");
+    LOG(ERROR) << "No CID?";
     return;
   }
   if (hamt_hexs_.size()) {
-    L_INF("Appear to be mid-Hamt traversal: " << hamt_hexs_.front());
+    LOG(INFO) << "Appear to be mid-Hamt traversal: " << hamt_hexs_.front();
   }
   Block const* block = storage_.Get(cid_);
   if (!block) {
-    L_INF("Current block " << cid_ << " not found.");
+    LOG(INFO) << "Current block " << cid_ << " not found.";
     Request(api, cid_, Scheduler::Priority::Required);
     return;
   }
-  L_INF("Process block of type " << block->type());
+  LOG(INFO) << "Process block of type " << ipfs::Stringify(block->type());
   switch (block->type()) {
     case Block::Type::Directory:
       ProcessDirectory(api, *block);
@@ -62,7 +64,8 @@ void ipfs::UnixFsPathResolver::Step(std::shared_ptr<FrameworkApi> api) {
       ProcessDirShard(api, *block);
       break;
     default:
-      L_DIE("TODO : Unhandled UnixFS node of type " << block->type());
+      LOG(FATAL) << "TODO : Unhandled UnixFS node of type "
+                 << Stringify(block->type());
   }
 }
 void ipfs::UnixFsPathResolver::ProcessLargeFile(
@@ -106,7 +109,8 @@ void ipfs::UnixFsPathResolver::ProcessLargeFile(
           api->ReceiveBlockBytes(child->chunk_data());
           break;
         default:
-          L_DIE(" unhandled child-of-file block type: " << child->type());
+          LOG(FATAL) << " unhandled child-of-file block type: "
+                     << ipfs::Stringify(child->type());
       }
       written_through_.assign(child_cid);
       return true;
@@ -175,7 +179,7 @@ void ipfs::UnixFsPathResolver::ProcessDirectory(
   if (!found) {
     api->FourOhFour(cid_, path_);
   }
-  L_INF("Descending path: " << next << " . " << path_);
+  LOG(INFO) << "Descending path: " << next << " . " << path_;
   path_.erase(0, end);
   Step(api);
 }
@@ -205,7 +209,7 @@ void ipfs::UnixFsPathResolver::ProcessDirShard(
    */
   auto non_slash = path_.find_first_not_of("/");
   if (non_slash && non_slash < path_.size()) {
-    L_INF("Removing " << non_slash << " leading slashes from " << path_);
+    LOG(INFO) << "Removing " << non_slash << " leading slashes from " << path_;
     path_.erase(0, non_slash);
   }
   auto slash = path_.find('/');
@@ -214,7 +218,8 @@ void ipfs::UnixFsPathResolver::ProcessDirShard(
   bool missing_descendents = false;
   //  RequestHamtDescendents(api, missing_descendents, block, hex_width);
   if (missing_descendents) {
-    L_WRN("Waiting on more blocks before dealing with this HAMT node.");
+    LOG(WARNING)
+        << "Waiting on more blocks before dealing with this HAMT node.";
     return;
   }
   L_VAR(next)
@@ -222,7 +227,7 @@ void ipfs::UnixFsPathResolver::ProcessDirShard(
   if (next.empty()) {
     GeneratedDirectoryListing listing{original_path_};
     if (ListHamt(api, block, listing, hex_width)) {
-      L_INF("Returning generated listing for a HAMT");
+      LOG(INFO) << "Returning generated listing for a HAMT";
       api->ReceiveBlockBytes(listing.Finish());
       api->BlocksComplete("text/html");
       this->cid_.clear();
@@ -238,8 +243,8 @@ void ipfs::UnixFsPathResolver::ProcessDirShard(
     // Rust's fastmurmur3 also passes 0 for seed, and iroh uses that.
     MurmurHash3_x64_128(component.data(), component.size(), 0, digest.data());
     auto bug_compatible_digest = htobe64(digest[0]);
-    L_INF("Hash: " << std::hex << digest[0] << ' ' << digest[1] << " -> "
-                   << bug_compatible_digest);
+    LOG(INFO) << "Hash: " << digest[0] << ' ' << digest[1] << " -> "
+              << bug_compatible_digest;
     for (auto d : digest) {
       auto hash_bits = htobe64(d);
       while (hash_bits) {
@@ -247,8 +252,7 @@ void ipfs::UnixFsPathResolver::ProcessDirShard(
         // digest,...
         auto popped = hash_bits % fanout;
         hash_bits /= fanout;
-        L_INF("popped=" << std::hex << popped
-                        << " remaining digest=" << hash_bits);
+        LOG(INFO) << "popped=" << popped << " remaining digest=" << hash_bits;
         std::ostringstream oss;
         // ... then hex encode (using 0-F) using little endian thoses bits ...
         oss << std::setfill('0') << std::setw(hex_width) << std::uppercase
@@ -263,17 +267,16 @@ void ipfs::UnixFsPathResolver::ProcessDirShard(
       // Fun fact: there is a spec-defined sort order to these children.
       // We *could* do a binary search.
       if (!starts_with(name, hamt_hexs_.front())) {
-        //        L_INF(name << " isn't the right child for " <<
-        //        hamt_hexs_.front());
+        //        LOG(INFO) << name << " isn't the right child for " <<
+        //        hamt_hexs_.front() ;
         return true;
       }
       found = true;
-      L_INF("As we move down a Hamt, "
-            << cid_ << " -> " << name << " / " << cid
-            << " fanout=" << block.fsdata().fanout());
+      LOG(INFO) << "As we move down a Hamt, " << cid_ << " -> " << name << " / "
+                << cid << " fanout=" << block.fsdata().fanout();
       cid_ = cid;
       if (ends_with(name, component)) {
-        L_INF("Found our calling! Leaving the Hamt");
+        LOG(INFO) << "Found our calling! Leaving the Hamt";
         hamt_hexs_.clear();
         auto slash = path_.find('/');
         if (slash == std::string::npos) {
@@ -282,13 +285,13 @@ void ipfs::UnixFsPathResolver::ProcessDirShard(
           path_.erase(0, slash + 1);
         }
       } else if (hamt_hexs_.front() == name) {
-        L_INF("One more level down the Hamt");
+        LOG(INFO) << "One more level down the Hamt";
         hamt_hexs_.erase(hamt_hexs_.begin());
       } else {
-        L_ERR("Was looking for "
-              << cid_ << '/' << path_ << " and got as far as HAMT hash bits "
-              << hamt_hexs_.front() << " but the corresponding link is " << name
-              << " and does not end with " << component);
+        LOG(ERROR) << "Was looking for " << cid_ << '/' << path_
+                   << " and got as far as HAMT hash bits " << hamt_hexs_.front()
+                   << " but the corresponding link is " << name
+                   << " and does not end with " << component;
         api->FourOhFour(cid_, hamt_hexs_.front() + component);
       }
       return false;
@@ -324,7 +327,7 @@ bool ipfs::UnixFsPathResolver::ListHamt(std::shared_ptr<FrameworkApi>& api,
                                         Block const& block,
                                         GeneratedDirectoryListing& out,
                                         unsigned hex_width) {
-  L_INF(hex_width);
+  LOG(INFO) << hex_width;
   bool got_all = true;
   block.List([&](std::string const& link_name, auto cid) {
     if (link_name.size() > hex_width) {
@@ -429,13 +432,12 @@ std::string ipfs::UnixFsPathResolver::GuessContentType(
   auto mime = api->MimeType(ext, content, "ipfs://" + original_path_);
   if (mime.size()) {
     // TODO, store mime in block
-    L_INF("Detected mime "
-          << mime << " for " << original_path_
-          << " based on the file contents (likely magic number).");
+    LOG(INFO) << "Detected mime " << mime << " for " << original_path_
+              << " based on the file contents (likely magic number).";
     return mime;
   }
   // TODO fetch the mime from block if available
-  L_ERR("\n\t###\tTODO:\tCould not determine mime type for '" << original_path_
-                                                              << "'.\t###\n\n");
+  LOG(ERROR) << "\n\t###\tTODO:\tCould not determine mime type for '"
+             << original_path_ << "'.\t###\n\n";
   return "TODO";
 }

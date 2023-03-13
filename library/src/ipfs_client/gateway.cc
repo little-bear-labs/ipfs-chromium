@@ -22,7 +22,7 @@ bool ipfs::Gateway::operator<(Gateway const& rhs) const {
 }
 bool ipfs::Gateway::accept(std::string const& suffix) {
   if (tasked_with_.empty() && !PreviouslyFailed(suffix)) {
-    L_INF(prefix_ << ".accept(" << suffix << ")");
+    LOG(INFO) << prefix_ << ".accept(" << suffix << ")";
     tasked_with_.assign(suffix);
     return true;
   }
@@ -40,7 +40,7 @@ void ipfs::Gateway::TaskSuccess() {
   proven_ = true;
 }
 void ipfs::Gateway::TaskFailed() {
-  L_WRN(url() << " TaskFailed");
+  LOG(WARNING) << url() << " TaskFailed";
   failed_requests_.insert(tasked_with_);
   priority_ /= 2;
   tasked_with_.clear();

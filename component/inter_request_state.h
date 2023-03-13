@@ -3,6 +3,7 @@
 
 #include "ipfs_client/block_storage.h"
 #include "ipfs_client/gateways.h"
+#include "ipfs_client/ipns_names.h"
 
 #include "base/supports_user_data.h"
 
@@ -11,9 +12,12 @@ class BrowserContext;
 }
 
 namespace ipfs {
+class Scheduler;
 class InterRequestState : public base::SupportsUserData::Data {
   Gateways gws_;
   BlockStorage storage_;
+  IpnsNames names_;
+  std::weak_ptr<Scheduler> existing_scheduler_;
 
  public:
   InterRequestState();
@@ -21,7 +25,8 @@ class InterRequestState : public base::SupportsUserData::Data {
 
   Gateways& gateways() { return gws_; }
   BlockStorage& storage() { return storage_; }
-  flat_map<std::string, std::string> names_;
+  IpnsNames& names() { return names_; }
+  std::shared_ptr<Scheduler> scheduler();
 
   static InterRequestState& FromBrowserContext(content::BrowserContext*);
 };

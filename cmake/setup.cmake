@@ -9,6 +9,19 @@ if(CLANG_TIDY_EXE)
 endif()
 find_package (Python3 COMPONENTS Interpreter)
 if(Python3_EXECUTABLE)
+    execute_process(
+        COMMAND ${Python3_EXECUTABLE} -m pip --version
+        RESULT_VARIABLE pip_result
+    )
+    if(pip_result EQUAL 0)
+        set(HAVE_PIP TRUE)
+    else()
+        set(HAVE_PIP FALSE)
+    endif()
+else()
+    set(HAVE_PIP FALSE)
+endif()
+if(HAVE_PIP)
     set(CONAN_CMAKE_SILENT_OUTPUT 1)
     execute_process(
         COMMAND conan config home

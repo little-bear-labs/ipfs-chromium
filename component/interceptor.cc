@@ -1,10 +1,10 @@
 #include "interceptor.h"
 
 #include "inter_request_state.h"
-#include "loader.h"
+#include "ipfs_url_loader.h"
+#include "ipns_url_loader.h"
 
 #include "base/logging.h"
-#include "base/supports_user_data.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/url_loader_factory.h"
@@ -19,18 +19,22 @@ Interceptor::Interceptor(network::mojom::URLLoaderFactory* handles_http,
 void Interceptor::MaybeCreateLoader(network::ResourceRequest const& req,
                                     content::BrowserContext* context,
                                     LoaderCallback loader_callback) {
-  if (req.url.SchemeIs("ipfs") || req.url.SchemeIs("ipns")) {
+  auto& state = InterRequestState::FromBrowserContext(context);
+  if (req.url.SchemeIs("ipns")) {
+    auto redirect = std::make_shared<IpnsUrlLoader>(
+        state, req.url.host(), network_context_, *loader_factory_);
+    std::move(loader_callback)
+        .Run(base::BindOnce(&ipfs::IpnsUrlLoader::StartHandling, redirect));
+  } else if (req.url.SchemeIs("ipfs")) {
     auto hdr_str = req.headers.ToString();
     std::replace(hdr_str.begin(), hdr_str.end(), '\r', ' ');
     LOG(INFO) << req.url.spec() << " getting intercepted! Headers: \n"
               << hdr_str;
     DCHECK(context);
+    auto loader =
+        std::make_shared<ipfs::IpfsUrlLoader>(*loader_factory_, state);
     std::move(loader_callback)
-        .Run(base::BindOnce(&ipfs::Loader::StartRequest,
-                            std::make_shared<ipfs::Loader>(
-                                loader_factory_,
-                                InterRequestState::FromBrowserContext(context)),
-                            network_context_));
+        .Run(base::BindOnce(&ipfs::IpfsUrlLoader::StartRequest, loader));
   } else {
     LOG(INFO) << req.url.spec() << " has host '" << req.url.host()
               << "' and is not being intercepted.";

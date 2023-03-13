@@ -1,6 +1,5 @@
 * Decompose UnixFsPathResolver
 * Shared Scheduler
-* Proper CID library
 * Scan all known nodes of a HAMT for index.html before deciding to require everything for a listing
 * Unit tests coverage for ipfs_client, using GTest
 * cull hard-coded list to remove those that don't allow block-level access
@@ -9,7 +8,6 @@
 * Use SetPriority to modify Scheduler parameters
 * Validation!!
 * ipns resolution
-* dnslink resolution
 * User settings
 * ChromiumStyle() (accessors_only())
 * Persist promote/demote (perhaps integrated with user settings)
@@ -17,7 +15,6 @@
 * Documentation
 * Code cleanup
 * Robustness (all the other hash algos, etc.)
-* ifps_client logging
 * prefetch
 * frecency to GC block cache
 * Blog

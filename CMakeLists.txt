@@ -16,17 +16,6 @@ include(cmake/setup.cmake)
 enable_testing()
 
 add_subdirectory(library)
-add_executable(simple simple_main.cpp)
-
-target_compile_features(simple
-    PUBLIC
-    cxx_std_${CXX_VERSION}
-)
-target_link_libraries(simple
-    PUBLIC
-        ipfs_client
-)
-with_vocab(simple)
 
 if(IS_DIRECTORY "${CHROMIUM_SOURCE_TREE}")
     add_subdirectory(component)

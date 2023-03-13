@@ -50,7 +50,7 @@ index 0a338dd358391..f4ec6979fa9a0 100644
      "//components/keyed_service/content",
      "//components/language/content/browser",
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
-index febbb4791f6a2..4947fb39c469a 100644
+index febbb4791f6a2..840cee7bdbab5 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
 @@ -212,6 +212,8 @@
@@ -62,7 +62,7 @@ index febbb4791f6a2..4947fb39c469a 100644
  #include "components/keep_alive_registry/keep_alive_types.h"
  #include "components/keep_alive_registry/scoped_keep_alive.h"
  #include "components/language/core/browser/pref_names.h"
-@@ -5735,13 +5737,12 @@ void ChromeContentBrowserClient::
+@@ -5735,13 +5737,17 @@ void ChromeContentBrowserClient::
          int render_frame_id,
          const absl::optional<url::Origin>& request_initiator_origin,
          NonNetworkURLLoaderFactoryMap* factories) {
@@ -74,12 +74,17 @@ index febbb4791f6a2..4947fb39c469a 100644
 -#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS) || \
 -        // !BUILDFLAG(IS_ANDROID)
 +  network::mojom::URLLoaderFactory* default_factory = g_browser_process->system_network_context_manager()->GetURLLoaderFactory();
-+  ipfs::IpfsURLLoaderFactory::Create(factories, __PRETTY_FUNCTION__,web_contents->GetBrowserContext(),default_factory);
++  ipfs::IpfsURLLoaderFactory::Create(
++    factories,
++    web_contents->GetBrowserContext(),
++    default_factory,
++    GetSystemNetworkContext()
++  );
 +
  
  #if BUILDFLAG(IS_CHROMEOS_ASH)
    if (web_contents) {
-@@ -5886,8 +5887,8 @@ std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+@@ -5886,8 +5892,8 @@ std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
  ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
      content::NavigationUIData* navigation_ui_data,
      int frame_tree_node_id) {
@@ -107,150 +112,380 @@ index db08f6151229e..e63c004ec6398 100644
  }
  
  std::u16string ChromeContentClient::GetLocalizedString(int message_id) {
-diff --git a/net/dns/dns_client.cc b/net/dns/dns_client.cc
-index d8e9ca7aef414..99ee57d1db63a 100644
---- a/net/dns/dns_client.cc
-+++ b/net/dns/dns_client.cc
-@@ -100,9 +100,10 @@ class DnsClientImpl : public DnsClient {
-   }
- 
-   bool CanUseInsecureDnsTransactions() const override {
--    const DnsConfig* config = GetEffectiveConfig();
--    return config && config->nameservers.size() > 0 && insecure_enabled_ &&
--           !config->unhandled_options && !config->dns_over_tls_active;
-+    return true;
-+    // const DnsConfig* config = GetEffectiveConfig();
-+    // return config && config->nameservers.size() > 0 && insecure_enabled_ &&
-+           // !config->unhandled_options && !config->dns_over_tls_active;
-   }
- 
-   bool CanQueryAdditionalTypesViaInsecureDns() const override {
-@@ -136,7 +137,7 @@ class DnsClientImpl : public DnsClient {
-   bool SetSystemConfig(absl::optional<DnsConfig> system_config) override {
-     if (system_config == system_config_)
-       return false;
--
-+    LOG(ERROR) << " system config changed";
-     system_config_ = std::move(system_config);
- 
-     return UpdateDnsConfig();
-@@ -145,7 +146,7 @@ class DnsClientImpl : public DnsClient {
-   bool SetConfigOverrides(DnsConfigOverrides config_overrides) override {
-     if (config_overrides == config_overrides_)
-       return false;
--
-+    LOG(ERROR) << " config overrides changed";
-     config_overrides_ = std::move(config_overrides);
- 
-     return UpdateDnsConfig();
-@@ -161,9 +162,10 @@ class DnsClientImpl : public DnsClient {
-   DnsSession* GetCurrentSession() override { return session_.get(); }
- 
-   const DnsConfig* GetEffectiveConfig() const override {
--    if (!session_)
-+    if (!session_) {
-+      // LOG(ERROR) << "No session = no effective config";
-       return nullptr;
--
-+    }
-     DCHECK(session_->config().IsValid());
-     return &session_->config();
-   }
-@@ -243,38 +245,45 @@ class DnsClientImpl : public DnsClient {
- 
-  private:
-   absl::optional<DnsConfig> BuildEffectiveConfig() const {
-+
-     DnsConfig config;
-     if (config_overrides_.OverridesEverything()) {
-+      LOG(ERROR) << " override all the things";
-       config = config_overrides_.ApplyOverrides(DnsConfig());
-     } else {
--      if (!system_config_)
-+      if (!system_config_) {
-+        LOG(ERROR) << " no system configs.";
-         return absl::nullopt;
--
-+      }
-+      LOG(INFO) << " apply overrides";
-       config = config_overrides_.ApplyOverrides(system_config_.value());
-     }
- 
-     UpdateConfigForDohUpgrade(&config);
--
-+    LOG(ERROR) << "config.unhandled_options=" << config.unhandled_options << ' ' << config.nameservers.size() << " nameservers...";
-     // TODO(ericorth): Consider keeping a separate DnsConfig for pure Chrome-
-     // produced configs to allow respecting all fields like |unhandled_options|
-     // while still being able to fallback to system config for DoH.
-     // For now, clear the nameservers for extra security if parts of the system
-     // config are unhandled.
--    if (config.unhandled_options)
--      config.nameservers.clear();
-+    // if (config.unhandled_options)
-+      // config.nameservers.clear();
- 
--    if (!config.IsValid())
-+    if (!config.IsValid()) {
-+      LOG(ERROR) << " Config is invalid.";
-       return absl::nullopt;
--
-+    }
-     return config;
-   }
- 
-   bool UpdateDnsConfig() {
-     absl::optional<DnsConfig> new_effective_config = BuildEffectiveConfig();
- 
--    if (IsEqual(new_effective_config, GetEffectiveConfig()))
-+    if (IsEqual(new_effective_config, GetEffectiveConfig())) {
-+      LOG(INFO) << "dns config unchanged";
-       return false;
--
-+    }
-+    LOG(ERROR) << "updating DNS config";
-     insecure_fallback_failures_ = 0;
-     UpdateSession(std::move(new_effective_config));
- 
-@@ -293,11 +302,13 @@ class DnsClientImpl : public DnsClient {
- 
-     if (new_effective_config) {
-       DCHECK(new_effective_config.value().IsValid());
--
-+      LOG(ERROR) << "setting session new effective config";
-       session_ = base::MakeRefCounted<DnsSession>(
-           std::move(new_effective_config).value(), rand_int_callback_,
-           net_log_);
-       factory_ = DnsTransactionFactory::CreateFactory(session_.get());
-+    } else {
-+      LOG(ERROR) << "clearing session from empty new config";
-     }
-   }
- 
-@@ -322,6 +333,7 @@ class DnsClientImpl : public DnsClient {
- 
- // static
- std::unique_ptr<DnsClient> DnsClient::CreateClient(NetLog* net_log) {
-+  LOG(ERROR) << "Creating dns client from NetLog @ " << static_cast<void*>(net_log);
-   return std::make_unique<DnsClientImpl>(net_log,
-                                          base::BindRepeating(&base::RandInt));
+diff --git a/net/dns/dns_client_unittest.cc b/net/dns/dns_client_unittest.cc
+index 6d9dcd3bc325d..a8e21efaf6d82 100644
+--- a/net/dns/dns_client_unittest.cc
++++ b/net/dns/dns_client_unittest.cc
+@@ -168,237 +168,6 @@ TEST_F(DnsClientTest, RespectsAdditionalTypesDisabled) {
+   EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
  }
+ 
+-TEST_F(DnsClientTest, UnhandledOptions) {
+-  client_->SetInsecureEnabled(/*enabled=*/true,
+-                              /*additional_types_enabled=*/true);
+-  DnsConfig config = ValidConfigWithDoh(false /* doh_only */);
+-  config.unhandled_options = true;
+-  client_->SetSystemConfig(config);
+-
+-  EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
+-  EXPECT_TRUE(
+-      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
+-  EXPECT_FALSE(client_->CanUseInsecureDnsTransactions());
+-  EXPECT_TRUE(client_->FallbackFromInsecureTransactionPreferred());
+-
+-  DnsConfig expected_config = config;
+-  expected_config.nameservers.clear();
+-  EXPECT_THAT(client_->GetEffectiveConfig(), testing::Pointee(expected_config));
+-  EXPECT_TRUE(client_->GetHosts());
+-  EXPECT_TRUE(client_->GetTransactionFactory());
+-  EXPECT_EQ(client_->GetCurrentSession()->config(), expected_config);
+-}
+-
+-TEST_F(DnsClientTest, CanUseSecureDnsTransactions_ProbeSuccess) {
+-  client_->SetSystemConfig(ValidConfigWithDoh(true /* doh_only */));
+-  resolve_context_->InvalidateCachesAndPerSessionData(
+-      client_->GetCurrentSession(), true /* network_change */);
+-
+-  EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
+-  EXPECT_TRUE(
+-      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
+-
+-  resolve_context_->RecordServerSuccess(0u /* server_index */,
+-                                        true /* is_doh_server */,
+-                                        client_->GetCurrentSession());
+-  EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
+-  EXPECT_FALSE(
+-      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
+-}
+-
+-TEST_F(DnsClientTest, DnsOverTlsActive) {
+-  client_->SetInsecureEnabled(/*enabled=*/true,
+-                              /*additional_types_enabled=*/true);
+-  DnsConfig config = ValidConfigWithDoh(false /* doh_only */);
+-  config.dns_over_tls_active = true;
+-  client_->SetSystemConfig(config);
+-
+-  EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
+-  EXPECT_TRUE(
+-      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
+-  EXPECT_FALSE(client_->CanUseInsecureDnsTransactions());
+-  EXPECT_TRUE(client_->FallbackFromInsecureTransactionPreferred());
+-
+-  EXPECT_THAT(client_->GetEffectiveConfig(), testing::Pointee(config));
+-  EXPECT_TRUE(client_->GetHosts());
+-  EXPECT_TRUE(client_->GetTransactionFactory());
+-  EXPECT_EQ(client_->GetCurrentSession()->config(), config);
+-}
+-
+-TEST_F(DnsClientTest, AllAllowed) {
+-  client_->SetInsecureEnabled(/*enabled=*/true,
+-                              /*additional_types_enabled=*/true);
+-  client_->SetSystemConfig(ValidConfigWithDoh(false /* doh_only */));
+-  resolve_context_->InvalidateCachesAndPerSessionData(
+-      client_->GetCurrentSession(), false /* network_change */);
+-  resolve_context_->RecordServerSuccess(0u /* server_index */,
+-                                        true /* is_doh_server */,
+-                                        client_->GetCurrentSession());
+-
+-  EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
+-  EXPECT_FALSE(
+-      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
+-  EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
+-  EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
+-  EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
+-
+-  EXPECT_THAT(client_->GetEffectiveConfig(),
+-              testing::Pointee(ValidConfigWithDoh(false /* doh_only */)));
+-  EXPECT_TRUE(client_->GetHosts());
+-  EXPECT_TRUE(client_->GetTransactionFactory());
+-  EXPECT_EQ(client_->GetCurrentSession()->config(),
+-            ValidConfigWithDoh(false /* doh_only */));
+-}
+-
+-TEST_F(DnsClientTest, FallbackFromInsecureTransactionPreferred_Failures) {
+-  client_->SetInsecureEnabled(/*enabled=*/true,
+-                              /*additional_types_enabled=*/true);
+-  client_->SetSystemConfig(ValidConfigWithDoh(false /* doh_only */));
+-
+-  for (int i = 0; i < DnsClient::kMaxInsecureFallbackFailures; ++i) {
+-    EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
+-    EXPECT_TRUE(client_->FallbackFromSecureTransactionPreferred(
+-        resolve_context_.get()));
+-    EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
+-    EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
+-    EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
+-
+-    client_->IncrementInsecureFallbackFailures();
+-  }
+-
+-  EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
+-  EXPECT_TRUE(
+-      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
+-  EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
+-  EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
+-  EXPECT_TRUE(client_->FallbackFromInsecureTransactionPreferred());
+-
+-  client_->ClearInsecureFallbackFailures();
+-
+-  EXPECT_TRUE(client_->CanUseSecureDnsTransactions());
+-  EXPECT_TRUE(
+-      client_->FallbackFromSecureTransactionPreferred(resolve_context_.get()));
+-  EXPECT_TRUE(client_->CanUseInsecureDnsTransactions());
+-  EXPECT_TRUE(client_->CanQueryAdditionalTypesViaInsecureDns());
+-  EXPECT_FALSE(client_->FallbackFromInsecureTransactionPreferred());
+-}
+-
+-TEST_F(DnsClientTest, GetPresetAddrs) {
+-  DnsConfig config;
+-  config.doh_config = *net::DnsOverHttpsConfig::FromString(R"(
+-    {
+-      "servers": [{
+-        "template": "https://www.doh.com/",
+-        "endpoints": [{
+-          "ips": ["4.3.2.1"]
+-        }, {
+-          "ips": ["4.3.2.2"]
+-        }]
+-      }]
+-    }
+-  )");
+-  client_->SetSystemConfig(config);
+-
+-  EXPECT_FALSE(client_->GetPresetAddrs(
+-      url::SchemeHostPort("https", "otherdomain.com", 443)));
+-  EXPECT_FALSE(
+-      client_->GetPresetAddrs(url::SchemeHostPort("http", "www.doh.com", 443)));
+-  EXPECT_FALSE(client_->GetPresetAddrs(
+-      url::SchemeHostPort("https", "www.doh.com", 9999)));
+-
+-  std::vector<IPEndPoint> expected({{{4, 3, 2, 1}, 443}, {{4, 3, 2, 2}, 443}});
+-
+-  EXPECT_THAT(
+-      client_->GetPresetAddrs(url::SchemeHostPort("https", "www.doh.com", 443)),
+-      testing::Optional(expected));
+-}
+-
+-TEST_F(DnsClientTest, Override) {
+-  client_->SetSystemConfig(BasicValidConfig());
+-  EXPECT_THAT(client_->GetEffectiveConfig(),
+-              testing::Pointee(BasicValidConfig()));
+-  EXPECT_EQ(client_->GetCurrentSession()->config(), BasicValidConfig());
+-
+-  client_->SetConfigOverrides(BasicValidOverrides());
+-  EXPECT_THAT(client_->GetEffectiveConfig(),
+-              testing::Pointee(
+-                  BasicValidOverrides().ApplyOverrides(BasicValidConfig())));
+-  EXPECT_EQ(client_->GetCurrentSession()->config(),
+-            BasicValidOverrides().ApplyOverrides(BasicValidConfig()));
+-
+-  client_->SetConfigOverrides(DnsConfigOverrides());
+-  EXPECT_THAT(client_->GetEffectiveConfig(),
+-              testing::Pointee(BasicValidConfig()));
+-  EXPECT_EQ(client_->GetCurrentSession()->config(), BasicValidConfig());
+-}
+-
+-// Cannot apply overrides without a system config unless everything is
+-// overridden
+-TEST_F(DnsClientTest, OverrideNoConfig) {
+-  client_->SetConfigOverrides(BasicValidOverrides());
+-  EXPECT_FALSE(client_->GetEffectiveConfig());
+-  EXPECT_FALSE(client_->GetCurrentSession());
+-
+-  auto override_everything =
+-      DnsConfigOverrides::CreateOverridingEverythingWithDefaults();
+-  override_everything.nameservers.emplace(
+-      {IPEndPoint(IPAddress(1, 2, 3, 4), 123)});
+-  client_->SetConfigOverrides(override_everything);
+-  EXPECT_THAT(
+-      client_->GetEffectiveConfig(),
+-      testing::Pointee(override_everything.ApplyOverrides(DnsConfig())));
+-  EXPECT_EQ(client_->GetCurrentSession()->config(),
+-            override_everything.ApplyOverrides(DnsConfig()));
+-}
+-
+-TEST_F(DnsClientTest, OverrideInvalidConfig) {
+-  client_->SetSystemConfig(DnsConfig());
+-  EXPECT_FALSE(client_->GetEffectiveConfig());
+-  EXPECT_FALSE(client_->GetCurrentSession());
+-
+-  client_->SetConfigOverrides(BasicValidOverrides());
+-  EXPECT_THAT(client_->GetEffectiveConfig(),
+-              testing::Pointee(
+-                  BasicValidOverrides().ApplyOverrides(BasicValidConfig())));
+-  EXPECT_EQ(client_->GetCurrentSession()->config(),
+-            BasicValidOverrides().ApplyOverrides(DnsConfig()));
+-}
+-
+-TEST_F(DnsClientTest, OverrideToInvalid) {
+-  client_->SetSystemConfig(BasicValidConfig());
+-  EXPECT_THAT(client_->GetEffectiveConfig(),
+-              testing::Pointee(BasicValidConfig()));
+-  EXPECT_EQ(client_->GetCurrentSession()->config(), BasicValidConfig());
+-
+-  DnsConfigOverrides overrides;
+-  overrides.nameservers.emplace();
+-  client_->SetConfigOverrides(std::move(overrides));
+-
+-  EXPECT_FALSE(client_->GetEffectiveConfig());
+-  EXPECT_FALSE(client_->GetCurrentSession());
+-}
+-
+-TEST_F(DnsClientTest, ReplaceCurrentSession) {
+-  client_->SetSystemConfig(BasicValidConfig());
+-
+-  base::WeakPtr<DnsSession> session_before =
+-      client_->GetCurrentSession()->GetWeakPtr();
+-  ASSERT_TRUE(session_before);
+-
+-  client_->ReplaceCurrentSession();
+-
+-  EXPECT_FALSE(session_before);
+-  EXPECT_TRUE(client_->GetCurrentSession());
+-}
+-
+-TEST_F(DnsClientTest, ReplaceCurrentSession_NoSession) {
+-  ASSERT_FALSE(client_->GetCurrentSession());
+-
+-  client_->ReplaceCurrentSession();
+-
+-  EXPECT_FALSE(client_->GetCurrentSession());
+-}
+-
+ }  // namespace
+ 
+ }  // namespace net
+diff --git a/net/dns/dns_config.cc b/net/dns/dns_config.cc
+index c099f05d8dc7a..b50265220a070 100644
+--- a/net/dns/dns_config.cc
++++ b/net/dns/dns_config.cc
+@@ -7,7 +7,9 @@
+ #include <utility>
+ 
+ #include "base/numerics/safe_conversions.h"
++#include "base/logging.h"
+ #include "base/values.h"
++#include "base/debug/stack_trace.h"
+ #include "net/dns/public/dns_over_https_config.h"
+ 
+ namespace net {
+@@ -104,4 +106,13 @@ base::Value DnsConfig::ToValue() const {
+   return base::Value(std::move(dict));
+ }
+ 
++Boolmon& Boolmon::operator=(bool v) {
++  if (v != value) {
++    base::debug::StackTrace t;
++    LOG(ERROR) << "Value changing from " << value << " to " << v << ' ' << t.ToString();
++    value = v;
++  }
++  return *this;
++}
++
+ }  // namespace net
+diff --git a/net/dns/dns_config.h b/net/dns/dns_config.h
+index fffb31ce5427f..38aa2ebd3839f 100644
+--- a/net/dns/dns_config.h
++++ b/net/dns/dns_config.h
+@@ -23,7 +23,11 @@ class Value;
+ namespace net {
+ 
+ constexpr base::TimeDelta kDnsDefaultFallbackPeriod = base::Seconds(1);
+-
++struct Boolmon {
++  bool value = false;
++  operator bool() const { return value; }
++  Boolmon& operator=(bool v);
++};
+ // DnsConfig stores configuration of the system resolver.
+ struct NET_EXPORT DnsConfig {
+   DnsConfig();
+@@ -66,7 +70,8 @@ struct NET_EXPORT DnsConfig {
+ 
+   // True if there are options set in the system configuration that are not yet
+   // supported by DnsClient.
+-  bool unhandled_options = false;
++  // bool unhandled_options = false;
++  Boolmon unhandled_options;
+ 
+   // AppendToMultiLabelName: is suffix search performed for multi-label names?
+   // True, except on Windows where it can be configured.
+diff --git a/net/dns/dns_config_service_linux.cc b/net/dns/dns_config_service_linux.cc
+index 5273da5190277..d95544c64d213 100644
+--- a/net/dns/dns_config_service_linux.cc
++++ b/net/dns/dns_config_service_linux.cc
+@@ -93,6 +93,9 @@ absl::optional<DnsConfig> ConvertResStateToDnsConfig(
+   // cannot be overwritten by /etc/resolv.conf
+   const unsigned kRequiredOptions = RES_RECURSE | RES_DEFNAMES | RES_DNSRCH;
+   if ((res.options & kRequiredOptions) != kRequiredOptions) {
++    if (!dns_config.unhandled_options) {
++      LOG(ERROR) << "unhandled_options set to true bec " << res.options;
++    }
+     dns_config.unhandled_options = true;
+     return dns_config;
+   }
+@@ -206,9 +209,12 @@ void RecordIncompatibleNsswitchReason(
+     IncompatibleNsswitchReason reason,
+     absl::optional<NsswitchReader::Service> service_token) {
+   if (service_token) {
++    LOG(ERROR) << "RecordIncompatibleNsswitchReason(" << static_cast<int>(reason) << ',' << int(service_token.value()) << ')';
+     base::UmaHistogramEnumeration(
+         "Net.DNS.DnsConfig.Nsswitch.IncompatibleService",
+         service_token.value());
++  } else {
++    LOG(ERROR) << "RecordIncompatibleNsswitchReason(" << static_cast<int>(reason) << ",nullopt)";
+   }
+ }
+ 
+@@ -272,11 +278,11 @@ bool IsNsswitchConfigCompatible(
+         // Ignore any entries after `kDns` because Chrome will fallback to the
+         // system resolver if a result was not found in DNS.
+         return true;
+-
++      case NsswitchReader::Service::kResolve:
++        break;
+       case NsswitchReader::Service::kMdns:
+       case NsswitchReader::Service::kMdns4:
+       case NsswitchReader::Service::kMdns6:
+-      case NsswitchReader::Service::kResolve:
+       case NsswitchReader::Service::kNis:
+         RecordIncompatibleNsswitchReason(
+             IncompatibleNsswitchReason::kIncompatibleService,
+diff --git a/net/dns/dns_config_service_posix.cc b/net/dns/dns_config_service_posix.cc
+index a93e7cd74d2a9..bfed2d9e6a157 100644
+--- a/net/dns/dns_config_service_posix.cc
++++ b/net/dns/dns_config_service_posix.cc
+@@ -283,6 +283,9 @@ absl::optional<DnsConfig> ConvertResStateToDnsConfig(
+   // cannot be overwritten by /etc/resolv.conf
+   const unsigned kRequiredOptions = RES_RECURSE | RES_DEFNAMES | RES_DNSRCH;
+   if ((res.options & kRequiredOptions) != kRequiredOptions) {
++    if (!dns_config.unhandled_options) {
++      LOG(ERROR) << "unhandled_options set to true bec " << res.options;
++    }
+     dns_config.unhandled_options = true;
+     return dns_config;
+   }
 diff --git a/net/dns/dns_query.cc b/net/dns/dns_query.cc
-index 1a898f90af429..2aa2051ebf0e3 100644
+index 1a898f90af429..7dba2548ad88c 100644
 --- a/net/dns/dns_query.cc
 +++ b/net/dns/dns_query.cc
-@@ -106,6 +106,11 @@ DnsQuery::DnsQuery(uint16_t id,
+@@ -106,6 +106,16 @@ DnsQuery::DnsQuery(uint16_t id,
                     const OptRecordRdata* opt_rdata,
                     PaddingStrategy padding_strategy)
      : qname_size_(qname.size()) {
++      std::string q;
++      for (auto c : qname) {
++        if (std::isgraph(c)) {
++          q.push_back(c);
++        }
++      }
 +      LOG(ERROR) << "DnsQuery(" << id << ','
-+        << "qname.size()=" << qname.size()
-+        // << std::string_view{reinterpret_cast<char const*>(qname.data()),qname.size()}
++        << "qname(" << qname.size() << ")=" << q
 +        << ',' << qtype << ','
 +        << static_cast<void const*>(opt_rdata) << ',' << static_cast<long>(padding_strategy) << ')';
  #if DCHECK_IS_ON()
    absl::optional<std::string> dotted_name =
        dns_names_util::NetworkToDottedName(qname);
-@@ -156,7 +161,9 @@ DnsQuery::DnsQuery(uint16_t id,
+@@ -156,7 +166,9 @@ DnsQuery::DnsQuery(uint16_t id,
  }
  
  DnsQuery::DnsQuery(scoped_refptr<IOBufferWithSize> buffer)
@@ -261,7 +496,7 @@ index 1a898f90af429..2aa2051ebf0e3 100644
  
  DnsQuery::DnsQuery(const DnsQuery& query) {
    CopyFrom(query);
-@@ -228,6 +235,7 @@ uint16_t DnsQuery::qtype() const {
+@@ -228,6 +240,7 @@ uint16_t DnsQuery::qtype() const {
    base::ReadBigEndian(reinterpret_cast<const uint8_t*>(
                            io_buffer_->data() + kHeaderSize + qname_size_),
                        &type);
@@ -269,18 +504,6 @@ index 1a898f90af429..2aa2051ebf0e3 100644
    return type;
  }
  
-diff --git a/net/dns/dns_response.cc b/net/dns/dns_response.cc
-index 03f300c1d0bc2..57539a03d796b 100644
---- a/net/dns/dns_response.cc
-+++ b/net/dns/dns_response.cc
-@@ -245,6 +245,7 @@ bool DnsRecordParser::ReadRecord(DnsResourceRecord* out) {
-       reader.ReadU32(&out->ttl) &&
-       reader.ReadU16(&rdlen) &&
-       reader.ReadPiece(&out->rdata, rdlen)) {
-+    LOG(ERROR) << "type=" << out->type << " klass=" << out->klass;
-     cur_ = reinterpret_cast<const char*>(reader.ptr());
-     ++num_records_parsed_;
-     return true;
 diff --git a/net/dns/dns_response_result_extractor.cc b/net/dns/dns_response_result_extractor.cc
 index 644b88f9715de..f0d6fb81c8c27 100644
 --- a/net/dns/dns_response_result_extractor.cc
@@ -294,161 +517,29 @@ index 644b88f9715de..f0d6fb81c8c27 100644
    if (extraction_error != ExtractionError::kOk) {
      *out_results = HostCache::Entry(ERR_DNS_MALFORMED_RESPONSE,
                                      HostCache::Entry::SOURCE_DNS);
-diff --git a/net/dns/dns_transaction.cc b/net/dns/dns_transaction.cc
-index 1ba2317ca581f..d258448c86825 100644
---- a/net/dns/dns_transaction.cc
-+++ b/net/dns/dns_transaction.cc
-@@ -206,7 +206,9 @@ class DnsUDPAttempt : public DnsAttempt {
-         socket_(std::move(socket)),
-         server_(server),
-         query_(std::move(query)),
--        udp_tracker_(udp_tracker) {}
-+        udp_tracker_(udp_tracker) {
-+          LOG(ERROR) << "DnsUDPAttempt ctor";
-+        }
+diff --git a/net/dns/dns_session.cc b/net/dns/dns_session.cc
+index 351685813aad7..723a0e246323a 100644
+--- a/net/dns/dns_session.cc
++++ b/net/dns/dns_session.cc
+@@ -3,6 +3,7 @@
+ // found in the LICENSE file.
  
-   DnsUDPAttempt(const DnsUDPAttempt&) = delete;
-   DnsUDPAttempt& operator=(const DnsUDPAttempt&) = delete;
-@@ -222,6 +224,7 @@ class DnsUDPAttempt : public DnsAttempt {
-     int rv = socket_->ConnectAsync(
-         server_,
-         base::BindOnce(&DnsUDPAttempt::OnIOComplete, base::Unretained(this)));
-+    LOG(ERROR) << "ConnectAsync for DnsUDPAttempt returned " << rv;
-     if (rv == ERR_IO_PENDING) {
-       return rv;
-     }
-@@ -262,6 +265,7 @@ class DnsUDPAttempt : public DnsAttempt {
-     int rv = result;
-     do {
-       State state = next_state_;
-+      LOG(ERROR) << "DoLoop(state=" << state << ')';
-       next_state_ = STATE_NONE;
-       switch (state) {
-         case STATE_CONNECT_COMPLETE:
-@@ -292,6 +296,7 @@ class DnsUDPAttempt : public DnsAttempt {
-   }
+ #include "net/dns/dns_session.h"
++#include "base/logging.h"
  
-   int DoConnectComplete(int rv) {
-+    LOG(ERROR) << "DoConnectComplete(" << rv << ')';
-     if (rv != OK) {
-       DVLOG(1) << "Failed to connect socket: " << rv;
-       udp_tracker_->RecordConnectionError(rv);
-@@ -305,6 +310,7 @@ class DnsUDPAttempt : public DnsAttempt {
-   }
+ #include <stdint.h>
  
-   int DoSendQuery(int rv) {
-+    LOG(ERROR) << "DoSendQuery(" << rv << ')';
-     DCHECK_NE(ERR_IO_PENDING, rv);
-     if (rv < 0)
-       return rv;
-@@ -316,6 +322,7 @@ class DnsUDPAttempt : public DnsAttempt {
-   }
+@@ -23,7 +24,9 @@ DnsSession::DnsSession(const DnsConfig& config,
+       rand_callback_(base::BindRepeating(rand_int_callback,
+                                          0,
+                                          std::numeric_limits<uint16_t>::max())),
+-      net_log_(net_log) {}
++      net_log_(net_log) {
++        LOG(INFO) << "(session) config.unhandled_options =" << config.unhandled_options ;
++      }
  
-   int DoSendQueryComplete(int rv) {
-+    LOG(ERROR) << "DoSendQueryComplete(" << rv << ')';
-     DCHECK_NE(ERR_IO_PENDING, rv);
-     if (rv < 0)
-       return rv;
-@@ -361,6 +368,7 @@ class DnsUDPAttempt : public DnsAttempt {
+ DnsSession::~DnsSession() = default;
  
-   void OnIOComplete(int rv) {
-     rv = DoLoop(rv);
-+    LOG(ERROR) << "OnIOComplete(" << rv << ')';
-     if (rv != ERR_IO_PENDING)
-       std::move(callback_).Run(rv);
-   }
-@@ -669,7 +677,9 @@ class DnsTCPAttempt : public DnsAttempt {
-         socket_(std::move(socket)),
-         query_(std::move(query)),
-         length_buffer_(
--            base::MakeRefCounted<IOBufferWithSize>(sizeof(uint16_t))) {}
-+            base::MakeRefCounted<IOBufferWithSize>(sizeof(uint16_t))) {
-+              LOG(ERROR) << "DnsTCPAttempt ctor";
-+            }
- 
-   DnsTCPAttempt(const DnsTCPAttempt&) = delete;
-   DnsTCPAttempt& operator=(const DnsTCPAttempt&) = delete;
-@@ -882,6 +892,7 @@ class DnsTCPAttempt : public DnsAttempt {
- 
-   void OnIOComplete(int rv) {
-     rv = DoLoop(rv);
-+    LOG(ERROR) << "OnIOComplete(" << rv << ')';
-     if (rv != ERR_IO_PENDING)
-       std::move(callback_).Run(rv);
-   }
-@@ -1198,7 +1209,9 @@ class DnsTransactionImpl : public DnsTransaction,
-   struct AttemptResult {
-     AttemptResult() = default;
-     AttemptResult(int rv, const DnsAttempt* attempt)
--        : rv(rv), attempt(attempt) {}
-+        : rv(rv), attempt(attempt) {
-+          LOG(ERROR) << "AttemptResult(" << rv << ')';
-+        }
- 
-     int rv;
-     raw_ptr<const DnsAttempt, DanglingUntriaged> attempt;
-@@ -1269,7 +1282,7 @@ class DnsTransactionImpl : public DnsTransaction,
- 
-   void DoCallback(AttemptResult result) {
-     DCHECK_NE(ERR_IO_PENDING, result.rv);
--
-+    LOG(ERROR) << "DoCallback";
-     // TODO(mgersh): consider changing back to a DCHECK once
-     // https://crbug.com/779589 is fixed.
-     if (callback_.is_null())
-@@ -1277,6 +1290,7 @@ class DnsTransactionImpl : public DnsTransaction,
- 
-     const DnsResponse* response =
-         result.attempt ? result.attempt->GetResponse() : nullptr;
-+    LOG(ERROR) << "In DoCallback(result.rv=" << result.rv << ')';
-     CHECK(result.rv != OK || response != nullptr);
- 
-     timer_.Stop();
-@@ -1345,7 +1359,7 @@ class DnsTransactionImpl : public DnsTransaction,
-                                std::unique_ptr<DnsQuery> query) {
-     DCHECK(!secure_);
-     DCHECK(!session_->udp_tracker()->low_entropy());
--
-+    LOG(ERROR) << "MakeUdpAttempt(" << server_index << ')';
-     const DnsConfig& config = session_->config();
-     DCHECK_LT(server_index, config.nameservers.size());
-     size_t attempt_number = attempts_.size();
-@@ -1378,6 +1392,7 @@ class DnsTransactionImpl : public DnsTransaction,
-     size_t doh_server_index = dns_server_iterator_->GetNextAttemptIndex();
- 
-     unsigned attempt_number = attempts_.size();
-+    LOG(ERROR) << "MakeHTTPAttempt(" << doh_server_index << ')';
-     ConstructDnsHTTPAttempt(
-         session_.get(), doh_server_index, qnames_.front(), qtype_, opt_rdata_,
-         &attempts_, resolve_context_->url_request_context(),
-@@ -1428,6 +1443,7 @@ class DnsTransactionImpl : public DnsTransaction,
- 
-   AttemptResult MakeTcpAttempt(size_t server_index,
-                                std::unique_ptr<DnsQuery> query) {
-+    LOG(ERROR) << "MakeTcpAttempt(" << server_index << ')';
-     DCHECK(!secure_);
-     const DnsConfig& config = session_->config();
-     DCHECK_LT(server_index, config.nameservers.size());
-@@ -1490,6 +1506,7 @@ class DnsTransactionImpl : public DnsTransaction,
-                          bool record_rtt,
-                          base::TimeTicks start,
-                          int rv) {
-+    LOG(ERROR) << "OnAttemptComplete(" << attempt_number << ',' << record_rtt << ',' << rv << ')';
-     DCHECK_LT(attempt_number, attempts_.size());
-     const DnsAttempt* attempt = attempts_[attempt_number].get();
-     if (record_rtt && attempt->GetResponse()) {
-@@ -1523,9 +1540,10 @@ class DnsTransactionImpl : public DnsTransaction,
-   // Resolves the result of a DnsAttempt until a terminal result is reached
-   // or it will complete asynchronously (ERR_IO_PENDING).
-   AttemptResult ProcessAttemptResult(AttemptResult result) {
-+    LOG(ERROR) << "ProcessAttemptResult (" << result.rv << ')';
-     while (result.rv != ERR_IO_PENDING) {
-       LogResponse(result.attempt);
--
-+      LOG(ERROR) << "ProcessAttemptResult ... " << result.rv;
-       switch (result.rv) {
-         case OK:
-           resolve_context_->RecordServerSuccess(result.attempt->server_index(),
 diff --git a/net/dns/dns_util.cc b/net/dns/dns_util.cc
 index 534d3c3d6196c..55502bad55ed6 100644
 --- a/net/dns/dns_util.cc
@@ -502,453 +593,58 @@ index 951730bfd5994..d072de57211a1 100644
    return *scheme_host_port;
  }
  
-diff --git a/net/dns/host_resolver_internal_result.cc b/net/dns/host_resolver_internal_result.cc
-index 487bf810b8e6f..49a40d988917a 100644
---- a/net/dns/host_resolver_internal_result.cc
-+++ b/net/dns/host_resolver_internal_result.cc
-@@ -316,7 +316,9 @@ base::Value::Dict HostResolverInternalResult::ToValueBaseDict() const {
- // static
- std::unique_ptr<HostResolverInternalDataResult>
- HostResolverInternalDataResult::FromValue(const base::Value& value) {
-+
-   const base::Value::Dict* dict = value.GetIfDict();
-+  LOG(ERROR) << static_cast<void const*>(dict);
-   if (!dict || !ValidateValueBaseDict(*dict, /*require_timed_expiration=*/true))
-     return nullptr;
- 
-@@ -386,6 +388,7 @@ HostResolverInternalDataResult::HostResolverInternalDataResult(
-       strings_(std::move(strings)),
-       hosts_(std::move(hosts)) {
-   DCHECK(!endpoints_.empty() || !strings_.empty() || !hosts_.empty());
-+  LOG(ERROR) << "HostResolverInternalDataResult::ctor(" << strings.size() << " TXT results)";
- }
- 
- HostResolverInternalDataResult::~HostResolverInternalDataResult() = default;
-@@ -425,7 +428,9 @@ HostResolverInternalDataResult::HostResolverInternalDataResult(
-     : HostResolverInternalResult(dict),
-       endpoints_(std::move(endpoints)),
-       strings_(std::move(strings)),
--      hosts_(std::move(hosts)) {}
-+      hosts_(std::move(hosts)) {
-+        LOG(ERROR) << "HostResolverInternalDataResult::ctor(" << strings.size() << " TXT results)";
-+      }
- 
- // static
- std::unique_ptr<HostResolverInternalMetadataResult>
 diff --git a/net/dns/host_resolver_manager.cc b/net/dns/host_resolver_manager.cc
-index 7adb6931cd2c1..358d728e7659b 100644
+index 7adb6931cd2c1..be73275f5b1e4 100644
 --- a/net/dns/host_resolver_manager.cc
 +++ b/net/dns/host_resolver_manager.cc
-@@ -457,7 +457,9 @@ absl::variant<url::SchemeHostPort, std::string> CreateHostForJobKey(
-     return input.AsSchemeHostPort();
+@@ -2938,6 +2938,7 @@ void HostResolverManager::SetInsecureDnsClientEnabled(
+       (dns_client_->CanUseInsecureDnsTransactions() &&
+        dns_client_->CanQueryAdditionalTypesViaInsecureDns() !=
+            additional_types_before)) {
++    LOG(ERROR) << "Don't do an insecure DNS.";
+     AbortInsecureDnsTasks(ERR_NETWORK_CHANGED, false /* fallback_only */);
    }
- 
--  return std::string(input.GetHostnameWithoutBrackets());
-+  auto h = std::string(input.GetHostnameWithoutBrackets());
-+  LOG(ERROR) << "host is apparently '" << h << "'";
-+  return h;
  }
+@@ -3919,6 +3920,11 @@ void HostResolverManager::OnConnectionTypeChanged(
+ void HostResolverManager::OnSystemDnsConfigChanged(
+     absl::optional<DnsConfig> config) {
+   DCHECK(!IsBoundToNetwork());
++  if (config) {
++    LOG(INFO) << "OnSystemDnsConfigChanged(" << config->unhandled_options;
++  } else {
++    LOG(INFO) << "OnSystemDnsConfigChanged(nullopt)";
++  }
+   // If tests have provided a catch-all DNS block and then disabled it, check
+   // that we are not at risk of sending queries beyond the local network.
+   if (HostResolverProc::GetDefault() && system_resolver_disabled_for_testing_ &&
+diff --git a/net/dns/system_dns_config_change_notifier.cc b/net/dns/system_dns_config_change_notifier.cc
+index 48f62e2a686a1..02026e60fc491 100644
+--- a/net/dns/system_dns_config_change_notifier.cc
++++ b/net/dns/system_dns_config_change_notifier.cc
+@@ -17,6 +17,7 @@
+ #include "base/task/sequenced_task_runner.h"
+ #include "base/task/task_traits.h"
+ #include "base/task/thread_pool.h"
++#include "base/logging.h"
+ #include "net/dns/dns_config_service.h"
  
- DnsResponse CreateFakeEmptyResponse(base::StringPiece hostname,
-@@ -573,7 +575,7 @@ class HostResolverManager::RequestImpl
-     int rv = resolver_->Resolve(this);
-     DCHECK(!complete_);
-     if (rv == ERR_IO_PENDING) {
--      CHECK(job_.has_value());
-+      // CHECK(job_.has_value());
-       callback_ = std::move(callback);
-     } else {
-       CHECK(!job_.has_value());
-@@ -947,9 +949,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
-     DCHECK(client_);
-     DCHECK(delegate_);
+ namespace net {
+@@ -158,8 +159,17 @@ class SystemDnsConfigChangeNotifier::Core {
  
--    if (!secure_) {
--      DCHECK(client_->CanUseInsecureDnsTransactions());
--    }
-+    // if (!secure_) {
-+      // DCHECK(client_->CanUseInsecureDnsTransactions());
-+    // }
- 
-     PushTransactionsNeeded(MaybeDisableAdditionalQueries(query_types));
-   }
-@@ -969,7 +971,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
- 
-   void StartNextTransaction() {
-     DCHECK_GE(num_additional_transactions_needed(), 1);
+     if (config_ == new_config)
+       return;
 -
-+    LOG(ERROR) << "StartNextTransaction(num_additional_transactions_needed()=" << num_additional_transactions_needed() << ')';
-     if (!any_transaction_started_) {
-       net_log_.BeginEvent(NetLogEventType::HOST_RESOLVER_MANAGER_DNS_TASK,
-                           [&] { return NetLogDnsTaskCreationParams(); });
-@@ -1073,7 +1075,9 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
-   DnsQueryTypeSet MaybeDisableAdditionalQueries(DnsQueryTypeSet types) {
-     DCHECK(!types.Empty());
-     DCHECK(!types.Has(DnsQueryType::UNSPECIFIED));
--
-+    for (auto t : types) {
-+      LOG(ERROR) << "MaybeDisableAdditionalQueries(types includes " << kDnsQueryTypes.at(t) << ')';
++    if (config_) {
++      LOG(INFO) << "DNS change detected (old) " << config_->unhandled_options;
++    } else {
++      LOG(INFO) << "DNS change detected (old) nullopt";
 +    }
-     // No-op if the caller explicitly requested this one query type.
-     if (types.Size() == 1)
-       return types;
-@@ -1092,7 +1096,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
+     config_ = std::move(new_config);
++    if (config_) {
++      LOG(INFO) << "DNS change detected (new) " << config_->unhandled_options;
++    } else {
++      LOG(INFO) << "DNS change detected (new) nullopt";
++    }
  
-   void PushTransactionsNeeded(DnsQueryTypeSet query_types) {
-     DCHECK(transactions_needed_.empty());
--
-+    LOG(ERROR) << "PushTransactionsNeeded(query_types.Size()==" << query_types.Size() << ')';
-     if (query_types.Has(DnsQueryType::HTTPS) &&
-         features::kUseDnsHttpsSvcbEnforceSecureResponse.Get() && secure_) {
-       query_types.Remove(DnsQueryType::HTTPS);
-@@ -1102,6 +1106,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
- 
-     // Give some queries a head start by pushing them to the queue first.
-     constexpr DnsQueryType kHighPriorityQueries[] = {DnsQueryType::A,
-+                                                     DnsQueryType::TXT,
-                                                      DnsQueryType::AAAA};
-     for (DnsQueryType high_priority_query : kHighPriorityQueries) {
-       if (query_types.Has(high_priority_query)) {
-@@ -1127,6 +1132,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
-     DCHECK_NE(DnsQueryType::UNSPECIFIED, transaction_info.type);
- 
-     std::string transaction_hostname(GetHostname(host_));
-+    LOG(ERROR) << "CreateAndStartTransaction(" << GetHostname(host_) << ')';
- 
-     // For HTTPS, prepend "_<port>._https." for any non-default port.
-     uint16_t request_port = 0;
-@@ -2043,7 +2049,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
-     }
-     tasks_.pop_front();
-     job_running_ = true;
--
-+    LOG(INFO) << static_cast<long>(next_task);
-     switch (next_task) {
-       case TaskType::SYSTEM:
-         StartSystemTask();
-@@ -2623,6 +2629,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
-       CHECK(key_ == req->GetJobKey());
- 
-       if (results.error() == OK && !req->parameters().is_speculative) {
-+        LOG(ERROR) << "Setting results...";
-         req->set_results(
-             results.CopyWithDefaultPort(req->request_host().GetPort()));
-       }
-@@ -2809,7 +2816,9 @@ HostResolverManager::HostResolverManager(
-   dns_client_->SetInsecureEnabled(
-       options.insecure_dns_client_enabled,
-       options.additional_types_via_insecure_dns_enabled);
-+  LOG(ERROR) << "Calling SetConfigOverrides from HostResolverManager ctor.";
-   dns_client_->SetConfigOverrides(options.dns_config_overrides);
-+  LOG(ERROR) << "Called SetConfigOverrides from HostResolverManager ctor.";
- #else
-   DCHECK(options.dns_config_overrides == DnsConfigOverrides());
- #endif
-@@ -2879,7 +2888,7 @@ HostResolverManager::CreateRequest(
-   // ResolveContexts must register (via RegisterResolveContext()) before use to
-   // ensure cached data is invalidated on network and configuration changes.
-   DCHECK(registered_contexts_.HasObserver(resolve_context));
--
-+  LOG(ERROR) << "Attempting to create a request for host='" << host.ToString() << "'.";
-   return std::make_unique<RequestImpl>(
-       std::move(net_log), std::move(host), std::move(network_anonymization_key),
-       std::move(optional_parameters), resolve_context->GetWeakPtr(), host_cache,
-@@ -3052,7 +3061,13 @@ bool HostResolverManager::IsLocalTask(TaskType task) {
-       return false;
-   }
- }
--
-+/*
-+namespace {
-+  void a_call_back(int neterror, const DnsResponse* response) {
-+    LOG(ERROR) << "Got a DNS response from side trx. error=" << neterror;
-+  }
-+}
-+*/
- int HostResolverManager::Resolve(RequestImpl* request) {
-   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-   // Request should not yet have a scheduled Job.
-@@ -3066,8 +3081,27 @@ int HostResolverManager::Resolve(RequestImpl* request) {
-          request->parameters().cache_usage ==
-              ResolveHostParameters::CacheUsage::ALLOWED);
-   DCHECK(!invalidation_in_progress_);
--
-+  LOG(ERROR) << "request->request_host()=" << request->request_host().ToString();
-   const auto& parameters = request->parameters();
-+  if (parameters.dns_query_type == DnsQueryType::TXT) {
-+    LOG(ERROR) << "Doing a TXT query.";
-+    /*
-+    auto* fact = dns_client_->GetTransactionFactory();
-+    LOG(ERROR) << "fact @ " << static_cast<void*>(fact);
-+    auto trx = fact->CreateTransaction(
-+        request->request_host().GetHostname()
-+      , 16
-+      , request->source_net_log()
-+      , false
-+      , SecureDnsMode::kOff
-+      , request->resolve_context()
-+      , false
-+      );
-+    LOG(ERROR) << "trx @ " << static_cast<void*>(trx.get());
-+    trx->Start(base::BindOnce(&a_call_back));
-+    return ERR_IO_PENDING;
-+    */
-+  }
-   JobKey job_key(request->resolve_context());
-   job_key.host =
-       CreateHostForJobKey(request->request_host(), parameters.dns_query_type,
-@@ -3085,10 +3119,13 @@ int HostResolverManager::Resolve(RequestImpl* request) {
- 
-   std::deque<TaskType> tasks;
-   absl::optional<HostCache::EntryStaleness> stale_info;
-+  LOG(ERROR) << "attempt to resolve locally";
-   HostCache::Entry results = ResolveLocally(
-       job_key, ip_address, parameters.cache_usage, parameters.secure_dns_policy,
-       parameters.source, request->source_net_log(), request->host_cache(),
-       &tasks, &stale_info);
-+  LOG(ERROR) << "results.error()=" << results.error()
-+    << " request->parameters().source=" << static_cast<long>(request->parameters().source) << " tasks.size()=" << tasks.size();
-   if (results.error() != ERR_DNS_CACHE_MISS ||
-       request->parameters().source == HostResolverSource::LOCAL_ONLY ||
-       tasks.empty()) {
-@@ -3102,7 +3139,7 @@ int HostResolverManager::Resolve(RequestImpl* request) {
-                             false /* is_secure_network_error */);
-     return HostResolver::SquashErrorCode(results.error());
-   }
--
-+  LOG(ERROR) << "creating dns job";
-   CreateAndStartJob(std::move(job_key), std::move(tasks), request);
-   return ERR_IO_PENDING;
- }
-@@ -3121,7 +3158,7 @@ HostCache::Entry HostResolverManager::ResolveLocally(
-   *out_stale_info = absl::nullopt;
- 
-   CreateTaskSequence(job_key, cache_usage, secure_dns_policy, out_tasks);
--
-+  LOG(INFO) << "out_tasks->size()=" << out_tasks->size();
-   if (!ip_address.IsValid()) {
-     // Check that the caller supplied a valid hostname to resolve. For
-     // MULTICAST_DNS, we are less restrictive.
-@@ -3157,10 +3194,12 @@ HostCache::Entry HostResolverManager::ResolveLocally(
-         source != HostResolverSource::LOCAL_ONLY &&
-         !IsGloballyReachable(IPAddress(ip_address), source_net_log)) {
-       out_tasks->push_front(TaskType::NAT64);
-+      LOG(INFO) << "out_tasks->size()=" << out_tasks->size();
-+      LOG(ERROR) << " cache miss in resolve locally";
-       return HostCache::Entry(ERR_DNS_CACHE_MISS,
-                               HostCache::Entry::SOURCE_UNKNOWN);
-     }
--
-+    LOG(ERROR) << "going to resolve as ip";
-     return ResolveAsIP(job_key.query_types, resolve_canonname, ip_address);
-   }
- 
-@@ -3176,6 +3215,7 @@ HostCache::Entry HostResolverManager::ResolveLocally(
-   while (!out_tasks->empty() && IsLocalTask(out_tasks->front())) {
-     TaskType task = out_tasks->front();
-     out_tasks->pop_front();
-+    LOG(ERROR) << "Local task " << static_cast<long>(task) << ' ' << out_tasks->size() << " remain.";
-     if (task == TaskType::SECURE_CACHE_LOOKUP ||
-         task == TaskType::INSECURE_CACHE_LOOKUP ||
-         task == TaskType::CACHE_LOOKUP) {
-@@ -3221,7 +3261,7 @@ HostCache::Entry HostResolverManager::ResolveLocally(
-       NOTREACHED();
-     }
-   }
--
-+  LOG(ERROR) << " cache miss in resolve locally";
-   return HostCache::Entry(ERR_DNS_CACHE_MISS, HostCache::Entry::SOURCE_UNKNOWN);
- }
- 
-@@ -3513,14 +3553,20 @@ void HostResolverManager::PushDnsTasks(bool system_task_allowed,
-                                        std::deque<TaskType>* out_tasks) {
-   DCHECK(dns_client_);
-   DCHECK(dns_client_->GetEffectiveConfig());
--
-+  LOG(ERROR) << "out_tasks->size()" << out_tasks->size();
-   // If a catch-all DNS block has been set for unit tests, we shouldn't send
-   // DnsTasks. It is still necessary to call this method, however, so that the
-   // correct cache tasks for the secure dns mode are added.
-   const bool dns_tasks_allowed = !ShouldForceSystemResolverDueToTestOverride();
-   // Upgrade the insecure DnsTask depending on the secure dns mode.
-+  LOG(ERROR) << "secure_dns_mode=" << static_cast<long>(secure_dns_mode)
-+    << " dns_tasks_allowed=" << dns_tasks_allowed
-+    << " insecure_tasks_allowed=" << insecure_tasks_allowed
-+    << " prioritize_local_lookups=" << prioritize_local_lookups
-+    ;
-   switch (secure_dns_mode) {
-     case SecureDnsMode::kSecure:
-+      LOG(ERROR) << "kSecure";
-       DCHECK(!allow_cache ||
-              out_tasks->front() == TaskType::SECURE_CACHE_LOOKUP);
-       // Policy misconfiguration can put us in secure DNS mode without any DoH
-@@ -3529,9 +3575,11 @@ void HostResolverManager::PushDnsTasks(bool system_task_allowed,
-         out_tasks->push_back(TaskType::SECURE_DNS);
-       break;
-     case SecureDnsMode::kAutomatic:
-+      LOG(ERROR) << "kAutomatic";
-       DCHECK(!allow_cache || out_tasks->front() == TaskType::CACHE_LOOKUP);
-       if (dns_client_->FallbackFromSecureTransactionPreferred(
-               resolve_context)) {
-+        LOG(ERROR) << "fallback?";
-         // Don't run a secure DnsTask if there are no available DoH servers.
-         if (dns_tasks_allowed && insecure_tasks_allowed)
-           out_tasks->push_back(TaskType::DNS);
-@@ -3560,6 +3608,7 @@ void HostResolverManager::PushDnsTasks(bool system_task_allowed,
-       }
-       break;
-     case SecureDnsMode::kOff:
-+      LOG(ERROR) << "kOff";
-       DCHECK(!allow_cache || IsLocalTask(out_tasks->front()));
-       if (dns_tasks_allowed && insecure_tasks_allowed)
-         out_tasks->push_back(TaskType::DNS);
-@@ -3590,6 +3639,8 @@ void HostResolverManager::CreateTaskSequence(
-   // DnsTask, this task may be replaced.
-   bool allow_cache =
-       cache_usage != ResolveHostParameters::CacheUsage::DISALLOWED;
-+  LOG(ERROR) << "allow_cache=" << allow_cache << " secure_dns_policy=" << static_cast<long>(secure_dns_policy)
-+    << " flags=" << job_key.flags;
-   if (secure_dns_policy == SecureDnsPolicy::kBootstrap) {
-     DCHECK_EQ(SecureDnsMode::kOff, job_key.secure_dns_mode);
-     if (allow_cache)
-@@ -3601,9 +3652,11 @@ void HostResolverManager::CreateTaskSequence(
-     if (job_key.secure_dns_mode == SecureDnsMode::kSecure) {
-       out_tasks->push_front(TaskType::SECURE_CACHE_LOOKUP);
-     } else {
-+      LOG(ERROR) << " adding cache lookup";
-       out_tasks->push_front(TaskType::CACHE_LOOKUP);
-     }
-   }
-+  LOG(ERROR) << " adding 'hosts'";
-   out_tasks->push_back(TaskType::HOSTS);
- 
-   // Determine what type of task a future Job should start.
-@@ -3612,9 +3665,10 @@ void HostResolverManager::CreateTaskSequence(
-       HostResolver::ResolveHostParameters::CacheUsage::STALE_ALLOWED;
- 
-   const bool has_address_type = HasAddressType(job_key.query_types);
--
-+  LOG(ERROR) << "dns_client_ @ " << static_cast<void*>(dns_client_.get());
-   switch (job_key.source) {
-     case HostResolverSource::ANY:
-+      LOG(INFO) << " any ";
-       // Force address queries with canonname to use HostResolverSystemTask to
-       // counter poor CNAME support in DnsTask. See https://crbug.com/872665
-       //
-@@ -3624,35 +3678,46 @@ void HostResolverManager::CreateTaskSequence(
-       // address queries and MdnsTask for non- address queries.
-       if ((job_key.flags & HOST_RESOLVER_CANONNAME) && has_address_type) {
-         out_tasks->push_back(TaskType::SYSTEM);
-+        LOG(ERROR) << " adding system?";
-       } else if (!ResemblesMulticastDNSName(GetHostname(job_key.host))) {
-+        LOG(INFO) << " not resembling mdns";
-         bool system_task_allowed =
-             has_address_type &&
-             job_key.secure_dns_mode != SecureDnsMode::kSecure;
-         if (dns_client_ && dns_client_->GetEffectiveConfig()) {
-+          LOG(INFO) << " has effective config.";
-           bool insecure_allowed =
--              dns_client_->CanUseInsecureDnsTransactions() &&
--              !dns_client_->FallbackFromInsecureTransactionPreferred() &&
--              (has_address_type ||
--               dns_client_->CanQueryAdditionalTypesViaInsecureDns());
-+            true;
-+              // dns_client_->CanUseInsecureDnsTransactions() &&
-+              // !dns_client_->FallbackFromInsecureTransactionPreferred() &&
-+              // (has_address_type ||
-+               // dns_client_->CanQueryAdditionalTypesViaInsecureDns());
-           PushDnsTasks(system_task_allowed, job_key.secure_dns_mode,
-                        insecure_allowed, allow_cache, prioritize_local_lookups,
-                        &*job_key.resolve_context, out_tasks);
-         } else if (system_task_allowed) {
-           out_tasks->push_back(TaskType::SYSTEM);
-+          LOG(ERROR) << " adding system?";
-+        } else {
-+          LOG(ERROR) << " sad";
-         }
-       } else if (has_address_type) {
-+        LOG(ERROR) << " adding system?";
-         // For *.local address queries, try the system resolver even if the
-         // secure dns mode is SECURE. Public recursive resolvers aren't expected
-         // to handle these queries.
-         out_tasks->push_back(TaskType::SYSTEM);
-       } else {
-+        LOG(ERROR) << " adding mdns?";
-         out_tasks->push_back(TaskType::MDNS);
-       }
-       break;
-     case HostResolverSource::SYSTEM:
-+      LOG(INFO) << " system ";
-       out_tasks->push_back(TaskType::SYSTEM);
-       break;
-     case HostResolverSource::DNS:
-+      LOG(INFO) << " dns ";
-       if (dns_client_ && dns_client_->GetEffectiveConfig()) {
-         bool insecure_allowed =
-             dns_client_->CanUseInsecureDnsTransactions() &&
-@@ -3693,7 +3758,7 @@ void HostResolverManager::GetEffectiveParametersForRequest(
- 
-   *out_effective_secure_dns_mode = secure_dns_mode;
-   *out_effective_flags = flags | additional_resolver_flags_;
--
-+  LOG(ERROR) << "dns_query_type=" << static_cast<long>(dns_query_type);
-   if (dns_query_type != DnsQueryType::UNSPECIFIED) {
-     *out_effective_types = dns_query_type;
-     return;
-@@ -3777,6 +3842,7 @@ void HostResolverManager::SetLastIPv6ProbeResult(bool last_ipv6_probe_result) {
- 
- bool HostResolverManager::IsGloballyReachable(const IPAddress& dest,
-                                               const NetLogWithSource& net_log) {
-+  LOG(ERROR) << "hmm";
-   std::unique_ptr<DatagramClientSocket> socket(
-       ClientSocketFactory::GetDefaultFactory()->CreateDatagramClientSocket(
-           DatagramSocket::DEFAULT_BIND, net_log.net_log(), net_log.source()));
-@@ -3812,6 +3878,7 @@ void HostResolverManager::RunLoopbackProbeJob() {
- }
- 
- void HostResolverManager::RemoveAllJobs(const ResolveContext* context) {
-+  LOG(ERROR) << "hmm";
-   for (auto it = jobs_.begin(); it != jobs_.end();) {
-     const JobKey& key = it->first;
-     if (&*key.resolve_context == context) {
-@@ -3823,6 +3890,7 @@ void HostResolverManager::RemoveAllJobs(const ResolveContext* context) {
- }
- 
- void HostResolverManager::AbortJobsWithoutTargetNetwork(bool in_progress_only) {
-+  LOG(ERROR) << "hmm";
-   // In Abort, a Request callback could spawn new Jobs with matching keys, so
-   // first collect and remove all running jobs from `jobs_`.
-   std::vector<std::unique_ptr<Job>> jobs_to_abort;
-@@ -3856,6 +3924,7 @@ void HostResolverManager::AbortJobsWithoutTargetNetwork(bool in_progress_only) {
- }
- 
- void HostResolverManager::AbortInsecureDnsTasks(int error, bool fallback_only) {
-+  LOG(ERROR) << "hmm";
-   // Aborting jobs potentially modifies |jobs_| and may even delete some jobs.
-   // Create safe closures of all current jobs.
-   std::vector<base::OnceClosure> job_abort_closures;
-diff --git a/net/dns/host_resolver_manager.h b/net/dns/host_resolver_manager.h
-index 1457a742ab86f..1435167c449cc 100644
---- a/net/dns/host_resolver_manager.h
-+++ b/net/dns/host_resolver_manager.h
-@@ -519,7 +519,7 @@ class NET_EXPORT HostResolverManager
-   HostResolverSystemTask::Params host_resolver_system_params_;
- 
-   raw_ptr<NetLog> net_log_;
--
-+      public:
-   // If present, used by DnsTask and ServeFromHosts to resolve requests.
-   std::unique_ptr<DnsClient> dns_client_;
- 
-diff --git a/net/dns/resolve_context.cc b/net/dns/resolve_context.cc
-index e090b5be360db..5e78e320f8f01 100644
---- a/net/dns/resolve_context.cc
-+++ b/net/dns/resolve_context.cc
-@@ -219,6 +219,7 @@ void ResolveContext::RecordServerFailure(size_t server_index,
- void ResolveContext::RecordServerSuccess(size_t server_index,
-                                          bool is_doh_server,
-                                          const DnsSession* session) {
-+  LOG(ERROR) << "RecordServerSuccess(" << server_index << ')';
-   if (!IsCurrentSession(session))
-     return;
- 
+     for (auto& wrapped_observer : wrapped_observers_) {
+       wrapped_observer.second->OnNotifyThreadsafe(config_);

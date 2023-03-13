@@ -68,7 +68,7 @@ if(GTest_FOUND)
         get_filename_component(name ${unit_test_source} NAME_WE)
         add_executable(${name}_runner
             ${unit_test_source}
-        )
+                src/ipfs_client/ipns_names.cc)
         target_compile_features(${name}_runner
             PUBLIC
                 cxx_std_${CXX_VERSION}
