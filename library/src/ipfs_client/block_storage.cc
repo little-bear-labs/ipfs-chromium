@@ -1,13 +1,14 @@
 #include "ipfs_client/block_storage.h"
 #include "ipfs_client/unixfs_path_resolver.h"
 
+#include <libp2p/multi/content_identifier_codec.hpp>
+
 #include "vocab/log_macros.h"
 #include "vocab/stringify.h"
 
 bool ipfs::BlockStorage::Store(std::shared_ptr<FrameworkApi> api,
                                std::string const& cid,
                                ipfs::Block&& block) {
-  // TODO validate, return false if fail
   if (cid2node_.emplace(cid, std::move(block)).second == false) {
     return false;  // We've already seen this block
   }
@@ -22,6 +23,13 @@ bool ipfs::BlockStorage::Store(std::shared_ptr<FrameworkApi> api,
   CheckDoneListening();
   return true;
 }
+bool ipfs::BlockStorage::Store(std::shared_ptr<FrameworkApi> api,
+                               Block&& block) {
+  auto cid_res = libp2p::multi::ContentIdentifierCodec::toString(block.cid());
+  DCHECK(cid_res.has_value());
+  return Store(api, cid_res.value(), std::move(block));
+}
+
 ipfs::Block const* ipfs::BlockStorage::Get(std::string const& cid) const {
   auto it = cid2node_.find(cid);
   if (it == cid2node_.end()) {
@@ -34,10 +42,12 @@ ipfs::Block const* ipfs::BlockStorage::Get(std::string const& cid) const {
 void ipfs::BlockStorage::AddListening(UnixFsPathResolver* p) {
   listening_.insert(p);
 }
+
 void ipfs::BlockStorage::StopListening(UnixFsPathResolver* p) {
   auto e = std::remove(listening_.begin(), listening_.end(), p);
   listening_.erase(e, listening_.end());
 }
+
 void ipfs::BlockStorage::CheckDoneListening() {
   while (true) {
     auto done_it =
@@ -51,4 +61,5 @@ void ipfs::BlockStorage::CheckDoneListening() {
 }
 
 ipfs::BlockStorage::BlockStorage() {}
+
 ipfs::BlockStorage::~BlockStorage() noexcept {}

@@ -10,19 +10,26 @@
 
 namespace ipfs {
 class FrameworkApi;
+
 class UnixFsPathResolver;
 
 class BlockStorage {
  public:
   BlockStorage();
+
   BlockStorage(BlockStorage const&) = delete;
+
   ~BlockStorage() noexcept;
 
   bool Store(std::shared_ptr<FrameworkApi>,
              std::string const& cid,
              Block&& block);
+  bool Store(std::shared_ptr<FrameworkApi>, Block&& block);
+
   Block const* Get(std::string const& cid) const;
+
   void AddListening(UnixFsPathResolver*);
+
   void StopListening(UnixFsPathResolver*);
 
  private:
