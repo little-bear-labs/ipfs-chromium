@@ -1,8 +1,9 @@
 * Build scripting to download & setup a Chromium tree on your behalf
 * Blog & video for the uninitiated
 * Shared Scheduler
-* Docker builds verifying every documented build approach
+* ipns resolution
 * Decompose UnixFsPathResolver
+* Docker builds verifying every documented build approach
 * Scan all known nodes of a HAMT for index.html before deciding to require everything for a listing
 * Unit tests coverage for ipfs_client, using GTest
 * Dynamically... https://orchestrator.strn.pl/nodes/nearby
@@ -11,7 +12,6 @@
 * Validation
     - Other hashes for blocks
     - IPNS signatures
-* ipns resolution
 * User settings
 * ChromiumStyle() (accessors_only())
 * Persist promote/demote (perhaps integrated with user settings)

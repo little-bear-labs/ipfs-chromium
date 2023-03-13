@@ -20,4 +20,6 @@ RUN echo 'test -f /ipfs-chromium/docker/shared.env && source /ipfs-chromium/dock
 RUN ip addr
 RUN ping -c 1 -w 1 host.docker.internal
 RUN ln -s /cache/ccache /root/.ccache
-ADD . /ipfs-chromium
+
+ARG GIT_REF=main
+RUN git clone --branch "${GIT_REF}" https://github.com/little-bear-labs/ipfs-chromium.git /ipfs-chromium

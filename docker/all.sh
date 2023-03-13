@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 cd `dirname "${0}"`/..
-./docker/library-images.sh
+./docker/library-builds.sh
 for profile in Debug Release
 do
   for variant in boost python

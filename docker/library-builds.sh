@@ -2,13 +2,14 @@
 uname | grep Linux # Portability is untested. Would not surprise me if other Unix-like doesn't have fuser and needs a different way to count CPUs
 
 cd `dirname "${0}"`/..
-docker build --file docker/debian-base --network=host --add-host=host.docker.internal:host-gateway --tag ipfs-chromium-debian-base .
+branch=`git rev-parse --abbrev-ref HEAD`
+docker build --file docker/debian-base --network=host --add-host=host.docker.internal:host-gateway --build-arg "GIT_REF=${branch}" --tag ipfs-chromium-debian-base .
 tag() {
   tr '[:upper:]' '[:lower:]' <<< "debian-${variant}-${profile}"
 }
-for variant in python boost
+for variant in python boost cxx23
 do
-  for profile in Debug # Release
+  for profile in Debug Release
   do
     echo -e "\n   ###   BUILDING IMAGE   ###   $(tag)   ###   ${variant}/${profile}   ###"
     sleep 3
@@ -22,9 +23,9 @@ else
   export cache_dir="${HOME}/.ipfs-chromium-cache/"
 fi
 mkdir -p "${cache_dir}"/{ccache,conan}
-for profile in Debug # Release
+for profile in Debug Release
 do
-  for variant in boost python
+  for variant in boost python cxx23
   do
     echo -e "\n   ###   BUILDING LIBRARY   ###   $(tag)   ###   ${variant}/${profile}   ###"
     sleep 3
