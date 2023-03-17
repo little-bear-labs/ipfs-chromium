@@ -2,6 +2,7 @@
 #define IPFS_UNIXFS_PATH_RESOLVER_H_
 
 #include "block.h"
+#include "dag_listener.h"
 #include "scheduler.h"
 
 #include <functional>
@@ -18,17 +19,19 @@ class Scheduler;
 class UnixFsPathResolver {
  public:
   UnixFsPathResolver(BlockStorage&,
-                     std::shared_ptr<Scheduler>,
+                     Scheduler&,
                      std::string cid,
-                     std::string path);
+                     std::string path,
+                     std::shared_ptr<FrameworkApi>);
   ~UnixFsPathResolver() noexcept;
 
   std::string const& waiting_on() const;
-  void Step(std::shared_ptr<FrameworkApi>);
+  std::string describe() const;
+  void Step(std::shared_ptr<DagListener>);
 
  private:
   BlockStorage& storage_;
-  std::shared_ptr<Scheduler> sched_;
+  Scheduler& sched_;
   std::string cid_;
   std::string path_;
   std::string original_cid_;
@@ -40,22 +43,22 @@ class UnixFsPathResolver {
       already_requested_;
   std::vector<std::string> hamt_hexs_;
   std::string head_;
+  std::shared_ptr<FrameworkApi> api_;
 
-  void CompleteDirectory(std::shared_ptr<FrameworkApi>&, Block const&);
-  void ProcessDirectory(std::shared_ptr<FrameworkApi>&, Block const&);
-  void ProcessLargeFile(std::shared_ptr<FrameworkApi>&, Block const&);
-  void ProcessDirShard(std::shared_ptr<FrameworkApi>&, Block const&);
-  void Request(std::shared_ptr<FrameworkApi>&,
+  void CompleteDirectory(std::shared_ptr<DagListener>&, Block const&);
+  void ProcessDirectory(std::shared_ptr<DagListener>&, Block const&);
+  void ProcessLargeFile(std::shared_ptr<DagListener>&, Block const&);
+  void ProcessDirShard(std::shared_ptr<DagListener>&, Block const&);
+  void Request(std::shared_ptr<DagListener>&,
                std::string const& cid,
                Scheduler::Priority);
-  std::string GuessContentType(std::shared_ptr<FrameworkApi>& api,
-                               std::string_view content);
+  std::string GuessContentType(std::string_view content);
 
-  void RequestHamtDescendents(std::shared_ptr<FrameworkApi>&,
+  void RequestHamtDescendents(std::shared_ptr<DagListener>,
                               bool&,
                               Block const& block,
                               unsigned) const;
-  bool ListHamt(std::shared_ptr<FrameworkApi>&,
+  bool ListHamt(std::shared_ptr<DagListener>&,
                 Block const&,
                 GeneratedDirectoryListing&,
                 unsigned);

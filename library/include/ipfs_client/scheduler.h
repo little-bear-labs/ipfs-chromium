@@ -7,11 +7,14 @@
 #include <functional>
 #include <iosfwd>
 #include <memory>
+#include <set>
 
 namespace ipfs {
+class DagListener;
 class FrameworkApi;
 class Gateway;
 class Scheduler;
+
 class BusyGateway {
  public:
   BusyGateway(BusyGateway const&) = delete;
@@ -24,8 +27,12 @@ class BusyGateway {
   void reset();
   bool operator==(BusyGateway const&) const;
 
-  void Success(Gateways&);
-  void Failure(Gateways&);
+  void Success(Gateways&,
+               std::shared_ptr<FrameworkApi>,
+               std::shared_ptr<DagListener>&);
+  void Failure(Gateways&,
+               std::shared_ptr<FrameworkApi>,
+               std::shared_ptr<DagListener>&);
 
  private:
   friend class Scheduler;
@@ -45,9 +52,11 @@ class Scheduler {
   enum Result { Scheduled, InProgress, Failed };
   enum class Priority { Required, Optional };
   void Enqueue(std::shared_ptr<FrameworkApi>,
+               std::shared_ptr<DagListener> listener,
                std::string const& suffix,
                Priority);
-  void IssueRequests(std::shared_ptr<FrameworkApi>);
+  void IssueRequests(std::shared_ptr<FrameworkApi>,
+                     std::shared_ptr<DagListener>& listener);
   std::string DetectCompleteFailure() const;
 
  private:
@@ -58,12 +67,17 @@ class Scheduler {
   unsigned ongoing_ = 0;
   std::time_t fudge_ = 0;
   struct Todo {
+    Todo(Todo const&);
+    Todo(std::string);
+    ~Todo();
     std::string suffix;
+    std::set<std::shared_ptr<DagListener>> listeners;
     unsigned dup_count_ = 0;
   };
   std::array<std::vector<Todo>, 2> todos_;
 
   void Issue(std::shared_ptr<FrameworkApi>,
+             std::shared_ptr<DagListener>&,
              std::vector<Todo> todos,
              unsigned up_to);
   void CheckSwap(std::size_t);

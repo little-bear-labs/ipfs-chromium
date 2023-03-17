@@ -6,7 +6,7 @@
 #include "vocab/log_macros.h"
 #include "vocab/stringify.h"
 
-bool ipfs::BlockStorage::Store(std::shared_ptr<FrameworkApi> api,
+bool ipfs::BlockStorage::Store(std::shared_ptr<DagListener> listener,
                                std::string const& cid,
                                ipfs::Block&& block) {
   if (cid2node_.emplace(cid, std::move(block)).second == false) {
@@ -17,13 +17,13 @@ bool ipfs::BlockStorage::Store(std::shared_ptr<FrameworkApi> api,
   for (UnixFsPathResolver* ptr : listening_) {
     LOG(INFO) << "A resolver was waiting on " << ptr->waiting_on();
     if (ptr->waiting_on() == cid) {
-      ptr->Step(api);
+      ptr->Step(listener);
     }
   }
   CheckDoneListening();
   return true;
 }
-bool ipfs::BlockStorage::Store(std::shared_ptr<FrameworkApi> api,
+bool ipfs::BlockStorage::Store(std::shared_ptr<DagListener> api,
                                Block&& block) {
   auto cid_res = libp2p::multi::ContentIdentifierCodec::toString(block.cid());
   DCHECK(cid_res.has_value());
@@ -40,10 +40,12 @@ ipfs::Block const* ipfs::BlockStorage::Get(std::string const& cid) const {
 }
 
 void ipfs::BlockStorage::AddListening(UnixFsPathResolver* p) {
+  LOG(INFO) << "AddListening(" << p->waiting_on() << ')';
   listening_.insert(p);
 }
 
 void ipfs::BlockStorage::StopListening(UnixFsPathResolver* p) {
+  LOG(INFO) << "StopListening(" << p->waiting_on() << ')';
   auto e = std::remove(listening_.begin(), listening_.end(), p);
   listening_.erase(e, listening_.end());
 }
@@ -56,10 +58,13 @@ void ipfs::BlockStorage::CheckDoneListening() {
     if (done_it == listening_.end()) {
       return;
     }
+    LOG(INFO) << "Kicking this listener out: " << (*done_it)->waiting_on();
     listening_.erase(done_it);
   }
 }
 
 ipfs::BlockStorage::BlockStorage() {}
 
-ipfs::BlockStorage::~BlockStorage() noexcept {}
+ipfs::BlockStorage::~BlockStorage() noexcept {
+  LOG(WARNING) << "BlockStorage dtor!";
+}
