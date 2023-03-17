@@ -11,10 +11,10 @@ RUN wget 'https://github.com/Kitware/CMake/releases/download/v3.25.2/cmake-3.25.
 RUN tar --extract --file cmake*.tar.gz
 RUN ln -s /cmake-3.25.2-linux-x86_64/ /cmake
 
-RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git /depot_tools
-ENV PATH=/usr/bin:/bin:/depot_tools
-RUN mkdir /chromium
-RUN cd /chromium && fetch --nohooks chromium
+#RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git /depot_tools
+#ENV PATH=/usr/bin:/bin:/depot_tools
+#RUN mkdir /chromium
+#RUN cd /chromium && fetch --nohooks chromium
 
 RUN echo 'test -f /ipfs-chromium/docker/shared.env && source /ipfs-chromium/docker/shared.env' >> /root/.bash_profile
 RUN echo 'test -f /ipfs-chromium/docker/shared.env && source /ipfs-chromium/docker/shared.env' >> /root/.bashrc

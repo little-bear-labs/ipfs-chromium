@@ -1,7 +1,7 @@
 #ifndef COMPONENTS_IPFS_URL_LOADER_H_
 #define COMPONENTS_IPFS_URL_LOADER_H_ 1
 
-#include "ipfs_client/framework_api.h"
+#include "ipfs_client/dag_listener.h"
 #include "ipfs_client/scheduler.h"
 
 #include "base/debug/debugging_buildflags.h"
@@ -14,8 +14,9 @@
 #include <list>
 
 namespace ipfs {
+class GatewayRequests;
 class UnixFsPathResolver;
-}
+}  // namespace ipfs
 
 namespace network::mojom {
 class URLLoaderFactory;
@@ -30,7 +31,7 @@ namespace ipfs {
 class InterRequestState;
 
 class IpfsUrlLoader final : public network::mojom::URLLoader,
-                            public FrameworkApi {
+                            public DagListener {
   void FollowRedirect(
       std::vector<std::string> const& removed_headers,
       net::HttpRequestHeaders const& modified_headers,
@@ -69,45 +70,19 @@ class IpfsUrlLoader final : public network::mojom::URLLoader,
   mojo::ScopedDataPipeProducerHandle pipe_prod_ = {};
   mojo::ScopedDataPipeConsumerHandle pipe_cons_ = {};
   bool complete_ = false;
-  std::shared_ptr<Scheduler> sched_;
-  std::list<std::pair<BusyGateway, RequestHandle>> gateway_requests_;
+  std::shared_ptr<GatewayRequests> api_;
   std::string original_url_;
   std::shared_ptr<ipfs::UnixFsPathResolver> resolver_;
   std::string partial_block_;
   std::shared_ptr<network::mojom::URLLoader> extra_;
 
-  void RequestByCid(std::string cid, Scheduler::Priority) override;
   void CreateBlockRequest(std::string cid);
-  void InitiateGatewayRequest(BusyGateway) override;
 
-  void startup(ptr,
-               std::string requested_path,
-               unsigned concurrent_requests = 10);
-  bool start_gateway_request(ptr, std::string requested_path);
-  bool start_gateway_request(ptr,
-                             GatewayList& free_gws,
-                             GatewayList& busy_gws,
-                             std::string requested_path);
-  void OnGatewayResponse(std::shared_ptr<ipfs::FrameworkApi>,
-                         std::size_t,
-                         std::unique_ptr<std::string>);
-  bool ProcessBlockResponse(Gateway& gw,
-                            network::SimpleURLLoader* gw_req,
-                            std::string* body);
-
-  bool HandleBlockResponse(Gateway&,
-                           std::string const&,
-                           network::mojom::URLResponseHead const&);
-  std::string MimeType(std::string extension,
-                       std::string_view content,
-                       std::string const& url) const override;
   void ReceiveBlockBytes(std::string_view) override;
   void BlocksComplete(std::string mime_type) override;
-  std::string UnescapeUrlComponent(std::string_view) const override;
   void FourOhFour(std::string_view cid, std::string_view path) override;
 
   void StartUnixFsProc(ptr, std::string_view);
-  std::string GetIpfsRefFromIpnsUri(std::string_view) const;
 };
 
 }  // namespace ipfs

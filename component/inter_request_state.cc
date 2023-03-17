@@ -1,5 +1,7 @@
 #include "inter_request_state.h"
 
+#include "gateway_requests.h"
+
 #include "base/logging.h"
 #include "content/public/browser/browser_context.h"
 
@@ -27,14 +29,19 @@ auto ipfs::InterRequestState::FromBrowserContext(
   context->SetUserData(user_data_key, std::move(owned));
   return *raw;
 }
-std::shared_ptr<ipfs::Scheduler> ipfs::InterRequestState::scheduler() {
-  //  auto existing = existing_scheduler_.lock();
-  //  if (existing) {
-  //    return existing;
-  //  }
-  auto created = std::make_shared<ipfs::Scheduler>(gateways().GenerateList());
-  //  existing_scheduler_ = created;
+std::shared_ptr<ipfs::GatewayRequests> ipfs::InterRequestState::api() {
+  auto existing = api_.lock();
+  if (existing) {
+    return existing;
+  }
+  auto created = std::make_shared<ipfs::GatewayRequests>(*this);
+  api_ = created;
   return created;
+}
+auto ipfs::InterRequestState::scheduler() -> Scheduler& {
+  auto api = api_.lock();
+  DCHECK(api);
+  return api->scheduler();
 }
 
 ipfs::InterRequestState::InterRequestState() {}

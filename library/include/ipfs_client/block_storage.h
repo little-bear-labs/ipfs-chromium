@@ -9,6 +9,7 @@
 #include <vector>
 
 namespace ipfs {
+class DagListener;
 class FrameworkApi;
 
 class UnixFsPathResolver;
@@ -21,10 +22,10 @@ class BlockStorage {
 
   ~BlockStorage() noexcept;
 
-  bool Store(std::shared_ptr<FrameworkApi>,
+  bool Store(std::shared_ptr<DagListener>,
              std::string const& cid,
              Block&& block);
-  bool Store(std::shared_ptr<FrameworkApi>, Block&& block);
+  bool Store(std::shared_ptr<DagListener>, Block&& block);
 
   Block const* Get(std::string const& cid) const;
 

@@ -16,17 +16,24 @@ ipfs::Scheduler::Scheduler(GatewayList&& initial_list,
 ipfs::Scheduler::~Scheduler() {}
 
 void ipfs::Scheduler::Enqueue(std::shared_ptr<FrameworkApi> api,
+                              std::shared_ptr<DagListener> listener,
                               std::string const& suffix,
                               Priority p) {
   auto& todos = todos_.at(static_cast<unsigned>(p));
   auto pred = [suffix](auto& t) { return t.suffix == suffix; };
-  if (std::none_of(todos.begin(), todos.end(), pred)) {
-    todos.emplace_back(Todo{suffix, 0});
+  auto it = std::find_if(todos.begin(), todos.end(), pred);
+  if (todos.end() == it) {
+    todos.emplace_back(suffix);
+    it = std::prev(todos.end());
   }
-  IssueRequests(api);
+  if (listener) {
+    it->listeners.insert(listener);
+  }
+  IssueRequests(api, listener);
 }
-void ipfs::Scheduler::IssueRequests(std::shared_ptr<FrameworkApi> api) {
-  Issue(api, todos_.at(0), 0);
+void ipfs::Scheduler::IssueRequests(std::shared_ptr<FrameworkApi> api,
+                                    std::shared_ptr<DagListener>& listener) {
+  Issue(api, listener, todos_.at(0), 0);
   if (ongoing_ >= max_conc_) {
     auto t = std::time(nullptr);
     if (!fudge_) {
@@ -39,12 +46,13 @@ void ipfs::Scheduler::IssueRequests(std::shared_ptr<FrameworkApi> api) {
               << (t - fudge_);
   }
   fudge_ = 0;
-  Issue(api, todos_.at(1), 0);
+  Issue(api, listener, todos_.at(1), 0);
   for (auto i = 1U; i <= max_dup_ && ongoing_ < max_conc_; ++i) {
-    Issue(api, todos_.at(0), i);
+    Issue(api, listener, todos_.at(0), i);
   }
 }
 void ipfs::Scheduler::Issue(std::shared_ptr<FrameworkApi> api,
+                            std::shared_ptr<DagListener>& listener,
                             std::vector<Todo> todos,
                             unsigned up_to) {
   for (auto& todo : todos) {
@@ -53,7 +61,8 @@ void ipfs::Scheduler::Issue(std::shared_ptr<FrameworkApi> api,
       auto it = std::find_if(gateways_.begin(), gateways_.end(), assign);
       if (it != gateways_.end()) {
         todo.dup_count_++;
-        api->InitiateGatewayRequest({it->url_prefix(), todo.suffix, this});
+        api->InitiateGatewayRequest({it->url_prefix(), todo.suffix, this},
+                                    listener);
         if (++ongoing_ >= max_conc_) {
           return;
         }
@@ -88,6 +97,7 @@ ipfs::BusyGateway::BusyGateway(BusyGateway&& rhs)
       suffix_(rhs.suffix_),
       scheduler_(rhs.scheduler_),
       maybe_offset_(0UL) {
+  LOG(INFO) << "BusyGateway<mov ctor>(" << prefix_ << ',' << suffix_ << ')';
   rhs.prefix_.clear();
   rhs.suffix_.clear();
   rhs.scheduler_ = nullptr;
@@ -130,21 +140,31 @@ ipfs::BusyGateway::operator bool() const {
   return scheduler_ && prefix_.size() && suffix_.size();
 }
 void ipfs::BusyGateway::reset() {
-  scheduler_->ongoing_--;
-  for (auto& todos : scheduler_->todos_) {
-    for (auto& todo : todos) {
-      if (todo.suffix == suffix_) {
-        todo.dup_count_--;
-        break;
+  std::clog << static_cast<void*>(this) << "::reset()";
+  if (scheduler_) {
+    scheduler_->ongoing_--;
+    for (auto& todos : scheduler_->todos_) {
+      for (auto& todo : todos) {
+        if (todo.suffix == suffix_) {
+          todo.dup_count_--;
+          break;
+        }
       }
     }
   }
+  scheduler_ = nullptr;
   prefix_.clear();
   suffix_.clear();
 }
-void ipfs::BusyGateway::Success(Gateways& g) {
-  assert(prefix_.size() > 0);
+void ipfs::BusyGateway::Success(Gateways& g,
+                                std::shared_ptr<FrameworkApi> api,
+                                std::shared_ptr<DagListener>& listener) {
+  if (prefix_.empty()) {
+    return;
+  }
   g.promote(prefix_);
+  DCHECK(get());
+  get()->TaskSuccess();
   for (auto& todos : scheduler_->todos_) {
     auto it = std::find_if(todos.begin(), todos.end(),
                            [this](auto& t) { return t.suffix == suffix_; });
@@ -152,17 +172,20 @@ void ipfs::BusyGateway::Success(Gateways& g) {
       todos.erase(it);
     }
   }
-  assert(get());
-  get()->TaskSuccess();
   if (maybe_offset_) {
     scheduler_->CheckSwap(--maybe_offset_);
   }
+  scheduler_->IssueRequests(api, listener);
   reset();
 }
-void ipfs::BusyGateway::Failure(Gateways& g) {
+void ipfs::BusyGateway::Failure(Gateways& g,
+                                std::shared_ptr<FrameworkApi> api,
+                                std::shared_ptr<DagListener>& listener) {
+  DCHECK(prefix_.size() > 0U);
   g.demote(prefix_);
   get()->TaskFailed();
   scheduler_->CheckSwap(maybe_offset_);
+  scheduler_->IssueRequests(api, listener);
   reset();
 }
 
@@ -170,3 +193,8 @@ std::ostream& operator<<(std::ostream& s, ipfs::Scheduler::Priority p) {
   return s << (p == ipfs::Scheduler::Priority::Required ? "Required"
                                                         : "Optional");
 }
+
+ipfs::Scheduler::Todo::Todo(std::string sfx) : suffix(sfx) {}
+ipfs::Scheduler::Todo::Todo(Todo const& r)
+    : suffix(r.suffix), listeners(r.listeners), dup_count_(r.dup_count_) {}
+ipfs::Scheduler::Todo::~Todo() {}

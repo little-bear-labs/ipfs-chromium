@@ -13,11 +13,12 @@ class BrowserContext;
 
 namespace ipfs {
 class Scheduler;
+class GatewayRequests;
 class InterRequestState : public base::SupportsUserData::Data {
   Gateways gws_;
   BlockStorage storage_;
   IpnsNames names_;
-  std::weak_ptr<Scheduler> existing_scheduler_;
+  std::weak_ptr<GatewayRequests> api_;
 
  public:
   InterRequestState();
@@ -26,7 +27,8 @@ class InterRequestState : public base::SupportsUserData::Data {
   Gateways& gateways() { return gws_; }
   BlockStorage& storage() { return storage_; }
   IpnsNames& names() { return names_; }
-  std::shared_ptr<Scheduler> scheduler();
+  Scheduler& scheduler();
+  std::shared_ptr<GatewayRequests> api();
 
   static InterRequestState& FromBrowserContext(content::BrowserContext*);
 };
