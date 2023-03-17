@@ -86,7 +86,6 @@ file(GLOB
 )
 add_custom_target(setup_component
     ALL
-#    DEPENDS local_shim_build
     COMMENT "Moving code over to ${target_dir} and setting up the build there."
     COMMAND ${CMAKE_COMMAND} -E make_directory "${target_dir}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${srcs} ${hdrs} ${lib_srcs} ${test_srcs} ${protos} ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn "${target_dir}"
@@ -139,38 +138,31 @@ add_custom_target(generate_in_tree_headers
   SOURCES "${chromium_build_dir}/gen/components/ipfs/pb_dag.pb.h"
 )
 
-#Mostly for the sake of IDEs, though it also serves a purpose here.
-add_library(local_shim_build
-  ${srcs}
-  ${hdrs} #Some IDEs like you to indicate header association this way. Otherwise they're "external"
-  )
-add_dependencies(local_shim_build generate_in_tree_headers)
-target_compile_features(local_shim_build
-  PRIVATE
-  cxx_std_17 # Always target C++17 when using Chromium headers exclusively
-  )
-target_compile_options(local_shim_build
-  PUBLIC
-  ${CHROMIUM_COMPILER_FLAGS}
-  ${WARNING_FLAGS}
-  )
-target_include_directories(local_shim_build
-  SYSTEM
-  PUBLIC
-  ../library/include/
-  "${CHROMIUM_SOURCE_TREE}"
-  "${CHROMIUM_SOURCE_TREE}/buildtools/third_party/libc++/trunk/include/"
-  "${CHROMIUM_SOURCE_TREE}/buildtools/third_party/libc++/"
-  "${CHROMIUM_SOURCE_TREE}/third_party/abseil-cpp/"
-  "${CHROMIUM_SOURCE_TREE}/third_party/boringssl/src/include/"
-  "${CHROMIUM_SOURCE_TREE}/third_party/protobuf/src/"
-  "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/gen"
-  "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/gen/components/ipfs/"
-  )
-target_link_libraries(local_shim_build
-  PUBLIC
-  ipfs_client
-  )
+#Mostly for the sake of IDEs
+#set(stubbedchromiumincdir "/" CACHE PATH "Used only for local_shim_build")
+#add_library(local_shim_build
+#  ${srcs}
+#  ${hdrs} #Some IDEs like you to indicate header association this way. Otherwise they're "external"
+#)
+#target_compile_features(local_shim_build
+#  PRIVATE
+#    cxx_std_17 # Always target C++17 when targeting Chromium
+#)
+#target_compile_options(local_shim_build
+#  PUBLIC
+#    ${WARNING_FLAGS}
+#)
+#target_link_libraries(local_shim_build
+#  PUBLIC
+#    ipfs_client
+#)
+#target_include_directories(local_shim_build
+#  SYSTEM
+#  PUBLIC
+#    .
+#    "${CMAKE_BINARY_DIR}"
+#    ${stubbedchromiumincdir}
+#)
 
 if(DEPOT_TOOLS_NINJA_PY)
     add_custom_target(in_tree_build
@@ -195,7 +187,7 @@ file(GLOB
     "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/lib*.so"
     "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/obj/t*/*/lib*.a"
 )
-if(ENABLE_OUTOFTREE_TESTING)
+if(ENABLE_OUTOFTREE_TESTING)#TODO
     enable_testing()
     foreach(test_src ${test_srcs})
         get_filename_component(

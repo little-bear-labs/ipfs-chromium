@@ -1,6 +1,7 @@
 * Build scripting to download & setup a Chromium tree on your behalf
 * Blog & video for the uninitiated
 * Shared Scheduler
+* Intent to prototype
 * ipns resolution
 * Decompose UnixFsPathResolver
 * Docker builds verifying every documented build approach

@@ -2,6 +2,10 @@
 
 #include "generated_directory_listing.h"
 
+#if __has_include("base/debug/stack_trace.h")
+#include "base/debug/stack_trace.h"
+#endif
+
 #include "ipfs_client/block.h"
 #include "ipfs_client/block_storage.h"
 #include "ipfs_client/framework_api.h"
@@ -29,7 +33,7 @@ bool ends_with(std::string_view a, std::string_view b) {
 }
 }  // namespace
 
-void ipfs::UnixFsPathResolver::Step(std::shared_ptr<FrameworkApi> api) {
+void ipfs::UnixFsPathResolver::Step(std::shared_ptr<DagListener> listener) {
   LOG(INFO) << "Step(" << cid_ << ',' << path_ << ',' << original_path_ << ')';
   if (awaiting_.size() && storage_.Get(awaiting_)) {
     awaiting_.clear();
@@ -44,24 +48,24 @@ void ipfs::UnixFsPathResolver::Step(std::shared_ptr<FrameworkApi> api) {
   Block const* block = storage_.Get(cid_);
   if (!block) {
     LOG(INFO) << "Current block " << cid_ << " not found.";
-    Request(api, cid_, Scheduler::Priority::Required);
+    Request(listener, cid_, Scheduler::Priority::Required);
     return;
   }
   LOG(INFO) << "Process block of type " << ipfs::Stringify(block->type());
   switch (block->type()) {
     case Block::Type::Directory:
-      ProcessDirectory(api, *block);
+      ProcessDirectory(listener, *block);
       break;
     case Block::Type::FileChunk:
-      api->ReceiveBlockBytes(block->chunk_data());
-      api->BlocksComplete(GuessContentType(api, block->chunk_data()));
+      listener->ReceiveBlockBytes(block->chunk_data());
+      listener->BlocksComplete(GuessContentType(block->chunk_data()));
       cid_.clear();
       break;
     case Block::Type::File:
-      ProcessLargeFile(api, *block);
+      ProcessLargeFile(listener, *block);
       break;
     case Block::Type::HAMTShard:
-      ProcessDirShard(api, *block);
+      ProcessDirShard(listener, *block);
       break;
     default:
       LOG(FATAL) << "TODO : Unhandled UnixFS node of type "
@@ -69,21 +73,21 @@ void ipfs::UnixFsPathResolver::Step(std::shared_ptr<FrameworkApi> api) {
   }
 }
 void ipfs::UnixFsPathResolver::ProcessLargeFile(
-    std::shared_ptr<FrameworkApi>& api,
+    std::shared_ptr<DagListener>& listener,
     Block const& block) {
   bool writing = false;
   if (written_through_.empty()) {
     // First time here, probably
     // Request any missing blocks
-    block.List([this, &api](auto, auto child_cid) {
+    block.List([this, &listener](auto, auto child_cid) {
       if (storage_.Get(child_cid) == nullptr) {
-        Request(api, child_cid, Scheduler::Priority::Required);
+        Request(listener, child_cid, Scheduler::Priority::Required);
       }
       return true;
     });
     writing = true;
   }
-  block.List([&writing, this, &api](auto, auto child_cid) {
+  block.List([&writing, listener, this](auto, auto child_cid) {
     if (child_cid == written_through_) {
       // Found written_through_
       writing = true;
@@ -100,13 +104,13 @@ void ipfs::UnixFsPathResolver::ProcessLargeFile(
           if (head_.empty()) {
             head_ = child->unparsed();
           }
-          api->ReceiveBlockBytes(child->unparsed());
+          listener->ReceiveBlockBytes(child->unparsed());
           break;
         case Block::Type::FileChunk:
           if (head_.empty()) {
             head_ = child->chunk_data();
           }
-          api->ReceiveBlockBytes(child->chunk_data());
+          listener->ReceiveBlockBytes(child->chunk_data());
           break;
         default:
           LOG(FATAL) << " unhandled child-of-file block type: "
@@ -119,11 +123,11 @@ void ipfs::UnixFsPathResolver::ProcessLargeFile(
     return (writing = false);
   });
   if (writing) {
-    api->BlocksComplete(GuessContentType(api, head_));
+    listener->BlocksComplete(GuessContentType(head_));
   }
 }
 void ipfs::UnixFsPathResolver::CompleteDirectory(
-    std::shared_ptr<FrameworkApi>& api,
+    std::shared_ptr<DagListener>& listener,
     Block const& block) {
   auto has_index_html = false;
   GeneratedDirectoryListing list{original_path_};
@@ -144,29 +148,29 @@ void ipfs::UnixFsPathResolver::CompleteDirectory(
     return true;
   });
   if (has_index_html) {
-    Step(api);
+    Step(listener);
   } else {
-    api->ReceiveBlockBytes(list.Finish());
-    api->BlocksComplete("text/html");
+    listener->ReceiveBlockBytes(list.Finish());
+    listener->BlocksComplete("text/html");
     cid_.clear();
   }
 }
 
 void ipfs::UnixFsPathResolver::ProcessDirectory(
-    std::shared_ptr<FrameworkApi>& api,
+    std::shared_ptr<DagListener>& listener,
     Block const& block) {
-  block.List([this, &api](auto&, auto cid) {
-    Request(api, cid, Scheduler::Priority::Optional);
+  block.List([this, &listener](auto&, auto cid) {
+    Request(listener, cid, Scheduler::Priority::Optional);
     return true;
   });
   auto start = path_.find_first_not_of("/");
   if (start == std::string::npos) {
-    CompleteDirectory(api, block);
+    CompleteDirectory(listener, block);
     return;
   }
   auto end = path_.find('/', start);
   std::string_view next_comp = path_;
-  auto next = api->UnescapeUrlComponent(next_comp.substr(start, end - start));
+  auto next = api_->UnescapeUrlComponent(next_comp.substr(start, end - start));
   auto found = false;
   block.List([&found, this, next](auto& name, auto cid) {
     if (name == next) {
@@ -176,15 +180,16 @@ void ipfs::UnixFsPathResolver::ProcessDirectory(
     }
     return true;
   });
-  if (!found) {
-    api->FourOhFour(cid_, path_);
+  if (found) {
+    LOG(INFO) << "Descending path: " << next << " . " << path_;
+    path_.erase(0, end);
+    Step(listener);
+  } else {
+    listener->FourOhFour(cid_, path_);
   }
-  LOG(INFO) << "Descending path: " << next << " . " << path_;
-  path_.erase(0, end);
-  Step(api);
 }
 void ipfs::UnixFsPathResolver::ProcessDirShard(
-    std::shared_ptr<FrameworkApi>& api,
+    std::shared_ptr<DagListener>& listener,
     Block const& block) {
   // node.Data.hashType indicates a multihash function to use to digest path
   // components used for sharding.
@@ -226,15 +231,15 @@ void ipfs::UnixFsPathResolver::ProcessDirShard(
   L_VAR(path_)
   if (next.empty()) {
     GeneratedDirectoryListing listing{original_path_};
-    if (ListHamt(api, block, listing, hex_width)) {
+    if (ListHamt(listener, block, listing, hex_width)) {
       LOG(INFO) << "Returning generated listing for a HAMT";
-      api->ReceiveBlockBytes(listing.Finish());
-      api->BlocksComplete("text/html");
+      listener->ReceiveBlockBytes(listing.Finish());
+      listener->BlocksComplete("text/html");
       this->cid_.clear();
     }
     return;
   }
-  auto component = api->UnescapeUrlComponent(next);
+  auto component = api_->UnescapeUrlComponent(next);
   L_VAR(component);
   if (hamt_hexs_.empty()) {
     // ...  then hash it using the multihash id provided in Data.hashType.
@@ -260,7 +265,7 @@ void ipfs::UnixFsPathResolver::ProcessDirShard(
         hamt_hexs_.push_back(oss.str());
       }
     }
-    Step(api);
+    Step(listener);
   } else {
     bool found = false;
     block.List([&](auto& name, auto cid) {
@@ -292,38 +297,39 @@ void ipfs::UnixFsPathResolver::ProcessDirShard(
                    << " and got as far as HAMT hash bits " << hamt_hexs_.front()
                    << " but the corresponding link is " << name
                    << " and does not end with " << component;
-        api->FourOhFour(cid_, hamt_hexs_.front() + component);
+        listener->FourOhFour(cid_, hamt_hexs_.front() + component);
       }
       return false;
     });
     if (found) {
-      Step(api);
+      Step(listener);
     } else {
-      api->FourOhFour(cid_, path_);
+      listener->FourOhFour(cid_, path_);
     }
   }
 }
 
 void ipfs::UnixFsPathResolver::RequestHamtDescendents(
-    std::shared_ptr<FrameworkApi>& api,
+    std::shared_ptr<DagListener> listener,
     bool& missing_children,
     Block const& block,
     unsigned hex_width) const {
-  block.List([this, hex_width, &missing_children, &api](std::string const& name,
-                                                        auto cid) {
+  block.List([this, hex_width, listener, &missing_children](
+                 std::string const& name, auto cid) {
     GOOGLE_DCHECK_GE(name.size(), hex_width);
     auto block = storage_.Get(cid);
     if (block) {
       if (name.size() == hex_width) {
-        this->RequestHamtDescendents(api, missing_children, *block, hex_width);
+        this->RequestHamtDescendents(listener, missing_children, *block,
+                                     hex_width);
       }
     } else {
-      api->RequestByCid(cid, Scheduler::Priority::Optional);
+      api_->RequestByCid(cid, listener, Scheduler::Priority::Optional);
     }
     return true;
   });
 }
-bool ipfs::UnixFsPathResolver::ListHamt(std::shared_ptr<FrameworkApi>& api,
+bool ipfs::UnixFsPathResolver::ListHamt(std::shared_ptr<DagListener>& listener,
                                         Block const& block,
                                         GeneratedDirectoryListing& out,
                                         unsigned hex_width) {
@@ -333,7 +339,7 @@ bool ipfs::UnixFsPathResolver::ListHamt(std::shared_ptr<FrameworkApi>& api,
     if (link_name.size() > hex_width) {
       auto entry_name = std::string_view{link_name}.substr(hex_width);
       if (entry_name == "index.html") {
-        Request(api, cid, Scheduler::Priority::Required);
+        Request(listener, cid, Scheduler::Priority::Required);
         this->cid_ = cid;
         this->path_.clear();
         return got_all = false;
@@ -341,7 +347,7 @@ bool ipfs::UnixFsPathResolver::ListHamt(std::shared_ptr<FrameworkApi>& api,
         out.AddEntry(entry_name);
       }
     } else if (auto child = storage_.Get(cid)) {
-      if (!this->ListHamt(api, *child, out, hex_width)) {
+      if (!this->ListHamt(listener, *child, out, hex_width)) {
         got_all = false;
       }
     } else {
@@ -355,12 +361,13 @@ bool ipfs::UnixFsPathResolver::ListHamt(std::shared_ptr<FrameworkApi>& api,
   return got_all;
 }
 
-void ipfs::UnixFsPathResolver::Request(std::shared_ptr<FrameworkApi>& api,
+void ipfs::UnixFsPathResolver::Request(std::shared_ptr<DagListener>& listener,
                                        std::string const& cid,
                                        Scheduler::Priority prio) {
   if (storage_.Get(cid)) {
     return;
   }
+  LOG(INFO) << "Request(" << cid << ',' << static_cast<long>(prio) << ')';
   if (prio == Scheduler::Priority::Required) {
     storage_.AddListening(this);
     if (cid_ != cid) {
@@ -373,12 +380,12 @@ void ipfs::UnixFsPathResolver::Request(std::shared_ptr<FrameworkApi>& api,
   auto t = std::time(nullptr);
   if (it == already_requested_.end()) {
     already_requested_[cid] = {prio, t};
-    api->RequestByCid(cid, prio);
+    api_->RequestByCid(cid, listener, prio);
   } else if (prio == Scheduler::Priority::Required &&
              it->second.first == Scheduler::Priority::Optional) {
     it->second.first = Scheduler::Priority::Required;
     it->second.second = t;
-    api->RequestByCid(cid, Scheduler::Priority::Required);
+    api_->RequestByCid(cid, listener, Scheduler::Priority::Required);
   } else if (t - it->second.second > 2) {
     if (it->second.first == Scheduler::Priority::Required) {
       it->second.first = Scheduler::Priority::Optional;
@@ -396,17 +403,29 @@ const std::string& ipfs::UnixFsPathResolver::waiting_on() const {
     return awaiting_;
   }
 }
+std::string ipfs::UnixFsPathResolver::describe() const {
+  auto rv = original_cid_;
+  rv.append("//")
+      .append(original_path_)
+      .append(" ... ")
+      .append(cid_)
+      .append("//")
+      .append(path_);
+  return rv;
+}
 
 ipfs::UnixFsPathResolver::UnixFsPathResolver(BlockStorage& store,
-                                             std::shared_ptr<Scheduler> sched,
+                                             Scheduler& sched,
                                              std::string cid,
-                                             std::string path)
+                                             std::string path,
+                                             std::shared_ptr<FrameworkApi> api)
     : storage_{store},
       sched_(sched),
       cid_{cid},
       path_{path},
       original_cid_(cid),
-      original_path_(path) {
+      original_path_(path),
+      api_(api) {
   constexpr std::string_view filename_param{"filename="};
   auto fn = original_path_.find(filename_param);
   if (fn != std::string::npos) {
@@ -418,11 +437,17 @@ ipfs::UnixFsPathResolver::UnixFsPathResolver(BlockStorage& store,
   }
 }
 ipfs::UnixFsPathResolver::~UnixFsPathResolver() noexcept {
+#ifdef BASE_DEBUG_STACK_TRACE_H_
+  LOG(ERROR) << base::debug::StackTrace();
+#else
+  LOG(ERROR)
+      << "Don't have stack trace available, but in UnixFsPathResolver dtor";
+#endif
   storage_.StopListening(this);
 }
 
 std::string ipfs::UnixFsPathResolver::GuessContentType(
-    std::shared_ptr<FrameworkApi>& api,
+
     std::string_view content) {
   auto dot = original_path_.rfind('.');
   auto slash = original_path_.rfind('/');
@@ -431,7 +456,7 @@ std::string ipfs::UnixFsPathResolver::GuessContentType(
       (slash < dot || slash == std::string::npos)) {
     ext = original_path_.substr(dot + 1);
   }
-  auto mime = api->MimeType(ext, content, "ipfs://" + original_path_);
+  auto mime = api_->MimeType(ext, content, "ipfs://" + original_path_);
   if (mime.size()) {
     // TODO, store mime in block
     LOG(INFO) << "Detected mime " << mime << " for " << original_path_
