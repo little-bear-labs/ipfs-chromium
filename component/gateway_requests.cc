@@ -66,24 +66,31 @@ void ipfs::GatewayRequests::OnResponse(std::shared_ptr<FrameworkApi> api,
                                        std::string task,
                                        std::string url,
                                        std::unique_ptr<std::string> body) {
+  LOG(INFO) << "Got a response for " << task << " via " << url;
   auto task_it = outstanding_.find(task);
   if (outstanding_.end() == task_it) {
+    LOG(INFO) << "That task is already complete.";
     return;
   }
   auto& outs = task_it->second;
+  LOG(INFO) << "There are " << outs.size() << " busy gateways for " << task;
   auto url_it = std::find_if(outs.begin(), outs.end(), [url](auto& o) {
     return o.gateway->url() == url;
   });
-  if (outs.end() != url_it) {
+  if (outs.end() == url_it) {
+    LOG(ERROR) << "Can't find the outstanding BusyGateway for " << url;
+    outstanding_.erase(task_it);
+  } else {
     auto& bg = url_it->gateway;
     auto& ldr = url_it->loader;
     if (ProcessResponse(bg.get(), listener, ldr.get(), body.get())) {
       bg.Success(state_.gateways(), shared_from_this(), listener);
+      outstanding_.erase(task_it);
     } else {
       bg.Failure(state_.gateways(), shared_from_this(), listener);
+      outs.erase(url_it);
     }
   }
-  outstanding_.erase(task_it);
 }
 bool ipfs::GatewayRequests::ProcessResponse(
     Gateway* gw,
