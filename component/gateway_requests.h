@@ -4,6 +4,7 @@
 #include <ipfs_client/block_storage.h>
 #include <ipfs_client/framework_api.h>
 
+#include <list>
 #include <map>
 
 namespace network {
@@ -24,7 +25,7 @@ class GatewayRequests final : public FrameworkApi {
     std::unique_ptr<network::SimpleURLLoader> loader;
     BusyGateway gateway;
   };
-  using Outstanding = std::vector<GatewayRequest>;
+  using Outstanding = std::list<GatewayRequest>;
 
   network::mojom::URLLoaderFactory* loader_factory_ = nullptr;
   std::map<std::string, Outstanding> outstanding_;

@@ -3,17 +3,20 @@
 
 #include <vocab/log_macros.h>
 
-#include <cassert>
-
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 
 ipfs::Scheduler::Scheduler(GatewayList&& initial_list,
                            unsigned max_conc,
                            unsigned max_dup)
-    : gateways_{initial_list}, max_conc_(max_conc), max_dup_(max_dup) {}
+    : gateways_{initial_list}, max_conc_(max_conc), max_dup_(max_dup) {
+  LOG(INFO) << "Scheduler ctor";
+}
 
-ipfs::Scheduler::~Scheduler() {}
+ipfs::Scheduler::~Scheduler() {
+  LOG(INFO) << "Scheduler dtor";
+}
 
 void ipfs::Scheduler::Enqueue(std::shared_ptr<FrameworkApi> api,
                               std::shared_ptr<DagListener> listener,
@@ -50,6 +53,7 @@ void ipfs::Scheduler::IssueRequests(std::shared_ptr<FrameworkApi> api,
   for (auto i = 1U; i <= max_dup_ && ongoing_ < max_conc_; ++i) {
     Issue(api, listener, todos_.at(0), i);
   }
+  UpdateDevPage();
 }
 void ipfs::Scheduler::Issue(std::shared_ptr<FrameworkApi> api,
                             std::shared_ptr<DagListener>& listener,
@@ -61,6 +65,8 @@ void ipfs::Scheduler::Issue(std::shared_ptr<FrameworkApi> api,
       auto it = std::find_if(gateways_.begin(), gateways_.end(), assign);
       if (it != gateways_.end()) {
         todo.dup_count_++;
+        LOG(INFO) << "Increased dup_count of " << todo.suffix << " to "
+                  << todo.dup_count_;
         api->InitiateGatewayRequest({it->url_prefix(), todo.suffix, this},
                                     listener);
         if (++ongoing_ >= max_conc_) {
@@ -87,6 +93,24 @@ void ipfs::Scheduler::CheckSwap(std::size_t index) {
     std::swap(gateways_[index], gateways_[index + 1UL]);
   }
 }
+void ipfs::Scheduler::UpdateDevPage() {
+  {
+    std::ofstream f{"temp.devpage.html"};
+    f << "<html><title>IPFS Gateway Requests</title><body>\n";
+    using namespace std::literals;
+    for (auto [h, p] : {std::make_pair("Required"sv, 0), {"Optional"sv, 1}}) {
+      f << " <h2>" << h << "</h2>\n <table>\n";
+      auto& todos = todos_.at(p);
+      for (auto& todo : todos) {
+        f << "  <tr><td>" << todo.suffix << "</td><td>" << todo.dup_count_
+          << "</td><td>" << todo.listeners.size() << "</td>\n";
+      }
+      f << " </table>\n";
+    }
+    f << "</body></table>";
+  }
+  std::rename("temp.devpage.html", "devpage.html");
+}
 
 ipfs::BusyGateway::BusyGateway(std::string pre,
                                std::string suf,
@@ -104,6 +128,7 @@ ipfs::BusyGateway::BusyGateway(BusyGateway&& rhs)
   rhs.maybe_offset_ = 0UL;
 }
 ipfs::BusyGateway::~BusyGateway() {
+  LOG(INFO) << "BusyGateway dtor";
   if (*this && get()) {
     (*this)->TaskCancelled();
     if (scheduler_ && scheduler_->ongoing_) {
@@ -139,18 +164,27 @@ ipfs::Gateway& ipfs::BusyGateway::operator*() {
 ipfs::BusyGateway::operator bool() const {
   return scheduler_ && prefix_.size() && suffix_.size();
 }
-void ipfs::BusyGateway::reset() {
+void ipfs::BusyGateway::reset(std::shared_ptr<DagListener>& listener) {
+  LOG(INFO) << "BusyGateway::reset()";
   std::clog << static_cast<void*>(this) << "::reset()";
   if (scheduler_) {
     scheduler_->ongoing_--;
     for (auto& todos : scheduler_->todos_) {
-      for (auto& todo : todos) {
-        if (todo.suffix == suffix_) {
-          todo.dup_count_--;
-          break;
-        }
+      auto it = std::find_if(todos.begin(), todos.end(),
+                             [this](auto& t) { return t.suffix == suffix_; });
+      if (it == todos.end()) {
+        continue;
+      }
+      if (it->dup_count_) {
+        it->dup_count_--;
+        LOG(INFO) << "Reduced dup_count of " << it->suffix << " to "
+                  << it->dup_count_;
+      }
+      if (0 == it->dup_count_) {
+        todos.erase(it);
       }
     }
+    scheduler_->UpdateDevPage();
   }
   scheduler_ = nullptr;
   prefix_.clear();
@@ -176,7 +210,7 @@ void ipfs::BusyGateway::Success(Gateways& g,
     scheduler_->CheckSwap(--maybe_offset_);
   }
   scheduler_->IssueRequests(api, listener);
-  reset();
+  reset(listener);
 }
 void ipfs::BusyGateway::Failure(Gateways& g,
                                 std::shared_ptr<FrameworkApi> api,
@@ -186,7 +220,7 @@ void ipfs::BusyGateway::Failure(Gateways& g,
   get()->TaskFailed();
   scheduler_->CheckSwap(maybe_offset_);
   scheduler_->IssueRequests(api, listener);
-  reset();
+  reset(listener);
 }
 
 std::ostream& operator<<(std::ostream& s, ipfs::Scheduler::Priority p) {
