@@ -24,7 +24,7 @@ class BusyGateway {
   Gateway* operator->();
   Gateway* get();
   explicit operator bool() const;
-  void reset();
+  void reset(std::shared_ptr<DagListener>& listener);
   bool operator==(BusyGateway const&) const;
 
   void Success(Gateways&,
@@ -81,6 +81,7 @@ class Scheduler {
              std::vector<Todo> todos,
              unsigned up_to);
   void CheckSwap(std::size_t);
+  void UpdateDevPage();
 };
 
 }  // namespace ipfs

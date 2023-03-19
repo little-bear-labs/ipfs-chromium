@@ -437,12 +437,14 @@ ipfs::UnixFsPathResolver::UnixFsPathResolver(BlockStorage& store,
   }
 }
 ipfs::UnixFsPathResolver::~UnixFsPathResolver() noexcept {
+  /*
 #ifdef BASE_DEBUG_STACK_TRACE_H_
   LOG(ERROR) << base::debug::StackTrace();
 #else
   LOG(ERROR)
       << "Don't have stack trace available, but in UnixFsPathResolver dtor";
 #endif
+   */
   storage_.StopListening(this);
 }
 
