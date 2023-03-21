@@ -54,6 +54,10 @@ target_include_directories(ipfs_client
     PUBLIC
         include/
 )
+target_include_directories(ipfs_client
+  PRIVATE
+    src/
+)
 with_vocab(ipfs_client)
 
 file(GLOB_RECURSE

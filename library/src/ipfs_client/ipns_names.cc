@@ -1,7 +1,7 @@
 #include <ipfs_client/ipns_names.h>
 
-#include <vocab/log_macros.h>
 #include <libp2p/multi/content_identifier_codec.hpp>
+#include "log_macros.h"
 
 void ipfs::IpnsNames::AssignName(std::string const& name, std::string res) {
   auto endofcid = res.find_first_of("/?#", 6);

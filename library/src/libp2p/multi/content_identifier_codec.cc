@@ -9,7 +9,7 @@
 #include <libp2p/multi/uvarint.hpp>
 #include "libp2p/multi/multicodec_type.hpp"
 
-#include <vocab/log_macros.h>
+#include "log_macros.h"
 
 #include <algorithm>
 

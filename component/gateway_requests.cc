@@ -12,8 +12,9 @@
 
 #include <ipfs_client/block.h>
 #include <ipfs_client/block_storage.h>
-#include <vocab/log_macros.h>
 #include <libp2p/multi/content_identifier_codec.hpp>
+
+#include <base/logging.h>
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("ipfs_gateway_request", R"(
@@ -33,65 +34,55 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     )");
 void ipfs::GatewayRequests::RequestByCid(std::string cid,
                                          std::shared_ptr<DagListener> listener,
-                                         Scheduler::Priority prio) {
+                                         Priority prio) {
   scheduler().Enqueue(shared_from_this(), listener,
                       "ipfs/" + cid + "?format=raw", prio);
   scheduler().IssueRequests(shared_from_this(), listener);
 }
-void ipfs::GatewayRequests::InitiateGatewayRequest(
+auto ipfs::GatewayRequests::InitiateGatewayRequest(
     BusyGateway assigned,
-    std::shared_ptr<DagListener> listener) {
+    std::shared_ptr<DagListener> listener) -> std::shared_ptr<GatewayRequest> {
   auto url = assigned->url();
   LOG(INFO) << "InitiateGatewayRequest(" << url << ")";
   GOOGLE_DCHECK_GT(url.size(), 0U);
   auto url_suffix = assigned->current_task();
   auto req = std::make_unique<network::ResourceRequest>();
   req->url = GURL{url};
-  auto& outstanding = outstanding_[url_suffix];
-  outstanding.emplace_back(std::move(assigned));
-  auto& out = outstanding.back();
-  GOOGLE_DCHECK_GT(out.gateway->url_prefix().size(), 0U);
-  out.loader = network::SimpleURLLoader::Create(std::move(req),
-                                                kTrafficAnnotation, FROM_HERE);
-  auto cb =
-      base::BindOnce(&ipfs::GatewayRequests::OnResponse, base::Unretained(this),
-                     shared_from_this(), listener, url_suffix, url);
+  req->priority = net::HIGHEST;  // TODO
+  auto out = std::make_shared<GatewayUrlLoader>(std::move(assigned));
+  GOOGLE_DCHECK_GT(out->gateway->url_prefix().size(), 0U);
+  out->loader = network::SimpleURLLoader::Create(std::move(req),
+                                                 kTrafficAnnotation, FROM_HERE);
+  out->listener = listener;
+  auto cb = base::BindOnce(&ipfs::GatewayRequests::OnResponse,
+                           base::Unretained(this), shared_from_this(), out);
   DCHECK(loader_factory_);
   // TODO - proper requesting with full features (SetPriority, etc.).
-  out.loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(loader_factory_,
-                                                              std::move(cb));
+  out->loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(loader_factory_,
+                                                               std::move(cb));
+  return out;
 }
-void ipfs::GatewayRequests::OnResponse(std::shared_ptr<FrameworkApi> api,
-                                       std::shared_ptr<DagListener> listener,
-                                       std::string task,
-                                       std::string url,
+void ipfs::GatewayRequests::OnResponse(std::shared_ptr<NetworkingApi> api,
+                                       std::shared_ptr<GatewayUrlLoader> req,
                                        std::unique_ptr<std::string> body) {
-  LOG(INFO) << "Got a response for " << task << " via " << url;
-  auto task_it = outstanding_.find(task);
-  if (outstanding_.end() == task_it) {
-    LOG(INFO) << "That task is already complete.";
+  DCHECK(req);
+  auto task = req->task();
+  if (task.empty()) {
+    LOG(ERROR) << "Got a response for an empty task!";
     return;
   }
-  auto& outs = task_it->second;
-  LOG(INFO) << "There are " << outs.size() << " busy gateways for " << task;
-  auto url_it = std::find_if(outs.begin(), outs.end(), [url](auto& o) {
-    return o.gateway->url() == url;
-  });
-  if (outs.end() == url_it) {
-    LOG(ERROR) << "Can't find the outstanding BusyGateway for " << url;
-    outstanding_.erase(task_it);
+  auto url = req->url();
+  LOG(INFO) << "Got a response for " << task << " via " << url;
+  auto& bg = req->gateway;
+  auto& ldr = req->loader;
+  auto listener = req->listener;
+  if (ProcessResponse(bg.get(), listener, ldr.get(), body.get())) {
+    bg.Success(state_.gateways(), shared_from_this(), listener);
   } else {
-    auto& bg = url_it->gateway;
-    auto& ldr = url_it->loader;
-    if (ProcessResponse(bg.get(), listener, ldr.get(), body.get())) {
-      bg.Success(state_.gateways(), shared_from_this(), listener);
-      outstanding_.erase(task_it);
-    } else {
-      bg.Failure(state_.gateways(), shared_from_this(), listener);
-      outs.erase(url_it);
-    }
+    bg.Failure(state_.gateways(), shared_from_this(), listener);
   }
 }
+
 bool ipfs::GatewayRequests::ProcessResponse(
     Gateway* gw,
     std::shared_ptr<DagListener> listener,
@@ -198,10 +189,6 @@ ipfs::GatewayRequests::~GatewayRequests() {
   LOG(WARNING) << "API dtor - are all URIs loaded?";
 }
 
-ipfs::GatewayRequests::GatewayRequest::GatewayRequest(BusyGateway&& bg)
-    : loader{}, gateway{std::move(bg)} {}
-ipfs::GatewayRequests::GatewayRequest::GatewayRequest(GatewayRequest&& r)
-    : loader{std::move(r.loader)}, gateway{std::move(r.gateway)} {
-  LOG(INFO) << "GatewayRequest<mov ctor>(" << gateway->url() << ")";
-}
-ipfs::GatewayRequests::GatewayRequest::~GatewayRequest() {}
+ipfs::GatewayRequests::GatewayUrlLoader::GatewayUrlLoader(BusyGateway&& bg)
+    : GatewayRequest(std::move(bg)) {}
+ipfs::GatewayRequests::GatewayUrlLoader::~GatewayUrlLoader() {}

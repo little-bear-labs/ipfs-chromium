@@ -8,12 +8,11 @@
 namespace ipfs {
 class DagListener : public std::enable_shared_from_this<DagListener> {
  public:
-  // Sorry for the terrible name.
   //  You're receiving the next N bytes of a requested file, corresponding to a
   //  single block of its DAG
   virtual void ReceiveBlockBytes(std::string_view) = 0;
-  // Again, sorry for this name.
-  // The file you were recevining in ReceiveBlockBytes is done. You got all the
+
+  // The file you were receiving in ReceiveBlockBytes is done. You got all the
   // bytes.
   virtual void BlocksComplete(std::string mime_type) = 0;
 
