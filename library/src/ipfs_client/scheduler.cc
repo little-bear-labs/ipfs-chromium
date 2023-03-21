@@ -37,11 +37,15 @@ void ipfs::Scheduler::IssueRequests(std::shared_ptr<NetworkingApi> api,
   auto avail = std::count_if(gateways_.begin(), gateways_.end(),
                              [](auto& g) { return g.current_task().empty(); });
   LOG(INFO) << "We have " << avail << " gateways available for requests.";
-  for (auto thresh = 8; avail && thresh >= -1; --thresh) {
+  for (auto thresh = 8; avail && thresh >= 0; --thresh) {
     for (auto& e : task2todo_) {
       auto& task = e.first;
       auto& todo = e.second;
-      if (todo.under_target() < thresh) {
+      auto need = todo.under_target();
+      if (need < 0) {
+        continue;
+      }
+      if (need < thresh) {
         LOG(INFO) << task << " @(" << todo.under_target()
                   << ") doesn't meet threshold of " << thresh;
         continue;
