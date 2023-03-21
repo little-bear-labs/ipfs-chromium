@@ -1,5 +1,5 @@
 #include "ipfs_client/gateways.h"
-#include "vocab/log_macros.h"
+#include "log_macros.h"
 
 #include <algorithm>
 #include <string>
@@ -40,13 +40,11 @@ ipfs::Gateways::~Gateways() {}
 auto ipfs::Gateways::GenerateList() const -> GatewayList {
   GatewayList result;
   for (auto [k, v] : known_gateways_) {
-    //    result.push_back(std::make_shared<Gateway>(k, v +
-    //    dist_(random_engine_)));
+    result.push_back({k, v + dist_(random_engine_)});
+    result.push_back({k, v + dist_(random_engine_)});
     result.push_back({k, v + dist_(random_engine_)});
   }
   std::sort(result.begin(), result.end());
-  //,            [](auto& a, auto& b) { return *a < *b; }
-  //  );
   return result;
 }
 

@@ -5,7 +5,7 @@
 
 #include <libp2p/multi/multibase_codec/multibase_codec_impl.hpp>
 
-#include <vocab/log_macros.h>
+#include "log_macros.h"
 
 #include <unordered_map>
 

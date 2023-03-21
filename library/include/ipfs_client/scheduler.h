@@ -1,48 +1,23 @@
 #ifndef IPFS_SCHEDULER_H_
 #define IPFS_SCHEDULER_H_
 
+#include "busy_gateway.h"
 #include "gateways.h"
+#include "networking_api.h"
 
 #include <ctime>
 #include <functional>
 #include <iosfwd>
+#include <map>
 #include <memory>
 #include <set>
 
 namespace ipfs {
 class DagListener;
-class FrameworkApi;
+class NetworkingApi;
 class Gateway;
 class Scheduler;
 
-class BusyGateway {
- public:
-  BusyGateway(BusyGateway const&) = delete;
-  BusyGateway(BusyGateway&&);
-  ~BusyGateway();
-  Gateway& operator*();
-  Gateway* operator->();
-  Gateway* get();
-  explicit operator bool() const;
-  void reset(std::shared_ptr<DagListener>& listener);
-  bool operator==(BusyGateway const&) const;
-
-  void Success(Gateways&,
-               std::shared_ptr<FrameworkApi>,
-               std::shared_ptr<DagListener>&);
-  void Failure(Gateways&,
-               std::shared_ptr<FrameworkApi>,
-               std::shared_ptr<DagListener>&);
-
- private:
-  friend class Scheduler;
-  BusyGateway(std::string, std::string, Scheduler*);
-
-  std::string prefix_;
-  std::string suffix_;
-  Scheduler* scheduler_;
-  std::size_t maybe_offset_;
-};
 class Scheduler {
  public:
   explicit Scheduler(GatewayList&& initial_list,
@@ -50,33 +25,27 @@ class Scheduler {
                      unsigned duplication_waste_tolerance = 3);
   ~Scheduler();
   enum Result { Scheduled, InProgress, Failed };
-  enum class Priority { Required, Optional };
-  void Enqueue(std::shared_ptr<FrameworkApi>,
+  void Enqueue(std::shared_ptr<NetworkingApi>,
                std::shared_ptr<DagListener> listener,
                std::string const& suffix,
                Priority);
-  void IssueRequests(std::shared_ptr<FrameworkApi>,
+  void IssueRequests(std::shared_ptr<NetworkingApi>,
                      std::shared_ptr<DagListener>& listener);
-  std::string DetectCompleteFailure() const;
+  bool DetectCompleteFailure(std::string task) const;
 
  private:
   friend class BusyGateway;
   GatewayList gateways_;
-  unsigned const max_conc_;
-  unsigned const max_dup_;
-  unsigned ongoing_ = 0;
-  std::time_t fudge_ = 0;
   struct Todo {
-    Todo(Todo const&);
-    Todo(std::string);
+    Todo();
     ~Todo();
-    std::string suffix;
-    std::set<std::shared_ptr<DagListener>> listeners;
-    unsigned dup_count_ = 0;
+    std::set<std::shared_ptr<GatewayRequest>> requests;
+    Priority priority;
+    long under_target() const;
   };
-  std::array<std::vector<Todo>, 2> todos_;
+  std::map<std::string, Todo> task2todo_;
 
-  void Issue(std::shared_ptr<FrameworkApi>,
+  void Issue(std::shared_ptr<NetworkingApi>,
              std::shared_ptr<DagListener>&,
              std::vector<Todo> todos,
              unsigned up_to);
@@ -85,7 +54,5 @@ class Scheduler {
 };
 
 }  // namespace ipfs
-
-std::ostream& operator<<(std::ostream&, ipfs::Scheduler::Priority);
 
 #endif  // IPFS_SCHEDULER_H_

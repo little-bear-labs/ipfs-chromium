@@ -136,7 +136,8 @@ void ipfs::IpfsUrlLoader::FourOhFour(std::string_view cid,
                                      std::string_view path) {
   LOG(ERROR) << "Immutable data 404 for " << cid << '/' << path;
   complete_ = true;
-  client_->OnComplete(network::URLLoaderCompletionStatus{404});
+  client_->OnComplete(
+      network::URLLoaderCompletionStatus{net::ERR_FILE_NOT_FOUND});
 }
 
 void ipfs::IpfsUrlLoader::ReceiveBlockBytes(std::string_view content) {

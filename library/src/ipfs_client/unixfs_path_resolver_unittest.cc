@@ -1,7 +1,7 @@
 #include <ipfs_client/unixfs_path_resolver.h>
 
 #include <ipfs_client/block_storage.h>
-#include <ipfs_client/framework_api.h>
+#include <ipfs_client/networking_api.h>
 #include <libp2p/multi/content_identifier_codec.hpp>
 #include <libp2p/multi/multibase_codec/codecs/base58.hpp>
 #include "pb_dag.pb.h"

@@ -4,7 +4,7 @@
 #include <libp2p/multi/content_identifier_codec.hpp>
 #include <libp2p/multi/multihash.hpp>
 
-#include <vocab/log_macros.h>
+#include "log_macros.h"
 
 #include <algorithm>
 
