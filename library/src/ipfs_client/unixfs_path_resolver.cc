@@ -6,11 +6,11 @@
 #include "base/debug/stack_trace.h"
 #endif
 
+#include "log_macros.h"
 #include "ipfs_client/block.h"
 #include "ipfs_client/block_storage.h"
-#include "ipfs_client/framework_api.h"
+#include "ipfs_client/networking_api.h"
 #include "smhasher/MurmurHash3.h"
-#include "vocab/log_macros.h"
 #include "vocab/stringify.h"
 
 #include <endian.h>
@@ -48,7 +48,7 @@ void ipfs::UnixFsPathResolver::Step(std::shared_ptr<DagListener> listener) {
   Block const* block = storage_.Get(cid_);
   if (!block) {
     LOG(INFO) << "Current block " << cid_ << " not found.";
-    Request(listener, cid_, Scheduler::Priority::Required);
+    Request(listener, cid_, prio_);
     return;
   }
   LOG(INFO) << "Process block of type " << ipfs::Stringify(block->type());
@@ -81,7 +81,7 @@ void ipfs::UnixFsPathResolver::ProcessLargeFile(
     // Request any missing blocks
     block.List([this, &listener](auto, auto child_cid) {
       if (storage_.Get(child_cid) == nullptr) {
-        Request(listener, child_cid, Scheduler::Priority::Required);
+        Request(listener, child_cid, prio_);
       }
       return true;
     });
@@ -160,7 +160,7 @@ void ipfs::UnixFsPathResolver::ProcessDirectory(
     std::shared_ptr<DagListener>& listener,
     Block const& block) {
   block.List([this, &listener](auto&, auto cid) {
-    Request(listener, cid, Scheduler::Priority::Optional);
+    Request(listener, cid, 0);
     return true;
   });
   auto start = path_.find_first_not_of("/");
@@ -324,7 +324,7 @@ void ipfs::UnixFsPathResolver::RequestHamtDescendents(
                                      hex_width);
       }
     } else {
-      api_->RequestByCid(cid, listener, Scheduler::Priority::Optional);
+      api_->RequestByCid(cid, listener, 0);
     }
     return true;
   });
@@ -339,7 +339,7 @@ bool ipfs::UnixFsPathResolver::ListHamt(std::shared_ptr<DagListener>& listener,
     if (link_name.size() > hex_width) {
       auto entry_name = std::string_view{link_name}.substr(hex_width);
       if (entry_name == "index.html") {
-        Request(listener, cid, Scheduler::Priority::Required);
+        Request(listener, cid, prio_);
         this->cid_ = cid;
         this->path_.clear();
         return got_all = false;
@@ -363,12 +363,12 @@ bool ipfs::UnixFsPathResolver::ListHamt(std::shared_ptr<DagListener>& listener,
 
 void ipfs::UnixFsPathResolver::Request(std::shared_ptr<DagListener>& listener,
                                        std::string const& cid,
-                                       Scheduler::Priority prio) {
+                                       Priority prio) {
   if (storage_.Get(cid)) {
     return;
   }
   LOG(INFO) << "Request(" << cid << ',' << static_cast<long>(prio) << ')';
-  if (prio == Scheduler::Priority::Required) {
+  if (prio) {
     storage_.AddListening(this);
     if (cid_ != cid) {
       awaiting_ = cid;
@@ -381,18 +381,10 @@ void ipfs::UnixFsPathResolver::Request(std::shared_ptr<DagListener>& listener,
   if (it == already_requested_.end()) {
     already_requested_[cid] = {prio, t};
     api_->RequestByCid(cid, listener, prio);
-  } else if (prio == Scheduler::Priority::Required &&
-             it->second.first == Scheduler::Priority::Optional) {
-    it->second.first = Scheduler::Priority::Required;
+  } else if (prio > it->second.first) {
+    it->second.first = prio;
     it->second.second = t;
-    api_->RequestByCid(cid, listener, Scheduler::Priority::Required);
-  } else if (t - it->second.second > 2) {
-    if (it->second.first == Scheduler::Priority::Required) {
-      it->second.first = Scheduler::Priority::Optional;
-      it->second.second = t;
-    } else {
-      already_requested_.erase(it);
-    }
+    api_->RequestByCid(cid, listener, prio);
   }
 }
 
@@ -418,7 +410,7 @@ ipfs::UnixFsPathResolver::UnixFsPathResolver(BlockStorage& store,
                                              Scheduler& sched,
                                              std::string cid,
                                              std::string path,
-                                             std::shared_ptr<FrameworkApi> api)
+                                             std::shared_ptr<NetworkingApi> api)
     : storage_{store},
       sched_(sched),
       cid_{cid},

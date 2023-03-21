@@ -1,6 +1,6 @@
 #include "ipfs_client/scheduler.h"
 
-#include <ipfs_client/framework_api.h>
+#include <ipfs_client/networking_api.h>
 
 #include <gtest/gtest.h>
 /*

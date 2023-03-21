@@ -10,7 +10,7 @@
 
 namespace ipfs {
 class DagListener;
-class FrameworkApi;
+class NetworkingApi;
 
 class UnixFsPathResolver;
 
