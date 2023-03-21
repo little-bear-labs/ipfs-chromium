@@ -28,6 +28,7 @@ class GatewayRequests final : public NetworkingApi {
   network::mojom::URLLoaderFactory* loader_factory_ = nullptr;
   InterRequestState& state_;
   Scheduler sched_;
+  std::function<void(std::vector<std::string>)> disc_cb_;
 
   void RequestByCid(std::string cid,
                     std::shared_ptr<DagListener>,
@@ -53,6 +54,7 @@ class GatewayRequests final : public NetworkingApi {
   ~GatewayRequests();
   void SetLoaderFactory(network::mojom::URLLoaderFactory&);
   Scheduler& scheduler();
+  void Discover(std::function<void(std::vector<std::string>)>) override;
 };
 
 }  // namespace ipfs

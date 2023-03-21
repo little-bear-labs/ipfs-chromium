@@ -39,6 +39,48 @@ void ipfs::GatewayRequests::RequestByCid(std::string cid,
                       "ipfs/" + cid + "?format=raw", prio);
   scheduler().IssueRequests(shared_from_this(), listener);
 }
+namespace {
+void parse_discover_response(std::function<void(std::vector<std::string>)> cb,
+                             std::unique_ptr<std::string> body) {
+  std::vector<std::string> discovered;
+  if (!body) {
+    LOG(ERROR) << "Failed to discover gateways.";
+    cb(discovered);
+    return;
+  }
+  std::string_view r{*body};
+  while (r.size()) {
+    LOG(INFO) << "Discovered gateways, body remaining to parse: " << r;
+    auto i = r.find('"');
+    if (i == std::string_view::npos) {
+      break;
+    }
+    r.remove_prefix(++i);
+    i = r.find('"');
+    discovered.emplace_back(r.substr(0, i));
+    r.remove_prefix(++i);
+  }
+  cb(discovered);
+}
+}  // namespace
+void ipfs::GatewayRequests::Discover(
+    std::function<void(std::vector<std::string>)> cb) {
+  if (!loader_factory_) {
+    LOG(INFO) << "Can't discover as I have no loader factory.";
+    disc_cb_ = cb;
+    return;
+  }
+  auto req = std::make_unique<network::ResourceRequest>();
+  req->url = GURL{"https://orchestrator.strn.pl/nodes/nearby"};
+  static auto loader = network::SimpleURLLoader::Create(
+      std::move(req), kTrafficAnnotation, FROM_HERE);
+  auto bound = base::BindOnce(&parse_discover_response, cb);
+  LOG(INFO) << "Issuing discovery request to: "
+               "https://orchestrator.strn.pl/nodes/nearby";
+  loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(loader_factory_,
+                                                          std::move(bound));
+}
+
 auto ipfs::GatewayRequests::InitiateGatewayRequest(
     BusyGateway assigned,
     std::shared_ptr<DagListener> listener) -> std::shared_ptr<GatewayRequest> {
@@ -154,6 +196,11 @@ auto ipfs::GatewayRequests::scheduler() -> Scheduler& {
 void ipfs::GatewayRequests::SetLoaderFactory(
     network::mojom::URLLoaderFactory& lf) {
   loader_factory_ = &lf;
+  if (disc_cb_) {
+    LOG(INFO) << "Have loader factory, calling Discover";
+    Discover(disc_cb_);
+    disc_cb_ = {};
+  }
 }
 
 std::string ipfs::GatewayRequests::MimeType(std::string extension,
@@ -184,7 +231,7 @@ std::string ipfs::GatewayRequests::UnescapeUrlComponent(
 }
 
 ipfs::GatewayRequests::GatewayRequests(InterRequestState& state)
-    : state_{state}, sched_(state_.gateways().GenerateList()) {}
+    : state_{state}, sched_(state_.gateways().GenerateList(this)) {}
 ipfs::GatewayRequests::~GatewayRequests() {
   LOG(WARNING) << "API dtor - are all URIs loaded?";
 }
