@@ -36,6 +36,11 @@ std::shared_ptr<ipfs::GatewayRequests> ipfs::InterRequestState::api() {
   }
   auto created = std::make_shared<ipfs::GatewayRequests>(*this);
   api_ = created;
+  auto t = std::time(nullptr);
+  if (t - last_discovery_ > 9) {
+    created->Discover([this](auto v) { gws_.AddGateways(v); });
+    last_discovery_ = t;
+  }
   return created;
 }
 auto ipfs::InterRequestState::scheduler() -> Scheduler& {

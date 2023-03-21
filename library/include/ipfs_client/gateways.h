@@ -5,6 +5,7 @@
 #include "gateway.h"
 #include "vocab/flat_mapset.h"
 
+#include <ctime>
 #include <memory>
 #include <random>
 #include <string>
@@ -13,19 +14,20 @@
 
 namespace ipfs {
 using GatewayList = std::vector<Gateway>;
+class NetworkingApi;
 
 class Gateways {
   flat_map<std::string, unsigned> known_gateways_;
-  // TODO - no way mutable is allowed to slide
-  mutable std::default_random_engine random_engine_;
-  mutable std::geometric_distribution<unsigned> dist_;
+  std::default_random_engine random_engine_;
+  std::geometric_distribution<unsigned> dist_;
 
  public:
   Gateways();
   ~Gateways();
-  GatewayList GenerateList() const;
+  GatewayList GenerateList(NetworkingApi*);
   void promote(std::string const&);
   void demote(std::string const&);
+  void AddGateways(std::vector<std::string>);
 };
 }  // namespace ipfs
 

@@ -3,6 +3,7 @@
 
 #include "busy_gateway.h"
 
+#include <functional>
 #include <memory>
 
 namespace ipfs {
@@ -46,6 +47,7 @@ class NetworkingApi : public std::enable_shared_from_this<NetworkingApi> {
                                std::string const& url) const = 0;
 
   virtual std::string UnescapeUrlComponent(std::string_view) const = 0;
+  virtual void Discover(std::function<void(std::vector<std::string>)>) = 0;
 };
 
 }  // namespace ipfs
