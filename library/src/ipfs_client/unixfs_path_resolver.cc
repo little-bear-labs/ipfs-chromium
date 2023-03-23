@@ -6,10 +6,10 @@
 #include "base/debug/stack_trace.h"
 #endif
 
-#include "log_macros.h"
 #include "ipfs_client/block.h"
 #include "ipfs_client/block_storage.h"
 #include "ipfs_client/networking_api.h"
+#include "log_macros.h"
 #include "smhasher/MurmurHash3.h"
 #include "vocab/stringify.h"
 
@@ -34,6 +34,7 @@ bool ends_with(std::string_view a, std::string_view b) {
 }  // namespace
 
 void ipfs::UnixFsPathResolver::Step(std::shared_ptr<DagListener> listener) {
+  hrmm_ = listener;
   LOG(INFO) << "Step(" << cid_ << ',' << path_ << ',' << original_path_ << ')';
   if (awaiting_.size() && storage_.Get(awaiting_)) {
     awaiting_.clear();
@@ -257,7 +258,8 @@ void ipfs::UnixFsPathResolver::ProcessDirShard(
         // digest,...
         auto popped = hash_bits % fanout;
         hash_bits /= fanout;
-        LOG(INFO) << "popped=" << popped << " remaining digest=" << hash_bits;
+        //        LOG(INFO) << "popped=" << popped << " remaining digest=" <<
+        //        hash_bits;
         std::ostringstream oss;
         // ... then hex encode (using 0-F) using little endian thoses bits ...
         oss << std::setfill('0') << std::setw(hex_width) << std::uppercase
@@ -439,7 +441,10 @@ ipfs::UnixFsPathResolver::~UnixFsPathResolver() noexcept {
    */
   storage_.StopListening(this);
 }
-
+std::shared_ptr<ipfs::DagListener>
+ipfs::UnixFsPathResolver::MaybeGetPreviousListener() {
+  return hrmm_.lock();
+}
 std::string ipfs::UnixFsPathResolver::GuessContentType(
 
     std::string_view content) {

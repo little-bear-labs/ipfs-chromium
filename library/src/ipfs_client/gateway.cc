@@ -9,47 +9,50 @@ ipfs::Gateway::~Gateway() {}
 
 // Less means should-be-preferred
 bool ipfs::Gateway::operator<(Gateway const& rhs) const {
-  if (proven_ != rhs.proven_) {
-    return proven_;
-  }
   if (failed_requests_.size() != rhs.failed_requests_.size()) {
     return failed_requests_.size() < rhs.failed_requests_.size();
   }
   if (priority_ != rhs.priority_) {
     return priority_ > rhs.priority_;
   }
+  if (tasks_.size() != rhs.tasks_.size()) {
+    return tasks_.size() < rhs.tasks_.size();
+  }
   return prefix_ < rhs.prefix_;
 }
-bool ipfs::Gateway::accept(std::string const& suffix) {
-  if (tasked_with_.empty() && !PreviouslyFailed(suffix)) {
-    LOG(INFO) << prefix_ << ".accept(" << suffix << ")";
-    tasked_with_.assign(suffix);
-    return true;
+bool ipfs::Gateway::accept(std::string const& suffix, long need) {
+  if (need < 0) {
+    return false;
   }
-  return false;
+  if (static_cast<std::size_t>(need) < tasks_.size() / 2) {
+    return false;
+  }
+  if (priority_ < tasks_.size()) {
+    return false;
+  }
+  if (PreviouslyFailed(suffix)) {
+    return false;
+  }
+  return tasks_.insert(suffix).second;
 }
 std::string const& ipfs::Gateway::url_prefix() const {
   return prefix_;
 }
-std::string ipfs::Gateway::url() const {
-  return url_prefix() + tasked_with_;
+long ipfs::Gateway::load() const {
+  return static_cast<long>(tasks_.size());
 }
-void ipfs::Gateway::TaskSuccess() {
-  tasked_with_.clear();
+void ipfs::Gateway::TaskSuccess(std::string const& task) {
+  tasks_.erase(task);
   ++priority_;
-  proven_ = true;
 }
-void ipfs::Gateway::TaskFailed() {
-  LOG(WARNING) << url() << " TaskFailed";
-  failed_requests_.insert(tasked_with_);
+void ipfs::Gateway::TaskFailed(std::string const& task) {
+  LOG(INFO) << prefix_ << task << " TaskFailed";
+  failed_requests_.insert(task);
   priority_ /= 2;
-  tasked_with_.clear();
+  tasks_.erase(task);
 }
-void ipfs::Gateway::TaskCancelled() {
-  tasked_with_.clear();
-}
-std::string const& ipfs::Gateway::current_task() const {
-  return tasked_with_;
+void ipfs::Gateway::TaskCancelled(std::string const& task) {
+  tasks_.erase(task);
 }
 bool ipfs::Gateway::PreviouslyFailed(const std::string& suffix) const {
   return failed_requests_.find(suffix) != failed_requests_.end();

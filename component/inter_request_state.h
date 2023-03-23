@@ -19,6 +19,7 @@ class InterRequestState : public base::SupportsUserData::Data {
   BlockStorage storage_;
   IpnsNames names_;
   std::weak_ptr<GatewayRequests> api_;
+  //  std::shared_ptr<GatewayRequests> api_;
   std::time_t last_discovery_ = 0;
 
  public:

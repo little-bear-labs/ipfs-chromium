@@ -57,6 +57,7 @@ class IpnsUrlLoader : public network::ResolveHostClientBase,
   void Next();
   void QueryDns(std::string_view);
   void DoIpfs();
+  void FailNameResolution();
   network::mojom::URLLoader& under();
 
   void FollowRedirect(

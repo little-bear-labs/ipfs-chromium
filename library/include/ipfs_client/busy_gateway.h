@@ -30,6 +30,9 @@ class BusyGateway {
                std::shared_ptr<NetworkingApi>,
                std::shared_ptr<DagListener>);
 
+  std::string const& current_task() const { return suffix_; }
+  std::string url() const { return prefix_ + suffix_; }
+
  private:
   friend class Scheduler;
   BusyGateway(std::string, std::string, Scheduler*);

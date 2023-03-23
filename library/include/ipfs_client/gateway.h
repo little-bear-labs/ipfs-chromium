@@ -9,9 +9,9 @@ namespace ipfs {
 class Gateway {
   std::string prefix_;
   flat_set<std::string> failed_requests_;
-  unsigned priority_;
-  std::string tasked_with_;
-  bool proven_ = false;
+  unsigned priority_;  /// This is not request priority. This is how eager we
+                       /// are to use this particular gateway.
+  flat_set<std::string> tasks_;
 
  public:
   Gateway(std::string url_prefix, unsigned priority);
@@ -19,13 +19,12 @@ class Gateway {
   ~Gateway();
 
   std::string const& url_prefix() const;
-  std::string url() const;
-  std::string const& current_task() const;
+  long load() const;
 
-  bool accept(std::string const& suffix);
-  void TaskSuccess();
-  void TaskFailed();
-  void TaskCancelled();
+  bool accept(std::string const& suffix, long need);
+  void TaskSuccess(std::string const&);
+  void TaskFailed(std::string const&);
+  void TaskCancelled(std::string const&);
   bool PreviouslyFailed(std::string const& suffix) const;
 
   bool operator<(Gateway const&) const;

@@ -15,6 +15,9 @@ class IpnsNames {
 
   std::string_view NameResolvedTo(std::string_view name) const;
   void AssignName(std::string const&, std::string);
+  void NoSuchName(std::string const&);
+
+  static constexpr std::string_view kNoSuchName{"NO_SUCH_NAME"};
 };
 }  // namespace ipfs
 

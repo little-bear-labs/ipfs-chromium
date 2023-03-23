@@ -20,9 +20,7 @@ class Scheduler;
 
 class Scheduler {
  public:
-  explicit Scheduler(GatewayList&& initial_list,
-                     unsigned max_concurrent_requests = 20,
-                     unsigned duplication_waste_tolerance = 3);
+  explicit Scheduler(std::function<GatewayList()> list_gen);
   ~Scheduler();
   enum Result { Scheduled, InProgress, Failed };
   void Enqueue(std::shared_ptr<NetworkingApi>,
@@ -34,6 +32,7 @@ class Scheduler {
   bool DetectCompleteFailure(std::string task) const;
 
  private:
+  std::function<GatewayList()> list_gen_;
   friend class BusyGateway;
   GatewayList gateways_;
   struct Todo {

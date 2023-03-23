@@ -128,7 +128,7 @@ add_custom_command(
 add_custom_command(
   COMMENT "Building targets necessary to have generated headers used by //components/ipfs"
   OUTPUT "${chromium_build_dir}/gen/components/ipfs/pb_dag.pb.h"
-  COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 9 components/ipfs:ipfs_generated_code
+  COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 22 components/ipfs:ipfs_generated_code
   MAIN_DEPENDENCY "${chromium_build_dir}/obj/components/ipfs/ipfs.ninja"
   WORKING_DIRECTORY "${chromium_build_dir}"
 )
