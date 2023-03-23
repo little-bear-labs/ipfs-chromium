@@ -66,6 +66,10 @@ file(GLOB_RECURSE
     "${CMAKE_SOURCE_DIR}/library/include/*.h"
     "${CMAKE_SOURCE_DIR}/library/include/*.hpp"
 )
+file(GLOB
+  protos
+  ${CMAKE_SOURCE_DIR}/library/*.proto
+  )
 
 foreach(source ${srcs} ${lib_srcs})
     get_filename_component(basename "${source}" NAME )
@@ -75,14 +79,14 @@ foreach(source ${srcs} ${test_srcs})
     get_filename_component(basename "${source}" NAME )
     set(gn_test_sources "${gn_test_sources}  \"${basename}\",\n  ")
 endforeach()
+foreach(proto ${protos} )
+    get_filename_component(basename "${proto}" NAME )
+    set(gn_protos "${gn_protos}  \"${basename}\",\n  ")
+endforeach()
 configure_file(
     BUILD.gn.in
     ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn
     @ONLY
-)
-file(GLOB
-    protos
-    ${CMAKE_SOURCE_DIR}/library/*.proto
 )
 add_custom_target(setup_component
     ALL

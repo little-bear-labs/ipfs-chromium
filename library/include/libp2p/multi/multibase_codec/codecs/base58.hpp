@@ -8,8 +8,10 @@
 
 #include "base_error.hpp"
 
-#include <vocab/expected.h>
 #include <libp2p/common/types.hpp>
+
+#include <vocab/byte_view.h>
+#include <vocab/expected.h>
 
 #include <optional>
 #include <string>
@@ -26,7 +28,7 @@ namespace libp2p::multi::detail {
  * @param bytes to be encoded
  * @return encoded string
  */
-std::string encodeBase58(const common::ByteArray& bytes);
+std::string encodeBase58(ipfs::ByteView bytes);
 
 /**
  * Decode base58 string to bytes

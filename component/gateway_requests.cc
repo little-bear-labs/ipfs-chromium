@@ -243,7 +243,7 @@ std::string ipfs::GatewayRequests::UnescapeUrlComponent(
 
 ipfs::GatewayRequests::GatewayRequests(InterRequestState& state)
     : state_{state},
-      sched_([this]() { return state_.gateways().GenerateList(this); }) {}
+      sched_([this]() { return state_.gateways().GenerateList(); }) {}
 ipfs::GatewayRequests::~GatewayRequests() {
   LOG(WARNING) << "API dtor - are all URIs loaded?";
 }

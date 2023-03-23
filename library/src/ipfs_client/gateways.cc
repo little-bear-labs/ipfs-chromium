@@ -19,9 +19,23 @@ ipfs::Gateways::Gateways()
                       {"https://ipfs.jpu.jp/"s, 149},
                       {"https://gateway.pinata.cloud/"s, 109},
                       {"https://ipfs.runfission.com/"s, 89},
+                      {"https://c4rex.co/"s, 84},
+                      {"https://ipfs.soul-network.com/"s, 79},
+                      {"https://nftstorage.link/"s, 74},
+                      {"https://w3s.link/"s, 69},
+                      {"https://ipfs.scalaproject.io/"s, 64},
                       {"https://storry.tv/"s, 59},
+                      {"https://hardbin.com/"s, 54},
+                      {"https://ipfs.eth.aragon.network/"s, 49},
+                      {"https://cf-ipfs.com/"s, 44},
                       {"https://ipfs-gateway.cloud/"s, 39},
+                      {"https://ipfs.yt/"s, 34},
+                      {"https://ipfs.fleek.co/"s, 29},
+                      {"https://permaweb.eu.org/"s, 24},
                       {"https://ipfs.storry.tv/"s, 19},
+                      {"https://dweb.eu.org/"s, 15},
+                      {"https://cloudflare-ipfs.com/"s, 10},
+                      {"https://ipfs.anonymize.com/"s, 5},
                       {"https://ipfs.litnet.work/"s, 0}
 
       },
@@ -29,11 +43,9 @@ ipfs::Gateways::Gateways()
       dist_{0.01} {}
 ipfs::Gateways::~Gateways() {}
 
-auto ipfs::Gateways::GenerateList(NetworkingApi* api) -> GatewayList {
+auto ipfs::Gateways::GenerateList() -> GatewayList {
   GatewayList result;
   for (auto [k, v] : known_gateways_) {
-    result.push_back({k, v + dist_(random_engine_)});
-    result.push_back({k, v + dist_(random_engine_)});
     result.push_back({k, v + dist_(random_engine_)});
   }
   std::sort(result.begin(), result.end());

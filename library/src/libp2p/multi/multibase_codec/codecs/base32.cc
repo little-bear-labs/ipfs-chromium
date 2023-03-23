@@ -89,7 +89,7 @@ int encode_sequence(ipfs::span<const uint8_t> plain,
   return 8;
 }
 
-std::string encodeBase32(const common::ByteArray& bytes, Base32Mode mode) {
+std::string encodeBase32(ipfs::ByteView bytes, Base32Mode mode) {
   std::string result;
   if (bytes.size() % 5 == 0) {
     result = std::string(bytes.size() / 5 * 8, ' ');
@@ -110,11 +110,11 @@ std::string encodeBase32(const common::ByteArray& bytes, Base32Mode mode) {
   return result;
 }
 
-std::string encodeBase32Upper(const common::ByteArray& bytes) {
+std::string encodeBase32Upper(ipfs::ByteView bytes) {
   return encodeBase32(bytes, Base32Mode::UPPER);
 }
 
-std::string encodeBase32Lower(const common::ByteArray& bytes) {
+std::string encodeBase32Lower(ipfs::ByteView bytes) {
   return encodeBase32(bytes, Base32Mode::LOWER);
 }
 

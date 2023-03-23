@@ -31,7 +31,7 @@ void append(Collection& c, char g) {
 }
 
 /// Hash256 as a sequence of 32 bytes
-using Hash256 = std::array<uint8_t, 32u>;
+using Hash256 = std::array<ipfs::Byte, 32u>;
 /// Hash512 as a sequence of 64 bytes
 using Hash512 = std::array<uint8_t, 64u>;
 }  // namespace libp2p::common

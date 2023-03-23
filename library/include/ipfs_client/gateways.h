@@ -24,7 +24,7 @@ class Gateways {
  public:
   Gateways();
   ~Gateways();
-  GatewayList GenerateList(NetworkingApi*);
+  GatewayList GenerateList();
   void promote(std::string const&);
   void demote(std::string const&);
   void AddGateways(std::vector<std::string>);

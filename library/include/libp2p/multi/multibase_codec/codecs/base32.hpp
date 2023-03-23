@@ -23,13 +23,13 @@ namespace libp2p::multi::detail {
  * @param bytes to be encoded
  * @return encoded string
  */
-std::string encodeBase32Upper(const common::ByteArray& bytes);
+std::string encodeBase32Upper(ipfs::ByteView bytes);
 /**
  * Encode bytes to base32 lowercase string
  * @param bytes to be encoded
  * @return encoded string
  */
-std::string encodeBase32Lower(const common::ByteArray& bytes);
+std::string encodeBase32Lower(ipfs::ByteView bytes);
 
 /**
  * Decode base32 uppercase to bytes
