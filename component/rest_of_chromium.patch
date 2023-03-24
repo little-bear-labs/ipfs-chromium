@@ -1,0 +1,760 @@
+diff --git a/base/memory/ref_counted.h b/base/memory/ref_counted.h
+index 9ef94d84769df..f70e30748a389 100644
+--- a/base/memory/ref_counted.h
++++ b/base/memory/ref_counted.h
+@@ -7,6 +7,7 @@
+ 
+ #include <stddef.h>
+ 
++#include <limits>
+ #include <utility>
+ 
+ #include "base/atomic_ref_count.h"
+diff --git a/base/threading/thread_local_internal.h b/base/threading/thread_local_internal.h
+index ed99410ea8a31..d89d48ba981ab 100644
+--- a/base/threading/thread_local_internal.h
++++ b/base/threading/thread_local_internal.h
+@@ -30,8 +30,7 @@ class CheckedThreadLocalOwnedPointer {
+  public:
+   CheckedThreadLocalOwnedPointer() = default;
+ 
+-  CheckedThreadLocalOwnedPointer<T>(const CheckedThreadLocalOwnedPointer<T>&) =
+-      delete;
++  CheckedThreadLocalOwnedPointer(const CheckedThreadLocalOwnedPointer&) = delete;
+   CheckedThreadLocalOwnedPointer<T>& operator=(
+       const CheckedThreadLocalOwnedPointer<T>&) = delete;
+ 
+diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
+index 33ba5d1a77bd8..2fe074af6c879 100644
+--- a/chrome/browser/BUILD.gn
++++ b/chrome/browser/BUILD.gn
+@@ -2156,6 +2156,7 @@ static_library("browser") {
+     "//components/infobars/content",
+     "//components/infobars/core",
+     "//components/invalidation/impl",
++    "//components/ipfs",
+     "//components/javascript_dialogs",
+     "//components/keyed_service/content",
+     "//components/language/content/browser",
+diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
+index 92467599efe02..0dd1a1bfe5d2f 100644
+--- a/chrome/browser/chrome_content_browser_client.cc
++++ b/chrome/browser/chrome_content_browser_client.cc
+@@ -213,6 +213,8 @@
+ #include "components/error_page/common/localized_error.h"
+ #include "components/error_page/content/browser/net_error_auto_reloader.h"
+ #include "components/google/core/common/google_switches.h"
++#include "components/ipfs/interceptor.h"
++#include "components/ipfs/url_loader_factory.h"
+ #include "components/keep_alive_registry/keep_alive_types.h"
+ #include "components/keep_alive_registry/scoped_keep_alive.h"
+ #include "components/language/core/browser/pref_names.h"
+@@ -5807,13 +5809,17 @@ void ChromeContentBrowserClient::
+         int render_frame_id,
+         const absl::optional<url::Origin>& request_initiator_origin,
+         NonNetworkURLLoaderFactoryMap* factories) {
+-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS) || \
+-    !BUILDFLAG(IS_ANDROID)
+   content::RenderFrameHost* frame_host =
+       RenderFrameHost::FromID(render_process_id, render_frame_id);
+   WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
+-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS) || \
+-        // !BUILDFLAG(IS_ANDROID)
++  network::mojom::URLLoaderFactory* default_factory = g_browser_process->system_network_context_manager()->GetURLLoaderFactory();
++  ipfs::IpfsURLLoaderFactory::Create(
++    factories,
++    web_contents->GetBrowserContext(),
++    default_factory,
++    GetSystemNetworkContext()
++  );
++
+ 
+ #if BUILDFLAG(IS_CHROMEOS_ASH)
+   if (web_contents) {
+@@ -5958,8 +5964,8 @@ std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
+     content::NavigationUIData* navigation_ui_data,
+     int frame_tree_node_id) {
+-  std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+-      interceptors;
++  std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>> interceptors;
++  interceptors.push_back(std::make_unique<ipfs::Interceptor>(g_browser_process->system_network_context_manager()->GetURLLoaderFactory(), GetSystemNetworkContext()));
+ #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+   interceptors.push_back(
+       std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(
+diff --git a/chrome/browser/web_applications/commands/install_from_manifest_command.cc b/chrome/browser/web_applications/commands/install_from_manifest_command.cc
+index 0e407f827e839..c8794a81230f7 100644
+--- a/chrome/browser/web_applications/commands/install_from_manifest_command.cc
++++ b/chrome/browser/web_applications/commands/install_from_manifest_command.cc
+@@ -12,6 +12,7 @@
+ #include "base/containers/flat_tree.h"
+ #include "base/functional/bind.h"
+ #include "base/strings/string_util.h"
++#include "base/strings/string_number_conversions.h"
+ #include "chrome/browser/web_applications/locks/shared_web_contents_lock.h"
+ #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
+ #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
+diff --git a/chrome/browser/web_applications/commands/install_placeholder_command.cc b/chrome/browser/web_applications/commands/install_placeholder_command.cc
+index 86d58d2eb1f3c..87b7282dd767c 100644
+--- a/chrome/browser/web_applications/commands/install_placeholder_command.cc
++++ b/chrome/browser/web_applications/commands/install_placeholder_command.cc
+@@ -7,6 +7,7 @@
+ #include <memory>
+ #include <utility>
+ 
++#include "base/strings/string_util.h"
+ #include "base/strings/utf_string_conversions.h"
+ #include "base/task/single_thread_task_runner.h"
+ #include "chrome/browser/profiles/profile.h"
+diff --git a/chrome/browser/web_applications/commands/manifest_update_check_command.cc b/chrome/browser/web_applications/commands/manifest_update_check_command.cc
+new file mode 100644
+index 0000000000000..268d6d0d78e7b
+--- /dev/null
++++ b/chrome/browser/web_applications/commands/manifest_update_check_command.cc
+@@ -0,0 +1,505 @@
++// Copyright 2023 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "chrome/browser/web_applications/commands/manifest_update_check_command.h"
++
++#include "base/feature_list.h"
++#include "base/strings/utf_string_conversions.h"
++#include "base/strings/string_util.h"
++#include "base/values.h"
++#include "chrome/browser/web_applications/callback_utils.h"
++#include "chrome/browser/web_applications/web_app.h"
++#include "chrome/browser/web_applications/web_app_helpers.h"
++#include "chrome/browser/web_applications/web_app_registrar.h"
++#include "chrome/browser/web_applications/web_app_ui_manager.h"
++#include "chrome/common/chrome_features.h"
++#include "content/public/browser/web_contents.h"
++#include "url/gurl.h"
++
++namespace web_app {
++
++ManifestUpdateCheckCommand::ManifestUpdateCheckCommand(
++    const GURL& url,
++    const AppId& app_id,
++    base::WeakPtr<content::WebContents> web_contents,
++    CompletedCallback callback,
++    std::unique_ptr<WebAppDataRetriever> data_retriever)
++    : WebAppCommandTemplate<AppLock>("ManifestUpdateCheckCommand"),
++      url_(url),
++      app_id_(app_id),
++      completed_callback_(std::move(callback)),
++      lock_description_(app_id),
++      web_contents_(web_contents),
++      data_retriever_(std::move(data_retriever)) {}
++
++ManifestUpdateCheckCommand::~ManifestUpdateCheckCommand() = default;
++
++const LockDescription& ManifestUpdateCheckCommand::lock_description() const {
++  return lock_description_;
++}
++
++void ManifestUpdateCheckCommand::OnShutdown() {
++  CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult::kSystemShutdown);
++}
++
++base::Value ManifestUpdateCheckCommand::ToDebugValue() const {
++  base::Value::Dict data = debug_log_.Clone();
++  data.Set("app_id", app_id_);
++  data.Set("url", url_.spec());
++  data.Set("stage", base::ToString(stage_));
++  return base::Value(std::move(data));
++}
++
++void ManifestUpdateCheckCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
++  lock_ = std::move(lock);
++
++  // Runs a linear sequence of asynchronous and synchronous steps.
++  // This sequence can be early exited at any point by a call to
++  // CompleteCommandAndSelfDestruct().
++  RunChainedCallbacks(
++      base::BindOnce(&ManifestUpdateCheckCommand::DownloadNewManifestData,
++                     GetWeakPtr()),
++
++      base::BindOnce(&ManifestUpdateCheckCommand::LoadExistingManifestData,
++                     GetWeakPtr()),
++
++      base::BindOnce(&ManifestUpdateCheckCommand::CompareManifestData,
++                     GetWeakPtr()),
++
++      base::BindOnce(&ManifestUpdateCheckCommand::ResolveIdentityChanges,
++                     GetWeakPtr()),
++
++      base::BindOnce(&ManifestUpdateCheckCommand::CheckComplete, GetWeakPtr()));
++}
++
++////////////////////////////////////////////////////////////////////////////////
++// ManifestUpdateCheckStage::kDownloadingNewManifestData:
++////////////////////////////////////////////////////////////////////////////////
++
++void ManifestUpdateCheckCommand::DownloadNewManifestData(
++    base::OnceClosure next_step_callback) {
++  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kPendingAppLock);
++  stage_ = ManifestUpdateCheckStage::kDownloadingNewManifestData;
++
++  RunChainedCallbacks(
++      base::BindOnce(&ManifestUpdateCheckCommand::DownloadNewManifestJson,
++                     GetWeakPtr()),
++
++      base::BindOnce(&ManifestUpdateCheckCommand::StashNewManifestJson,
++                     GetWeakPtr()),
++
++      base::BindOnce(&ManifestUpdateCheckCommand::DownloadNewIconBitmaps,
++                     GetWeakPtr()),
++
++      base::BindOnce(&ManifestUpdateCheckCommand::StashNewIconBitmaps,
++                     GetWeakPtr()),
++
++      std::move(next_step_callback));
++}
++
++void ManifestUpdateCheckCommand::DownloadNewManifestJson(
++    WebAppDataRetriever::CheckInstallabilityCallback next_step_callback) {
++  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
++
++  if (IsWebContentsDestroyed()) {
++    CompleteCommandAndSelfDestruct(
++        ManifestUpdateCheckResult::kWebContentsDestroyed);
++    return;
++  }
++
++  webapps::InstallableParams params;
++  params.valid_primary_icon = true;
++  params.valid_manifest = true;
++  params.check_webapp_manifest_display = false;
++  data_retriever_->CheckInstallabilityAndRetrieveManifest(
++      web_contents_.get(),
++      /*bypass_service_worker_check=*/true, std::move(next_step_callback),
++      params);
++}
++
++void ManifestUpdateCheckCommand::StashNewManifestJson(
++    base::OnceClosure next_step_callback,
++    blink::mojom::ManifestPtr opt_manifest,
++    const GURL& manifest_url,
++    bool valid_manifest_for_web_app,
++    webapps::InstallableStatusCode installable_status) {
++  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
++
++  if (installable_status != webapps::InstallableStatusCode::NO_ERROR_DETECTED) {
++    CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult::kAppNotEligible);
++    return;
++  }
++  DCHECK(opt_manifest);
++
++  UpdateWebAppInfoFromManifest(*opt_manifest, manifest_url, &new_install_info_);
++
++  if (app_id_ != GenerateAppId(new_install_info_.manifest_id,
++                               new_install_info_.start_url)) {
++    CompleteCommandAndSelfDestruct(ManifestUpdateCheckResult::kAppIdMismatch);
++    return;
++  }
++
++  std::move(next_step_callback).Run();
++}
++
++void ManifestUpdateCheckCommand::DownloadNewIconBitmaps(
++    WebAppIconDownloader::WebAppIconDownloaderCallback next_step_callback) {
++  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
++
++  if (IsWebContentsDestroyed()) {
++    CompleteCommandAndSelfDestruct(
++        ManifestUpdateCheckResult::kWebContentsDestroyed);
++    return;
++  }
++
++  base::flat_set<GURL> icon_urls =
++      GetValidIconUrlsToDownload(new_install_info_);
++
++  icon_downloader_.emplace(web_contents_.get(), std::move(icon_urls),
++                           std::move(next_step_callback));
++  icon_downloader_->SkipPageFavicons();
++  icon_downloader_->FailAllIfAnyFail();
++  icon_downloader_->Start();
++}
++
++void ManifestUpdateCheckCommand::StashNewIconBitmaps(
++    base::OnceClosure next_step_callback,
++    IconsDownloadedResult result,
++    IconsMap icons_map,
++    DownloadedIconsHttpResults icons_http_results) {
++  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
++
++  RecordIconDownloadMetrics(result, icons_http_results);
++
++  if (result != IconsDownloadedResult::kCompleted) {
++    CompleteCommandAndSelfDestruct(
++        ManifestUpdateCheckResult::kIconDownloadFailed);
++    return;
++  }
++
++  PopulateOtherIcons(&new_install_info_, icons_map);
++  PopulateProductIcons(&new_install_info_, &icons_map);
++
++  std::move(next_step_callback).Run();
++}
++
++////////////////////////////////////////////////////////////////////////////////
++// ManifestUpdateCheckStage::kLoadingExistingManifestData:
++////////////////////////////////////////////////////////////////////////////////
++
++void ManifestUpdateCheckCommand::LoadExistingManifestData(
++    base::OnceClosure next_step_callback) {
++  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kDownloadingNewManifestData);
++  stage_ = ManifestUpdateCheckStage::kLoadingExistingManifestData;
++
++  RunChainedCallbacks(
++      base::BindOnce(&ManifestUpdateCheckCommand::LoadExistingAppIcons,
++                     GetWeakPtr()),
++
++      base::BindOnce(&ManifestUpdateCheckCommand::StashExistingAppIcons,
++                     GetWeakPtr()),
++
++      base::BindOnce(
++          &ManifestUpdateCheckCommand::LoadExistingShortcutsMenuIcons,
++          GetWeakPtr()),
++
++      base::BindOnce(
++          &ManifestUpdateCheckCommand::StashExistingShortcutsMenuIcons,
++          GetWeakPtr()),
++
++      std::move(next_step_callback));
++}
++
++void ManifestUpdateCheckCommand::LoadExistingAppIcons(
++    WebAppIconManager::ReadIconBitmapsCallback next_step_callback) {
++  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
++
++  lock_->icon_manager().ReadAllIcons(app_id_, std::move(next_step_callback));
++}
++
++void ManifestUpdateCheckCommand::StashExistingAppIcons(
++    base::OnceClosure next_step_callback,
++    IconBitmaps icon_bitmaps) {
++  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
++
++  if (icon_bitmaps.empty()) {
++    CompleteCommandAndSelfDestruct(
++        ManifestUpdateCheckResult::kIconReadFromDiskFailed);
++    return;
++  }
++
++  existing_app_icon_bitmaps_ = std::move(icon_bitmaps);
++  std::move(next_step_callback).Run();
++}
++
++void ManifestUpdateCheckCommand::LoadExistingShortcutsMenuIcons(
++    WebAppIconManager::ReadShortcutsMenuIconsCallback next_step_callback) {
++  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
++
++  lock_->icon_manager().ReadAllShortcutsMenuIcons(
++      app_id_, std::move(next_step_callback));
++}
++
++void ManifestUpdateCheckCommand::StashExistingShortcutsMenuIcons(
++    base::OnceClosure next_step_callback,
++    ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps) {
++  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
++
++  existing_shortcuts_menu_icon_bitmaps_ =
++      std::move(shortcuts_menu_icon_bitmaps);
++  std::move(next_step_callback).Run();
++}
++
++////////////////////////////////////////////////////////////////////////////////
++// ManifestUpdateCheckStage::kComparingManifestData:
++////////////////////////////////////////////////////////////////////////////////
++
++void ManifestUpdateCheckCommand::CompareManifestData(
++    base::OnceClosure next_step_callback) {
++  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kLoadingExistingManifestData);
++  stage_ = ManifestUpdateCheckStage::kComparingManifestData;
++
++  const WebApp* web_app = lock_->registrar().GetAppById(app_id_);
++  DCHECK(web_app);
++
++  manifest_data_changes_ = GetManifestDataChanges(
++      GetWebApp(), &existing_app_icon_bitmaps_,
++      &existing_shortcuts_menu_icon_bitmaps_, new_install_info_);
++
++  std::move(next_step_callback).Run();
++}
++
++////////////////////////////////////////////////////////////////////////////////
++// ManifestUpdateCheckStage::kResolvingIdentityChanges:
++////////////////////////////////////////////////////////////////////////////////
++
++void ManifestUpdateCheckCommand::ResolveIdentityChanges(
++    base::OnceClosure next_step_callback) {
++  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kComparingManifestData);
++  stage_ = ManifestUpdateCheckStage::kResolvingIdentityChanges;
++
++  if (manifest_data_changes_.app_name_changed) {
++    manifest_data_changes_.app_name_identity_update_decision =
++        MakeAppNameIdentityUpdateDecision();
++  }
++  if (manifest_data_changes_.app_icon_identity_change) {
++    manifest_data_changes_.app_icon_identity_update_decision =
++        MakeAppIconIdentityUpdateDecision();
++  }
++
++  // Record metrics prior to reverts to capture attempts to change name/icons.
++  RecordIdentityConfirmationMetrics(manifest_data_changes_, GetWebApp());
++
++  // Apply reverts before showing the confirmation dialog to avoid showing
++  // rejected changes in the preview.
++  RevertIdentityChangesIfNeeded();
++
++  if (manifest_data_changes_.RequiresConfirmation()) {
++    ConfirmAppIdentityUpdate(std::move(next_step_callback));
++    return;
++  }
++
++  std::move(next_step_callback).Run();
++}
++
++IdentityUpdateDecision
++ManifestUpdateCheckCommand::MakeAppNameIdentityUpdateDecision() const {
++  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kResolvingIdentityChanges);
++  DCHECK(manifest_data_changes_.app_name_changed);
++
++  const WebApp& web_app = GetWebApp();
++  if (CanWebAppSilentlyUpdateIdentity(web_app)) {
++    return IdentityUpdateDecision::kSilentlyAllow;
++  }
++
++  if (CanShowIdentityUpdateConfirmationDialog(lock_->registrar(), web_app) &&
++      base::FeatureList::IsEnabled(features::kPwaUpdateDialogForName)) {
++    return IdentityUpdateDecision::kGetUserConfirmation;
++  }
++
++  return IdentityUpdateDecision::kRevert;
++}
++
++IdentityUpdateDecision
++ManifestUpdateCheckCommand::MakeAppIconIdentityUpdateDecision() const {
++  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kResolvingIdentityChanges);
++  DCHECK(manifest_data_changes_.app_icon_identity_change);
++
++  const WebApp& web_app = GetWebApp();
++  if (CanWebAppSilentlyUpdateIdentity(web_app) ||
++      base::FeatureList::IsEnabled(features::kWebAppManifestIconUpdating)) {
++    return IdentityUpdateDecision::kSilentlyAllow;
++  }
++
++  if (CanShowIdentityUpdateConfirmationDialog(lock_->registrar(), web_app) &&
++      base::FeatureList::IsEnabled(features::kPwaUpdateDialogForIcon)) {
++    return IdentityUpdateDecision::kGetUserConfirmation;
++  }
++
++  return IdentityUpdateDecision::kRevert;
++}
++
++void ManifestUpdateCheckCommand::ConfirmAppIdentityUpdate(
++    base::OnceClosure next_step_callback) {
++  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kResolvingIdentityChanges);
++
++  DCHECK(
++      CanShowIdentityUpdateConfirmationDialog(lock_->registrar(), GetWebApp()));
++  DCHECK(manifest_data_changes_.RequiresConfirmation());
++
++  if (IsWebContentsDestroyed()) {
++    CompleteCommandAndSelfDestruct(
++        ManifestUpdateCheckResult::kWebContentsDestroyed);
++    return;
++  }
++
++  const SkBitmap* before_icon = nullptr;
++  const SkBitmap* after_icon = nullptr;
++  if (manifest_data_changes_.app_icon_identity_change) {
++    before_icon = &manifest_data_changes_.app_icon_identity_change->before;
++    after_icon = &manifest_data_changes_.app_icon_identity_change->after;
++  } else {
++    // Even though this is just a name update an icon still needs to be shown
++    // to the user, find an existing icon to show in the before/after.
++    for (SquareSizePx size : kIdentitySizes) {
++      auto it = existing_app_icon_bitmaps_.any.find(size);
++      if (it != existing_app_icon_bitmaps_.any.end()) {
++        before_icon = &it->second;
++        after_icon = before_icon;
++        break;
++      }
++    }
++    // TODO(crbug.com/1409710): Try other sizes if the above sizes fail.
++  }
++
++  if (before_icon == nullptr || after_icon == nullptr ||
++      before_icon->drawsNothing() || after_icon->drawsNothing()) {
++    OnIdentityUpdateConfirmationComplete(std::move(next_step_callback),
++                                         AppIdentityUpdate::kSkipped);
++    return;
++  }
++
++  // TODO(https://crbug.com/1378271): Pull this out of this command so the app
++  // lock is no longer held while a dialog is showing. We should not hold locks
++  // while waiting on user input.
++  lock_->ui_manager().ShowWebAppIdentityUpdateDialog(
++      app_id_,
++      /*title_change=*/manifest_data_changes_.app_name_changed,
++      /*icon_change=*/
++      manifest_data_changes_.app_icon_identity_change.has_value(),
++      /*old_title=*/base::UTF8ToUTF16(GetWebApp().untranslated_name()),
++      /*new_title=*/new_install_info_.title,
++      /*old_icon=*/*before_icon,
++      /*new_icon=*/*after_icon, web_contents_.get(),
++      base::BindOnce(
++          &ManifestUpdateCheckCommand::OnIdentityUpdateConfirmationComplete,
++          GetWeakPtr(), std::move(next_step_callback)));
++}
++
++void ManifestUpdateCheckCommand::OnIdentityUpdateConfirmationComplete(
++    base::OnceClosure next_step_callback,
++    AppIdentityUpdate app_identity_update) {
++  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kResolvingIdentityChanges);
++
++  switch (app_identity_update) {
++    case AppIdentityUpdate::kAllowed:
++      break;
++
++    case AppIdentityUpdate::kUninstall:
++      CompleteCommandAndSelfDestruct(
++          ManifestUpdateCheckResult::kAppIdentityUpdateRejectedAndUninstalled);
++      return;
++
++    case AppIdentityUpdate::kSkipped: {
++      manifest_data_changes_.app_name_identity_update_decision =
++          IdentityUpdateDecision::kRevert;
++      manifest_data_changes_.app_icon_identity_update_decision =
++          IdentityUpdateDecision::kRevert;
++      RevertIdentityChangesIfNeeded();
++      break;
++    }
++  }
++
++  std::move(next_step_callback).Run();
++}
++
++void ManifestUpdateCheckCommand::RevertIdentityChangesIfNeeded() {
++  if (manifest_data_changes_.app_name_identity_update_decision ==
++          IdentityUpdateDecision::kRevert &&
++      manifest_data_changes_.app_name_changed) {
++    // Revert to WebApp::untranslated_name() instead of
++    // WebAppRegistrar::GetAppShortName() because that's the field
++    // WebAppInstallInfo::title gets written to (see SetWebAppManifestFields()).
++    new_install_info_.title =
++        base::UTF8ToUTF16(GetWebApp().untranslated_name());
++    manifest_data_changes_.app_name_changed = false;
++  }
++
++  if (manifest_data_changes_.app_icon_identity_update_decision ==
++          IdentityUpdateDecision::kRevert &&
++      manifest_data_changes_.app_icon_identity_change) {
++    const WebApp& web_app = GetWebApp();
++    new_install_info_.manifest_icons = web_app.manifest_icons();
++    new_install_info_.icon_bitmaps = existing_app_icon_bitmaps_;
++    new_install_info_.is_generated_icon = web_app.is_generated_icon();
++    manifest_data_changes_.app_icon_identity_change.reset();
++    manifest_data_changes_.any_app_icon_changed = false;
++  }
++}
++
++////////////////////////////////////////////////////////////////////////////////
++// ManifestUpdateCheckStage::kComplete:
++////////////////////////////////////////////////////////////////////////////////
++
++void ManifestUpdateCheckCommand::CheckComplete() {
++  DCHECK_EQ(stage_, ManifestUpdateCheckStage::kResolvingIdentityChanges);
++  stage_ = ManifestUpdateCheckStage::kComplete;
++
++  ManifestUpdateCheckResult check_result =
++      manifest_data_changes_ ? ManifestUpdateCheckResult::kAppUpdateNeeded
++                             : ManifestUpdateCheckResult::kAppUpToDate;
++  CompleteCommandAndSelfDestruct(check_result);
++}
++
++const WebApp& ManifestUpdateCheckCommand::GetWebApp() const {
++  const WebApp* web_app = lock_->registrar().GetAppById(app_id_);
++  DCHECK(web_app);
++  return *web_app;
++}
++
++bool ManifestUpdateCheckCommand::IsWebContentsDestroyed() const {
++  return !web_contents_ || web_contents_->IsBeingDestroyed();
++}
++
++void ManifestUpdateCheckCommand::CompleteCommandAndSelfDestruct(
++    ManifestUpdateCheckResult check_result) {
++  debug_log_.Set("result", base::ToString(check_result));
++
++  CommandResult command_result = [&] {
++    switch (check_result) {
++      case ManifestUpdateCheckResult::kAppUpdateNeeded:
++      case ManifestUpdateCheckResult::kAppIdentityUpdateRejectedAndUninstalled:
++      case ManifestUpdateCheckResult::kAppUpToDate:
++        return CommandResult::kSuccess;
++      case ManifestUpdateCheckResult::kAppIdMismatch:
++      case ManifestUpdateCheckResult::kAppNotEligible:
++      case ManifestUpdateCheckResult::kIconDownloadFailed:
++      case ManifestUpdateCheckResult::kIconReadFromDiskFailed:
++      case ManifestUpdateCheckResult::kWebContentsDestroyed:
++        return CommandResult::kFailure;
++      case ManifestUpdateCheckResult::kSystemShutdown:
++        return CommandResult::kShutdown;
++    }
++  }();
++
++  SignalCompletionAndSelfDestruct(
++      command_result,
++      base::BindOnce(std::move(completed_callback_), check_result,
++                     check_result == ManifestUpdateCheckResult::kAppUpdateNeeded
++                         ? absl::make_optional<WebAppInstallInfo>(
++                               std::move(new_install_info_))
++                         : absl::nullopt));
++}
++
++}  // namespace web_app
+diff --git a/chrome/common/chrome_content_client.cc b/chrome/common/chrome_content_client.cc
+index db08f6151229e..e63c004ec6398 100644
+--- a/chrome/common/chrome_content_client.cc
++++ b/chrome/common/chrome_content_client.cc
+@@ -292,6 +292,12 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
+ #if BUILDFLAG(IS_ANDROID)
+   schemes->local_schemes.push_back(url::kContentScheme);
+ #endif
++  for ( const char* ip_s : {"ipfs", "ipns"} ) {
++    schemes->standard_schemes.push_back(ip_s);
++    schemes->cors_enabled_schemes.push_back(ip_s);
++    schemes->secure_schemes.push_back(ip_s);
++    schemes->csp_bypassing_schemes.push_back(ip_s);
++  }
+ }
+ 
+ std::u16string ChromeContentClient::GetLocalizedString(int message_id) {
+diff --git a/net/dns/dns_config_service_linux.cc b/net/dns/dns_config_service_linux.cc
+index 5273da5190277..d95544c64d213 100644
+--- a/net/dns/dns_config_service_linux.cc
++++ b/net/dns/dns_config_service_linux.cc
+@@ -93,6 +93,9 @@ absl::optional<DnsConfig> ConvertResStateToDnsConfig(
+   // cannot be overwritten by /etc/resolv.conf
+   const unsigned kRequiredOptions = RES_RECURSE | RES_DEFNAMES | RES_DNSRCH;
+   if ((res.options & kRequiredOptions) != kRequiredOptions) {
++    if (!dns_config.unhandled_options) {
++      LOG(ERROR) << "unhandled_options set to true bec " << res.options;
++    }
+     dns_config.unhandled_options = true;
+     return dns_config;
+   }
+@@ -206,9 +209,12 @@ void RecordIncompatibleNsswitchReason(
+     IncompatibleNsswitchReason reason,
+     absl::optional<NsswitchReader::Service> service_token) {
+   if (service_token) {
++    LOG(ERROR) << "RecordIncompatibleNsswitchReason(" << static_cast<int>(reason) << ',' << int(service_token.value()) << ')';
+     base::UmaHistogramEnumeration(
+         "Net.DNS.DnsConfig.Nsswitch.IncompatibleService",
+         service_token.value());
++  } else {
++    LOG(ERROR) << "RecordIncompatibleNsswitchReason(" << static_cast<int>(reason) << ",nullopt)";
+   }
+ }
+ 
+@@ -272,11 +278,11 @@ bool IsNsswitchConfigCompatible(
+         // Ignore any entries after `kDns` because Chrome will fallback to the
+         // system resolver if a result was not found in DNS.
+         return true;
+-
++      case NsswitchReader::Service::kResolve:
++        break;
+       case NsswitchReader::Service::kMdns:
+       case NsswitchReader::Service::kMdns4:
+       case NsswitchReader::Service::kMdns6:
+-      case NsswitchReader::Service::kResolve:
+       case NsswitchReader::Service::kNis:
+         RecordIncompatibleNsswitchReason(
+             IncompatibleNsswitchReason::kIncompatibleService,
+diff --git a/net/dns/dns_session.cc b/net/dns/dns_session.cc
+index 351685813aad7..723a0e246323a 100644
+--- a/net/dns/dns_session.cc
++++ b/net/dns/dns_session.cc
+@@ -3,6 +3,7 @@
+ // found in the LICENSE file.
+ 
+ #include "net/dns/dns_session.h"
++#include "base/logging.h"
+ 
+ #include <stdint.h>
+ 
+@@ -23,7 +24,9 @@ DnsSession::DnsSession(const DnsConfig& config,
+       rand_callback_(base::BindRepeating(rand_int_callback,
+                                          0,
+                                          std::numeric_limits<uint16_t>::max())),
+-      net_log_(net_log) {}
++      net_log_(net_log) {
++        LOG(INFO) << "(session) config.unhandled_options =" << config.unhandled_options ;
++      }
+ 
+ DnsSession::~DnsSession() = default;
+ 
+diff --git a/net/dns/host_cache.h b/net/dns/host_cache.h
+index f077893d071df..10ef0cea2078e 100644
+--- a/net/dns/host_cache.h
++++ b/net/dns/host_cache.h
+@@ -212,10 +212,16 @@ class NET_EXPORT HostCache {
+       aliases_ = std::move(aliases);
+     }
+     const absl::optional<std::vector<std::string>>& text_records() const {
++      if (text_records_) {
++        LOG(INFO) << " This host entry has " << text_records_.value().size() << " TXT records.";
++      }
+       return text_records_;
+     }
+     void set_text_records(
+         absl::optional<std::vector<std::string>> text_records) {
++      if (text_records) {
++        LOG(INFO) << "set_text_records(" << text_records.value().size() << " recs)";
++      }
+       text_records_ = std::move(text_records);
+     }
+     const absl::optional<std::vector<HostPortPair>>& hostnames() const {
+@@ -303,6 +309,7 @@ class NET_EXPORT HostCache {
+       endpoint_metadatas_ = std::move(endpoint_metadatas);
+     }
+     void SetResult(std::vector<std::string> text_records) {
++      LOG(INFO) << "SetResult(" << text_records.size() << " recs)";
+       text_records_ = std::move(text_records);
+     }
+     void SetResult(std::vector<HostPortPair> hostnames) {
+diff --git a/net/dns/system_dns_config_change_notifier.cc b/net/dns/system_dns_config_change_notifier.cc
+index ddff4e00059a5..4a34765da956f 100644
+--- a/net/dns/system_dns_config_change_notifier.cc
++++ b/net/dns/system_dns_config_change_notifier.cc
+@@ -17,6 +17,7 @@
+ #include "base/task/sequenced_task_runner.h"
+ #include "base/task/task_traits.h"
+ #include "base/task/thread_pool.h"
++#include "base/logging.h"
+ #include "net/dns/dns_config_service.h"
+ 
+ namespace net {
+@@ -166,8 +167,17 @@ class SystemDnsConfigChangeNotifier::Core {
+ 
+     if (config_ == new_config)
+       return;
+-
++    if (config_) {
++      LOG(INFO) << "DNS change detected (old) " << config_->unhandled_options;
++    } else {
++      LOG(INFO) << "DNS change detected (old) nullopt";
++    }
+     config_ = std::move(new_config);
++    if (config_) {
++      LOG(INFO) << "DNS change detected (new) " << config_->unhandled_options;
++    } else {
++      LOG(INFO) << "DNS change detected (new) nullopt";
++    }
+ 
+     for (auto& wrapped_observer : wrapped_observers_) {
+       wrapped_observer.second->OnNotifyThreadsafe(config_);
