@@ -14,6 +14,7 @@
 
 namespace ipfs {
 class DagListener;
+class NameListener;
 class NetworkingApi;
 class Gateway;
 class Scheduler;
@@ -24,12 +25,13 @@ class Scheduler {
   ~Scheduler();
   enum Result { Scheduled, InProgress, Failed };
   void Enqueue(std::shared_ptr<NetworkingApi>,
-               std::shared_ptr<DagListener> listener,
+               std::shared_ptr<DagListener>,
+               std::shared_ptr<NameListener>,
                std::string const& suffix,
                Priority);
-  void IssueRequests(std::shared_ptr<NetworkingApi>,
-                     std::shared_ptr<DagListener>& listener);
+  void IssueRequests(std::shared_ptr<NetworkingApi>);
   bool DetectCompleteFailure(std::string task) const;
+  void TaskComplete(std::string const&);
 
  private:
   std::function<GatewayList()> list_gen_;
@@ -39,6 +41,8 @@ class Scheduler {
     Todo();
     ~Todo();
     std::set<std::shared_ptr<GatewayRequest>> requests;
+    std::set<std::shared_ptr<DagListener>> dag_listeners;
+    std::set<std::shared_ptr<NameListener>> name_listeners;
     Priority priority;
     long under_target() const;
   };

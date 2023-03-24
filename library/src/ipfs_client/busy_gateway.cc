@@ -76,8 +76,7 @@ void ipfs::BusyGateway::reset() {
   suffix_.clear();
 }
 void ipfs::BusyGateway::Success(Gateways& g,
-                                std::shared_ptr<NetworkingApi> api,
-                                std::shared_ptr<DagListener> listener) {
+                                std::shared_ptr<NetworkingApi> api) {
   if (prefix_.empty()) {
     return;
   }
@@ -85,26 +84,25 @@ void ipfs::BusyGateway::Success(Gateways& g,
   DCHECK(get());
   get()->TaskSuccess(suffix_);
   auto* sched = scheduler_;
-  sched->task2todo_.erase(suffix_);
+  sched->TaskComplete(suffix_);
   if (maybe_offset_) {
     sched->CheckSwap(--maybe_offset_);
   }
   reset();
-  sched->IssueRequests(api, listener);
+  sched->IssueRequests(api);
 }
 void ipfs::BusyGateway::Failure(Gateways& g,
-                                std::shared_ptr<NetworkingApi> api,
-                                std::shared_ptr<DagListener> listener) {
+                                std::shared_ptr<NetworkingApi> api) {
   DCHECK(prefix_.size() > 0U);
   g.demote(prefix_);
   get()->TaskFailed(suffix_);
   auto* sched = scheduler_;
   sched->CheckSwap(maybe_offset_);
   if (sched->DetectCompleteFailure(prefix_)) {
-    sched->task2todo_.erase(suffix_);
+    sched->TaskComplete(suffix_);
   } else {
-    sched->IssueRequests(api, listener);
+    sched->IssueRequests(api);
   }
   reset();
-  sched->IssueRequests(api, listener);
+  sched->IssueRequests(api);
 }

@@ -54,9 +54,8 @@ TEST(IpnsRecordTest, AKnownKuboRecord) {
   EXPECT_TRUE(ci.version == libp2p::multi::ContentIdentifier::Version::V1);
   EXPECT_TRUE(ci.content_type ==
               libp2p::multi::MulticodecType::Code::LIBP2P_KEY);
-  //  EXPECT_TRUE(ci.content_address.getType() ==
-  //  libp2p::multi::HashType::sha256); auto hash =
-  //  ci.content_address.getHash();
+  EXPECT_EQ(ci.content_address.getType(), libp2p::multi::HashType::identity);
+  auto hash = ci.content_address.getHash();
   auto my_name_res = libp2p::peer::PeerId::fromHash(ci.content_address);
 
   //  auto my_name_res =
