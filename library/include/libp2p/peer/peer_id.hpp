@@ -9,6 +9,7 @@
 #include <libp2p/crypto/error.hpp>
 #include <libp2p/crypto/key.hpp>
 #include <libp2p/crypto/protobuf/protobuf_key.hpp>
+#include <libp2p/multi/multibase_codec.hpp>
 #include <libp2p/multi/multibase_codec/codecs/base_error.hpp>
 #include <libp2p/multi/multihash.hpp>
 
@@ -26,7 +27,8 @@ class PeerId {
   using Error = std::variant<FactoryError,
                              crypto::Error,
                              multi::Multihash::Error,
-                             multi::detail::BaseError>;
+                             multi::detail::BaseError,
+                             multi::MultibaseCodec::Error>;
   using FactoryResult = ipfs::expected<PeerId, Error>;
 
  public:
@@ -57,6 +59,8 @@ class PeerId {
    * @return instance of PeerId in case of success, error otherwise
    */
   static FactoryResult fromBase58(std::string_view id);
+
+  static FactoryResult FromMultibase(std::string_view id);
 
   /**
    * Create a PeerId from SHA256 hash of its ID

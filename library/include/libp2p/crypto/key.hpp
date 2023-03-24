@@ -15,8 +15,6 @@ namespace libp2p::crypto {
 using Buffer = libp2p::common::ByteArray;
 
 struct Key {
-  Key();
-  ~Key() noexcept;
   /**
    * Supported types of all keys
    */
@@ -28,6 +26,8 @@ struct Key {
     ECDSA = 3
   };
 
+  Key(Type, std::vector<uint8_t>);
+  ~Key() noexcept;
   Type type = Type::UNSPECIFIED;  ///< key type
   std::vector<uint8_t> data{};    ///< key content
 };

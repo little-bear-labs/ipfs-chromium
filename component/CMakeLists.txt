@@ -116,7 +116,7 @@ if(GIT_EXECUTABLE)
         TARGET setup_component
         POST_BUILD
         WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
-        COMMAND "${GIT_EXECUTABLE}" diff --patch > "${CMAKE_CURRENT_LIST_DIR}/rest_of_chromium.patch"
+        COMMAND "${GIT_EXECUTABLE}" -C "${CHROMIUM_SOURCE_TREE}" diff --patch "${CHROMIUM_TAG}" > "${CMAKE_CURRENT_LIST_DIR}/rest_of_chromium.patch"
     )
 else()
     message(WARNING "git not in path - will not be creating the patch file to save your changes.")

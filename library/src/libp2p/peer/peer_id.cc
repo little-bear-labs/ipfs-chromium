@@ -9,6 +9,7 @@
 #include <libp2p/crypto/sha/sha256.hpp>
 #include <libp2p/multi/hash_type.hpp>
 #include <libp2p/multi/multibase_codec/codecs/base58.hpp>
+#include <libp2p/multi/multibase_codec/multibase_codec_impl.hpp>
 
 /*
 OUTCOME_CPP_DEFINE_CATEGORY(libp2p::peer, PeerId::FactoryError, e) {
@@ -74,6 +75,15 @@ PeerId::FactoryResult PeerId::fromBase58(std::string_view id) {
   }
 
   return PeerId{std::move(hash)};
+}
+
+auto PeerId::FromMultibase(std::string_view id) -> FactoryResult {
+  multi::MultibaseCodecImpl c;
+  auto res = c.decode(id);
+  if (!res.has_value()) {
+    return ipfs::unexpected<Error>{res.error()};
+  }
+  return fromBytes(res.value());
 }
 
 PeerId::FactoryResult PeerId::fromHash(const Multihash& hash) {

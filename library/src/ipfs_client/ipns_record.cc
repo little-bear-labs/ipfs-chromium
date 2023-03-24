@@ -8,8 +8,26 @@
 #include "ipns_record.pb.h"
 #endif
 
+// #include <libp2p/crypto/crypto_provider/crypto_provider_impl.hpp>
+#include <libp2p/crypto/hasher.hpp>
 #include <libp2p/peer/peer_id.hpp>
 
+namespace {
+bool matches(libp2p::multi::Multihash const& hash,
+             ipfs::ByteView pubkey_bytes) {
+  auto hasher = libp2p::crypto::CreateHasher(hash.getType());
+  std::basic_string<ipfs::Byte> result(hasher->digestSize(), ipfs::Byte{});
+  if (hasher->write(pubkey_bytes).value()) {
+    if (!hasher->digestOut({result.data(), result.size()}).has_value()) {
+      LOG(ERROR) << "Error getting digest.";
+    }
+  } else {
+    LOG(ERROR) << "Attempt to hash bytes returned false";
+  }
+  return std::equal(result.begin(), result.end(), hash.getHash().begin(),
+                    hash.getHash().end());
+}
+}  // namespace
 std::string ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
                                      libp2p::peer::PeerId const& name) {
   // https://github.com/ipfs/specs/blob/main/ipns/IPNS.md#record-verification
@@ -42,12 +60,19 @@ std::string ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
   // the expiration date after which the IPNS record becomes invalid.
   DCHECK_EQ(entry.validitytype(), 0);
 
+  ipfs::ByteView public_key;
   if (entry.has_pubkey()) {
-    // TODO hash key & match against name
-    // TODO verify signature with entry.pubkey()
+    public_key = ipfs::ByteView{
+        reinterpret_cast<ipfs::Byte const*>(entry.pubkey().data()),
+        entry.pubkey().size()};
+    if (!matches(name.toMultihash(), public_key)) {
+      LOG(ERROR) << "Given IPNS record contains a pubkey that does not match "
+                    "the hash from the IPNS name that fetched it!";
+      return {};
+    }
   } else if (name.toMultihash().getType() ==
              libp2p::multi::HashType::identity) {
-    // TODO get key from name & verify signature
+    public_key = name.toMultihash().getHash();
   } else {
     LOG(ERROR) << "IPNS record contains no public key, and the IPNS name "
                << name.toMultihash().toHex()
@@ -55,5 +80,8 @@ std::string ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
     return {};
   }
 
+  //  LOG(INFO) << "Record contains a public key of type ";
+  // TODO verify signature
+  LOG(INFO) << entry.value();
   return entry.value();
 }

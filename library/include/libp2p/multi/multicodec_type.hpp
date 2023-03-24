@@ -30,6 +30,7 @@ class MulticodecType {
     RAW = 0x55,
     DAG_PB = 0x70,
     DAG_CBOR = 0x71,
+    LIBP2P_KEY = 0x72,
     FILECOIN_COMMITMENT_UNSEALED = 0xf101,
     FILECOIN_COMMITMENT_SEALED = 0xf102,
   };
@@ -58,6 +59,8 @@ class MulticodecType {
         return "dag-pb";
       case Code::DAG_CBOR:
         return "dag-cbor";
+      case Code::LIBP2P_KEY:
+        return "libp2p-key";
       case Code::FILECOIN_COMMITMENT_UNSEALED:
         return "fil-commitment-unsealed";
       case Code::FILECOIN_COMMITMENT_SEALED:
