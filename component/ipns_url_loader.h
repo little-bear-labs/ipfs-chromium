@@ -21,6 +21,7 @@ class URLLoaderClient;
 }  // namespace network
 
 namespace ipfs {
+class NetworkingApi;
 class InterRequestState;
 class IpnsUrlLoader : public network::ResolveHostClientBase,
                       public network::mojom::URLLoader {
@@ -32,6 +33,7 @@ class IpnsUrlLoader : public network::ResolveHostClientBase,
   mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote_;
   std::shared_ptr<IpfsUrlLoader> ipfs_loader_;
   network::mojom::NetworkContext* network_context_;
+  std::shared_ptr<GatewayRequests> api_;
 
  public:
   explicit IpnsUrlLoader(InterRequestState& state,
@@ -59,6 +61,7 @@ class IpnsUrlLoader : public network::ResolveHostClientBase,
   void DoIpfs();
   void FailNameResolution();
   network::mojom::URLLoader& under();
+  bool RequestIpnsRecord();
 
   void FollowRedirect(
       std::vector<std::string> const& removed_headers,

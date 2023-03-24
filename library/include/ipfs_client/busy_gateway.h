@@ -23,12 +23,8 @@ class BusyGateway {
   void reset();
   bool operator==(BusyGateway const&) const;
 
-  void Success(Gateways&,
-               std::shared_ptr<NetworkingApi>,
-               std::shared_ptr<DagListener>);
-  void Failure(Gateways&,
-               std::shared_ptr<NetworkingApi>,
-               std::shared_ptr<DagListener>);
+  void Success(Gateways&, std::shared_ptr<NetworkingApi>);
+  void Failure(Gateways&, std::shared_ptr<NetworkingApi>);
 
   std::string const& current_task() const { return suffix_; }
   std::string url() const { return prefix_ + suffix_; }

@@ -35,9 +35,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 void ipfs::GatewayRequests::RequestByCid(std::string cid,
                                          std::shared_ptr<DagListener> listener,
                                          Priority prio) {
-  scheduler().Enqueue(shared_from_this(), listener,
+  scheduler().Enqueue(shared_from_this(), listener, {},
                       "ipfs/" + cid + "?format=raw", prio);
-  scheduler().IssueRequests(shared_from_this(), listener);
+  scheduler().IssueRequests(shared_from_this());
 }
 namespace {
 std::unique_ptr<network::SimpleURLLoader> discovery_loader;
@@ -88,9 +88,8 @@ void ipfs::GatewayRequests::Discover(
       loader_factory_, std::move(bound));
 }
 
-auto ipfs::GatewayRequests::InitiateGatewayRequest(
-    BusyGateway assigned,
-    std::shared_ptr<DagListener> listener) -> std::shared_ptr<GatewayRequest> {
+auto ipfs::GatewayRequests::InitiateGatewayRequest(BusyGateway assigned)
+    -> std::shared_ptr<GatewayRequest> {
   auto url = assigned.url();
   //  LOG(INFO) << "InitiateGatewayRequest(" << url << ")";
   GOOGLE_DCHECK_GT(url.size(), 0U);
@@ -103,7 +102,7 @@ auto ipfs::GatewayRequests::InitiateGatewayRequest(
   out->loader = network::SimpleURLLoader::Create(std::move(req),
                                                  kTrafficAnnotation, FROM_HERE);
   out->loader->SetTimeoutDuration(base::Seconds(2));
-  out->listener = listener;
+  //  out->listener = listener;
   auto cb = base::BindOnce(&ipfs::GatewayRequests::OnResponse,
                            base::Unretained(this), shared_from_this(), out);
   DCHECK(loader_factory_);
@@ -125,21 +124,19 @@ void ipfs::GatewayRequests::OnResponse(std::shared_ptr<NetworkingApi> api,
   //  LOG(INFO) << "Got a response for " << task << " via " << url;
   auto& bg = req->gateway;
   auto& ldr = req->loader;
-  auto listener = req->listener;
-  if (ProcessResponse(bg, listener, ldr.get(), body.get())) {
-    bg.Success(state_.gateways(), shared_from_this(), listener);
+  //  auto listener = req->listener;
+  if (ProcessResponse(bg, ldr.get(), body.get())) {
+    bg.Success(state_.gateways(), shared_from_this());
   } else {
-    bg.Failure(state_.gateways(), shared_from_this(), listener);
+    bg.Failure(state_.gateways(), shared_from_this());
   }
   state_.storage().CheckListening();
-  state_.scheduler().IssueRequests(api, listener);
+  state_.scheduler().IssueRequests(api);
 }
 
-bool ipfs::GatewayRequests::ProcessResponse(
-    BusyGateway& gw,
-    std::shared_ptr<DagListener> listener,
-    network::SimpleURLLoader* ldr,
-    std::string* body) {
+bool ipfs::GatewayRequests::ProcessResponse(BusyGateway& gw,
+                                            network::SimpleURLLoader* ldr,
+                                            std::string* body) {
   if (!gw) {
     LOG(ERROR) << "No gateway.";
     return false;
@@ -191,7 +188,7 @@ bool ipfs::GatewayRequests::ProcessResponse(
   if (block.cid_matches_data()) {
     LOG(INFO) << "Storing CID=" << cid_str;
     state_.storage().Store(cid_str, std::move(block));
-    scheduler().IssueRequests(shared_from_this(), listener);
+    scheduler().IssueRequests(shared_from_this());
     return true;
   } else {
     LOG(ERROR) << "You tried to store some bytes as a block for a CID ("

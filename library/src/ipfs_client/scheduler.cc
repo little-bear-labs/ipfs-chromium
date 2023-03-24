@@ -1,5 +1,7 @@
-#include <ipfs_client/networking_api.h>
 #include <ipfs_client/scheduler.h>
+
+#include <ipfs_client/name_listener.h>
+#include <ipfs_client/networking_api.h>
 
 #include "log_macros.h"
 
@@ -17,7 +19,8 @@ ipfs::Scheduler::~Scheduler() {
 }
 
 void ipfs::Scheduler::Enqueue(std::shared_ptr<NetworkingApi> api,
-                              std::shared_ptr<DagListener> listener,
+                              std::shared_ptr<DagListener> dag_listener,
+                              std::shared_ptr<NameListener> name_listener,
                               std::string const& suffix,
                               Priority p) {
   if (suffix.empty()) {
@@ -26,18 +29,22 @@ void ipfs::Scheduler::Enqueue(std::shared_ptr<NetworkingApi> api,
   } else {
     auto& todo = task2todo_[suffix];
     todo.priority = std::max(todo.priority, p);
+    if (dag_listener) {
+      todo.dag_listeners.insert(dag_listener);
+    }
+    if (name_listener) {
+      todo.name_listeners.insert(name_listener);
+    }
   }
-  IssueRequests(api, listener);
+  IssueRequests(api);
 }
-void ipfs::Scheduler::IssueRequests(std::shared_ptr<NetworkingApi> api,
-                                    std::shared_ptr<DagListener>& listener) {
+void ipfs::Scheduler::IssueRequests(std::shared_ptr<NetworkingApi> api) {
   //  LOG(INFO) << "Scheduler::IssueRequests";
   decltype(task2todo_)::value_type* unmet = nullptr;
-  auto assign = [this, api, listener](auto& gw, auto& task, auto& todo,
-                                      auto need) {
+  auto assign = [this, api](auto& gw, auto& task, auto& todo, auto need) {
     if (gw.accept(task, need)) {
-      auto req = api->InitiateGatewayRequest(
-          BusyGateway{gw.url_prefix(), task, this}, listener);
+      auto req =
+          api->InitiateGatewayRequest(BusyGateway{gw.url_prefix(), task, this});
       todo.requests.insert(req);
       LOG(INFO) << "Initiated request " << req->url() << " (" << need << ')';
       return true;
@@ -102,6 +109,18 @@ void ipfs::Scheduler::UpdateDevPage() {
     f << "</table></body></html>";
   }
   std::rename("temp.devpage.html", "devpage.html");
+}
+void ipfs::Scheduler::TaskComplete(std::string const& task) {
+  auto todo = task2todo_.find(task);
+  if (task2todo_.end() == todo) {
+    LOG(WARNING) << "An unknown TODO finished.";
+    return;
+  }
+  // Don't need to call back on dag listeners because storage covered that?
+  for (auto& nl : todo->second.name_listeners) {
+    nl->Complete();
+  }
+  task2todo_.erase(todo);
 }
 
 ipfs::Scheduler::Todo::Todo() {}
