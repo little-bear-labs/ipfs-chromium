@@ -3,6 +3,7 @@
 
 #include "ipfs_url_loader.h"
 
+#include <ipfs_client/name_listener.h>
 #include <mojo/public/cpp/bindings/receiver.h>
 #include <services/network/public/cpp/resolve_host_client_base.h>
 #include <services/network/public/mojom/url_loader.mojom.h>
@@ -24,7 +25,8 @@ namespace ipfs {
 class NetworkingApi;
 class InterRequestState;
 class IpnsUrlLoader : public network::ResolveHostClientBase,
-                      public network::mojom::URLLoader {
+                      public network::mojom::URLLoader,
+                      public NameListener {
   InterRequestState& state_;
   std::string host_;
   std::optional<network::ResourceRequest> request_;
@@ -34,6 +36,7 @@ class IpnsUrlLoader : public network::ResolveHostClientBase,
   std::shared_ptr<IpfsUrlLoader> ipfs_loader_;
   network::mojom::NetworkContext* network_context_;
   std::shared_ptr<GatewayRequests> api_;
+  network::mojom::URLLoaderFactory& http_loader_;
 
  public:
   explicit IpnsUrlLoader(InterRequestState& state,
@@ -72,6 +75,8 @@ class IpnsUrlLoader : public network::ResolveHostClientBase,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
   void ResumeReadingBodyFromNet() override;
+
+  void Complete() override;  // From NameListener
 };
 }  // namespace ipfs
 

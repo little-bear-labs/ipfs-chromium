@@ -83,7 +83,8 @@ bool ipfs::Scheduler::DetectCompleteFailure(std::string task) const {
   auto fail_count =
       std::count_if(gateways_.begin(), gateways_.end(),
                     [&task](auto& g) { return g.PreviouslyFailed(task); });
-  return fail_count < static_cast<long>(gateways_.size());
+  LOG(INFO) << task << " has already failed on " << fail_count << " gateways.";
+  return fail_count >= static_cast<long>(gateways_.size());
 }
 void ipfs::Scheduler::CheckSwap(std::size_t index) {
   if (index + 1UL < gateways_.size() &&
@@ -113,11 +114,14 @@ void ipfs::Scheduler::UpdateDevPage() {
 void ipfs::Scheduler::TaskComplete(std::string const& task) {
   auto todo = task2todo_.find(task);
   if (task2todo_.end() == todo) {
-    LOG(WARNING) << "An unknown TODO finished.";
+    LOG(WARNING) << "An unknown TODO " << task << " finished.";
     return;
   }
+  LOG(INFO) << "Task " << task << " completed with "
+            << todo->second.name_listeners.size() << " name listeners.";
   // Don't need to call back on dag listeners because storage covered that?
   for (auto& nl : todo->second.name_listeners) {
+    LOG(INFO) << "Notifying a name listener that its listener is ready.";
     nl->Complete();
   }
   task2todo_.erase(todo);
