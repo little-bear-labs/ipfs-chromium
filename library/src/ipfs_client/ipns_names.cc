@@ -9,7 +9,9 @@ void ipfs::IpnsNames::NoSuchName(std::string const& name) {
 void ipfs::IpnsNames::AssignName(std::string const& name, std::string res) {
   auto endofcid = res.find_first_of("/?#", 6);
   using namespace libp2p::multi;
-  auto dec_res = ContentIdentifierCodec::fromString(res.substr(5, endofcid));
+  auto cid_str = res.substr(5, endofcid);
+  LOG(INFO) << "IPNS points to CID " << cid_str;
+  auto dec_res = ContentIdentifierCodec::fromString(cid_str);
   if (dec_res.has_value()) {
     auto cid = dec_res.value();
     if (dec_res.value().version == ContentIdentifier::Version::V0) {
@@ -33,7 +35,7 @@ void ipfs::IpnsNames::AssignName(std::string const& name, std::string res) {
     LOG(INFO) << name << " now resolves to (desensitized)" << desensitized;
     names_[name] = std::move(desensitized);
   } else {
-    LOG(INFO) << name << " now resolves to (extra DNSLink)" << res;
+    LOG(INFO) << name << " now resolves to (extra level)" << res;
     names_[name] = std::move(res);
   }
 }

@@ -21,10 +21,10 @@ void Interceptor::MaybeCreateLoader(network::ResourceRequest const& req,
                                     LoaderCallback loader_callback) {
   auto& state = InterRequestState::FromBrowserContext(context);
   if (req.url.SchemeIs("ipns")) {
-    auto redirect = std::make_shared<IpnsUrlLoader>(
+    auto ipns_loader = std::make_shared<IpnsUrlLoader>(
         state, req.url.host(), network_context_, *loader_factory_);
     std::move(loader_callback)
-        .Run(base::BindOnce(&ipfs::IpnsUrlLoader::StartHandling, redirect));
+        .Run(base::BindOnce(&ipfs::IpnsUrlLoader::StartHandling, ipns_loader));
   } else if (req.url.SchemeIs("ipfs")) {
     auto hdr_str = req.headers.ToString();
     std::replace(hdr_str.begin(), hdr_str.end(), '\r', ' ');

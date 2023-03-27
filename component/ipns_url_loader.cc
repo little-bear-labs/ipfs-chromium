@@ -24,9 +24,9 @@ ipfs::IpnsUrlLoader::IpnsUrlLoader(
     : state_{state},
       host_(host),
       ipfs_loader_(std::make_shared<ipfs::IpfsUrlLoader>(handles_http, state)),
-      network_context_{network_context} {
+      network_context_{network_context},
+      http_loader_{handles_http} {
   DCHECK(network_context);
-  Next();
 }
 ipfs::IpnsUrlLoader::~IpnsUrlLoader() noexcept {}
 
@@ -39,10 +39,7 @@ void ipfs::IpnsUrlLoader::StartHandling(
   me->request_ = resource_request;
   me->client_remote_ = std::move(client);
   me->loader_receiver_ = std::move(receiver);
-  auto repl = me->state_.names().NameResolvedTo(me->host_);
-  if (repl.size()) {
-    me->Next();
-  }
+  me->Next();
 }
 
 void ipfs::IpnsUrlLoader::OnTextResults(
@@ -212,6 +209,13 @@ bool ipfs::IpnsUrlLoader::RequestIpnsRecord() {
     return true;
   }
   api_ = state_.api();
-  // TODO
+  api_->SetLoaderFactory(http_loader_);
+  state_.scheduler().Enqueue(api_, {}, shared_from_this(),
+                             "ipns/" + host_ + "?format=ipns-record", 3);
+  state_.scheduler().IssueRequests(api_);
   return true;
+}
+void ipfs::IpnsUrlLoader::Complete() {
+  LOG(INFO) << "NameListener's Complete called for an IpnsLoader!";
+  Next();
 }

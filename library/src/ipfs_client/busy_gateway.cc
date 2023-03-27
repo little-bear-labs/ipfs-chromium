@@ -98,7 +98,9 @@ void ipfs::BusyGateway::Failure(Gateways& g,
   get()->TaskFailed(suffix_);
   auto* sched = scheduler_;
   sched->CheckSwap(maybe_offset_);
-  if (sched->DetectCompleteFailure(prefix_)) {
+  if (sched->DetectCompleteFailure(suffix_)) {
+    LOG(WARNING) << "Giving up on task " << suffix_
+                 << " due to complete failure.";
     sched->TaskComplete(suffix_);
   } else {
     sched->IssueRequests(api);

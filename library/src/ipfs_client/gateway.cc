@@ -54,6 +54,10 @@ void ipfs::Gateway::TaskFailed(std::string const& task) {
 void ipfs::Gateway::TaskCancelled(std::string const& task) {
   tasks_.erase(task);
 }
-bool ipfs::Gateway::PreviouslyFailed(const std::string& suffix) const {
-  return failed_requests_.find(suffix) != failed_requests_.end();
+bool ipfs::Gateway::PreviouslyFailed(std::string const& suffix) const {
+  if (failed_requests_.find(suffix) != failed_requests_.end()) {
+    LOG(WARNING) << prefix_ << " has already failed to serve up " << suffix;
+    return true;
+  }
+  return false;
 }
