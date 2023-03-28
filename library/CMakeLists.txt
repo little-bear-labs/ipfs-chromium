@@ -78,6 +78,11 @@ if(GTest_FOUND)
             PUBLIC
                 cxx_std_${CXX_VERSION}
         )
+        target_include_directories(${name}_runner
+          PRIVATE
+            include/
+            src/
+        )
         target_link_libraries(${name}_runner
             PUBLIC
                 ipfs_client

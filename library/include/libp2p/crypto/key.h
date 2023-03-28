@@ -8,7 +8,7 @@
 
 #include <functional>
 
-#include <libp2p/common/types.hpp>
+#include "libp2p/common/types.hpp"
 
 namespace libp2p::crypto {
 
@@ -48,6 +48,8 @@ struct KeyPair {
   PublicKey publicKey;
   PrivateKey privateKey;
 };
+
+using Signature = std::vector<std::uint8_t>;
 
 inline bool operator==(const KeyPair& a, const KeyPair& b) {
   return a.publicKey == b.publicKey && a.privateKey == b.privateKey;

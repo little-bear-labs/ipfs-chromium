@@ -10,6 +10,8 @@
 
 #include <vocab/byte.h>
 
+#include <vector>
+
 namespace libp2p::crypto {
 /**
  * Strict type for key, which is encoded into Protobuf format

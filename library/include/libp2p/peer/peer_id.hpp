@@ -7,11 +7,11 @@
 #define LIBP2P_PEER_ID_HPP
 
 #include <libp2p/crypto/error.hpp>
-#include <libp2p/crypto/key.hpp>
 #include <libp2p/crypto/protobuf/protobuf_key.hpp>
 #include <libp2p/multi/multibase_codec.hpp>
 #include <libp2p/multi/multibase_codec/codecs/base_error.hpp>
 #include <libp2p/multi/multihash.hpp>
+#include "libp2p/crypto/key.h"
 
 #include <vocab/byte_view.h>
 #include <vocab/expected.h>

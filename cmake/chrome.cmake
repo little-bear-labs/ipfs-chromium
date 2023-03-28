@@ -1,6 +1,12 @@
 include("${CMAKE_CURRENT_LIST_DIR}/depot_tools.cmake")
 find_program(CCACHE_EXECUTABLE ccache)
 set(chromium_build_dir "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}")
+cmake_host_system_information(RESULT core_count QUERY NUMBER_OF_PHYSICAL_CORES)
+if(core_count GREATER 1)
+  math(EXPR parallel_jobs "${core_count} / 2")
+else()
+  set(parallel_jobs 1)
+endif()
 if(Python3_EXECUTABLE)
   if(CCACHE_EXECUTABLE)
     set(gnargs " cc_wrapper=\"${CCACHE_EXECUTABLE}\" ")
@@ -21,9 +27,9 @@ if(Python3_EXECUTABLE)
             WORKING_DIRECTORY "${chromium_base_dir}"
             COMMAND_ERROR_IS_FATAL ANY
         )
-	message(WARNING "And now, gclient runhooks. ${Python3_EXECUTABLE} ${DEPOT_TOOLS_GCLIENT_PY} -j 1 runhooks")
+	message(WARNING "And now, gclient runhooks. ${Python3_EXECUTABLE} ${DEPOT_TOOLS_GCLIENT_PY} -j ${parallel_jobs} runhooks")
         execute_process(
-          COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GCLIENT_PY}"  runhooks -j 1
+          COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GCLIENT_PY}"  runhooks -j ${parallel_jobs}
           WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
           COMMAND_ERROR_IS_FATAL ANY
         )
