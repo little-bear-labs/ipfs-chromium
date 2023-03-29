@@ -11,7 +11,7 @@
 #include "protobuf_key.hpp"
 
 #include <libp2p/crypto/error.hpp>
-#include <libp2p/crypto/key.hpp>
+#include "libp2p/crypto/key.h"
 
 #include <vocab/expected.h>
 

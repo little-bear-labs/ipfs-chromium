@@ -58,12 +58,14 @@ file(GLOB_RECURSE
     lib_hdrs_rel
     RELATIVE "${CMAKE_SOURCE_DIR}/library/include"
     "${CMAKE_SOURCE_DIR}/library/include/*.h"
+    "${CMAKE_SOURCE_DIR}/library/src/*.h"
     "${CMAKE_SOURCE_DIR}/library/include/*.hpp"
 )
 file(GLOB_RECURSE
     lib_hdrs_abs
     CONFIGURE_DEPENDS
     "${CMAKE_SOURCE_DIR}/library/include/*.h"
+    "${CMAKE_SOURCE_DIR}/library/src/*.h"
     "${CMAKE_SOURCE_DIR}/library/include/*.hpp"
 )
 file(GLOB

@@ -4,8 +4,11 @@
 
 #if __has_include("components/ipfs/ipns_record.pb.h")
 #include "components/ipfs/ipns_record.pb.h"
+#include "components/ipfs/keys.pb.h"
+
 #else
 #include "ipns_record.pb.h"
+#include "keys.pb.h"
 #endif
 
 // #include <libp2p/crypto/crypto_provider/crypto_provider_impl.hpp>
@@ -79,8 +82,13 @@ std::string ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
                << " is a true hash, not identity. Validation impossible.";
     return {};
   }
-
-  //  LOG(INFO) << "Record contains a public key of type ";
+  ipfs::ipns::PublicKey pk;
+  auto* pkbp = reinterpret_cast<char const*>(public_key.data());
+  if (!pk.ParseFromArray(pkbp, public_key.size())) {
+    LOG(ERROR) << "Failed to parse public key bytes";
+    return {};
+  }
+  LOG(INFO) << "Record contains a public key of type " << pk.type();
   // TODO verify signature
   LOG(INFO) << entry.value();
   return entry.value();
