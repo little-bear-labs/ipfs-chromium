@@ -1,5 +1,5 @@
 diff --git a/base/memory/ref_counted.h b/base/memory/ref_counted.h
-index 9ef94d84769df..f70e30748a389 100644
+index 9ef94d8476..f70e30748a 100644
 --- a/base/memory/ref_counted.h
 +++ b/base/memory/ref_counted.h
 @@ -7,6 +7,7 @@
@@ -11,7 +11,7 @@ index 9ef94d84769df..f70e30748a389 100644
  
  #include "base/atomic_ref_count.h"
 diff --git a/base/threading/thread_local_internal.h b/base/threading/thread_local_internal.h
-index ed99410ea8a31..d89d48ba981ab 100644
+index ed99410ea8..d89d48ba98 100644
 --- a/base/threading/thread_local_internal.h
 +++ b/base/threading/thread_local_internal.h
 @@ -30,8 +30,7 @@ class CheckedThreadLocalOwnedPointer {
@@ -25,10 +25,10 @@ index ed99410ea8a31..d89d48ba981ab 100644
        const CheckedThreadLocalOwnedPointer<T>&) = delete;
  
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index 33ba5d1a77bd8..2fe074af6c879 100644
+index 3611d20dc0..fe9fcd5382 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -2156,6 +2156,7 @@ static_library("browser") {
+@@ -2114,6 +2114,7 @@ static_library("browser") {
      "//components/infobars/content",
      "//components/infobars/core",
      "//components/invalidation/impl",
@@ -37,10 +37,10 @@ index 33ba5d1a77bd8..2fe074af6c879 100644
      "//components/keyed_service/content",
      "//components/language/content/browser",
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
-index 92467599efe02..0dd1a1bfe5d2f 100644
+index 301fa6cc9c..a27bd4c24a 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -213,6 +213,8 @@
+@@ -214,6 +214,8 @@
  #include "components/error_page/common/localized_error.h"
  #include "components/error_page/content/browser/net_error_auto_reloader.h"
  #include "components/google/core/common/google_switches.h"
@@ -49,7 +49,7 @@ index 92467599efe02..0dd1a1bfe5d2f 100644
  #include "components/keep_alive_registry/keep_alive_types.h"
  #include "components/keep_alive_registry/scoped_keep_alive.h"
  #include "components/language/core/browser/pref_names.h"
-@@ -5807,13 +5809,17 @@ void ChromeContentBrowserClient::
+@@ -5872,13 +5874,17 @@ void ChromeContentBrowserClient::
          int render_frame_id,
          const absl::optional<url::Origin>& request_initiator_origin,
          NonNetworkURLLoaderFactoryMap* factories) {
@@ -71,7 +71,7 @@ index 92467599efe02..0dd1a1bfe5d2f 100644
  
  #if BUILDFLAG(IS_CHROMEOS_ASH)
    if (web_contents) {
-@@ -5958,8 +5964,8 @@ std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+@@ -6015,8 +6021,8 @@ std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
  ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
      content::NavigationUIData* navigation_ui_data,
      int frame_tree_node_id) {
@@ -83,7 +83,7 @@ index 92467599efe02..0dd1a1bfe5d2f 100644
    interceptors.push_back(
        std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(
 diff --git a/chrome/common/chrome_content_client.cc b/chrome/common/chrome_content_client.cc
-index db08f6151229e..e63c004ec6398 100644
+index db08f61512..e63c004ec6 100644
 --- a/chrome/common/chrome_content_client.cc
 +++ b/chrome/common/chrome_content_client.cc
 @@ -292,6 +292,12 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
@@ -100,7 +100,7 @@ index db08f6151229e..e63c004ec6398 100644
  
  std::u16string ChromeContentClient::GetLocalizedString(int message_id) {
 diff --git a/net/dns/dns_config_service_linux.cc b/net/dns/dns_config_service_linux.cc
-index 5273da5190277..d95544c64d213 100644
+index 5273da5190..d95544c64d 100644
 --- a/net/dns/dns_config_service_linux.cc
 +++ b/net/dns/dns_config_service_linux.cc
 @@ -93,6 +93,9 @@ absl::optional<DnsConfig> ConvertResStateToDnsConfig(
@@ -140,31 +140,8 @@ index 5273da5190277..d95544c64d213 100644
        case NsswitchReader::Service::kNis:
          RecordIncompatibleNsswitchReason(
              IncompatibleNsswitchReason::kIncompatibleService,
-diff --git a/net/dns/dns_session.cc b/net/dns/dns_session.cc
-index 351685813aad7..723a0e246323a 100644
---- a/net/dns/dns_session.cc
-+++ b/net/dns/dns_session.cc
-@@ -3,6 +3,7 @@
- // found in the LICENSE file.
- 
- #include "net/dns/dns_session.h"
-+#include "base/logging.h"
- 
- #include <stdint.h>
- 
-@@ -23,7 +24,9 @@ DnsSession::DnsSession(const DnsConfig& config,
-       rand_callback_(base::BindRepeating(rand_int_callback,
-                                          0,
-                                          std::numeric_limits<uint16_t>::max())),
--      net_log_(net_log) {}
-+      net_log_(net_log) {
-+        LOG(INFO) << "(session) config.unhandled_options =" << config.unhandled_options ;
-+      }
- 
- DnsSession::~DnsSession() = default;
- 
 diff --git a/net/dns/host_cache.h b/net/dns/host_cache.h
-index f077893d071df..10ef0cea2078e 100644
+index f077893d07..10ef0cea20 100644
 --- a/net/dns/host_cache.h
 +++ b/net/dns/host_cache.h
 @@ -212,10 +212,16 @@ class NET_EXPORT HostCache {
