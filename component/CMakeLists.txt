@@ -136,7 +136,7 @@ add_custom_command(
 add_custom_command(
   COMMENT "Building targets necessary to have generated headers used by //components/ipfs"
   OUTPUT "${chromium_build_dir}/gen/components/ipfs/pb_dag.pb.h"
-  COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 22 components/ipfs:ipfs_generated_code
+  COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j ${parallel_jobs} components/ipfs:ipfs_generated_code
   MAIN_DEPENDENCY "${chromium_build_dir}/obj/components/ipfs/ipfs.ninja"
   WORKING_DIRECTORY "${chromium_build_dir}"
 )
@@ -178,13 +178,13 @@ if(DEPOT_TOOLS_NINJA_PY)
         DEPENDS setup_component
         WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
         COMMENT "Building component in Chromium source tree ${target_dir}, output in out/${CHROMIUM_PROFILE}"
-        COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 9 components/ipfs:ipfs
+        COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j ${parallel_jobs} components/ipfs:ipfs
     )
     add_custom_target(chrome_browser
       DEPENDS in_tree_build
       WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
       COMMENT "Building 'chrome' in Chromium source tree, output in out/${CHROMIUM_PROFILE}"
-      COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 9 chrome
+      COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j ${parallel_jobs} chrome
     )
 else()
     message(WARNING "No depot_tools")
