@@ -3,6 +3,9 @@
 #include <libp2p/multi/content_identifier_codec.hpp>
 #include "log_macros.h"
 
+void ipfs::IpnsNames::NoSuchName(std::string const& name) {
+  names_[name];  // If it already exists, leave it.
+}
 void ipfs::IpnsNames::AssignName(std::string const& name, std::string res) {
   auto endofcid = res.find_first_of("/?#", 6);
   using namespace libp2p::multi;
@@ -51,6 +54,9 @@ std::string_view ipfs::IpnsNames::NameResolvedTo(
       LOG(ERROR) << "Host cycle found in IPNS: " << std::string{original_name}
                  << ' ' << name;
       return "";
+    }
+    if (it->second.empty()) {
+      return kNoSuchName;
     }
     if (it->second.at(2) == 'f') {
       return it->second;

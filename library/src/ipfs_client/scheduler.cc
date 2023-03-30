@@ -7,10 +7,8 @@
 #include <fstream>
 #include <iostream>
 
-ipfs::Scheduler::Scheduler(GatewayList&& initial_list,
-                           unsigned max_conc,
-                           unsigned max_dup)
-    : gateways_{initial_list} {
+ipfs::Scheduler::Scheduler(std::function<GatewayList()> list_gen)
+    : list_gen_(list_gen), gateways_{list_gen()} {
   LOG(INFO) << "Scheduler ctor";
 }
 
@@ -33,38 +31,43 @@ void ipfs::Scheduler::Enqueue(std::shared_ptr<NetworkingApi> api,
 }
 void ipfs::Scheduler::IssueRequests(std::shared_ptr<NetworkingApi> api,
                                     std::shared_ptr<DagListener>& listener) {
-  LOG(INFO) << "Scheduler::IssueRequests";
-  auto avail = std::count_if(gateways_.begin(), gateways_.end(),
-                             [](auto& g) { return g.current_task().empty(); });
-  LOG(INFO) << "We have " << avail << " gateways available for requests.";
-  for (auto thresh = 8; avail && thresh >= 0; --thresh) {
-    for (auto& e : task2todo_) {
-      auto& task = e.first;
-      auto& todo = e.second;
-      auto need = todo.under_target();
-      if (need < 0) {
-        continue;
-      }
-      if (need < thresh) {
-        LOG(INFO) << task << " @(" << todo.under_target()
-                  << ") doesn't meet threshold of " << thresh;
-        continue;
-      }
-      auto it = std::find_if(gateways_.begin(), gateways_.end(),
-                             [&task](auto& gw) { return gw.accept(task); });
-      if (gateways_.end() == it) {
-        LOG(WARNING) << "Failed to assign gateway for " << task
-                     << ". Getting bogged down, or failure?";
-      } else {
-        auto req = api->InitiateGatewayRequest(
-            BusyGateway{it->url_prefix(), task, this}, listener);
-        todo.requests.insert(req);
-        ++thresh;
-        --avail;
-        LOG(INFO) << "Initiated a request to " << req->url() << " now have "
-                  << avail << " gateways available.";
+  //  LOG(INFO) << "Scheduler::IssueRequests";
+  decltype(task2todo_)::value_type* unmet = nullptr;
+  auto assign = [this, api, listener](auto& gw, auto& task, auto& todo,
+                                      auto need) {
+    if (gw.accept(task, need)) {
+      auto req = api->InitiateGatewayRequest(
+          BusyGateway{gw.url_prefix(), task, this}, listener);
+      todo.requests.insert(req);
+      LOG(INFO) << "Initiated request " << req->url() << " (" << need << ')';
+      return true;
+    }
+    return false;
+  };
+  for (auto& e : task2todo_) {
+    auto& task = e.first;
+    auto& todo = e.second;
+    auto need = todo.under_target();
+    for (auto& gw : gateways_) {
+      if (assign(gw, task, todo, need)) {
+        need = todo.under_target();
+      } else if (!unmet || unmet->second.under_target() < need) {
+        unmet = &e;
       }
     }
+  }
+  if (unmet) {
+    for (auto& gw : gateways_) {
+      if (gw.load() < 2 && assign(gw, unmet->first, unmet->second, 987)) {
+        unmet = nullptr;
+        break;
+      }
+    }
+  }
+  if (unmet) {
+    LOG(WARNING) << "Max load.";
+    //    auto more_list = list_gen_();
+    //    gateways_.insert(gateways_.end(), more_list.begin(), more_list.end());
   }
   UpdateDevPage();
 }
@@ -82,10 +85,10 @@ void ipfs::Scheduler::CheckSwap(std::size_t index) {
   }
 }
 void ipfs::Scheduler::UpdateDevPage() {
-  /*
   {
     std::ofstream f{"temp.devpage.html"};
-    f << "<html><title>IPFS Gateway Requests</title><body><table>\n";
+    f << "<html><title>IPFS Gateway Requests</title>"
+      << "<body><p>TODOs: " << task2todo_.size() << "</p><table border=1>\n";
     using namespace std::literals;
     for (auto& e : task2todo_) {
       auto& task = e.first;
@@ -99,7 +102,6 @@ void ipfs::Scheduler::UpdateDevPage() {
     f << "</table></body></html>";
   }
   std::rename("temp.devpage.html", "devpage.html");
-   */
 }
 
 ipfs::Scheduler::Todo::Todo() {}

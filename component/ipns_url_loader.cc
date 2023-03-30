@@ -62,7 +62,7 @@ void ipfs::IpnsUrlLoader::OnTextResults(
     }
   }
   if (result.empty()) {
-    // TODO create some sort of host-not-found-like error
+    state_.names().NoSuchName(host_);
     LOG(ERROR)
         << "_dnslink. domain exists, but contains no /ipfs or /ipns entry";
   } else {
@@ -80,16 +80,17 @@ void ipfs::IpnsUrlLoader::OnComplete(
     Next();
   } else {
     LOG(ERROR) << "Error resolving _dnslink." << host_ << " : " << result;
-    mojo::Remote<network::mojom::URLLoaderClient> client;
-    client.Bind(std::move(client_remote_));
-    client->OnComplete(
-        network::URLLoaderCompletionStatus(net::ERR_NAME_NOT_RESOLVED));
+    state_.names().NoSuchName(host_);
+    FailNameResolution();
   }
 }
 void ipfs::IpnsUrlLoader::Next() {
   auto resolved = state_.names().NameResolvedTo(host_);
   if (resolved.empty()) {
     QueryDns(host_);
+  } else if (resolved == IpnsNames::kNoSuchName) {
+    LOG(WARNING) << "We have given up on resolving DNSLink " << host_;
+    FailNameResolution();
   } else if (request_ && resolved.substr(0, 5) == "ipfs/") {
     DoIpfs();
   } else if (resolved.substr(0, 5) == "ipns/") {
@@ -177,4 +178,12 @@ void ipfs::IpnsUrlLoader::QueryDns(std::string_view host) {
   auto nak = net::NetworkAnonymizationKey::CreateTransient();
   network_context_->ResolveHost(std::move(hrh), nak, std::move(params),
                                 recv_.BindNewPipeAndPassRemote());
+}
+void ipfs::IpnsUrlLoader::FailNameResolution() {
+  if (client_remote_.is_valid()) {
+    mojo::Remote<network::mojom::URLLoaderClient> client;
+    client.Bind(std::move(client_remote_));
+    client->OnComplete(
+        network::URLLoaderCompletionStatus(net::ERR_NAME_NOT_RESOLVED));
+  }
 }
