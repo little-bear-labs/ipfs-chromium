@@ -44,7 +44,7 @@ class GatewayRequests final : public NetworkingApi {
   void OnResponse(std::shared_ptr<NetworkingApi>,
                   std::shared_ptr<GatewayUrlLoader>,
                   std::unique_ptr<std::string>);
-  bool ProcessResponse(Gateway*,
+  bool ProcessResponse(BusyGateway&,
                        std::shared_ptr<DagListener>,
                        network::SimpleURLLoader*,
                        std::string*);

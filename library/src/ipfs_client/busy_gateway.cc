@@ -13,7 +13,7 @@ ipfs::BusyGateway::BusyGateway(BusyGateway&& rhs)
       suffix_(rhs.suffix_),
       scheduler_(rhs.scheduler_),
       maybe_offset_(0UL) {
-  LOG(INFO) << "BusyGateway<mov ctor>(" << prefix_ << ',' << suffix_ << ')';
+  //  LOG(INFO) << "BusyGateway<mov ctor>(" << prefix_ << ',' << suffix_ << ')';
   rhs.prefix_.clear();
   rhs.suffix_.clear();
   rhs.scheduler_ = nullptr;
@@ -21,7 +21,7 @@ ipfs::BusyGateway::BusyGateway(BusyGateway&& rhs)
 }
 ipfs::BusyGateway::~BusyGateway() {
   if (*this && get()) {
-    (*this)->TaskCancelled();
+    (*this)->TaskCancelled(suffix_);
   }
 }
 ipfs::Gateway* ipfs::BusyGateway::get() {
@@ -56,7 +56,7 @@ ipfs::BusyGateway::operator bool() const {
   return scheduler_ && prefix_.size() && suffix_.size();
 }
 void ipfs::BusyGateway::reset() {
-  LOG(INFO) << "BusyGateway::reset()";
+  //  LOG(INFO) << "BusyGateway::reset()";
   if (scheduler_) {
     auto todo_it = scheduler_->task2todo_.find(suffix_);
     if (todo_it != scheduler_->task2todo_.end()) {
@@ -83,7 +83,7 @@ void ipfs::BusyGateway::Success(Gateways& g,
   }
   g.promote(prefix_);
   DCHECK(get());
-  get()->TaskSuccess();
+  get()->TaskSuccess(suffix_);
   auto* sched = scheduler_;
   sched->task2todo_.erase(suffix_);
   if (maybe_offset_) {
@@ -97,7 +97,7 @@ void ipfs::BusyGateway::Failure(Gateways& g,
                                 std::shared_ptr<DagListener> listener) {
   DCHECK(prefix_.size() > 0U);
   g.demote(prefix_);
-  get()->TaskFailed();
+  get()->TaskFailed(suffix_);
   auto* sched = scheduler_;
   sched->CheckSwap(maybe_offset_);
   if (sched->DetectCompleteFailure(prefix_)) {

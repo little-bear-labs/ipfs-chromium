@@ -40,6 +40,7 @@ void ipfs::GatewayRequests::RequestByCid(std::string cid,
   scheduler().IssueRequests(shared_from_this(), listener);
 }
 namespace {
+std::unique_ptr<network::SimpleURLLoader> discovery_loader;
 void parse_discover_response(std::function<void(std::vector<std::string>)> cb,
                              std::unique_ptr<std::string> body) {
   std::vector<std::string> discovered;
@@ -61,6 +62,7 @@ void parse_discover_response(std::function<void(std::vector<std::string>)> cb,
     r.remove_prefix(++i);
   }
   cb(discovered);
+  discovery_loader.reset();
 }
 }  // namespace
 void ipfs::GatewayRequests::Discover(
@@ -70,24 +72,29 @@ void ipfs::GatewayRequests::Discover(
     disc_cb_ = cb;
     return;
   }
+  if (discovery_loader) {
+    LOG(INFO)
+        << "Not issuing a discovery request, as one has already been sent.";
+    return;
+  }
   auto req = std::make_unique<network::ResourceRequest>();
   req->url = GURL{"https://orchestrator.strn.pl/nodes/nearby"};
-  static auto loader = network::SimpleURLLoader::Create(
+  discovery_loader = network::SimpleURLLoader::Create(
       std::move(req), kTrafficAnnotation, FROM_HERE);
   auto bound = base::BindOnce(&parse_discover_response, cb);
   LOG(INFO) << "Issuing discovery request to: "
                "https://orchestrator.strn.pl/nodes/nearby";
-  loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(loader_factory_,
-                                                          std::move(bound));
+  discovery_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      loader_factory_, std::move(bound));
 }
 
 auto ipfs::GatewayRequests::InitiateGatewayRequest(
     BusyGateway assigned,
     std::shared_ptr<DagListener> listener) -> std::shared_ptr<GatewayRequest> {
-  auto url = assigned->url();
-  LOG(INFO) << "InitiateGatewayRequest(" << url << ")";
+  auto url = assigned.url();
+  //  LOG(INFO) << "InitiateGatewayRequest(" << url << ")";
   GOOGLE_DCHECK_GT(url.size(), 0U);
-  auto url_suffix = assigned->current_task();
+  auto url_suffix = assigned.current_task();
   auto req = std::make_unique<network::ResourceRequest>();
   req->url = GURL{url};
   req->priority = net::HIGHEST;  // TODO
@@ -95,6 +102,7 @@ auto ipfs::GatewayRequests::InitiateGatewayRequest(
   GOOGLE_DCHECK_GT(out->gateway->url_prefix().size(), 0U);
   out->loader = network::SimpleURLLoader::Create(std::move(req),
                                                  kTrafficAnnotation, FROM_HERE);
+  out->loader->SetTimeoutDuration(base::Seconds(2));
   out->listener = listener;
   auto cb = base::BindOnce(&ipfs::GatewayRequests::OnResponse,
                            base::Unretained(this), shared_from_this(), out);
@@ -114,19 +122,21 @@ void ipfs::GatewayRequests::OnResponse(std::shared_ptr<NetworkingApi> api,
     return;
   }
   auto url = req->url();
-  LOG(INFO) << "Got a response for " << task << " via " << url;
+  //  LOG(INFO) << "Got a response for " << task << " via " << url;
   auto& bg = req->gateway;
   auto& ldr = req->loader;
   auto listener = req->listener;
-  if (ProcessResponse(bg.get(), listener, ldr.get(), body.get())) {
+  if (ProcessResponse(bg, listener, ldr.get(), body.get())) {
     bg.Success(state_.gateways(), shared_from_this(), listener);
   } else {
     bg.Failure(state_.gateways(), shared_from_this(), listener);
   }
+  state_.storage().CheckListening();
+  state_.scheduler().IssueRequests(api, listener);
 }
 
 bool ipfs::GatewayRequests::ProcessResponse(
-    Gateway* gw,
+    BusyGateway& gw,
     std::shared_ptr<DagListener> listener,
     network::SimpleURLLoader* ldr,
     std::string* body) {
@@ -134,28 +144,30 @@ bool ipfs::GatewayRequests::ProcessResponse(
     LOG(ERROR) << "No gateway.";
     return false;
   }
-  LOG(INFO) << "ProcessBlockResponse(" << gw->url() << ')';
+  //  LOG(INFO) << "ProcessResponse(" << gw.url() << ')';
   if (!ldr) {
-    LOG(ERROR) << "No loader for processing " << gw->url();
+    LOG(ERROR) << "No loader for processing " << gw.url();
     return false;
   }
   if (!body) {
-    LOG(INFO) << "ProcessBlockResponse(" << gw->url()
+    LOG(INFO) << "ProcessResponse(" << gw.url()
               << ") Null body - presumably http error.\n";
     return false;
   }
   network::mojom::URLResponseHead const* head = ldr->ResponseInfo();
   if (!head) {
-    LOG(INFO) << "ProcessBlockResponse(" << gw->url() << ") Null head.\n";
+    LOG(INFO) << "ProcessResponse(" << gw.url() << ") Null head.\n";
     return false;
   }
-  GOOGLE_DCHECK_LT(gw->url().find("?format=raw"), gw->url().size());
+  // TODO - might need to remove this check when we're getting IPNS records
+  // possibly also here
+  GOOGLE_DCHECK_LT(gw.url().find("?format=raw"), gw.url().size());
   std::string reported_content_type;
   head->headers->EnumerateHeader(nullptr, "Content-Type",
                                  &reported_content_type);
   if (reported_content_type != "application/vnd.ipld.raw") {
     LOG(ERROR) << '\n'
-               << gw->url() << " reported a content type of "
+               << gw.url() << " reported a content type of "
                << reported_content_type
                << " strongly implying that it's a full request, not a single "
                   "block. TODO: Remove "
@@ -163,7 +175,7 @@ bool ipfs::GatewayRequests::ProcessResponse(
     state_.gateways().demote(gw->url_prefix());
     return false;
   }
-  auto cid_str = gw->current_task();
+  auto cid_str = gw.current_task();
   cid_str.erase(0, 5);  // ipfs/
   cid_str.erase(cid_str.find('?'));
   if (state_.storage().Get(cid_str)) {
@@ -178,8 +190,7 @@ bool ipfs::GatewayRequests::ProcessResponse(
   Block block{cid.value(), *body};
   if (block.cid_matches_data()) {
     LOG(INFO) << "Storing CID=" << cid_str;
-    state_.storage().Store(listener, cid_str, std::move(block));
-    // resolver_->Step(); TODO - is this needed?
+    state_.storage().Store(cid_str, std::move(block));
     scheduler().IssueRequests(shared_from_this(), listener);
     return true;
   } else {
@@ -231,7 +242,8 @@ std::string ipfs::GatewayRequests::UnescapeUrlComponent(
 }
 
 ipfs::GatewayRequests::GatewayRequests(InterRequestState& state)
-    : state_{state}, sched_(state_.gateways().GenerateList(this)) {}
+    : state_{state},
+      sched_([this]() { return state_.gateways().GenerateList(this); }) {}
 ipfs::GatewayRequests::~GatewayRequests() {
   LOG(WARNING) << "API dtor - are all URIs loaded?";
 }

@@ -22,10 +22,8 @@ class BlockStorage {
 
   ~BlockStorage() noexcept;
 
-  bool Store(std::shared_ptr<DagListener>,
-             std::string const& cid,
-             Block&& block);
-  bool Store(std::shared_ptr<DagListener>, Block&& block);
+  bool Store(std::string const& cid, Block&& block);
+  bool Store(Block&& block);
 
   Block const* Get(std::string const& cid) const;
 
@@ -33,11 +31,11 @@ class BlockStorage {
 
   void StopListening(UnixFsPathResolver*);
 
+  void CheckListening();
+
  private:
   flat_map<std::string, Block> cid2node_;
   flat_set<UnixFsPathResolver*> listening_;
-
-  void CheckDoneListening();
 };
 }  // namespace ipfs
 

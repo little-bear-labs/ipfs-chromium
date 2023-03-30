@@ -34,6 +34,10 @@ std::shared_ptr<ipfs::GatewayRequests> ipfs::InterRequestState::api() {
   if (existing) {
     return existing;
   }
+  /*
+ if (api_) {
+   return api_;
+ }*/
   auto created = std::make_shared<ipfs::GatewayRequests>(*this);
   api_ = created;
   auto t = std::time(nullptr);

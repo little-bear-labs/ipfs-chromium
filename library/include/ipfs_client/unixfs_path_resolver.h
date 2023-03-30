@@ -29,6 +29,7 @@ class UnixFsPathResolver {
   std::string describe() const;
   void Step(std::shared_ptr<DagListener>);
   void SetPriority(Priority p);
+  std::shared_ptr<DagListener> MaybeGetPreviousListener();
 
  private:
   BlockStorage& storage_;
@@ -45,7 +46,8 @@ class UnixFsPathResolver {
   std::vector<std::string> hamt_hexs_;
   std::string head_;
   std::shared_ptr<NetworkingApi> api_;
-  Priority prio_ = 22;
+  Priority prio_ = 9;
+  std::weak_ptr<DagListener> hrmm_;
 
   void CompleteDirectory(std::shared_ptr<DagListener>&, Block const&);
   void ProcessDirectory(std::shared_ptr<DagListener>&, Block const&);
