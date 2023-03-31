@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(chromium-ipfs)
+project(ipfs-chromium)
 
 #The cache variables in all-caps are meant for you to customize the build.
 #They are all here, so you don't need to hunt.

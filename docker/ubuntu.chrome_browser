@@ -1,0 +1,15 @@
+FROM ubuntu:latest
+
+RUN apt-get update
+RUN apt-get install sudo wget
+RUN wget https://raw.githubusercontent.com/chromium/chromium/main/build/install-build-deps.sh
+RUN ./install-build-deps.sh
+
+ARG GIT_REF=main
+RUN git clone --branch "${GIT_REF}" https://github.com/little-bear-labs/ipfs-chromium.git /source
+
+RUN cmake -D CMAKE_BUILD_TYPE=Release -D DOWNLOAD_CHROMIUM=TRUE -S /source/ -B /build/
+
+RUN cmake --build /build/ --target chrome_browser
+
+ENTRYPOINT ["/build/chromium/src/out/Release/chrome", "ipns://ipfs.tech"]

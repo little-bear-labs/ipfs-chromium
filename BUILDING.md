@@ -38,7 +38,7 @@ To enable testing, these are also required:
     - Set CMAKE_BUILD_TYPE to one of Debug or Release.
     - Specifying the generator (with -G) is optional, but I recommend picking one that knows about compile_commands.json. You do, obviously, need to pick one that you have installed. See the end of the output from `cmake --help` to see which ones you have available
 * Expect warnings about how it doesn't have access to a Chromium source tree and so won't be building that.
-* `cmake --build /your/build/dir ipfs_client`
+* `cmake --build /your/build/dir --target ipfs_client`
     - Or invoke your underlying build system directly, with make or ninja, or what have you.
 
 ## Chromium with the ipfs component 
@@ -61,7 +61,7 @@ To enable testing, these are also required:
     - CHROMIUM_PROFILE - the profile you're building. Defaults to ${CMAKE_BUILD_TYPE}. ${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE} should exist.
     - DEPOT_TOOLS_DIRECTORY - Path to scripts like gn, autoninja, and ninja.py. If these are executable and in your `PATH` environment variable, you can leave this as its default value which is "DETECT_FROM_PATH" and does what one might expect.
     - If ipfs is not mentioned in //chrome/browser/BUILD.gn , this command will apply the patch file presumably adding //components/ipfs as a dependency to //chrome/browser
-* `cmake --build /an/ipfs-chromium/build/dir chrome_browser`
+* `cmake --build /an/ipfs-chromium/build/dir --target chrome_browser`
 
 ### If you want ipfs-chromium's build do all your setup for you.
 
@@ -85,7 +85,7 @@ However, here we cannot make that assumption. So...
   - CMAKE_BUILD_TYPE - Either Debug or Release. If you choose Release it will set is_debug=false in args.gn.
   - If `ccache` is in your path, it will instruct not just the CMake but also the gn build to use it. I recommend this.
   - This step will take much, much longer than you may be used to as a normal CMake user.
-* `cmake --build /an/ipfs-chromium/build/dir chrome_browser`
+* `cmake --build /an/ipfs-chromium/build/dir --target chrome_browser`
   - This will also take much, much longer than you're used to. (TODO - time these things for a ballpark figure)
 
 *NOTE* - anwhere in this document you see `cmake --build`, feel free to replace that with a call to your chosen underlying build system. For example, `cmake --build X Y` could become `make -C X Y` 
