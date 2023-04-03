@@ -3,7 +3,7 @@ FROM ubuntu:latest
 ARG DEBIAN_FRONTEND=noninteractive
 RUN export DEBIAN_FRONTEND=noninteractive
 RUN apt-get update
-RUN apt-get install --yes apt-utils file lsb-release snapd sudo wget
+RUN apt-get install --yes apt-utils cmake file lsb-release python3-pip snapd software-properties-common sudo wget
 
 #RUN wget https://raw.githubusercontent.com/chromium/chromium/main/build/install-build-deps.sh
 #RUN sed -i 's/dev_list=.*snapcraft/echo do not snap anything &/' ./install-build-deps.sh
@@ -11,7 +11,7 @@ RUN apt-get install --yes apt-utils file lsb-release snapd sudo wget
 #RUN DEBIAN_FRONTEND=noninteractive bash -x ./install-build-deps.sh
 
 #From install-build-deps.sh
-RUN apt-get install adwaita-icon-theme alsa-topology-conf alsa-ucm-conf at-spi2-core autoconf automake autopoint autotools-dev binutils binutils-aarch64-linux-gnu \
+RUN apt-get install --yes adwaita-icon-theme alsa-topology-conf alsa-ucm-conf at-spi2-core autoconf automake autopoint autotools-dev binutils binutils-aarch64-linux-gnu \
   binutils-arm-linux-gnueabihf binutils-common binutils-mips64el-linux-gnuabi64 binutils-mipsel-linux-gnu binutils-x86-64-linux-gnu bison bsdextrautils build-essential \
   bzip2 bzip2-doc cdbs comerr-dev cpp cpp-11 curl dbus-x11 dconf-gsettings-backend dconf-service dctrl-tools debhelper debugedit devscripts dh-autoreconf \
   dh-strip-nondeterminism dh-translations diffstat dpkg-dev dput dwz elfutils fakeroot flex fontconfig fontconfig-config fonts-dejavu-core fonts-lato g++ g++-11 gcc \
@@ -73,13 +73,8 @@ RUN apt-get install adwaita-icon-theme alsa-topology-conf alsa-ucm-conf at-spi2-
   va-driver-all wayland-protocols wdiff x11-common x11-utils x11-xkb-utils x11proto-dev xcompmgr xfonts-base xfonts-encodings xfonts-utils xkb-data xorg-sgml-doctools xserver-common \
   xtrans-dev xvfb xz-utils zip zlib1g-dev zstd
 
-RUN apt-get install --yes cmake
 ARG GIT_REF=main
 RUN git clone --branch "${GIT_REF}" https://github.com/little-bear-labs/ipfs-chromium.git /source
-RUN apt-get install --yes software-properties-common
-RUN lsb_release -a && add-apt-repository universe
-#RUN apt-get install --yes python-httplib2
-RUN apt-get install --yes python3-pip
 RUN pip install httplib2
 RUN cmake -D CMAKE_BUILD_TYPE=Release -D DOWNLOAD_CHROMIUM=TRUE -S /source/ -B /build/
 
