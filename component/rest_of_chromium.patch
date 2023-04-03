@@ -25,7 +25,7 @@ index ed99410ea8..d89d48ba98 100644
        const CheckedThreadLocalOwnedPointer<T>&) = delete;
  
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index 3611d20dc0..fe9fcd5382 100644
+index d26ba8a3ea..37b86e62b6 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
 @@ -2114,6 +2114,7 @@ static_library("browser") {
@@ -140,32 +140,3 @@ index 5273da5190..d95544c64d 100644
        case NsswitchReader::Service::kNis:
          RecordIncompatibleNsswitchReason(
              IncompatibleNsswitchReason::kIncompatibleService,
-diff --git a/net/dns/host_cache.h b/net/dns/host_cache.h
-index f077893d07..10ef0cea20 100644
---- a/net/dns/host_cache.h
-+++ b/net/dns/host_cache.h
-@@ -212,10 +212,16 @@ class NET_EXPORT HostCache {
-       aliases_ = std::move(aliases);
-     }
-     const absl::optional<std::vector<std::string>>& text_records() const {
-+      if (text_records_) {
-+        LOG(INFO) << " This host entry has " << text_records_.value().size() << " TXT records.";
-+      }
-       return text_records_;
-     }
-     void set_text_records(
-         absl::optional<std::vector<std::string>> text_records) {
-+      if (text_records) {
-+        LOG(INFO) << "set_text_records(" << text_records.value().size() << " recs)";
-+      }
-       text_records_ = std::move(text_records);
-     }
-     const absl::optional<std::vector<HostPortPair>>& hostnames() const {
-@@ -303,6 +309,7 @@ class NET_EXPORT HostCache {
-       endpoint_metadatas_ = std::move(endpoint_metadatas);
-     }
-     void SetResult(std::vector<std::string> text_records) {
-+      LOG(INFO) << "SetResult(" << text_records.size() << " recs)";
-       text_records_ = std::move(text_records);
-     }
-     void SetResult(std::vector<HostPortPair> hostnames) {

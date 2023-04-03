@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.22)
 project(ipfs_client
     DESCRIPTION "Code related to using IPFS http gateways to resolve ipfs:// and ipns:// URLs"
     VERSION 0.0.0.0

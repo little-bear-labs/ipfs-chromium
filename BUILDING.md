@@ -75,7 +75,7 @@ However, here we cannot make that assumption. So...
 #### Pre-step: make sure you have Chromium's dependencies
 * See [the docs](https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md#Install-additional-build-dependencies)
   - Those instructions assume you've already fetched the Chromium source tree
-  - However, if you haven't, and your system is supported by install-build-deps.sh, you should be able to get a sufficient version of it from [here](https://raw.githubusercontent.com/chromium/chromium/main/build/install-build-deps.sh)
+  - However, if you haven't, and your system is supported by install-build-deps.sh, you should be able to get a sufficient version of it from [here](https://raw.githubusercontent.com/chromium/chromium/main/build/install-build-deps.sh), although it may want to call other scripts from subdirectories of build/, so you may want to recursively fetch the whole directory.
 * The author is writing this on Fedora, where the not-guaranteed [note](https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md#Fedora) seems to work fine.
   - If your system isn't supported by install-build-deps.sh, and doesn't have a functioning 'note' on that document, I suggest looking at that package list to get an idea of what is actually needed.
 
