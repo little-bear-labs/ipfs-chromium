@@ -8,6 +8,8 @@
 
 #include <algorithm>
 
+#include <algorithm>
+
 using MC = libp2p::multi::MulticodecType;
 
 namespace {
