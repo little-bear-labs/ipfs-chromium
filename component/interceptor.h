@@ -12,8 +12,8 @@ namespace ipfs {
 
 class COMPONENT_EXPORT(IPFS) Interceptor final
     : public content::URLLoaderRequestInterceptor {
-  network::mojom::URLLoaderFactory* loader_factory_;
-  network::mojom::NetworkContext* network_context_;
+  raw_ptr<network::mojom::URLLoaderFactory> loader_factory_;
+  raw_ptr<network::mojom::NetworkContext> network_context_;
 
   void MaybeCreateLoader(network::ResourceRequest const&,
                          content::BrowserContext*,

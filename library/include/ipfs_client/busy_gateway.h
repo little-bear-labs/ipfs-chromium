@@ -1,6 +1,8 @@
 #ifndef IPFS_BUSY_GATEWAY_H_
 #define IPFS_BUSY_GATEWAY_H_
 
+#include <vocab/raw_ptr.h>
+
 #include <memory>
 #include <string>
 
@@ -35,7 +37,7 @@ class BusyGateway {
 
   std::string prefix_;
   std::string suffix_;
-  Scheduler* scheduler_;
+  raw_ptr<Scheduler> scheduler_;
   std::size_t maybe_offset_;
 };
 

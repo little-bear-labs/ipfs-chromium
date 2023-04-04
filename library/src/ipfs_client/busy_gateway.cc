@@ -83,7 +83,7 @@ void ipfs::BusyGateway::Success(Gateways& g,
   g.promote(prefix_);
   DCHECK(get());
   get()->TaskSuccess(suffix_);
-  auto* sched = scheduler_;
+  auto sched = scheduler_;
   sched->TaskComplete(suffix_);
   if (maybe_offset_) {
     sched->CheckSwap(--maybe_offset_);
@@ -96,7 +96,7 @@ void ipfs::BusyGateway::Failure(Gateways& g,
   DCHECK(prefix_.size() > 0U);
   g.demote(prefix_);
   get()->TaskFailed(suffix_);
-  auto* sched = scheduler_;
+  auto sched = scheduler_;
   sched->CheckSwap(maybe_offset_);
   if (sched->DetectCompleteFailure(suffix_)) {
     LOG(WARNING) << "Giving up on task " << suffix_

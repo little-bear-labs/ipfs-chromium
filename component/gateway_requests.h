@@ -5,6 +5,8 @@
 #include <ipfs_client/networking_api.h>
 #include <ipfs_client/scheduler.h>
 
+#include <vocab/raw_ptr.h>
+
 #include <map>
 
 namespace network {
@@ -25,7 +27,7 @@ class GatewayRequests final : public NetworkingApi {
     std::unique_ptr<network::SimpleURLLoader> loader;
   };
 
-  network::mojom::URLLoaderFactory* loader_factory_ = nullptr;
+  raw_ptr<network::mojom::URLLoaderFactory> loader_factory_ = nullptr;
   InterRequestState& state_;
   Scheduler sched_;
   std::function<void(std::vector<std::string>)> disc_cb_;

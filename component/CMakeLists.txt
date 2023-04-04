@@ -35,8 +35,9 @@ if(ipfs_dep GREATER -1)
 elseif(GIT_EXECUTABLE)
     message(WARNING "ipfs dependency not found in chrome/browser/BUILD.gn. Assuming your Chromium source is not patched - will attempt to apply a patch right now.")
     execute_process(
-        COMMAND "${GIT_EXECUTABLE}" apply "${CMAKE_CURRENT_LIST_DIR}/rest_of_chromium.patch"
+        COMMAND "${GIT_EXECUTABLE}" apply --verbose "${CMAKE_CURRENT_LIST_DIR}/rest_of_chromium.patch"
         WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
+        COMMAND_ECHO STDERR
 	      COMMAND_ERROR_IS_FATAL ANY
     )
 elseif()
