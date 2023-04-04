@@ -3,7 +3,7 @@
 
 #include <libp2p/multi/content_identifier_codec.hpp>
 
-#include "vocab/log_macros.h"
+#include "log_macros.h"
 #include "vocab/stringify.h"
 
 bool ipfs::BlockStorage::Store(std::string const& cid, ipfs::Block&& block) {
