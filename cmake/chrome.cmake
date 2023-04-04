@@ -24,7 +24,7 @@ if(Python3_EXECUTABLE)
     if(NOT IS_DIRECTORY "${CHROMIUM_SOURCE_TREE}")
         file(MAKE_DIRECTORY "${chromium_base_dir}")
         execute_process(
-            COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_FETCH_PY}" --nohooks --no-history chromium
+            COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_FETCH_PY}" --nohooks chromium
             WORKING_DIRECTORY "${chromium_base_dir}"
             COMMAND_ERROR_IS_FATAL ANY
         )

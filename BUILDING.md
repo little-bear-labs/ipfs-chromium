@@ -1,6 +1,11 @@
 # Install CMake 3.22+
 
-Before proceeding with any combination of the steps below, make sure you have CMake version 3.22 or higher in your PATH
+Before proceeding with any combination of the steps below, make sure you have in your PATH:
+* CMake version 3.22 or higher
+  - run `cmake --version` to check
+  - If your system's preferred way to install software has only an older version, consider [these instructions](https://cmake.org/install/)
+* Python 3.6+ and its pip 
+* git
 
 Then decide which of these approaches are appropriate for you:
 
