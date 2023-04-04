@@ -53,7 +53,7 @@ struct CodecFunctions {
 };
 
 namespace {
-std::string todo_encode(libp2p::common::ByteArray const&) {
+std::string todo_encode(ipfs::ByteView) {
   LOG(FATAL) << "TODO implement encode for this multibase encoding";
   return "TODO";
 }

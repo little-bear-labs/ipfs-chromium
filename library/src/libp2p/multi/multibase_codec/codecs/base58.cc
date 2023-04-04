@@ -165,7 +165,7 @@ std::optional<std::vector<unsigned char>> decodeImpl(const char* psz) {
   return vch;
 }
 
-std::string encodeBase58(const common::ByteArray& bytes) {
+std::string encodeBase58(ipfs::ByteView bytes) {
   unsigned char const* ptr =
       reinterpret_cast<unsigned char const*>(bytes.data());
   return encodeImpl(ptr, ptr + bytes.size());

@@ -1,5 +1,6 @@
 #include "ipfs_client/gateways.h"
-#include "vocab/log_macros.h"
+#include "ipfs_client/networking_api.h"
+#include "log_macros.h"
 
 #include <algorithm>
 #include <string>
@@ -7,46 +8,47 @@
 using namespace std::string_literals;
 
 ipfs::Gateways::Gateways()
-    : known_gateways_{{"http://localhost:8080/"s, 84},
-                      {"https://ipfs.io/"s, 69},
-                      {"https://gateway.ipfs.io/"s, 56},
-                      {"https://dweb.link/"s, 34},
-                      {"https://jcsl.hopto.org/"s, 28},
-                      {"https://ipfs.joaoleitao.org/"s, 21},
-                      {"https://ipfs.best-practice.se/"s, 19},
-                      {"https://92.119.16.150/"s, 18},
-                      {"https://192.158.233.119/"s, 16},
-                      {"https://191.96.101.86/"s, 15},
-                      {"https://38.92.47.56/"s, 14},
-                      {"https://192.158.233.115/"s, 13},
-                      {"https://jorropo.net/"s, 12},
-                      {"https://ipfs.jpu.jp/"s, 12},
-                      {"https://192.158.233.122/"s, 11},
-                      {"https://192.158.233.118/"s, 11},
-                      {"https://192.158.233.117/"s, 10},
-                      {"https://storry.tv/"s, 7},
-                      {"https://video.oneloveipfs.com/"s, 7},
-                      {"https://gateway.pinata.cloud/"s, 4},
-                      {"https://ipfs.runfission.com/"s, 4},
-                      {"https://ipfs.storry.tv/"s, 2},
-                      {"https://ipfs-gateway.cloud/"s, 1},
+    : known_gateways_{{"http://localhost:8080/"s, 889},
+                      {"https://ipfs.io/"s, 869},
+                      {"https://gateway.ipfs.io/"s, 819},
+                      {"https://dweb.link/"s, 769},
+                      {"https://jcsl.hopto.org/"s, 559},
+                      {"https://ipfs.joaoleitao.org/"s, 489},
+                      {"https://ipfs.best-practice.se/"s, 399},
+                      {"https://jorropo.net/"s, 279},
+                      {"https://ipfs.jpu.jp/"s, 149},
+                      {"https://gateway.pinata.cloud/"s, 109},
+                      {"https://ipfs.runfission.com/"s, 89},
+                      {"https://c4rex.co/"s, 84},
+                      {"https://ipfs.soul-network.com/"s, 79},
+                      {"https://nftstorage.link/"s, 74},
+                      {"https://w3s.link/"s, 69},
+                      {"https://ipfs.scalaproject.io/"s, 64},
+                      {"https://storry.tv/"s, 59},
+                      {"https://hardbin.com/"s, 54},
+                      {"https://ipfs.eth.aragon.network/"s, 49},
+                      {"https://cf-ipfs.com/"s, 44},
+                      {"https://ipfs-gateway.cloud/"s, 39},
+                      {"https://ipfs.yt/"s, 34},
+                      {"https://ipfs.fleek.co/"s, 29},
+                      {"https://permaweb.eu.org/"s, 24},
+                      {"https://ipfs.storry.tv/"s, 19},
+                      {"https://dweb.eu.org/"s, 15},
+                      {"https://cloudflare-ipfs.com/"s, 10},
+                      {"https://ipfs.anonymize.com/"s, 5},
                       {"https://ipfs.litnet.work/"s, 0}
 
       },
       random_engine_{std::random_device{}()},
-      dist_{0.0625} {}
+      dist_{0.01} {}
 ipfs::Gateways::~Gateways() {}
 
-auto ipfs::Gateways::GenerateList() const -> GatewayList {
+auto ipfs::Gateways::GenerateList() -> GatewayList {
   GatewayList result;
   for (auto [k, v] : known_gateways_) {
-    //    result.push_back(std::make_shared<Gateway>(k, v +
-    //    dist_(random_engine_)));
     result.push_back({k, v + dist_(random_engine_)});
   }
   std::sort(result.begin(), result.end());
-  //,            [](auto& a, auto& b) { return *a < *b; }
-  //  );
   return result;
 }
 
