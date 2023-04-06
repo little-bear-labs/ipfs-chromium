@@ -10,7 +10,7 @@ set(CHROMIUM_SOURCE_TREE "${CMAKE_CURRENT_BINARY_DIR}/chromium/src" CACHE PATH
     "Path to chromium/src. If DOWNLOAD_CHROMIUM=TRUE, and it does not exist, it will be created."
 )
 set(CHROMIUM_PROFILE "${CMAKE_BUILD_TYPE}" CACHE STRING "The profile of the current Chromium build.")
-set(CHROMIUM_TAG "113.0.5616.0" CACHE STRING "The git ref of the Chromium tree you want your patch file to be relative to.")
+set(CHROMIUM_TAG "114.0.5696.1" CACHE STRING "The git ref of the Chromium tree you want your patch file to be relative to.")
 set(CXX_VERSION "17" CACHE STRING "The numeric part (year % 100) of the version of the C++ standard to be used. Must be at least 17 (for C++17). Must be one CMake knows about.")
 if(DOWNLOAD_CHROMIUM)
     set(default_dt "${CMAKE_CURRENT_BINARY_DIR}/depot_tools")

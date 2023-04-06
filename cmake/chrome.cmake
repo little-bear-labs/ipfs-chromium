@@ -15,7 +15,7 @@ if(Python3_EXECUTABLE)
   if(CMAKE_BUILD_TYPE STREQUAL Release)
     set(gnargs " ${gnargs} is_debug=false dcheck_always_on=false ")
   elseif(CMAKE_BUILD_TYPE STREQUAL Debug)
-    message(STATUS "Building Chromium also in debug mode. Note, this has performance implications.")
+    message(STATUS "Will build Chromium also in debug mode. Note, this has performance implications.")
   else()
     message(FATAL_ERROR "Please choose either Debug or Release for CMAKE_BUILD_TYPE (was '${CMAKE_BUILD_TYPE}').")
   endif()
@@ -26,20 +26,6 @@ if(Python3_EXECUTABLE)
         execute_process(
             COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_FETCH_PY}" --nohooks chromium
             WORKING_DIRECTORY "${chromium_base_dir}"
-            COMMAND_ERROR_IS_FATAL ANY
-        )
-	message(WARNING "And now, gclient runhooks. ${Python3_EXECUTABLE} ${DEPOT_TOOLS_GCLIENT_PY} -j ${parallel_jobs} runhooks")
-        execute_process(
-          COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GCLIENT_PY}"  runhooks -j ${parallel_jobs}
-          WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
-          COMMAND_ERROR_IS_FATAL ANY
-        )
-	message(WARNING "runhooks done.")
-    endif()
-    if(NOT IS_DIRECTORY "${chromium_build_dir}")
-        execute_process(
-            COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GN_PY}" gen "out/${CHROMIUM_PROFILE}" "--args= ${gnargs} "
-            WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
             COMMAND_ERROR_IS_FATAL ANY
         )
     endif()
