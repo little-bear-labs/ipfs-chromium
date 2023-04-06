@@ -30,25 +30,11 @@ string(
         ipfs
         ipfs_dep
 )
-if(ipfs_dep GREATER -1)
-    message(STATUS "Looks like you might have already patched Chromium.")
-elseif(GIT_EXECUTABLE)
-    message(WARNING "ipfs dependency not found in chrome/browser/BUILD.gn. Assuming your Chromium source is not patched - will attempt to apply a patch right now.")
-    execute_process(
-        COMMAND "${GIT_EXECUTABLE}" apply --verbose "${CMAKE_CURRENT_LIST_DIR}/rest_of_chromium.patch"
-        WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
-        COMMAND_ECHO STDERR
-	      COMMAND_ERROR_IS_FATAL ANY
-    )
-elseif()
-    message(FATAL_ERROR "It would appear your Chromium source tree is unpatched, and I don't have access to git.")
-endif()
 
 add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/.landmines"
-  COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GCLIENT_PY}"  runhooks -j ${parallel_jobs}
+  COMMAND ${CMAKE_COMMAND} -E env "PATH=$ENV{PATH}" "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GCLIENT_PY}"  runhooks -j ${parallel_jobs}
   WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
   COMMENT runhooks
-
 )
 add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/branched_for_ipfs_chromium"
   COMMAND "${GIT_EXECUTABLE}" -C "${CHROMIUM_SOURCE_TREE}" checkout -b "ipfs-chromium/${CHROMIUM_TAG}" "${CHROMIUM_TAG}"
@@ -56,12 +42,35 @@ add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/branched_for_ipfs_chromium"
   COMMENT branching
   MAIN_DEPENDENCY "${CHROMIUM_SOURCE_TREE}/.landmines"
 )
+add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/gclient_synced"
+  COMMAND ${CMAKE_COMMAND} -E env "PATH=$ENV{PATH}" "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GCLIENT_PY}"  sync -j ${parallel_jobs}
+  WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
+  COMMENT runhooks
+  COMMAND "${CMAKE_COMMAND}" -E touch "${CHROMIUM_SOURCE_TREE}/gclient_synced"
+  COMMENT branching
+  MAIN_DEPENDENCY "${CHROMIUM_SOURCE_TREE}/branched_for_ipfs_chromium"
+  )
+if(ipfs_dep GREATER -1)
+    message(STATUS "Looks like you might have already patched Chromium.")
+    execute_process(COMMAND "${CMAKE_COMMAND}" -E touch "${CHROMIUM_SOURCE_TREE}/patched")
+elseif(GIT_EXECUTABLE)
+    message(WARNING "ipfs dependency not found in chrome/browser/BUILD.gn. Assuming your Chromium source is not patched - will attempt to apply a patch right now.")
+    add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/patched"
+      COMMAND "${GIT_EXECUTABLE}" -C "${CHROMIUM_SOURCE_TREE}" apply --verbose "${CMAKE_CURRENT_LIST_DIR}/rest_of_chromium.patch"
+      WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
+      MAIN_DEPENDENCY "${CHROMIUM_SOURCE_TREE}/gclient_synced"
+    )
+elseif()
+    message(FATAL_ERROR "It would appear your Chromium source tree is unpatched, and I don't have access to git.")
+endif()
+
 set(target_dir "${CHROMIUM_SOURCE_TREE}/components/ipfs")
 add_custom_command(OUTPUT "${target_dir}/args.gn"
   COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GN_PY}" gen "out/${CHROMIUM_PROFILE}" "--args= ${gnargs} "
   WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
   COMMENT "gn generating"
-  MAIN_DEPENDENCY "${CHROMIUM_SOURCE_TREE}/branched_for_ipfs_chromium"
+  MAIN_DEPENDENCY "${CHROMIUM_SOURCE_TREE}/patched"
+  VERBATIM
   )
 file(GLOB_RECURSE
     lib_srcs
