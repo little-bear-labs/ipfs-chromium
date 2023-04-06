@@ -37,6 +37,7 @@ add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/.landmines"
   COMMENT runhooks
 )
 add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/branched_for_ipfs_chromium"
+  COMMAND ls -lrth "${CHROMIUM_SOURCE_TREE}/branched_for_ipfs_chromium"
   COMMAND "${GIT_EXECUTABLE}" -C "${CHROMIUM_SOURCE_TREE}" checkout -b "ipfs-chromium/${CHROMIUM_TAG}" "${CHROMIUM_TAG}"
   COMMAND "${CMAKE_COMMAND}" -E touch "${CHROMIUM_SOURCE_TREE}/branched_for_ipfs_chromium"
   COMMENT branching

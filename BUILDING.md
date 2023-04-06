@@ -79,25 +79,23 @@ If you take this approach, ipfs-chromium will download a private copy of the Chr
 *NOTE* The previous section assumes you must have gotten all the dependencies of Chromium, because if you had not you wouldn't have successfully built chrome.
 However, here we cannot make that assumption. So...
 
-#### Pre-step: make sure you have Chromium's dependencies
-See the docs for:
-* [Linux](https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md#Install-additional-build-dependencies)
-  - Those instructions assume you've already fetched the Chromium source tree
-  - However, if you haven't, and your system is supported by install-build-deps.sh, you should be able to get a sufficient version of it from [here](https://raw.githubusercontent.com/chromium/chromium/main/build/install-build-deps.sh), although it may want to call other scripts from subdirectories of build/, so you may want to recursively fetch the whole directory.
-  - The author is writing this on Fedora, where the not-guaranteed [note](https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md#Fedora) seems to work fine.
-  - If your system isn't supported by install-build-deps.sh, and doesn't have a functioning 'note' on that document, I suggest looking at the package lists from the other distros' notes to get an idea of what is actually needed.
-* [Mac](https://chromium.googlesource.com/chromium/src/+/main/docs/mac_build_instructions.md#System-requirements)
-  - Make any necessary upgrades/installations to meet the "System Requirements" mentioned in the doc.
-* [Windows](https://chromium.googlesource.com/chromium/src/+/main/docs/windows_build_instructions.md#Setting-up-Windows)
-  - Make any upgrades/installations mentioned in the "Setting up Windows" section mentioned in the doc that you don't already have.
-  - Note: building on Windows is untested
-
 #### Steps
 * `mkdir -p /an/ipfs-chromium/build/dir`
 * `cmake -D CMAKE_BUILD_TYPE=Debug -D DOWNLOAD_CHROMIUM=TRUE -S /path/to/ipfs-chromium -B /an/ipfs-chromium/build/dir`
   - CMAKE_BUILD_TYPE - Either Debug or Release. If you choose Release it will set is_debug=false in args.gn.
   - If `ccache` is in your path, it will instruct not just the CMake but also the gn build to use it. I recommend this.
   - This step will take much, much longer than you may be used to as a normal CMake user.
+* Make sure you have Chromium's dependencies
+  - [Linux](https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md#Install-additional-build-dependencies)
+    - Those instructions assume you've already fetched the Chromium source tree
+    - However, if you haven't, and your system is supported by install-build-deps.sh, you should be able to get a sufficient version of it from [here](https://raw.githubusercontent.com/chromium/chromium/main/build/install-build-deps.sh), although it may want to call other scripts from subdirectories of build/, so you may want to recursively fetch the whole directory.
+    - The author is writing this on Fedora, where the not-guaranteed [note](https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md#Fedora) seems to work fine.
+    - If your system isn't supported by install-build-deps.sh, and doesn't have a functioning 'note' on that document, I suggest looking at the package lists from the other distros' notes to get an idea of what is actually needed.
+  -[Mac](https://chromium.googlesource.com/chromium/src/+/main/docs/mac_build_instructions.md#System-requirements)
+    - Make any necessary upgrades/installations to meet the "System Requirements" mentioned in the doc.
+  -[Windows](https://chromium.googlesource.com/chromium/src/+/main/docs/windows_build_instructions.md#Setting-up-Windows)
+    - Make any upgrades/installations mentioned in the "Setting up Windows" section mentioned in the doc that you don't already have.
+    - Note: building on Windows is untested
 * `cmake --build /an/ipfs-chromium/build/dir --target chrome_browser`
   - This will also take much, much longer than you're used to. (TODO - time these things for a ballpark figure)
 
