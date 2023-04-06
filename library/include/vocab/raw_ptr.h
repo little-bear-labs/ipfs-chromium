@@ -1,0 +1,52 @@
+#ifndef IPFS_OBSERVER_PTR_H_
+#define IPFS_OBSERVER_PTR_H_
+
+#if __has_include("base/memory/raw_ptr.h")
+#include "base/memory/raw_ptr.h"
+
+namespace ipfs {
+template <class T>
+using raw_ptr = base::raw_ptr<T>;
+}
+
+#elif defined(__has_cpp_attribute) && \
+    __has_cpp_attribute(__cpp_lib_experimental_observer_ptr)
+#include <experimental/memory>
+
+namespace ipfs {
+template <class T>
+using raw_ptr = std::experimental::observer_ptr<T>;
+}
+
+#else
+
+namespace ipfs {
+template <class T>
+class raw_ptr {
+  T* ptr_;
+
+ public:
+  // Chromium's raw_ptr has a default ctor whose semantics depend on build
+  // config For components/ipfs purposes, there is no reason to ever default
+  // construct. Set it to nullptr. We have time needed to assign a word.
+  raw_ptr() = delete;
+
+  raw_ptr(T* p) : ptr_{p} {}
+  raw_ptr(raw_ptr&&) = default;
+  raw_ptr(raw_ptr const&) = default;
+
+  T* get() { return ptr_; }
+  T const* get() const { return ptr_; }
+  explicit operator bool() const { return !!ptr_; }
+  T* operator->() { return ptr_; }
+  T const* operator->() const { return ptr_; }
+  raw_ptr& operator=(T* p) {
+    ptr_ = p;
+    return *this;
+  }
+};
+}  // namespace ipfs
+
+#endif
+
+#endif  // IPFS_OBSERVER_PTR_H_

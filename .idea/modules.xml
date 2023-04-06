@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/chromium-ipfs.iml" filepath="$PROJECT_DIR$/.idea/chromium-ipfs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ipfs-chromium.iml" filepath="$PROJECT_DIR$/.idea/ipfs-chromium.iml" />
     </modules>
   </component>
 </project>

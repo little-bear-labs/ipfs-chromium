@@ -69,6 +69,12 @@ void ipfs::IpfsUrlLoader::StartRequest(
     DCHECK_EQ(ref.substr(0, 7), "ipfs://");
     // TODO these kinds of shenanigans should have their own special utils file
     ref.erase(4, 2);
+    auto e = ref.find_first_of("#?");
+    if (e < ref.size()) {
+      LOG(INFO) << "Dropping params/frags from '" << ref << "'";
+      ref.resize(e);
+      LOG(INFO) << "Now have '" << ref << "'";
+    }
     me->StartUnixFsProc(me, ref);
   } else {
     LOG(ERROR) << "Wrong scheme: " << resource_request.url.scheme();
@@ -81,7 +87,7 @@ void ipfs::IpfsUrlLoader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
   auto second_slash = ipfs_ref.find_first_of("/?", 5);
   auto cid = ipfs_ref.substr(5, second_slash - 5);
   second_slash = ipfs_ref.find('/', 5);
-  auto qmark = ipfs_ref.find('?');
+  auto qmark = ipfs_ref.find_first_of("?#");
   std::string remainder{"/"};
   if (second_slash < ipfs_ref.size()) {
     remainder.assign(ipfs_ref.substr(second_slash + 1));

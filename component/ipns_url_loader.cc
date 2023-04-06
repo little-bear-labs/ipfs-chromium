@@ -1,5 +1,6 @@
 #include "ipns_url_loader.h"
 
+#include "gateway_requests.h"
 #include "inter_request_state.h"
 
 #include "net/base/net_errors.h"
@@ -7,6 +8,11 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+#include <ipfs_client/networking_api.h>
+
+#include <libp2p/multi/content_identifier_codec.hpp>
+#include <libp2p/peer/peer_id.hpp>
 
 namespace moj = network::mojom;
 
@@ -18,9 +24,9 @@ ipfs::IpnsUrlLoader::IpnsUrlLoader(
     : state_{state},
       host_(host),
       ipfs_loader_(std::make_shared<ipfs::IpfsUrlLoader>(handles_http, state)),
-      network_context_{network_context} {
+      network_context_{network_context},
+      http_loader_{handles_http} {
   DCHECK(network_context);
-  Next();
 }
 ipfs::IpnsUrlLoader::~IpnsUrlLoader() noexcept {}
 
@@ -33,10 +39,7 @@ void ipfs::IpnsUrlLoader::StartHandling(
   me->request_ = resource_request;
   me->client_remote_ = std::move(client);
   me->loader_receiver_ = std::move(receiver);
-  auto repl = me->state_.names().NameResolvedTo(me->host_);
-  if (repl.size()) {
-    me->Next();
-  }
+  me->Next();
 }
 
 void ipfs::IpnsUrlLoader::OnTextResults(
@@ -87,7 +90,10 @@ void ipfs::IpnsUrlLoader::OnComplete(
 void ipfs::IpnsUrlLoader::Next() {
   auto resolved = state_.names().NameResolvedTo(host_);
   if (resolved.empty()) {
-    QueryDns(host_);
+    if (!RequestIpnsRecord()) {
+      LOG(INFO) << "Treatin '" << host_ << "' as a DNSLink host.";
+      QueryDns(host_);
+    }
   } else if (resolved == IpnsNames::kNoSuchName) {
     LOG(WARNING) << "We have given up on resolving DNSLink " << host_;
     FailNameResolution();
@@ -186,4 +192,30 @@ void ipfs::IpnsUrlLoader::FailNameResolution() {
     client->OnComplete(
         network::URLLoaderCompletionStatus(net::ERR_NAME_NOT_RESOLVED));
   }
+}
+bool ipfs::IpnsUrlLoader::RequestIpnsRecord() {
+  auto cid = libp2p::multi::ContentIdentifierCodec::fromString(host_);
+  if (!cid.has_value()) {
+    return false;
+  }
+  if (cid.value().content_type !=
+      libp2p::multi::MulticodecType::Code::LIBP2P_KEY) {
+    return false;
+  }
+  if (api_) {
+    // true because this is true IPNS
+    //  ... but return early because we have already requested it
+    state_.scheduler().IssueRequests(api_);
+    return true;
+  }
+  api_ = state_.api();
+  api_->SetLoaderFactory(http_loader_);
+  state_.scheduler().Enqueue(api_, {}, shared_from_this(),
+                             "ipns/" + host_ + "?format=ipns-record", 3);
+  state_.scheduler().IssueRequests(api_);
+  return true;
+}
+void ipfs::IpnsUrlLoader::Complete() {
+  LOG(INFO) << "NameListener's Complete called for an IpnsLoader!";
+  Next();
 }

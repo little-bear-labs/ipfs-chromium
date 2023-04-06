@@ -12,7 +12,10 @@
 
 #include <ipfs_client/block.h>
 #include <ipfs_client/block_storage.h>
+#include <ipfs_client/ipns_record.h>
+
 #include <libp2p/multi/content_identifier_codec.hpp>
+#include <libp2p/peer/peer_id.hpp>
 
 #include <base/logging.h>
 
@@ -35,9 +38,9 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 void ipfs::GatewayRequests::RequestByCid(std::string cid,
                                          std::shared_ptr<DagListener> listener,
                                          Priority prio) {
-  scheduler().Enqueue(shared_from_this(), listener,
+  scheduler().Enqueue(shared_from_this(), listener, {},
                       "ipfs/" + cid + "?format=raw", prio);
-  scheduler().IssueRequests(shared_from_this(), listener);
+  scheduler().IssueRequests(shared_from_this());
 }
 namespace {
 std::unique_ptr<network::SimpleURLLoader> discovery_loader;
@@ -88,11 +91,10 @@ void ipfs::GatewayRequests::Discover(
       loader_factory_, std::move(bound));
 }
 
-auto ipfs::GatewayRequests::InitiateGatewayRequest(
-    BusyGateway assigned,
-    std::shared_ptr<DagListener> listener) -> std::shared_ptr<GatewayRequest> {
+auto ipfs::GatewayRequests::InitiateGatewayRequest(BusyGateway assigned)
+    -> std::shared_ptr<GatewayRequest> {
   auto url = assigned.url();
-  //  LOG(INFO) << "InitiateGatewayRequest(" << url << ")";
+
   GOOGLE_DCHECK_GT(url.size(), 0U);
   auto url_suffix = assigned.current_task();
   auto req = std::make_unique<network::ResourceRequest>();
@@ -102,10 +104,16 @@ auto ipfs::GatewayRequests::InitiateGatewayRequest(
   GOOGLE_DCHECK_GT(out->gateway->url_prefix().size(), 0U);
   out->loader = network::SimpleURLLoader::Create(std::move(req),
                                                  kTrafficAnnotation, FROM_HERE);
-  out->loader->SetTimeoutDuration(base::Seconds(2));
-  out->listener = listener;
+  if (url.find("format=ipns-record") == std::string::npos) {
+    out->loader->SetTimeoutDuration(base::Seconds(8));
+  } else {
+    LOG(INFO) << "Doing an IPNS record query, so giving it a long timeout.";
+    out->loader->SetTimeoutDuration(base::Seconds(120));
+  }
+  //  out->listener = listener;
   auto cb = base::BindOnce(&ipfs::GatewayRequests::OnResponse,
                            base::Unretained(this), shared_from_this(), out);
+  LOG(INFO) << "InitiateGatewayRequest(" << url << ")";
   DCHECK(loader_factory_);
   // TODO - proper requesting with full features (SetPriority, etc.).
   out->loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(loader_factory_,
@@ -125,21 +133,19 @@ void ipfs::GatewayRequests::OnResponse(std::shared_ptr<NetworkingApi> api,
   //  LOG(INFO) << "Got a response for " << task << " via " << url;
   auto& bg = req->gateway;
   auto& ldr = req->loader;
-  auto listener = req->listener;
-  if (ProcessResponse(bg, listener, ldr.get(), body.get())) {
-    bg.Success(state_.gateways(), shared_from_this(), listener);
+  //  auto listener = req->listener;
+  if (ProcessResponse(bg, ldr.get(), body.get())) {
+    bg.Success(state_.gateways(), shared_from_this());
   } else {
-    bg.Failure(state_.gateways(), shared_from_this(), listener);
+    bg.Failure(state_.gateways(), shared_from_this());
   }
   state_.storage().CheckListening();
-  state_.scheduler().IssueRequests(api, listener);
+  state_.scheduler().IssueRequests(api);
 }
 
-bool ipfs::GatewayRequests::ProcessResponse(
-    BusyGateway& gw,
-    std::shared_ptr<DagListener> listener,
-    network::SimpleURLLoader* ldr,
-    std::string* body) {
+bool ipfs::GatewayRequests::ProcessResponse(BusyGateway& gw,
+                                            network::SimpleURLLoader* ldr,
+                                            std::string* body) {
   if (!gw) {
     LOG(ERROR) << "No gateway.";
     return false;
@@ -159,13 +165,16 @@ bool ipfs::GatewayRequests::ProcessResponse(
     LOG(INFO) << "ProcessResponse(" << gw.url() << ") Null head.\n";
     return false;
   }
-  // TODO - might need to remove this check when we're getting IPNS records
-  // possibly also here
-  GOOGLE_DCHECK_LT(gw.url().find("?format=raw"), gw.url().size());
+  GOOGLE_DCHECK_LT(gw.url().find("?format="), gw.url().size());
   std::string reported_content_type;
   head->headers->EnumerateHeader(nullptr, "Content-Type",
                                  &reported_content_type);
-  if (reported_content_type != "application/vnd.ipld.raw") {
+  // application/vnd.ipld.raw
+  //  -- OR --
+  // application/vnd.ipfs.ipns-record
+  constexpr std::string_view content_type_prefix{"application/vnd.ip"};
+  if (reported_content_type.compare(0, content_type_prefix.size(),
+                                    content_type_prefix)) {
     LOG(ERROR) << '\n'
                << gw.url() << " reported a content type of "
                << reported_content_type
@@ -187,17 +196,39 @@ bool ipfs::GatewayRequests::ProcessResponse(
     LOG(ERROR) << "Invalid CID '" << cid_str << "'.";
     return false;
   }
-  Block block{cid.value(), *body};
-  if (block.cid_matches_data()) {
-    LOG(INFO) << "Storing CID=" << cid_str;
-    state_.storage().Store(cid_str, std::move(block));
-    scheduler().IssueRequests(shared_from_this(), listener);
+  if (cid.value().content_type ==
+      libp2p::multi::MulticodecType::Code::LIBP2P_KEY) {
+    auto as_peer = libp2p::peer::PeerId::fromHash(cid.value().content_address);
+    if (!as_peer.has_value()) {
+      LOG(INFO) << cid_str
+                << " has the codec of being a libp2p key, like one would "
+                   "expect of a Peer ID, but it does not parse as a Peer ID.";
+      return false;
+    }
+    auto* bytes = reinterpret_cast<Byte const*>(body->data());
+    auto target = ValidateIpnsRecord({bytes, body->size()}, as_peer.value());
+    if (target.empty()) {
+      LOG(ERROR) << "IPNS record failed to validate! From: " << gw.url();
+      return false;
+    }
+    LOG(INFO) << "IPNS record from " << gw.url() << " points " << cid_str
+              << " to " << target;
+    state_.names().AssignName(cid_str, target.substr(1UL));
+    scheduler().IssueRequests(shared_from_this());
     return true;
   } else {
-    LOG(ERROR) << "You tried to store some bytes as a block for a CID ("
-               << cid_str << ") that does not correspond to those bytes!";
-    // TODO ban the gateway outright
-    return false;
+    Block block{cid.value(), *body};
+    if (block.cid_matches_data()) {
+      LOG(INFO) << "Storing CID=" << cid_str;
+      state_.storage().Store(cid_str, std::move(block));
+      scheduler().IssueRequests(shared_from_this());
+      return true;
+    } else {
+      LOG(ERROR) << "You tried to store some bytes as a block for a CID ("
+                 << cid_str << ") that does not correspond to those bytes!";
+      // TODO ban the gateway outright
+      return false;
+    }
   }
 }
 
@@ -243,7 +274,7 @@ std::string ipfs::GatewayRequests::UnescapeUrlComponent(
 
 ipfs::GatewayRequests::GatewayRequests(InterRequestState& state)
     : state_{state},
-      sched_([this]() { return state_.gateways().GenerateList(this); }) {}
+      sched_([this]() { return state_.gateways().GenerateList(); }) {}
 ipfs::GatewayRequests::~GatewayRequests() {
   LOG(WARNING) << "API dtor - are all URIs loaded?";
 }

@@ -19,9 +19,9 @@ do
 done
 if ccache --version
 then
-  export cache_dir=`ccache --get-config cache_dir`/../.ipfs-chromium-cache/
+  export cache_dir=`ccache --get-config cache_dir`/../ipfs-chromium-cache/docker
 else
-  export cache_dir="${HOME}/.ipfs-chromium-cache/"
+  export cache_dir="${HOME}/ipfs-chromium-cache/docker"
 fi
 mkdir -p "${cache_dir}"/{ccache,conan}
 for profile in Debug Release

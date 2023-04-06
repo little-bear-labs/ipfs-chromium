@@ -71,7 +71,7 @@ size_t Sha256::blockSize() const {
 void Sha256::sinkCtx() {
   if (initialized_) {
     libp2p::common::Hash256 digest;
-    SHA256_Final(digest.data(), &ctx_);
+    SHA256_Final(reinterpret_cast<uint8_t*>(digest.data()), &ctx_);
     memset(digest.data(), 0, digest.size());
     initialized_ = false;
   }

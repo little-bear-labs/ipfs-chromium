@@ -15,7 +15,6 @@ class DagListener;
 class GatewayRequest {
  public:
   BusyGateway gateway;
-  std::shared_ptr<DagListener> listener;
 
   GatewayRequest(BusyGateway&&);
   virtual ~GatewayRequest() noexcept;
@@ -38,8 +37,7 @@ class NetworkingApi : public std::enable_shared_from_this<NetworkingApi> {
 
   // Send a single http request to its gateway as scheduled
   virtual std::shared_ptr<GatewayRequest> InitiateGatewayRequest(
-      BusyGateway,
-      std::shared_ptr<DagListener>) = 0;
+      BusyGateway) = 0;
 
   // Determine a mime type for a given file.
   virtual std::string MimeType(std::string extension,

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.22)
 project(ipfs_client
     DESCRIPTION "Code related to using IPFS http gateways to resolve ipfs:// and ipns:// URLs"
     VERSION 0.0.0.0
@@ -77,6 +77,11 @@ if(GTest_FOUND)
         target_compile_features(${name}_runner
             PUBLIC
                 cxx_std_${CXX_VERSION}
+        )
+        target_include_directories(${name}_runner
+          PRIVATE
+            include/
+            src/
         )
         target_link_libraries(${name}_runner
             PUBLIC

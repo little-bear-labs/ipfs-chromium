@@ -45,9 +45,9 @@ class COMPONENT_EXPORT(IPFS) IpfsURLLoaderFactory
       override;
 
   std::string scheme_;
-  content::BrowserContext* context_;
-  network::mojom::URLLoaderFactory* default_factory_;
-  network::mojom::NetworkContext* network_context_;
+  raw_ptr<content::BrowserContext> context_;
+  raw_ptr<network::mojom::URLLoaderFactory> default_factory_;
+  raw_ptr<network::mojom::NetworkContext> network_context_;
 };
 }  // namespace ipfs
 

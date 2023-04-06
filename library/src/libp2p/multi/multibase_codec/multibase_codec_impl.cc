@@ -14,6 +14,7 @@
 #include <libp2p/multi/multibase_codec/codecs/base32.hpp>
 #include <libp2p/multi/multibase_codec/codecs/base58.hpp>
 // #include <libp2p/multi/multibase_codec/codecs/base64.hpp>
+#include <libp2p/multi/multibase_codec/codecs/base36.hpp>
 
 namespace {
 using namespace libp2p::multi;          // NOLINT
@@ -35,6 +36,8 @@ std::optional<MultibaseCodec::Encoding> encodingByChar(char ch) {
       return MultibaseCodec::Encoding::BASE32_LOWER;
     case 'B':
       return MultibaseCodec::Encoding::BASE32_UPPER;
+    case 'k':
+      return MultibaseCodec::Encoding::BASE36;
     case 'z':
       return MultibaseCodec::Encoding::BASE58;
     case 'm':
@@ -53,7 +56,7 @@ struct CodecFunctions {
 };
 
 namespace {
-std::string todo_encode(libp2p::common::ByteArray const&) {
+std::string todo_encode(ipfs::ByteView) {
   LOG(FATAL) << "TODO implement encode for this multibase encoding";
   return "TODO";
 }
@@ -75,6 +78,8 @@ const std::unordered_map<MultibaseCodec::Encoding, CodecFunctions> codecs{
      CodecFunctions{&encodeBase32Upper, &decodeBase32Upper}},
     {MultibaseCodec::Encoding::BASE32_LOWER,
      CodecFunctions{&encodeBase32Lower, &decodeBase32Lower}},
+    {MultibaseCodec::Encoding::BASE36,
+     CodecFunctions{&encodeBase36Lower, &decodeBase36}},
     {MultibaseCodec::Encoding::BASE58,
      CodecFunctions{&encodeBase58, &decodeBase58}},
     {MultibaseCodec::Encoding::BASE64,

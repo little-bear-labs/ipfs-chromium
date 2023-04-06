@@ -35,9 +35,10 @@ if(ipfs_dep GREATER -1)
 elseif(GIT_EXECUTABLE)
     message(WARNING "ipfs dependency not found in chrome/browser/BUILD.gn. Assuming your Chromium source is not patched - will attempt to apply a patch right now.")
     execute_process(
-        COMMAND "${GIT_EXECUTABLE}" apply "${CMAKE_CURRENT_LIST_DIR}/rest_of_chromium.patch"
+        COMMAND "${GIT_EXECUTABLE}" apply --verbose "${CMAKE_CURRENT_LIST_DIR}/rest_of_chromium.patch"
         WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
-	COMMAND_ERROR_IS_FATAL ANY
+        COMMAND_ECHO STDERR
+	      COMMAND_ERROR_IS_FATAL ANY
     )
 elseif()
     message(FATAL_ERROR "It would appear your Chromium source tree is unpatched, and I don't have access to git.")
@@ -58,14 +59,20 @@ file(GLOB_RECURSE
     lib_hdrs_rel
     RELATIVE "${CMAKE_SOURCE_DIR}/library/include"
     "${CMAKE_SOURCE_DIR}/library/include/*.h"
+    "${CMAKE_SOURCE_DIR}/library/src/*.h"
     "${CMAKE_SOURCE_DIR}/library/include/*.hpp"
 )
 file(GLOB_RECURSE
     lib_hdrs_abs
     CONFIGURE_DEPENDS
     "${CMAKE_SOURCE_DIR}/library/include/*.h"
+    "${CMAKE_SOURCE_DIR}/library/src/*.h"
     "${CMAKE_SOURCE_DIR}/library/include/*.hpp"
 )
+file(GLOB
+  protos
+  ${CMAKE_SOURCE_DIR}/library/*.proto
+  )
 
 foreach(source ${srcs} ${lib_srcs})
     get_filename_component(basename "${source}" NAME )
@@ -75,14 +82,14 @@ foreach(source ${srcs} ${test_srcs})
     get_filename_component(basename "${source}" NAME )
     set(gn_test_sources "${gn_test_sources}  \"${basename}\",\n  ")
 endforeach()
+foreach(proto ${protos} )
+    get_filename_component(basename "${proto}" NAME )
+    set(gn_protos "${gn_protos}  \"${basename}\",\n  ")
+endforeach()
 configure_file(
     BUILD.gn.in
     ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn
     @ONLY
-)
-file(GLOB
-    protos
-    ${CMAKE_SOURCE_DIR}/library/*.proto
 )
 add_custom_target(setup_component
     ALL
@@ -108,11 +115,13 @@ foreach(hdr ${lib_hdrs_rel})
     endif ()
 endforeach()
 if(GIT_EXECUTABLE)
-    add_custom_command(
-        TARGET setup_component
-        POST_BUILD
-        WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
-        COMMAND "${GIT_EXECUTABLE}" diff --patch > "${CMAKE_CURRENT_LIST_DIR}/rest_of_chromium.patch"
+#    add_custom_command(
+#        TARGET setup_component
+#        POST_BUILD
+#        WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
+    add_custom_target(patch_file
+        COMMAND "${GIT_EXECUTABLE}" -C "${CHROMIUM_SOURCE_TREE}" diff --patch > "${CMAKE_CURRENT_LIST_DIR}/rest_of_chromium.patch"
+        DEPENDS setup_component
     )
 else()
     message(WARNING "git not in path - will not be creating the patch file to save your changes.")
@@ -128,7 +137,7 @@ add_custom_command(
 add_custom_command(
   COMMENT "Building targets necessary to have generated headers used by //components/ipfs"
   OUTPUT "${chromium_build_dir}/gen/components/ipfs/pb_dag.pb.h"
-  COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 22 components/ipfs:ipfs_generated_code
+  COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j ${parallel_jobs} components/ipfs:ipfs_generated_code
   MAIN_DEPENDENCY "${chromium_build_dir}/obj/components/ipfs/ipfs.ninja"
   WORKING_DIRECTORY "${chromium_build_dir}"
 )
@@ -170,13 +179,13 @@ if(DEPOT_TOOLS_NINJA_PY)
         DEPENDS setup_component
         WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
         COMMENT "Building component in Chromium source tree ${target_dir}, output in out/${CHROMIUM_PROFILE}"
-        COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 9 components/ipfs:ipfs
+        COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j ${parallel_jobs} components/ipfs:ipfs
     )
     add_custom_target(chrome_browser
       DEPENDS in_tree_build
       WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
       COMMENT "Building 'chrome' in Chromium source tree, output in out/${CHROMIUM_PROFILE}"
-      COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j 9 chrome
+      COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j ${parallel_jobs} chrome
     )
 else()
     message(WARNING "No depot_tools")

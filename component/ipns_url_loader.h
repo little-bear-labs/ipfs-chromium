@@ -3,6 +3,9 @@
 
 #include "ipfs_url_loader.h"
 
+#include <ipfs_client/name_listener.h>
+#include <vocab/raw_ptr.h>
+
 #include <mojo/public/cpp/bindings/receiver.h>
 #include <services/network/public/cpp/resolve_host_client_base.h>
 #include <services/network/public/mojom/url_loader.mojom.h>
@@ -21,9 +24,11 @@ class URLLoaderClient;
 }  // namespace network
 
 namespace ipfs {
+class NetworkingApi;
 class InterRequestState;
 class IpnsUrlLoader : public network::ResolveHostClientBase,
-                      public network::mojom::URLLoader {
+                      public network::mojom::URLLoader,
+                      public NameListener {
   InterRequestState& state_;
   std::string host_;
   std::optional<network::ResourceRequest> request_;
@@ -31,7 +36,9 @@ class IpnsUrlLoader : public network::ResolveHostClientBase,
   mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver_;
   mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote_;
   std::shared_ptr<IpfsUrlLoader> ipfs_loader_;
-  network::mojom::NetworkContext* network_context_;
+  raw_ptr<network::mojom::NetworkContext> network_context_;
+  std::shared_ptr<GatewayRequests> api_;
+  network::mojom::URLLoaderFactory& http_loader_;
 
  public:
   explicit IpnsUrlLoader(InterRequestState& state,
@@ -59,6 +66,7 @@ class IpnsUrlLoader : public network::ResolveHostClientBase,
   void DoIpfs();
   void FailNameResolution();
   network::mojom::URLLoader& under();
+  bool RequestIpnsRecord();
 
   void FollowRedirect(
       std::vector<std::string> const& removed_headers,
@@ -69,6 +77,8 @@ class IpnsUrlLoader : public network::ResolveHostClientBase,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
   void ResumeReadingBodyFromNet() override;
+
+  void Complete() override;  // From NameListener
 };
 }  // namespace ipfs
 

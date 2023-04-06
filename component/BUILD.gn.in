@@ -13,7 +13,6 @@ component("ipfs") {
     "//components/policy/core/common",
     "//mojo/public/cpp/bindings",
     "//net",
-    "//services/cert_verifier/public/mojom/",
     "//services/network:network_service",
     "//services/network/public/cpp:cpp",
     "//services/network/public/mojom",
@@ -28,8 +27,10 @@ import("//third_party/protobuf/proto_library.gni")
 
 proto_library("ipfs_generated_code") {
   sources = [
-    "pb_dag.proto",
-    "unix_fs.proto",
+  @gn_protos@]
+  deps = [
+    "//services/network/public/mojom",
+    "//third_party/blink/public/mojom:mojom_platform"
   ]
   deps = [
     "//services/network/public/mojom",

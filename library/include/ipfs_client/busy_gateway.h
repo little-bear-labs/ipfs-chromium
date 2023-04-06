@@ -1,6 +1,8 @@
 #ifndef IPFS_BUSY_GATEWAY_H_
 #define IPFS_BUSY_GATEWAY_H_
 
+#include <vocab/raw_ptr.h>
+
 #include <memory>
 #include <string>
 
@@ -23,12 +25,8 @@ class BusyGateway {
   void reset();
   bool operator==(BusyGateway const&) const;
 
-  void Success(Gateways&,
-               std::shared_ptr<NetworkingApi>,
-               std::shared_ptr<DagListener>);
-  void Failure(Gateways&,
-               std::shared_ptr<NetworkingApi>,
-               std::shared_ptr<DagListener>);
+  void Success(Gateways&, std::shared_ptr<NetworkingApi>);
+  void Failure(Gateways&, std::shared_ptr<NetworkingApi>);
 
   std::string const& current_task() const { return suffix_; }
   std::string url() const { return prefix_ + suffix_; }
@@ -39,7 +37,7 @@ class BusyGateway {
 
   std::string prefix_;
   std::string suffix_;
-  Scheduler* scheduler_;
+  raw_ptr<Scheduler> scheduler_;
   std::size_t maybe_offset_;
 };
 

@@ -29,12 +29,14 @@ class MultibaseCodec {
   virtual ~MultibaseCodec() = default;
   /**
    * Encodings, supported by this Multibase
+   * @sa https://github.com/multiformats/multibase#multibase-table
    */
   enum class Encoding : char {
     BASE16_LOWER = 'f',
     BASE16_UPPER = 'F',
     BASE32_LOWER = 'b',
     BASE32_UPPER = 'B',
+    BASE36 = 'k',
     BASE58 = 'z',
     BASE64 = 'm'
   };
