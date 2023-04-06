@@ -107,6 +107,9 @@ index 5273da5190..d95544c64d 100644
    // cannot be overwritten by /etc/resolv.conf
    const unsigned kRequiredOptions = RES_RECURSE | RES_DEFNAMES | RES_DNSRCH;
    if ((res.options & kRequiredOptions) != kRequiredOptions) {
++    if (!dns_config.unhandled_options) {
++      LOG(ERROR) << "unhandled_options set to true bec " << res.options;
++    }
      dns_config.unhandled_options = true;
      return dns_config;
    }

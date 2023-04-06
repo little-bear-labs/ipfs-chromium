@@ -44,7 +44,25 @@ elseif()
     message(FATAL_ERROR "It would appear your Chromium source tree is unpatched, and I don't have access to git.")
 endif()
 
+add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/.landmines"
+  COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GCLIENT_PY}"  runhooks -j ${parallel_jobs}
+  WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
+  COMMENT runhooks
+
+)
+add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/branched_for_ipfs_chromium"
+  COMMAND "${GIT_EXECUTABLE}" -C "${CHROMIUM_SOURCE_TREE}" checkout -b "ipfs-chromium/${CHROMIUM_TAG}" "${CHROMIUM_TAG}"
+  COMMAND "${CMAKE_COMMAND}" -E touch "${CHROMIUM_SOURCE_TREE}/branched_for_ipfs_chromium"
+  COMMENT branching
+  MAIN_DEPENDENCY "${CHROMIUM_SOURCE_TREE}/.landmines"
+)
 set(target_dir "${CHROMIUM_SOURCE_TREE}/components/ipfs")
+add_custom_command(OUTPUT "${target_dir}/args.gn"
+  COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GN_PY}" gen "out/${CHROMIUM_PROFILE}" "--args= ${gnargs} "
+  WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
+  COMMENT "gn generating"
+  MAIN_DEPENDENCY "${CHROMIUM_SOURCE_TREE}/branched_for_ipfs_chromium"
+  )
 file(GLOB_RECURSE
     lib_srcs
         ../library/src/*.cc
@@ -96,7 +114,7 @@ add_custom_target(setup_component
     COMMENT "Moving code over to ${target_dir} and setting up the build there."
     COMMAND ${CMAKE_COMMAND} -E make_directory "${target_dir}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${srcs} ${hdrs} ${lib_srcs} ${test_srcs} ${protos} ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn "${target_dir}"
-    SOURCES ${srcs} ${hdrs} ${lib_srcs} ${lib_hdrs_abs}
+    SOURCES "${target_dir}/args.gn" ${srcs} ${hdrs} ${lib_srcs} ${lib_hdrs_abs}
     BYPRODUCTS "${target_dir}/BUILD.gn"
 )
 
