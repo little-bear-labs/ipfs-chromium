@@ -81,7 +81,7 @@ However, here we cannot make that assumption. So...
 
 #### Steps
 * `mkdir -p /an/ipfs-chromium/build/dir`
-* `cmake -D CMAKE_BUILD_TYPE=Debug -D DOWNLOAD_CHROMIUM=TRUE -S /path/to/ipfs-chromium -B /an/ipfs-chromium/build/dir`
+* `cmake -D CMAKE_BUILD_TYPE=Release -D DOWNLOAD_CHROMIUM=TRUE -S /path/to/ipfs-chromium -B /an/ipfs-chromium/build/dir`
   - CMAKE_BUILD_TYPE - Either Debug or Release. If you choose Release it will set is_debug=false in args.gn.
   - If `ccache` is in your path, it will instruct not just the CMake but also the gn build to use it. I recommend this.
   - This step will take much, much longer than you may be used to as a normal CMake user.
@@ -97,6 +97,8 @@ However, here we cannot make that assumption. So...
     - Make any upgrades/installations mentioned in the "Setting up Windows" section mentioned in the doc that you don't already have.
     - Note: building on Windows is untested
 * `cmake --build /an/ipfs-chromium/build/dir --target chrome_browser`
-  - This will also take much, much longer than you're used to. (TODO - time these things for a ballpark figure)
+  - This will also take much longer than you're used to.
+* At this point you should be able to run the binary. If you used the above command it could be found at: /an/ipfs-chromium/build/dir/chromium/src/out/Debug/chrome
+* To put a bow on it, you could `ninja package`. - Note, this may not work properly on Windows 
 
 *NOTE* - anwhere in this document you see `cmake --build`, feel free to replace that with a call to your chosen underlying build system. For example, `cmake --build X Y` could become `make -C X Y` 

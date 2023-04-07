@@ -31,25 +31,25 @@ string(
         ipfs_dep
 )
 
-add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/.landmines"
-  COMMAND ${CMAKE_COMMAND} -E env "PATH=$ENV{PATH}" "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GCLIENT_PY}"  runhooks -j ${parallel_jobs}
-  WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
-  COMMENT runhooks
-)
 add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/branched_for_ipfs_chromium"
-  COMMAND ls -lrth "${CHROMIUM_SOURCE_TREE}/branched_for_ipfs_chromium"
   COMMAND "${GIT_EXECUTABLE}" -C "${CHROMIUM_SOURCE_TREE}" checkout -b "ipfs-chromium/${CHROMIUM_TAG}" "${CHROMIUM_TAG}"
   COMMAND "${CMAKE_COMMAND}" -E touch "${CHROMIUM_SOURCE_TREE}/branched_for_ipfs_chromium"
   COMMENT branching
   MAIN_DEPENDENCY "${CHROMIUM_SOURCE_TREE}/.landmines"
 )
 add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/gclient_synced"
-  COMMAND ${CMAKE_COMMAND} -E env "PATH=$ENV{PATH}" "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GCLIENT_PY}"  sync -j ${parallel_jobs}
+  COMMAND ${CMAKE_COMMAND} -E env "PATH=${DEPOT_TOOLS_DIRECTORY}:$ENV{PATH}" "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GCLIENT_PY}"  sync -j ${parallel_jobs} --with_branch_heads
   WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
-  COMMENT runhooks
+  COMMENT gclient sync
   COMMAND "${CMAKE_COMMAND}" -E touch "${CHROMIUM_SOURCE_TREE}/gclient_synced"
   COMMENT branching
   MAIN_DEPENDENCY "${CHROMIUM_SOURCE_TREE}/branched_for_ipfs_chromium"
+  )
+add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/.landmines"
+  COMMAND ${CMAKE_COMMAND} -E env "PATH=${DEPOT_TOOLS_DIRECTORY}:$ENV{PATH}" "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GCLIENT_PY}"  runhooks -j ${parallel_jobs}
+  WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
+  COMMENT runhooks
+  MAIN_DEPENDENCY "${CHROMIUM_SOURCE_TREE}/gclient_synced"
   )
 if(ipfs_dep GREATER -1)
     message(STATUS "Looks like you might have already patched Chromium.")
@@ -67,7 +67,7 @@ endif()
 
 set(target_dir "${CHROMIUM_SOURCE_TREE}/components/ipfs")
 add_custom_command(OUTPUT "${target_dir}/args.gn"
-  COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GN_PY}" gen "out/${CHROMIUM_PROFILE}" "--args= ${gnargs} "
+  COMMAND ${CMAKE_COMMAND} -E env "PATH=${DEPOT_TOOLS_DIRECTORY}:$ENV{PATH}" "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GN_PY}" gen "out/${CHROMIUM_PROFILE}" "--args= ${gnargs} "
   WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
   COMMENT "gn generating"
   MAIN_DEPENDENCY "${CHROMIUM_SOURCE_TREE}/patched"
@@ -214,6 +214,12 @@ if(DEPOT_TOOLS_NINJA_PY)
       WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
       COMMENT "Building 'chrome' in Chromium source tree, output in out/${CHROMIUM_PROFILE}"
       COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j ${parallel_jobs} chrome
+    )
+    add_custom_target(package
+      DEPENDS chrome_browser
+      WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
+      COMMENT "Packaging"
+      COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j ${parallel_jobs} "chrome/installer/linux:unstable_deb"
     )
 else()
     message(WARNING "No depot_tools")
