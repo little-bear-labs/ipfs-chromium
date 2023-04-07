@@ -73,14 +73,15 @@ RUN apt-get install --yes adwaita-icon-theme alsa-topology-conf alsa-ucm-conf at
 
 ARG GIT_REF=main
 RUN git clone --branch "${GIT_REF}" https://github.com/little-bear-labs/ipfs-chromium.git /source
+RUN git -C /source pull
 RUN pip install httplib2
 RUN cmake -D CMAKE_BUILD_TYPE=Release -D DOWNLOAD_CHROMIUM=TRUE -S /source/ -B /build/
 
-RUN cmake --build /build/ --target setup_component
-RUN ls -lrth /build/chromium/src/components/ipfs/BUILD.gn
-RUN cmake --build /build/ --target package
+#RUN cmake --build /build/ --target setup_component || grep -n . /build/chromium/src/components/ipfs/BUILD.gn
+#RUN ls -lrth /build/chromium/src/components/ipfs/BUILD.gn
+#RUN cmake --build /build/ --target package
 
 # For dpkg stuff
-RUN apt install build-essential binutils lintian debhelper dh-make devscripts
+#RUN apt install build-essential binutils lintian debhelper dh-make devscripts
 
-ENTRYPOINT ["/build/chromium/src/out/Release/chrome", "ipns://ipfs.tech"]
+#ENTRYPOINT ["/build/chromium/src/out/Release/chrome", "ipns://ipfs.tech"]

@@ -66,13 +66,7 @@ elseif()
 endif()
 
 set(target_dir "${CHROMIUM_SOURCE_TREE}/components/ipfs")
-add_custom_command(OUTPUT "${target_dir}/args.gn"
-  COMMAND ${CMAKE_COMMAND} -E env "PATH=${DEPOT_TOOLS_DIRECTORY}:$ENV{PATH}" "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GN_PY}" gen "out/${CHROMIUM_PROFILE}" "--args= ${gnargs} "
-  WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
-  COMMENT "gn generating"
-  MAIN_DEPENDENCY "${CHROMIUM_SOURCE_TREE}/patched"
-  VERBATIM
-  )
+
 file(GLOB_RECURSE
     lib_srcs
         ../library/src/*.cc
@@ -124,7 +118,7 @@ add_custom_target(setup_component
     COMMENT "Moving code over to ${target_dir} and setting up the build there."
     COMMAND ${CMAKE_COMMAND} -E make_directory "${target_dir}"
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${srcs} ${hdrs} ${lib_srcs} ${test_srcs} ${protos} ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn "${target_dir}"
-    SOURCES "${target_dir}/args.gn" ${srcs} ${hdrs} ${lib_srcs} ${lib_hdrs_abs}
+    SOURCES ${srcs} ${hdrs} ${lib_srcs} ${lib_hdrs_abs}
     BYPRODUCTS "${target_dir}/BUILD.gn"
 )
 
@@ -156,7 +150,7 @@ else()
 endif()
 add_custom_command(
   COMMENT "Generating build files including //components/ipfs"
-  OUTPUT "${chromium_build_dir}/obj/components/ipfs/ipfs.ninja"
+  OUTPUT "${target_dir}/args.gn"
   COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GN_PY}" gen "--args= ${gnargs} " "out/${CHROMIUM_PROFILE}"
   MAIN_DEPENDENCY "${target_dir}/BUILD.gn"
   WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
@@ -169,37 +163,6 @@ add_custom_command(
   MAIN_DEPENDENCY "${chromium_build_dir}/obj/components/ipfs/ipfs.ninja"
   WORKING_DIRECTORY "${chromium_build_dir}"
 )
-add_custom_target(generate_in_tree_headers
-  ALL
-  COMMENT "Checking that the headers are generated via gn-generated Ninja build."
-  SOURCES "${chromium_build_dir}/gen/components/ipfs/pb_dag.pb.h"
-)
-
-#Mostly for the sake of IDEs
-#set(stubbedchromiumincdir "/" CACHE PATH "Used only for local_shim_build")
-#add_library(local_shim_build
-#  ${srcs}
-#  ${hdrs} #Some IDEs like you to indicate header association this way. Otherwise they're "external"
-#)
-#target_compile_features(local_shim_build
-#  PRIVATE
-#    cxx_std_17 # Always target C++17 when targeting Chromium
-#)
-#target_compile_options(local_shim_build
-#  PUBLIC
-#    ${WARNING_FLAGS}
-#)
-#target_link_libraries(local_shim_build
-#  PUBLIC
-#    ipfs_client
-#)
-#target_include_directories(local_shim_build
-#  SYSTEM
-#  PUBLIC
-#    .
-#    "${CMAKE_BINARY_DIR}"
-#    ${stubbedchromiumincdir}
-#)
 
 if(DEPOT_TOOLS_NINJA_PY)
     add_custom_target(in_tree_build
@@ -208,7 +171,8 @@ if(DEPOT_TOOLS_NINJA_PY)
         WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
         COMMENT "Building component in Chromium source tree ${target_dir}, output in out/${CHROMIUM_PROFILE}"
         COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j ${parallel_jobs} components/ipfs:ipfs
-    )
+        DEPENDS "${target_dir}/args.gn"
+      )
     add_custom_target(chrome_browser
       DEPENDS in_tree_build
       WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
