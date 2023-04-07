@@ -76,7 +76,9 @@ RUN git clone --branch "${GIT_REF}" https://github.com/little-bear-labs/ipfs-chr
 RUN pip install httplib2
 RUN cmake -D CMAKE_BUILD_TYPE=Release -D DOWNLOAD_CHROMIUM=TRUE -S /source/ -B /build/
 
-RUN cmake --build /build/ --target chrome_browser
+RUN cmake --build /build/ --target setup_component
+RUN ls -lrth /build/chromium/src/components/ipfs/BUILD.gn
+RUN cmake --build /build/ --target package
 
 # For dpkg stuff
 RUN apt install build-essential binutils lintian debhelper dh-make devscripts
