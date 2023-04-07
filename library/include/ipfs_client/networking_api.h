@@ -15,7 +15,6 @@ class DagListener;
 class GatewayRequest {
  public:
   BusyGateway gateway;
-  //  std::shared_ptr<DagListener> listener;
 
   GatewayRequest(BusyGateway&&);
   virtual ~GatewayRequest() noexcept;
