@@ -40,7 +40,7 @@ RUN apt-get install --yes adwaita-icon-theme alsa-topology-conf alsa-ucm-conf at
   libipc-system-simple-perl libisl23 libiterator-perl libiterator-util-perl libitm1 libjbig-dev libjbig0 libjpeg-dev libjpeg-turbo8 libjpeg-turbo8-dev libjpeg8 libjpeg8-dev libjq1 \
   libjs-jquery libjson-maybexs-perl libjson-perl libjson-xs-perl libkadm5clnt-mit12 libkadm5srv-mit12 libkdb5-10 libkrb5-dev liblcms2-2 liblist-compare-perl liblist-moreutils-perl \
   liblist-moreutils-xs-perl liblist-someutils-perl liblist-someutils-xs-perl liblist-utilsby-perl libllvm15 liblocale-gettext-perl liblog-any-adapter-screen-perl liblog-any-perl \
-  liblsan0 libltdl-dev libltdl7 liblua5.3-0 liblwp-mediatypes-perl liblwp-p-rotocol-https-perl liblzma-dev libmail-sendmail-perl libmailtools-perl libmarkdown2 libmath-base85-perl \
+  liblsan0 libltdl-dev libltdl7 liblua5.3-0 liblwp-mediatypes-perl liblwp-protocol-https-perl liblzma-dev libmail-sendmail-perl libmailtools-perl libmarkdown2 libmath-base85-perl \
   libmodule-implementation-perl libmodule-runtime-perl libmoo-perl libmoox-aliases-perl libmoox-struct-perl libmount-dev libmouse-perl libmpc3 libmpfr6 libmtdev-dev libmtdev1 \
   libnamespace-autoclean-perl libnamespace-clean-perl libnet-domain-tld-perl libnet-http-perl libnet-ipv6addr-perl libnet-netmask-perl libnet-smtp-ssl-perl libnet-ssleay-perl \
   libnetaddr-ip-perl libnghttp2-14 libnsl-dev libnspr4 libnspr4-dev libnss3 libnss3-dev libnumber-compare-perl libobject-id-perl libobrender32v5 libobt2v5 libogg0 libonig5 libopengl-dev \
@@ -77,5 +77,8 @@ RUN pip install httplib2
 RUN cmake -D CMAKE_BUILD_TYPE=Release -D DOWNLOAD_CHROMIUM=TRUE -S /source/ -B /build/
 
 RUN cmake --build /build/ --target chrome_browser
+
+# For dpkg stuff
+RUN apt install build-essential binutils lintian debhelper dh-make devscripts
 
 ENTRYPOINT ["/build/chromium/src/out/Release/chrome", "ipns://ipfs.tech"]
