@@ -13,8 +13,6 @@
 #include "smhasher/MurmurHash3.h"
 #include "vocab/stringify.h"
 
-#include <endian.h>
-
 #include <iomanip>
 
 namespace {
