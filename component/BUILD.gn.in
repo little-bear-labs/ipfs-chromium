@@ -32,8 +32,4 @@ proto_library("ipfs_generated_code") {
     "//services/network/public/mojom",
     "//third_party/blink/public/mojom:mojom_platform"
   ]
-  deps = [
-    "//services/network/public/mojom",
-    "//third_party/blink/public/mojom:mojom_platform"
-  ]
 }
