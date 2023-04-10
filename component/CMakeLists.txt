@@ -55,7 +55,7 @@ if(ipfs_dep GREATER -1)
     message(STATUS "Looks like you might have already patched Chromium.")
     execute_process(COMMAND "${CMAKE_COMMAND}" -E touch "${CHROMIUM_SOURCE_TREE}/patched")
 elseif(GIT_EXECUTABLE)
-    message(INFO "ipfs dependency not found in chrome/browser/BUILD.gn. Assuming your Chromium source is not patched - will attempt to apply a patch right during build step.")
+    message(STATUS "ipfs dependency not found in chrome/browser/BUILD.gn. Assuming your Chromium source is not patched - will attempt to apply a patch right during build step.")
     add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/patched"
       COMMAND "${GIT_EXECUTABLE}" -C "${CHROMIUM_SOURCE_TREE}" apply --verbose "${CMAKE_CURRENT_LIST_DIR}/rest_of_chromium.patch"
       WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
