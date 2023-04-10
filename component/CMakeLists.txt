@@ -42,7 +42,6 @@ add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/gclient_synced"
   WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
   COMMENT gclient sync
   COMMAND "${CMAKE_COMMAND}" -E touch "${CHROMIUM_SOURCE_TREE}/gclient_synced"
-  COMMENT branching
   MAIN_DEPENDENCY "${CHROMIUM_SOURCE_TREE}/branched_for_ipfs_chromium"
   )
 add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/.landmines"
@@ -60,6 +59,7 @@ elseif(GIT_EXECUTABLE)
       COMMAND "${GIT_EXECUTABLE}" -C "${CHROMIUM_SOURCE_TREE}" apply --verbose "${CMAKE_CURRENT_LIST_DIR}/rest_of_chromium.patch"
       WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
       MAIN_DEPENDENCY "${CHROMIUM_SOURCE_TREE}/.landmines"
+      DEPENDS "${CHROMIUM_SOURCE_TREE}/gclient_synced"
     )
 elseif()
     message(FATAL_ERROR "It would appear your Chromium source tree is unpatched, and I don't have access to git.")
@@ -154,6 +154,7 @@ add_custom_command(
   COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GN_PY}" gen "--args= ${gnargs} " "out/${CHROMIUM_PROFILE}"
   MAIN_DEPENDENCY "${target_dir}/BUILD.gn"
   WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
+  DEPENDS "${CHROMIUM_SOURCE_TREE}/patched"
   VERBATIM
 )
 add_custom_command(
