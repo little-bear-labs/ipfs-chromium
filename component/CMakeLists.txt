@@ -40,7 +40,7 @@ add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/branched_for_ipfs_chromium"
 add_custom_command(OUTPUT "${CHROMIUM_SOURCE_TREE}/gclient_synced"
   COMMAND ${CMAKE_COMMAND} -E env "PATH=${DEPOT_TOOLS_DIRECTORY}:$ENV{PATH}" "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_GCLIENT_PY}"  sync -j ${parallel_jobs} --with_branch_heads
   WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
-  COMMENT gclient sync
+  COMMENT "gclient sync"
   COMMAND "${CMAKE_COMMAND}" -E touch "${CHROMIUM_SOURCE_TREE}/gclient_synced"
   MAIN_DEPENDENCY "${CHROMIUM_SOURCE_TREE}/branched_for_ipfs_chromium"
   )
