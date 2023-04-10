@@ -15,6 +15,17 @@
 
 #include <iomanip>
 
+#if __has_include(<endian.h>)
+#include <endian.h>
+#elif __has_include(<machine/endian.h>)
+#include <machine/endian.h>
+#endif
+
+#ifndef htobe64
+// TODO proper endian library, abseil/boost/chromium etc
+#define htobe64(x) OSSwapHostToBigInt64(x)
+#endif
+
 namespace {
 bool starts_with(std::string_view a, std::string_view b) {
   if (a.size() < b.size()) {
