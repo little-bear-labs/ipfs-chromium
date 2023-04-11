@@ -11,7 +11,7 @@ component("ipfs") {
     "//content",
     "//crypto",
     "//base",
-    "//components/policy/core/common",
+    "//components/cbor",
     "//components/prefs",
     "//components/webcrypto:webcrypto",
     "//mojo/public/cpp/bindings",

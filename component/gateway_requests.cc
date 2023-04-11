@@ -2,6 +2,7 @@
 
 #include "crypto_api.h"
 #include "inter_request_state.h"
+#include "ipns_cbor.h"
 
 #include "base/strings/escape.h"
 #include "net/base/mime_sniffer.h"
@@ -207,8 +208,9 @@ bool ipfs::GatewayRequests::ProcessResponse(BusyGateway& gw,
       return false;
     }
     auto* bytes = reinterpret_cast<Byte const*>(body->data());
-    auto target = ValidateIpnsRecord({bytes, body->size()}, as_peer.value(),
-                                     crypto_api::VerifySignature);
+    auto target =
+        ValidateIpnsRecord({bytes, body->size()}, as_peer.value(),
+                           crypto_api::VerifySignature, ParseCborIpns);
     if (target.empty()) {
       LOG(ERROR) << "IPNS record failed to validate! From: " << gw.url();
       return false;
