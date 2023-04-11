@@ -12,10 +12,11 @@
 #include <vocab/byte_view.h>
 
 namespace ipfs::crypto_api {
+/*
 using Algo = std::pair<blink::WebCryptoAlgorithmId,
                        std::unique_ptr<webcrypto::AlgorithmImplementation>>;
 Algo GetAlgo(ipfs::ipns::KeyType);
-
+*/
 bool VerifySignature(ipfs::ipns::KeyType,
                      ByteView signature,
                      ByteView data,
