@@ -4,11 +4,8 @@
 
 #if __has_include("components/ipfs/ipns_record.pb.h")
 #include "components/ipfs/ipns_record.pb.h"
-#include "components/ipfs/keys.pb.h"
-
 #else
 #include "ipns_record.pb.h"
-#include "keys.pb.h"
 #endif
 
 // #include <libp2p/crypto/crypto_provider/crypto_provider_impl.hpp>
@@ -32,7 +29,8 @@ bool matches(libp2p::multi::Multihash const& hash,
 }
 }  // namespace
 std::string ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
-                                     libp2p::peer::PeerId const& name) {
+                                     libp2p::peer::PeerId const& name,
+                                     CryptoSignatureVerifier verify) {
   // https://github.com/ipfs/specs/blob/main/ipns/IPNS.md#record-verification
 
   // Before parsing the protobuf, confirm that the serialized IpnsEntry bytes
@@ -88,8 +86,27 @@ std::string ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
     LOG(ERROR) << "Failed to parse public key bytes";
     return {};
   }
-  LOG(INFO) << "Record contains a public key of type " << pk.type();
-  // TODO verify signature
-  LOG(INFO) << entry.value();
-  return entry.value();
+  LOG(INFO) << "Record contains a public key of type " << pk.type()
+            << " and points to " << entry.value();
+  auto& signature_str = entry.signaturev2();
+  ByteView signature{reinterpret_cast<ipfs::Byte const*>(signature_str.data()),
+                     signature_str.size()};
+  // https://specs.ipfs.tech/ipns/ipns-record/#record-verification
+  //  Create bytes for signature verification by concatenating ipns-signature:
+  //  prefix (bytes in hex: 69706e732d7369676e61747572653a) with raw CBOR bytes
+  //  from IpnsEntry.data
+  auto bytes_str = entry.data();
+  bytes_str.insert(
+      0, "\x69\x70\x6e\x73\x2d\x73\x69\x67\x6e\x61\x74\x75\x72\x65\x3a");
+  ByteView bytes{reinterpret_cast<ipfs::Byte const*>(bytes_str.data()),
+                 bytes_str.size()};
+  ByteView key_bytes{reinterpret_cast<ipfs::Byte const*>(pk.data().data()),
+                     pk.data().size()};
+  if (verify(pk.type(), signature, bytes, key_bytes)) {
+    LOG(INFO) << "Verification passed.";
+    return entry.value();
+  } else {
+    LOG(ERROR) << "Verification failed!!";
+    return {};
+  }
 }

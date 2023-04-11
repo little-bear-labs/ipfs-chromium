@@ -17,11 +17,13 @@ using GatewayList = std::vector<Gateway>;
 class NetworkingApi;
 
 class Gateways {
-  flat_map<std::string, unsigned> known_gateways_;
+  flat_map<std::string, int> known_gateways_;
   std::default_random_engine random_engine_;
   std::geometric_distribution<unsigned> dist_;
 
  public:
+  static std::vector<std::pair<std::string, int>> DefaultGateways();
+
   Gateways();
   ~Gateways();
   GatewayList GenerateList();

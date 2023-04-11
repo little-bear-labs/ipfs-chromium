@@ -77,9 +77,8 @@ RUN git -C /source pull
 RUN pip install httplib2
 RUN cmake -D CMAKE_BUILD_TYPE=Release -D DOWNLOAD_CHROMIUM=TRUE -S /source/ -B /build/
 
-#RUN cmake --build /build/ --target setup_component || grep -n . /build/chromium/src/components/ipfs/BUILD.gn
-#RUN ls -lrth /build/chromium/src/components/ipfs/BUILD.gn
-#RUN cmake --build /build/ --target package
+RUN cmake --build /build/ --target setup_component
+RUN cmake --build /build/ --target package
 
 # For dpkg stuff
 #RUN apt install build-essential binutils lintian debhelper dh-make devscripts

@@ -137,10 +137,6 @@ foreach(hdr ${lib_hdrs_rel})
     endif ()
 endforeach()
 if(GIT_EXECUTABLE)
-#    add_custom_command(
-#        TARGET setup_component
-#        POST_BUILD
-#        WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}"
     add_custom_target(patch_file
         COMMAND "${GIT_EXECUTABLE}" -C "${CHROMIUM_SOURCE_TREE}" diff --patch > "${CMAKE_CURRENT_LIST_DIR}/rest_of_chromium.patch"
         DEPENDS setup_component
@@ -179,6 +175,11 @@ if(DEPOT_TOOLS_NINJA_PY)
       WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
       COMMENT "Building 'chrome' in Chromium source tree, output in out/${CHROMIUM_PROFILE}"
       COMMAND "${Python3_EXECUTABLE}" "${DEPOT_TOOLS_NINJA_PY}" -j ${parallel_jobs} chrome
+    )
+    add_custom_command(
+      TARGET chrome_browser
+      POST_BUILD
+      COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome" "${CMAKE_BINARY_DIR}/chrome_browser"
     )
     add_custom_target(package
       DEPENDS chrome_browser
