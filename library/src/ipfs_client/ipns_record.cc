@@ -30,7 +30,8 @@ bool matches(libp2p::multi::Multihash const& hash,
 }  // namespace
 std::string ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
                                      libp2p::peer::PeerId const& name,
-                                     CryptoSignatureVerifier verify) {
+                                     CryptoSignatureVerifier verify,
+                                     CborDeserializer dser) {
   // https://github.com/ipfs/specs/blob/main/ipns/IPNS.md#record-verification
 
   // Before parsing the protobuf, confirm that the serialized IpnsEntry bytes
@@ -61,6 +62,13 @@ std::string ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
   // the expiration date after which the IPNS record becomes invalid.
   DCHECK_EQ(entry.validitytype(), 0);
 
+  auto parsed = dser({reinterpret_cast<Byte const*>(entry.data().data()),
+                      entry.data().size()});
+  if (parsed.value != entry.value()) {
+    LOG(ERROR) << "CBOR contains value '" << parsed.value
+               << "' but PB contains value '" << entry.value() << "'!";
+    return {};
+  }
   ipfs::ByteView public_key;
   if (entry.has_pubkey()) {
     public_key = ipfs::ByteView{

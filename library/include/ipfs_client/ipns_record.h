@@ -17,12 +17,28 @@ class PeerId;
 
 namespace ipfs {
 
-using CryptoSignatureVerifier = std::function<
-    bool(ipfs::ipns::KeyType, ipfs::ByteView, ipfs::ByteView, ipfs::ByteView)>;
+struct IpnsCborEntry {
+  std::string value;
+  //  std::basic_string<Byte> validity;
+  std::string validity;
+  std::uint64_t validityType;
+  std::uint64_t sequence;
+  std::uint64_t ttl;
+};
+
+using CborDeserializer = IpnsCborEntry(ByteView);
+
+// using CryptoSignatureVerifier = std::function<bool(ipfs::ipns::KeyType,
+// ipfs::ByteView, ipfs::ByteView, ipfs::ByteView)>;
+using CryptoSignatureVerifier = bool(ipns::KeyType,
+                                     ByteView,
+                                     ByteView,
+                                     ByteView);
 
 std::string ValidateIpnsRecord(ByteView top_level_bytes,
                                libp2p::peer::PeerId const& name,
-                               CryptoSignatureVerifier);
+                               CryptoSignatureVerifier,
+                               CborDeserializer);
 
 }  // namespace ipfs
 
