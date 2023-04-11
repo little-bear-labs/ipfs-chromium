@@ -62,7 +62,7 @@ TEST(IpnsRecordTest, AKnownKuboRecord) {
   //  libp2p::peer::PeerId::fromBase58("12D3KooWGDMwwqrpcYKpKCgxuKT2NfqPqa94QnkoBBpqvCaiCzWd");
   ASSERT_TRUE(my_name_res.has_value());
   auto& my_name = my_name_res.value();
-  auto result = ipfs::ValidateIpnsRecord(known_record, my_name);
+  auto result = ipfs::ValidateIpnsRecord(known_record, my_name , [](auto,auto,auto,auto){return true;});
   std::string_view expected{
       "/ipfs/bafybeig57t2dp435aupttilimd6767kppfebaa3gnunmqden66dgkhugwi"};
   EXPECT_EQ(result, expected);

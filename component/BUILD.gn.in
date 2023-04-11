@@ -9,15 +9,18 @@ component("ipfs") {
   deps = [
     "//components/ipfs:ipfs_generated_code",
     "//content",
+    "//crypto",
     "//base",
     "//components/policy/core/common",
+    "//components/prefs",
+    "//components/webcrypto:webcrypto",
     "//mojo/public/cpp/bindings",
-    "//net",
     "//services/network:network_service",
     "//services/network/public/cpp:cpp",
-    "//services/network/public/mojom",
     "//services/network/public/mojom:url_loader_base",
     "//url",
+    "//third_party/blink/public:blink",
+    "//third_party/boringssl",
     "//third_party/protobuf:protobuf_lite",
   ]
   defines = [ "IS_IPFS_IMPL" ]
