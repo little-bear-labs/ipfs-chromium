@@ -46,7 +46,8 @@ void ipfs::Scheduler::IssueRequests(std::shared_ptr<NetworkingApi> api) {
       auto req =
           api->InitiateGatewayRequest(BusyGateway{gw.url_prefix(), task, this});
       todo.requests.insert(req);
-      LOG(INFO) << "Initiated request " << req->url() << " (" << need << ')';
+      //      LOG(INFO) << "Initiated request " << req->url() << " (" << need <<
+      //      ')';
       return true;
     }
     return false;
@@ -72,11 +73,14 @@ void ipfs::Scheduler::IssueRequests(std::shared_ptr<NetworkingApi> api) {
     }
   }
   if (unmet) {
-    LOG(WARNING) << "Max load.";
-    //    auto more_list = list_gen_();
-    //    gateways_.insert(gateways_.end(), more_list.begin(), more_list.end());
+    if (!loaded_) {
+      LOG(INFO) << "Saturated.";
+      loaded_ = true;
+    }
+  } else {
+    loaded_ = false;
   }
-  UpdateDevPage();
+  //  UpdateDevPage();
 }
 
 bool ipfs::Scheduler::DetectCompleteFailure(std::string task) const {
