@@ -115,7 +115,7 @@ auto ipfs::GatewayRequests::InitiateGatewayRequest(BusyGateway assigned)
   //  out->listener = listener;
   auto cb = base::BindOnce(&ipfs::GatewayRequests::OnResponse,
                            base::Unretained(this), shared_from_this(), out);
-  LOG(INFO) << "InitiateGatewayRequest(" << url << ")";
+  //  LOG(INFO) << "InitiateGatewayRequest(" << url << ")";
   DCHECK(loader_factory_);
   // TODO - proper requesting with full features (SetPriority, etc.).
   out->loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(loader_factory_,

@@ -47,6 +47,7 @@ class Scheduler {
     long under_target() const;
   };
   std::map<std::string, Todo> task2todo_;
+  bool loaded_ = false;
 
   void Issue(std::shared_ptr<NetworkingApi>,
              std::shared_ptr<DagListener>&,

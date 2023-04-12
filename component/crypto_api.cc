@@ -27,7 +27,7 @@ int ToEvpKeyType(ipfs::ipns::KeyType t) {
 }
 }  // namespace
 
-namespace crypt = ipfs::crypto_api;
+namespace cpto = ipfs::crypto_api;
 /*
 auto crypt::GetAlgo(ipfs::ipns::KeyType t) -> Algo {
   switch (t) {
@@ -40,10 +40,10 @@ auto crypt::GetAlgo(ipfs::ipns::KeyType t) -> Algo {
   }
 }
  */
-bool crypt::VerifySignature(ipfs::ipns::KeyType key_type,
-                            ipfs::ByteView signature,
-                            ipfs::ByteView data,
-                            ipfs::ByteView key_bytes) {
+bool cpto::VerifySignature(ipfs::ipns::KeyType key_type,
+                           ipfs::ByteView signature,
+                           ipfs::ByteView data,
+                           ipfs::ByteView key_bytes) {
   auto* key_p = reinterpret_cast<unsigned char const*>(key_bytes.data());
   auto* data_p = reinterpret_cast<unsigned char const*>(data.data());
   auto* sig_p = reinterpret_cast<unsigned char const*>(signature.data());

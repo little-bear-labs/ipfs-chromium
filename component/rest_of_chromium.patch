@@ -25,10 +25,10 @@ index ed99410ea8a31..d89d48ba981ab 100644
        const CheckedThreadLocalOwnedPointer<T>&) = delete;
  
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index 47689ecf0ca32..b64e6f28542ba 100644
+index f5019bd840afc..12b08b48e4d2c 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -2107,6 +2107,7 @@ static_library("browser") {
+@@ -2159,6 +2159,7 @@ static_library("browser") {
      "//components/infobars/content",
      "//components/infobars/core",
      "//components/invalidation/impl",
@@ -37,7 +37,7 @@ index 47689ecf0ca32..b64e6f28542ba 100644
      "//components/keyed_service/content",
      "//components/language/content/browser",
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
-index bdd121f180802..91e6a1aa1fddb 100644
+index 3800b8fd8d098..91c60b9d097c2 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
 @@ -215,6 +215,8 @@
@@ -49,7 +49,7 @@ index bdd121f180802..91e6a1aa1fddb 100644
  #include "components/keep_alive_registry/keep_alive_types.h"
  #include "components/keep_alive_registry/scoped_keep_alive.h"
  #include "components/language/core/browser/pref_names.h"
-@@ -5873,13 +5875,17 @@ void ChromeContentBrowserClient::
+@@ -5764,13 +5766,17 @@ void ChromeContentBrowserClient::
          int render_frame_id,
          const absl::optional<url::Origin>& request_initiator_origin,
          NonNetworkURLLoaderFactoryMap* factories) {
@@ -71,7 +71,7 @@ index bdd121f180802..91e6a1aa1fddb 100644
  
  #if BUILDFLAG(IS_CHROMEOS_ASH)
    if (web_contents) {
-@@ -6016,8 +6022,8 @@ std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+@@ -5915,8 +5921,8 @@ std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
  ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
      content::NavigationUIData* navigation_ui_data,
      int frame_tree_node_id) {
@@ -83,10 +83,10 @@ index bdd121f180802..91e6a1aa1fddb 100644
    interceptors.push_back(
        std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(
 diff --git a/chrome/browser/prefs/browser_prefs.cc b/chrome/browser/prefs/browser_prefs.cc
-index ea6e974a5889a..dc51892350f33 100644
+index 3826c517befda..dd9316492eeff 100644
 --- a/chrome/browser/prefs/browser_prefs.cc
 +++ b/chrome/browser/prefs/browser_prefs.cc
-@@ -110,6 +110,7 @@
+@@ -108,6 +108,7 @@
  #include "components/invalidation/impl/fcm_invalidation_service.h"
  #include "components/invalidation/impl/invalidator_registrar_with_memory.h"
  #include "components/invalidation/impl/per_user_topic_subscription_manager.h"
@@ -94,7 +94,7 @@ index ea6e974a5889a..dc51892350f33 100644
  #include "components/language/content/browser/geo_language_provider.h"
  #include "components/language/content/browser/ulp_language_code_locator/ulp_language_code_locator.h"
  #include "components/language/core/browser/language_prefs.h"
-@@ -1120,6 +1121,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
+@@ -1143,6 +1144,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
    invalidation::FCMInvalidationService::RegisterPrefs(registry);
    invalidation::InvalidatorRegistrarWithMemory::RegisterPrefs(registry);
    invalidation::PerUserTopicSubscriptionManager::RegisterPrefs(registry);
@@ -102,7 +102,7 @@ index ea6e974a5889a..dc51892350f33 100644
    language::GeoLanguageProvider::RegisterLocalStatePrefs(registry);
    language::UlpLanguageCodeLocator::RegisterLocalStatePrefs(registry);
    memory::EnterpriseMemoryLimitPrefObserver::RegisterPrefs(registry);
-@@ -1344,6 +1346,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
+@@ -1367,6 +1369,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
  // Register prefs applicable to all profiles.
  void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
                            const std::string& locale) {
@@ -128,20 +128,10 @@ index db08f6151229e..e63c004ec6398 100644
  
  std::u16string ChromeContentClient::GetLocalizedString(int message_id) {
 diff --git a/net/dns/dns_config_service_linux.cc b/net/dns/dns_config_service_linux.cc
-index 5273da5190277..d95544c64d213 100644
+index 5273da5190277..51a53c7f39eba 100644
 --- a/net/dns/dns_config_service_linux.cc
 +++ b/net/dns/dns_config_service_linux.cc
-@@ -93,6 +93,9 @@ absl::optional<DnsConfig> ConvertResStateToDnsConfig(
-   // cannot be overwritten by /etc/resolv.conf
-   const unsigned kRequiredOptions = RES_RECURSE | RES_DEFNAMES | RES_DNSRCH;
-   if ((res.options & kRequiredOptions) != kRequiredOptions) {
-+    if (!dns_config.unhandled_options) {
-+      LOG(ERROR) << "unhandled_options set to true bec " << res.options;
-+    }
-     dns_config.unhandled_options = true;
-     return dns_config;
-   }
-@@ -206,9 +209,12 @@ void RecordIncompatibleNsswitchReason(
+@@ -206,9 +206,12 @@ void RecordIncompatibleNsswitchReason(
      IncompatibleNsswitchReason reason,
      absl::optional<NsswitchReader::Service> service_token) {
    if (service_token) {
@@ -154,7 +144,7 @@ index 5273da5190277..d95544c64d213 100644
    }
  }
  
-@@ -272,11 +278,11 @@ bool IsNsswitchConfigCompatible(
+@@ -272,11 +275,11 @@ bool IsNsswitchConfigCompatible(
          // Ignore any entries after `kDns` because Chrome will fallback to the
          // system resolver if a result was not found in DNS.
          return true;

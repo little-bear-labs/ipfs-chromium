@@ -180,6 +180,7 @@ if(DEPOT_TOOLS_NINJA_PY)
       TARGET chrome_browser
       POST_BUILD
       COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome" "${CMAKE_BINARY_DIR}/chrome_browser"
+      COMMENT "Symlinking... your browser can be found here: ${CMAKE_BINARY_DIR}/chrome_browser or ${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome"
     )
     add_custom_target(package
       DEPENDS chrome_browser
