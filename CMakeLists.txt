@@ -22,13 +22,12 @@ set(DEPOT_TOOLS_DIRECTORY "${default_dt}" CACHE PATH
 )
 #End of user-configuration cache variables.
 
-include(cmake/chrome.cmake)
-
 if(CXX_VERSION GREATER_EQUAL 17)
     message(STATUS "Building for C++${CXX_VERSION}")
 else()
     message(FATAL_ERROR "Unsupported CXX_VERSION: ${CXX_VERSION}")
 endif()
+include(cmake/chrome.cmake)
 include(cmake/setup.cmake)
 
 enable_testing()
