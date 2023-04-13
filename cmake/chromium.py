@@ -59,11 +59,11 @@ def out(args):
 
 if depot_tools_dir == 'DETECT_FROM_PATH':
     gclient = which('gclient')
-    if gclient == '':
+    if gclient:
+        depot_tools_dir = dirname( gclient )
+    else:
         print('You set DEPOT_TOOLS_DIRECTORY to DETECT_FROM_PATH, but there is no gclient in your path. Will download/use private copy instead.')
         depot_tools_dir = ''
-    else:
-        depot_tools_dir = dirname( gclient )
 if depot_tools_dir == '':
     depot_tools_dir = join(build_dir,'depot_tools')
 if not isdir(join(depot_tools_dir,'.git')):

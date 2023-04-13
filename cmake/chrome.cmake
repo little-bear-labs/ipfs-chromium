@@ -1,4 +1,4 @@
-include("${CMAKE_CURRENT_LIST_DIR}/depot_tools.cmake")
+
 find_program(CCACHE_EXECUTABLE ccache)
 set(chromium_build_dir "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}")
 cmake_host_system_information(RESULT core_count QUERY NUMBER_OF_PHYSICAL_CORES)

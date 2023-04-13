@@ -2,9 +2,9 @@
 
 #include "generated_directory_listing.h"
 
-#if __has_include("base/debug/stack_trace.h")
-#include "base/debug/stack_trace.h"
-#endif
+#include "unix_fs/guess_content_type.h"
+#include "unix_fs/plain_directory.h"
+#include "unix_fs/small_file.h"
 
 #include "ipfs_client/block.h"
 #include "ipfs_client/block_storage.h"
@@ -55,11 +55,10 @@ void ipfs::UnixFsPathResolver::Step(std::shared_ptr<DagListener> listener) {
   LOG(INFO) << "Process block of type " << ipfs::Stringify(block->type());
   switch (block->type()) {
     case Block::Type::Directory:
-      ProcessDirectory(listener, *block);
+      unix_fs::ProcessDirectory(*api_, listener, *this, path_, *block);
       break;
     case Block::Type::FileChunk:
-      listener->ReceiveBlockBytes(block->chunk_data());
-      listener->BlocksComplete(GuessContentType(block->chunk_data()));
+      unix_fs::ProcessSmallFile(*api_, *listener, original_path_, *block);
       cid_.clear();
       break;
     case Block::Type::File:
@@ -124,71 +123,10 @@ void ipfs::UnixFsPathResolver::ProcessLargeFile(
     return (writing = false);
   });
   if (writing) {
-    listener->BlocksComplete(GuessContentType(head_));
-  }
-}
-void ipfs::UnixFsPathResolver::CompleteDirectory(
-    std::shared_ptr<DagListener>& listener,
-    Block const& block) {
-  auto has_index_html = false;
-  GeneratedDirectoryListing list{original_path_};
-  block.List([this, &list, &has_index_html](auto& name, auto cid) {
-    if (name == "index.html") {
-      cid_ = cid;
-      path_.clear();
-      has_index_html = true;
-      force_type_dir_ = true;
-      if (original_path_.empty() || original_path_.back() != '/') {
-        original_path_.push_back('/');
-      }
-      original_path_.append("index.html");
-      return false;
-    } else {
-      list.AddEntry(name);
-    }
-    return true;
-  });
-  if (has_index_html) {
-    Step(listener);
-  } else {
-    listener->ReceiveBlockBytes(list.Finish());
-    listener->BlocksComplete("text/html");
-    cid_.clear();
+    listener->BlocksComplete(unix_fs::GuessContentType(*api_, original_path_, head_));
   }
 }
 
-void ipfs::UnixFsPathResolver::ProcessDirectory(
-    std::shared_ptr<DagListener>& listener,
-    Block const& block) {
-  block.List([this, &listener](auto&, auto cid) {
-    Request(listener, cid, 0);
-    return true;
-  });
-  auto start = path_.find_first_not_of("/");
-  if (start == std::string::npos) {
-    CompleteDirectory(listener, block);
-    return;
-  }
-  auto end = path_.find('/', start);
-  std::string_view next_comp = path_;
-  auto next = api_->UnescapeUrlComponent(next_comp.substr(start, end - start));
-  auto found = false;
-  block.List([&found, this, next](auto& name, auto cid) {
-    if (name == next) {
-      cid_ = cid;
-      found = true;
-      return false;
-    }
-    return true;
-  });
-  if (found) {
-    LOG(INFO) << "Descending path: " << next << " . " << path_;
-    path_.erase(0, end);
-    Step(listener);
-  } else {
-    listener->FourOhFour(cid_, path_);
-  }
-}
 void ipfs::UnixFsPathResolver::ProcessDirShard(
     std::shared_ptr<DagListener>& listener,
     Block const& block) {
@@ -445,25 +383,18 @@ std::shared_ptr<ipfs::DagListener>
 ipfs::UnixFsPathResolver::MaybeGetPreviousListener() {
   return hrmm_.lock();
 }
-std::string ipfs::UnixFsPathResolver::GuessContentType(
-
-    std::string_view content) {
-  auto dot = original_path_.rfind('.');
-  auto slash = original_path_.rfind('/');
-  std::string ext;
-  if (dot < original_path_.size() &&
-      (slash < dot || slash == std::string::npos)) {
-    ext = original_path_.substr(dot + 1);
-  }
-  auto mime = api_->MimeType(ext, content, "ipfs://" + original_path_);
-  if (mime.size()) {
-    // TODO, store mime in block
-    LOG(INFO) << "Detected mime " << mime << " for " << original_path_
-              << " based on the file contents (likely magic number).";
-    return mime;
-  }
-  // TODO fetch the mime from block if available
-  LOG(ERROR) << "\n\t###\tTODO:\tCould not determine mime type for '"
-             << original_path_ << "'.\t###\n\n";
-  return "TODO";
+void ipfs::UnixFsPathResolver::current_path(std::string_view p) {
+  path_.assign(p);
+}
+void ipfs::UnixFsPathResolver::current_cid(std::string_view v) {
+  cid_.assign(v);
+}
+std::string const& ipfs::UnixFsPathResolver::current_cid() const {
+  return cid_;
+}
+void ipfs::UnixFsPathResolver::original_path(std::string_view p) {
+  original_path_.assign(p);
+}
+std::string const& ipfs::UnixFsPathResolver::original_path() const {
+  return original_path_;
 }
