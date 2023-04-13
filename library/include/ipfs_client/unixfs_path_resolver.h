@@ -30,6 +30,12 @@ class UnixFsPathResolver {
   void Step(std::shared_ptr<DagListener>);
   void SetPriority(Priority p);
   std::shared_ptr<DagListener> MaybeGetPreviousListener();
+  void Request(std::shared_ptr<DagListener>&, std::string const& cid, Priority);
+  void current_path(std::string_view);
+  void current_cid(std::string_view);
+  std::string const& current_cid() const;
+  std::string const& original_path() const;
+  void original_path(std::string_view);
 
  private:
   BlockStorage& storage_;
@@ -40,7 +46,6 @@ class UnixFsPathResolver {
   std::string original_path_;
   std::string written_through_ = {};
   std::string awaiting_;  // TODO dehack
-  bool force_type_dir_ = false;
   std::unordered_map<std::string, std::pair<Priority, std::time_t>>
       already_requested_;
   std::vector<std::string> hamt_hexs_;
@@ -49,12 +54,8 @@ class UnixFsPathResolver {
   Priority prio_ = 9;
   std::weak_ptr<DagListener> hrmm_;
 
-  void CompleteDirectory(std::shared_ptr<DagListener>&, Block const&);
-  void ProcessDirectory(std::shared_ptr<DagListener>&, Block const&);
   void ProcessLargeFile(std::shared_ptr<DagListener>&, Block const&);
   void ProcessDirShard(std::shared_ptr<DagListener>&, Block const&);
-  void Request(std::shared_ptr<DagListener>&, std::string const& cid, Priority);
-  std::string GuessContentType(std::string_view content);
 
   void RequestHamtDescendents(std::shared_ptr<DagListener>,
                               bool&,

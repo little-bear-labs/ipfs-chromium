@@ -4,7 +4,9 @@ component("ipfs") {
   @gn_sources@]
   defines = [  ]
   include_dirs = [
-    "."
+    ".",
+    "ipfs_client",
+    "ipfs_client/unix_fs",
   ]
   deps = [
     "//components/ipfs:ipfs_generated_code",
