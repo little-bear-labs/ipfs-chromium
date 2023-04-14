@@ -36,6 +36,19 @@ index f5019bd840afc..12b08b48e4d2c 100644
      "//components/javascript_dialogs",
      "//components/keyed_service/content",
      "//components/language/content/browser",
+diff --git a/chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc b/chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc
+index 4c88614c68c25..269b0440ed571 100644
+--- a/chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc
++++ b/chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc
+@@ -59,6 +59,8 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
+       (ProfileIOData::IsHandledProtocol(scheme) ||
+        base::EqualsCaseInsensitiveASCII(scheme, content::kViewSourceScheme) ||
+        base::EqualsCaseInsensitiveASCII(scheme, url::kJavaScriptScheme) ||
++       base::EqualsCaseInsensitiveASCII(scheme, "ipfs") ||
++       base::EqualsCaseInsensitiveASCII(scheme, "ipns") ||
+        base::EqualsCaseInsensitiveASCII(scheme, url::kDataScheme))) {
+     return metrics::OmniboxInputType::URL;
+   }
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
 index 3800b8fd8d098..91c60b9d097c2 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
@@ -127,6 +140,119 @@ index db08f6151229e..e63c004ec6398 100644
  }
  
  std::u16string ChromeContentClient::GetLocalizedString(int message_id) {
+diff --git a/components/omnibox/browser/clipboard_provider.cc b/components/omnibox/browser/clipboard_provider.cc
+index f67d0d9bb49fb..4a23452976813 100644
+--- a/components/omnibox/browser/clipboard_provider.cc
++++ b/components/omnibox/browser/clipboard_provider.cc
+@@ -323,7 +323,7 @@ absl::optional<AutocompleteMatch> ClipboardProvider::CreateURLMatch(
+ 
+   *read_clipboard_content = true;
+   GURL url = std::move(optional_gurl).value();
+-
++  LOG(INFO) << "ClipboardProvider::CreateURLMatch '" << url.spec() << "'.";
+   // The URL on the page is the same as the URL in the clipboard.  Don't
+   // bother suggesting it.
+   if (url == input.current_url())
+diff --git a/components/omnibox/browser/search_provider.cc b/components/omnibox/browser/search_provider.cc
+index 1ce0649c742d6..3509b65fe7f28 100644
+--- a/components/omnibox/browser/search_provider.cc
++++ b/components/omnibox/browser/search_provider.cc
+@@ -886,6 +886,7 @@ void SearchProvider::ApplyCalculatedNavigationRelevance(
+     SearchSuggestionParser::NavigationResults* list) {
+   for (size_t i = 0; i < list->size(); ++i) {
+     SearchSuggestionParser::NavigationResult& result = (*list)[i];
++    LOG(INFO) << "Setting relevance of navigation_result " << result.url().spec();
+     result.set_relevance(
+         result.CalculateRelevance(input_, providers_.has_keyword_provider()) +
+         (list->size() - i - 1));
+@@ -1460,6 +1461,7 @@ AutocompleteMatch SearchProvider::NavigationToMatch(
+                           navigation.type());
+   match.destination_url = navigation.url();
+   for (const int subtype : navigation.subtypes()) {
++    LOG(INFO) << "NavigationToMatch: input=" << input << ", url=" << navigation.url().spec() << ", subtype=" << subtype;
+     match.subtypes.insert(SuggestSubtypeForNumber(subtype));
+   }
+   BaseSearchProvider::SetDeletionURL(navigation.deletion_url(), &match);
+diff --git a/components/omnibox/browser/search_suggestion_parser.cc b/components/omnibox/browser/search_suggestion_parser.cc
+index 5a0471fbdb554..5fb9ffdc88ec9 100644
+--- a/components/omnibox/browser/search_suggestion_parser.cc
++++ b/components/omnibox/browser/search_suggestion_parser.cc
+@@ -199,6 +199,12 @@ SearchSuggestionParser::Result::Result(bool from_keyword,
+ SearchSuggestionParser::Result::Result(const Result& other) = default;
+ 
+ SearchSuggestionParser::Result::~Result() {}
++void SearchSuggestionParser::Result::set_relevance(int relevance) {
++  LOG(INFO) << "SearchSuggestionParser::Result::set_relevance(" << relevance << "), old_val=" << relevance_;
++  relevance_ = relevance;
++}
++
++
+ 
+ // SearchSuggestionParser::SuggestResult ---------------------------------------
+ 
+@@ -328,6 +334,7 @@ int SearchSuggestionParser::SuggestResult::CalculateRelevance(
+     bool keyword_provider_requested) const {
+   if (!from_keyword_ && keyword_provider_requested)
+     return 100;
++  LOG(INFO) << "CalculateRelevance(input.type()==" << input.type();
+   return ((input.type() == metrics::OmniboxInputType::URL) ? 300 : 600);
+ }
+ 
+diff --git a/components/omnibox/browser/search_suggestion_parser.h b/components/omnibox/browser/search_suggestion_parser.h
+index 045aaf43b65a4..c9ccf31b4c24e 100644
+--- a/components/omnibox/browser/search_suggestion_parser.h
++++ b/components/omnibox/browser/search_suggestion_parser.h
+@@ -71,7 +71,7 @@ class SearchSuggestionParser {
+     AutocompleteMatchType::Type type() const { return type_; }
+     const std::vector<int>& subtypes() const { return subtypes_; }
+     int relevance() const { return relevance_; }
+-    void set_relevance(int relevance) { relevance_ = relevance; }
++    void set_relevance(int relevance);
+     bool received_after_last_keystroke() const {
+       return received_after_last_keystroke_;
+     }
+diff --git a/components/omnibox/browser/verbatim_match.cc b/components/omnibox/browser/verbatim_match.cc
+index 2b82c7c5a74e8..953a6aae3c9b2 100644
+--- a/components/omnibox/browser/verbatim_match.cc
++++ b/components/omnibox/browser/verbatim_match.cc
+@@ -20,6 +20,7 @@ AutocompleteMatch VerbatimMatchForURL(
+     const GURL& destination_url,
+     const std::u16string& destination_description,
+     int verbatim_relevance) {
++  LOG(INFO) << "VerbatimMatchForURL(" << destination_url.spec() << ",relevance=" << verbatim_relevance << ")";
+   AutocompleteMatch match;
+   // If the caller is a provider and already knows where the verbatim match
+   // should go, construct the match directly, don't call Classify() on the
+@@ -52,7 +53,7 @@ AutocompleteMatch VerbatimMatchForInput(AutocompleteProvider* provider,
+                                         bool trim_default_scheme) {
+   AutocompleteMatch match(provider, 0, false,
+                           AutocompleteMatchType::URL_WHAT_YOU_TYPED);
+-
++  LOG(INFO) << "VerbatimMatchForInput(" << destination_url.spec() << ")" << destination_url.is_valid();
+   if (destination_url.is_valid()) {
+     match.destination_url = destination_url;
+     // If the input explicitly contains "http://" or "https://", callers must
+@@ -92,6 +93,7 @@ AutocompleteMatch VerbatimMatchForInput(AutocompleteProvider* provider,
+     match.allowed_to_be_default_match =
+         (input.type() == metrics::OmniboxInputType::URL) ||
+         !has_default_search_provider;
++    LOG(INFO) << "match.allowed_to_be_default_match=" << match.allowed_to_be_default_match << ',' << input.type() << ',' << has_default_search_provider;
+     // NOTE: Don't set match.inline_autocompletion to something non-empty here;
+     // it's surprising and annoying.
+ 
+diff --git a/components/open_from_clipboard/clipboard_recent_content_generic.cc b/components/open_from_clipboard/clipboard_recent_content_generic.cc
+index 4dcafecbc66c6..d205209c08162 100644
+--- a/components/open_from_clipboard/clipboard_recent_content_generic.cc
++++ b/components/open_from_clipboard/clipboard_recent_content_generic.cc
+@@ -20,7 +20,7 @@
+ namespace {
+ // Schemes appropriate for suggestion by ClipboardRecentContent.
+ const char* kAuthorizedSchemes[] = {
+-    url::kAboutScheme, url::kDataScheme, url::kHttpScheme, url::kHttpsScheme,
++    url::kAboutScheme, url::kDataScheme, url::kHttpScheme, url::kHttpsScheme, "ipfs", "ipns"
+     // TODO(mpearson): add support for chrome:// URLs.  Right now the scheme
+     // for that lives in content and is accessible via
+     // GetEmbedderRepresentationOfAboutScheme() or content::kChromeUIScheme
 diff --git a/net/dns/dns_config_service_linux.cc b/net/dns/dns_config_service_linux.cc
 index 5273da5190277..51a53c7f39eba 100644
 --- a/net/dns/dns_config_service_linux.cc
