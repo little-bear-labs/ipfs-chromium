@@ -92,11 +92,14 @@ add_custom_target(chrome_browser
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" chrome
     DEPENDS in_tree_build
   )
-add_custom_target(package
-    COMMENT "Packaging"
-    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" "chrome/installer"
-    DEPENDS chrome_browser
-  )
+
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_custom_target(package
+        COMMENT "Packaging"
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" "chrome/installer"
+        DEPENDS chrome_browser
+      )
+endif()
 
 #Symlink for convenience
 add_custom_command(
