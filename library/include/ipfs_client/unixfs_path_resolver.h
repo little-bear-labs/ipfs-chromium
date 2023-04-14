@@ -1,7 +1,7 @@
 #ifndef IPFS_UNIXFS_PATH_RESOLVER_H_
 #define IPFS_UNIXFS_PATH_RESOLVER_H_
 
-#include "block.h"
+#include "dag_block.h"
 #include "dag_listener.h"
 #include "scheduler.h"
 

@@ -1,5 +1,5 @@
-#ifndef IPFS_BLOCK_H_
-#define IPFS_BLOCK_H_
+#ifndef IPFS_DAG_BLOCK_H_
+#define IPFS_DAG_BLOCK_H_
 
 #if __has_include("components/ipfs/pb_dag.pb.h")
 // inside Chromium build
@@ -113,4 +113,4 @@ class Block {
 
 std::ostream& operator<<(std::ostream&, ipfs::Block::Type);
 
-#endif  // IPFS_BLOCK_H_
+#endif  // IPFS_DAG_BLOCK_H_

@@ -1,4 +1,4 @@
-#include "ipfs_client/block.h"
+#include "ipfs_client/dag_block.h"
 
 #include <libp2p/crypto/hasher.hpp>
 #include <libp2p/multi/content_identifier_codec.hpp>

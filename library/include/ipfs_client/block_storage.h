@@ -1,7 +1,7 @@
 #ifndef IPFS_BLOCKS_H_
 #define IPFS_BLOCKS_H_
 
-#include "block.h"
+#include "dag_block.h"
 #include "vocab/flat_mapset.h"
 
 #include <string>

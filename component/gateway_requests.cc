@@ -12,8 +12,8 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
-#include <ipfs_client/block.h>
 #include <ipfs_client/block_storage.h>
+#include <ipfs_client/dag_block.h>
 #include <ipfs_client/ipns_record.h>
 
 #include <libp2p/multi/content_identifier_codec.hpp>
@@ -98,7 +98,7 @@ auto ipfs::GatewayRequests::InitiateGatewayRequest(BusyGateway assigned)
   auto url = assigned.url();
 
   GOOGLE_DCHECK_GT(url.size(), 0U);
-  auto url_suffix = assigned.current_task();
+  auto url_suffix = assigned.task();
   auto req = std::make_unique<network::ResourceRequest>();
   req->url = GURL{url};
   req->priority = net::HIGHEST;  // TODO
@@ -186,7 +186,7 @@ bool ipfs::GatewayRequests::ProcessResponse(BusyGateway& gw,
     state_.gateways().demote(gw->url_prefix());
     return false;
   }
-  auto cid_str = gw.current_task();
+  auto cid_str = gw.task();
   cid_str.erase(0, 5);  // ipfs/
   cid_str.erase(cid_str.find('?'));
   if (state_.storage().Get(cid_str)) {
