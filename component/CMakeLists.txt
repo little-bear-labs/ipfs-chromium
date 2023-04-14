@@ -94,14 +94,14 @@ add_custom_target(chrome_browser
   )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    add_custom_target(package
+    add_custom_target(package_browser
         COMMENT "Packaging"
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" "chrome/installer"
         DEPENDS chrome_browser
       )
-    add_custom_target(upload
-      DEPENDS package
-      COMMENT "Sending to gcloud"
+    add_custom_target(upload_browser
+      DEPENDS package_browser
+      COMMENT "Sending browser installer to gcloud"
       COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/upload.py" "${CMAKE_PROJECT_VERSION}"
       WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
     )

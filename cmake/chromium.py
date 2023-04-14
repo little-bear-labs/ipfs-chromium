@@ -71,6 +71,7 @@ if not isdir(join(depot_tools_dir,'.git')):
 
 environ['PATH'] = depot_tools_dir + pathsep + environ['PATH']
 
+run([python, '-m', 'pip', 'install', '--upgrade', 'httplib2'])
 if not isdir(chromium_dir):
     makedirs(chromium_dir)
 if not isdir(src):

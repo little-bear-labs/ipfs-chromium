@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 project(ipfs_client
     DESCRIPTION "Code related to using IPFS http gateways to resolve ipfs:// and ipns:// URLs"
-    VERSION 0.0.0.0
     LANGUAGES CXX
 )
 
@@ -69,6 +68,20 @@ install(
   TYPE INCLUDE
 )
 install(TARGETS ipfs_client)
+
+set(CPACK_GENERATOR TGZ)#;ZIP;DEB;RPM)
+set(CPACK_PACKAGE_NAME "ipfs-client-dev-${CMAKE_BUILD_TYPE}")
+set(CPACK_PACKAGE_VERSION "${CMAKE_PROJECT_VERSION}")
+set(CPACK_PACKAGE_VENDOR "LBL")
+set(CPACK_PACKAGE_CONTACT "john@littlebearlabs.io")
+include(CPack)
+
+add_custom_target(upload_library
+  DEPENDS package
+  COMMENT "Sending library to gcloud"
+  COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/upload.py" "${CMAKE_PROJECT_VERSION}"
+  WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+)
 
 file(GLOB_RECURSE
     unit_test_sources

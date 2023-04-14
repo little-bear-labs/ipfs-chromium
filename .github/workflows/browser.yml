@@ -37,6 +37,8 @@ jobs:
           brew install p7zip cmake ninja
           ninja --version
           cmake --version
+          which pip3
+          pip3 --version
           pip3 install httplib2
       - name: Configure
         shell: bash
@@ -54,7 +56,7 @@ jobs:
       - name: Package
         if: startsWith(matrix.config.build_type, 'Release')
         shell: bash
-        run: cmake --build build --config ${{ matrix.config.build_type }} --target package
+        run: cmake --build build --config ${{ matrix.config.build_type }} --target package_browser
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v0
         with:
@@ -66,4 +68,4 @@ jobs:
       - name: Upload
         if: startsWith(matrix.config.build_type, 'Release')
         shell: bash
-        run: cmake --build build --config ${{ matrix.config.build_type }} --target upload
+        run: cmake --build build --config ${{ matrix.config.build_type }} --target upload_browser
