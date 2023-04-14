@@ -41,7 +41,7 @@ jobs:
           mkdir build
           cmake \
             -G "${{ matrix.config.generators }}" \
-            -S ipfs-chromium \
+            -S . \
             -B build \
             -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
       - name: Build
