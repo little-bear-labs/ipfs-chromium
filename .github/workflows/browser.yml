@@ -1,6 +1,8 @@
-name: Basic library (ipfs_client) build
+name: Chromium in-tree browser build
 on:
-  push:
+  pull_request:
+    paths:
+      - CMakeLists.txt
 jobs:
   build:
     name: ${{ matrix.config.name }}
@@ -43,11 +45,16 @@ jobs:
             -G "${{ matrix.config.generators }}" \
             -S . \
             -B build \
-            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
+            -D DOWNLOAD_CHROMIUM=ON \
+            -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
       - name: Build
         shell: bash
-        run: cmake --build build --config ${{ matrix.config.build_type }}
-      - uses: actions/upload-artifact@v3
-        with:
-          name: Static Library
-          path: build/library/*ipfs_client.* # libipfs_client.a or ipfs_client.lib
+        run: cmake --build build --config ${{ matrix.config.build_type }} chrome_browser
+      - name: Package
+        if: startsWith(matrix.config.build_type, 'Release')
+        shell: bash
+        run: cmake --build build --config ${{ matrix.config.build_type }} package
+#      - uses: actions/upload-artifact@v3
+#        with:
+#          name: Static Library
+#          path: build/library/*ipfs_client.* # libipfs_client.a or ipfs_client.lib
