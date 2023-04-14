@@ -37,6 +37,7 @@ jobs:
           brew install p7zip cmake ninja
           ninja --version
           cmake --version
+          pip3 install httplib2
       - name: Configure
         shell: bash
         run: |
@@ -54,18 +55,15 @@ jobs:
         if: startsWith(matrix.config.build_type, 'Release')
         shell: bash
         run: cmake --build build --config ${{ matrix.config.build_type }} --target package
-      - uses: actions/upload-artifact@v3
-        if: startsWith(matrix.config.build_type, 'Release') && startsWith(matrix.config.os, 'macos')
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
         with:
-          name: Static Library
-          path: build/chromium/src/out/**/chromium-browser*.dmg
-      - uses: actions/upload-artifact@v3
-        if: startsWith(matrix.config.build_type, 'Release') && startsWith(matrix.config.os, 'Ubuntu')
-        with:
-          name: Static Library
-          path: build/chromium/src/out/**/chromium-browser*.deb
-      - uses: actions/upload-artifact@v3
-        if: startsWith(matrix.config.build_type, 'Release') && startsWith(matrix.config.os, 'Fedora')
-        with:
-          name: Static Library
-          path: build/chromium/src/out/**/chromium-browser*.rpm
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SERVICE_KEY }}
+          export_default_credentials: true
+      - name: Check gcloud CLI
+        run: gcloud info
+      - name: Upload
+        if: startsWith(matrix.config.build_type, 'Release')
+        shell: bash
+        run: cmake --build build --config ${{ matrix.config.build_type }} --target upload

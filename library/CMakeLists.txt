@@ -59,6 +59,16 @@ target_include_directories(ipfs_client
     src/
 )
 with_vocab(ipfs_client)
+file(
+  GLOB pub_incs
+  include/*
+  LIST_DIRECTORIES true
+)
+install(
+  DIRECTORY ${pub_incs}
+  TYPE INCLUDE
+)
+install(TARGETS ipfs_client)
 
 file(GLOB_RECURSE
     unit_test_sources
