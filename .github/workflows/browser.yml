@@ -49,12 +49,23 @@ jobs:
             -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
       - name: Build
         shell: bash
-        run: cmake --build build --config ${{ matrix.config.build_type }} chrome_browser
+        run: cmake --build build --config ${{ matrix.config.build_type }} --target chrome_browser
       - name: Package
         if: startsWith(matrix.config.build_type, 'Release')
         shell: bash
-        run: cmake --build build --config ${{ matrix.config.build_type }} package
-#      - uses: actions/upload-artifact@v3
-#        with:
-#          name: Static Library
-#          path: build/library/*ipfs_client.* # libipfs_client.a or ipfs_client.lib
+        run: cmake --build build --config ${{ matrix.config.build_type }} --target package
+      - uses: actions/upload-artifact@v3
+        if: startsWith(matrix.config.build_type, 'Release') && startsWith(matrix.config.os, 'macos')
+        with:
+          name: Static Library
+          path: build/chromium/src/out/**/chromium-browser*.dmg
+      - uses: actions/upload-artifact@v3
+        if: startsWith(matrix.config.build_type, 'Release') && startsWith(matrix.config.os, 'Ubuntu')
+        with:
+          name: Static Library
+          path: build/chromium/src/out/**/chromium-browser*.deb
+      - uses: actions/upload-artifact@v3
+        if: startsWith(matrix.config.build_type, 'Release') && startsWith(matrix.config.os, 'Fedora')
+        with:
+          name: Static Library
+          path: build/chromium/src/out/**/chromium-browser*.rpm
