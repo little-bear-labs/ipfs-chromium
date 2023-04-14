@@ -99,7 +99,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" "chrome/installer"
         DEPENDS chrome_browser
       )
-    add_custom_command(upload
+    add_custom_target(upload
       DEPENDS package
       COMMENT "Sending to gcloud"
       COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/upload.py" "${CMAKE_PROJECT_VERSION}"
