@@ -8,21 +8,31 @@
 #include "unix_fs.pb.h"
 
 #include <gtest/gtest.h>
-/*
 
 namespace {
 using entry = std::pair<std::string, std::string>;  // name to CID
 ipfs::Block mock_directory(std::string, std::vector<entry>);
 ipfs::Block mock_file(std::string, std::string content);
-void setup(std::shared_ptr<ipfs::FrameworkApi>, ipfs::BlockStorage& store);
-struct Api final : public ipfs::FrameworkApi {
+void setup(std::shared_ptr<ipfs::NetworkingApi>, ipfs::BlockStorage& store);
+ipfs::GatewayList gwl();
+struct Api final : public ipfs::NetworkingApi {
   std::vector<ipfs::BusyGateway> bgws;
-  void InitiateGatewayRequest(ipfs::BusyGateway) {
-    FAIL() << "InitiateGatewayRequest should not have been called.";
+  //  void InitiateGatewayRequest(ipfs::BusyGateway) {
+  std::shared_ptr<ipfs::GatewayRequest> InitiateGatewayRequest(
+      ipfs::BusyGateway) {
+    EXPECT_EQ("It was called!",
+              "InitiateGatewayRequest should not have been called.");
+    return {};
   }
-  void RequestByCid(std::string requested, ipfs::Scheduler::Priority) {
+  void RequestByCid(std::string requested) {
     EXPECT_EQ("Nothing additional should be requested", requested);
   }
+  void RequestByCid(std::string cid,
+                    std::shared_ptr<ipfs::DagListener>,
+                    ipfs::Priority priority) {
+    EXPECT_EQ("Nothing additional should be requested", cid);
+  }
+  void Discover(std::function<void(std::vector<std::string>)>) {}
   std::string MimeTypeFromExtension(std::string extension) const {
     return "text/html";
   }
@@ -47,35 +57,36 @@ struct Listener : public ipfs::DagListener {
   void FourOhFour(std::string_view, std::string_view) {}
 };
 struct UnixFsPathResolverTest : public ::testing::Test {
+  google::protobuf::LogSilencer no_log;
   std::shared_ptr<Api> api = std::make_shared<Api>();
   std::shared_ptr<Listener> listener = std::make_shared<Listener>();
+  ipfs::Scheduler sched{gwl};
+  ipfs::BlockStorage storage;
 };
 }  // namespace
    TEST_F(UnixFsPathResolverTest, ResolveDirectoryToIndexHtml) {
-     ipfs::BlockStorage storage;
-     setup(api, storage);
-     ipfs::UnixFsPathResolver resolver(
-         storage, {}, "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH",
-"/adir/", listener, api);
-     EXPECT_EQ("QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH",
+  setup(api, storage);
+
+  ipfs::UnixFsPathResolver resolver(
+      storage, sched, "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH",
+      "/adir/", api);
+  EXPECT_EQ("QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH",
                resolver.waiting_on());
      EXPECT_EQ(listener->is_done, false);
-     resolver.Step();
+     resolver.Step(listener);
      EXPECT_EQ(listener->is_done, true);
      EXPECT_EQ(listener->bytes_received,
                "<html><body><p>Hello</p></body></html>\n");
    }
    TEST_F(UnixFsPathResolverTest, ResolveDirectoryToGeneratedListing) {
-     auto api = std::make_shared<Api>();
-     ipfs::BlockStorage storage;
      setup(api, storage);
      auto resolver = ipfs::UnixFsPathResolver(
-         storage, {}, "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH", "/",
-         listener, api);
+         storage, sched, "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH", "/",
+         api);
      EXPECT_EQ("QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH",
                resolver.waiting_on());
      EXPECT_EQ(listener->is_done, false);
-     resolver.Step();
+     resolver.Step(listener);
      EXPECT_EQ(listener->is_done, true);
      EXPECT_TRUE(listener->bytes_received.find(">adir</") <
                  listener->bytes_received.size())
@@ -83,41 +94,35 @@ struct UnixFsPathResolverTest : public ::testing::Test {
    }
 
    namespace {
-   void setup(std::shared_ptr<ipfs::FrameworkApi> api, ipfs::BlockStorage&
-store) { store.Store(api, "QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX",
+   void setup(std::shared_ptr<ipfs::NetworkingApi> api,
+              ipfs::BlockStorage& store) {
+     store.Store("QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX",
                  mock_file("QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX",
                            "Please ignore\n"));
+     store.Store(mock_file(
+         "bafybeih5h3u5vqle7laz4kpo3imumdedj2n6y4u5s6zadqgtg77l243zny",
+         "Please ignore\n"));
+     store.Store(mock_file("QmcuGriuDDhMb6hRW71Nt87aDLrqMrh6W3sqxg3H76xEoR",
+                           "<html><body><p>Hello</p></body></html>\n"));
+     store.Store(mock_file(
+         "bafybeigyl4jx7snmutilxzewapa4l3qfqlvorxi7qibjtzurhtti5dm5aa",
+         "<html><body><p>Hello</p></body></html>\n"));
+     store.Store(mock_file("QmSsWZwmg7ArN7KCn1hYpZyQAK5eAryqkBehbRRWbkisFG",
+                           "Also ignore\n"));
+     store.Store(mock_directory(
+         "Qmdf4ByEwZtD78Wa2jQmXeQM16xM86P94JmBDjSqsuFXwh",
+         {{"ignored.txt", "QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX"},
+          {"index.html", "QmcuGriuDDhMb6hRW71Nt87aDLrqMrh6W3sqxg3H76xEoR"}}));
+     store.Store(mock_directory(
+         "bafybeihdszhm5xieyovwwqi256pltr5tlvfxzgfxnne7qjm54owrbfyrzq",
+         {{"ignored.txt", "QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX"},
+          {"index.html", "QmcuGriuDDhMb6hRW71Nt87aDLrqMrh6W3sqxg3H76xEoR"}}));
+     store.Store(mock_directory(
+         "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH",
+         {{"adir", "Qmdf4ByEwZtD78Wa2jQmXeQM16xM86P94JmBDjSqsuFXwh"}}));
      store.Store(
-         api,
-
-         mock_file("bafybeih5h3u5vqle7laz4kpo3imumdedj2n6y4u5s6zadqgtg77l243zny",
-                   "Please ignore\n"));
-     store.Store(api,
-mock_file("QmcuGriuDDhMb6hRW71Nt87aDLrqMrh6W3sqxg3H76xEoR",
-                                "<html><body><p>Hello</p></body></html>\n"));
-     store.Store(
-         api,
-
-         mock_file("bafybeigyl4jx7snmutilxzewapa4l3qfqlvorxi7qibjtzurhtti5dm5aa",
-                   "<html><body><p>Hello</p></body></html>\n"));
-     store.Store(api,
-mock_file("QmSsWZwmg7ArN7KCn1hYpZyQAK5eAryqkBehbRRWbkisFG", "Also ignore\n"));
-     store.Store(
-         api,
+         "bafybeidswjht6punszuomoi6ee2jlcyaz5cislrxa2bbc566tsyycdaxea",
          mock_directory(
-             "Qmdf4ByEwZtD78Wa2jQmXeQM16xM86P94JmBDjSqsuFXwh",
-             {{"ignored.txt", "QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX"},
-              {"index.html",
-"QmcuGriuDDhMb6hRW71Nt87aDLrqMrh6W3sqxg3H76xEoR"}})); store.Store( api,
-         mock_directory(
-             "bafybeihdszhm5xieyovwwqi256pltr5tlvfxzgfxnne7qjm54owrbfyrzq",
-             {{"ignored.txt", "QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX"},
-              {"index.html",
-"QmcuGriuDDhMb6hRW71Nt87aDLrqMrh6W3sqxg3H76xEoR"}})); store.Store( api,
-mock_directory( "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH",
-                  {{"adir",
-"Qmdf4ByEwZtD78Wa2jQmXeQM16xM86P94JmBDjSqsuFXwh"}})); store.Store( api,
-"bafybeidswjht6punszuomoi6ee2jlcyaz5cislrxa2bbc566tsyycdaxea", mock_directory(
              "bafybeidswjht6punszuomoi6ee2jlcyaz5cislrxa2bbc566tsyycdaxea",
              {{"adir", "Qmdf4ByEwZtD78Wa2jQmXeQM16xM86P94JmBDjSqsuFXwh"}}));
    }
@@ -145,5 +150,7 @@ mock_directory( "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH",
      auto cid = Codec::fromString(cid_str).value();
      return ipfs::Block{cid, node.SerializeAsString()};
    }
+   ipfs::GatewayList gwl() {
+     return {};
+   }
    }  // namespace
-   */
