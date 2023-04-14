@@ -28,7 +28,7 @@ class BusyGateway {
   void Success(Gateways&, std::shared_ptr<NetworkingApi>);
   void Failure(Gateways&, std::shared_ptr<NetworkingApi>);
 
-  std::string const& current_task() const { return suffix_; }
+  std::string const& task() const { return suffix_; }
   std::string url() const { return prefix_ + suffix_; }
 
  private:

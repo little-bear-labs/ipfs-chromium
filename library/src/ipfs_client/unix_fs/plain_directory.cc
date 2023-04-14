@@ -1,6 +1,6 @@
 #include "plain_directory.h"
 
-#include <ipfs_client/block.h>
+#include <ipfs_client/dag_block.h>
 #include <ipfs_client/networking_api.h>
 #include <ipfs_client/unixfs_path_resolver.h>
 

@@ -2,7 +2,7 @@
 
 #include "guess_content_type.h"
 
-#include <ipfs_client/block.h>
+#include <ipfs_client/dag_block.h>
 #include <ipfs_client/dag_listener.h>
 
 void ipfs::unix_fs::ProcessSmallFile(NetworkingApi& api,

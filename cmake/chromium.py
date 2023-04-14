@@ -2,7 +2,7 @@
 
 from glob import glob
 from os import environ, makedirs
-from os.path import basename, dirname, getmtime, isdir, isfile, join, pathsep
+from os.path import basename, dirname, getmtime, isdir, isfile, join, pathsep, relpath
 from shutil import copyfile, which
 from sys import argv, executable
 
@@ -71,6 +71,7 @@ if not isdir(join(depot_tools_dir,'.git')):
 
 environ['PATH'] = depot_tools_dir + pathsep + environ['PATH']
 
+run([python, '-m', 'pip', 'install', 'httplib2'])
 if not isdir(chromium_dir):
     makedirs(chromium_dir)
 if not isdir(src):
@@ -103,16 +104,19 @@ if not isdir(ipfs_dir):
 for d in ['component',join('library','include'),join('library','src')]:
     root = join(ipfs_chromium_source_dir,d)
     print('root',root)
-    for cc in glob('**/*.cc', root_dir = root, recursive=True):
+    for cc in glob(f'{root}/**/*.cc', recursive=True):
+        cc = relpath(cc, root)
         f=join(ipfs_chromium_source_dir,d,cc)
         t=join(ipfs_dir,basename(cc))
         if not isfile(t) or getmtime(f) > getmtime(t):
             print('copy',f,t)
             copyfile(f,t)
-    for h in glob('**/*.h', root_dir = root, recursive=True) + glob('**/*.hpp', root_dir = root, recursive=True):
+    for h in glob(f'{root}/**/*.h', recursive=True) + glob(f'{root}/**/*.hpp', recursive=True):
+        h = relpath(h, root)
         f=join(ipfs_chromium_source_dir,d,h)
         t=join(ipfs_dir,h)
         hd = dirname(t)
+        # print("Target header",t,"Target header directory",hd)
         if not isdir(hd):
             print('makedirs',hd)
             makedirs(hd)

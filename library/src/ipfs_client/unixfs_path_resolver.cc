@@ -6,8 +6,8 @@
 #include "unix_fs/plain_directory.h"
 #include "unix_fs/small_file.h"
 
-#include "ipfs_client/block.h"
 #include "ipfs_client/block_storage.h"
+#include "ipfs_client/dag_block.h"
 #include "ipfs_client/networking_api.h"
 #include "log_macros.h"
 #include "smhasher/MurmurHash3.h"

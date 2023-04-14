@@ -1,4 +1,4 @@
-#include <ipfs_client/block.h>
+#include <ipfs_client/dag_block.h>
 
 #include <gtest/gtest.h>
 

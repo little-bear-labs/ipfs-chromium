@@ -11,5 +11,5 @@ std::string ipfs::GatewayRequest::url() const {
   return gateway.url();
 }
 std::string ipfs::GatewayRequest::task() const {
-  return gateway.current_task();
+  return gateway.task();
 }

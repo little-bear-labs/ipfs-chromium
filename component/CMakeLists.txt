@@ -75,11 +75,17 @@ add_custom_target(patch_file
     COMMENT "Creating patch file (will overwrite)"
 )
 
+
+add_custom_target(setup_component
+    COMMENT "Preparing the Chromium repository & build directory, but not building any targets."
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" 
+    SOURCES ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn
+  )
 #Chromium ninja.py targets:
 add_custom_target(in_tree_gen
     COMMENT "Building targets necessary to have generated headers used by //components/ipfs"
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" components/ipfs:ipfs_generated_code
-    SOURCES ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn
+    DEPENDS setup_component
   )
 add_custom_target(in_tree_build
     ALL
@@ -94,11 +100,17 @@ add_custom_target(chrome_browser
   )
 
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    add_custom_target(package
+    add_custom_target(package_browser
         COMMENT "Packaging"
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" "chrome/installer"
         DEPENDS chrome_browser
       )
+    add_custom_target(upload_browser
+      DEPENDS package_browser
+      COMMENT "Sending browser installer to gcloud"
+      COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/upload.py" "${CMAKE_PROJECT_VERSION}"
+      WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
+    )
 endif()
 
 #Symlink for convenience
