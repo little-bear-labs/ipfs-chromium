@@ -1,0 +1,61 @@
+name: Basic library (ipfs_client) build
+on:
+  push:
+jobs:
+  build:
+    name: ${{ matrix.config.name }}
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      fail-fast: true
+      matrix:
+        config:
+          - {
+              name: "macOS Latest Clang",
+              os: macos-latest,
+              artifact: "macos_clang.7z",
+              build_type: "Release",
+              cc: "clang",
+              cxx: "clang++",
+              archiver: "7za a",
+              generators: "Ninja"
+            }
+    steps:
+      - uses: actions/checkout@v2
+      - name: Print env
+        run: |
+          echo github.event.action: ${{ github.event.action }}
+          echo github.event_name: ${{ github.event_name }}
+          ls -la
+          pwd
+          which python 
+          python --version
+      - name: Install dependencies on macos
+        if: startsWith(matrix.config.os, 'macos')
+        run: |
+          brew install p7zip cmake ninja
+          ninja --version
+          cmake --version
+      - name: Configure
+          shell: bash
+          run: |
+            mkdir build
+            cmake \
+              -G "${{ matrix.config.generators }}" \
+              -S ipfs-chromium \
+              -B build \
+              -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
+      - name: Configure
+          shell: bash
+          run: |
+            mkdir build
+            cmake \
+              -G "${{ matrix.config.generators }}" \
+              -S ipfs-chromium \
+              -B build \
+              -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
+      - name: Build
+          shell: bash
+          run: |
+            cmake \
+             --build build \
+             --config ${{ matrix.config.build_type }}
