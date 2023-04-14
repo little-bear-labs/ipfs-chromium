@@ -12,7 +12,7 @@
 // Good
 #elif __has_include(<absl/base/internal/endian.h>)
 #include <absl/base/internal/endian.h>
-#define htobe64 ghtonll
+#define htobe64 absl::ghtonll
 #elif __has_include(<boost/endian/conversion.hpp>)
 #include <boost/endian/conversion.hpp>
 #define htobe64 native_to_big
