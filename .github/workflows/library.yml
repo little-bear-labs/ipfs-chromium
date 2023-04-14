@@ -36,17 +36,14 @@ jobs:
           ninja --version
           cmake --version
       - name: Configure
-          shell: bash
-          run: |
-            mkdir build
-            cmake \
-              -G "${{ matrix.config.generators }}" \
-              -S ipfs-chromium \
-              -B build \
-              -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
+        shell: bash
+        run: |
+          mkdir build
+          cmake \
+            -G "${{ matrix.config.generators }}" \
+            -S ipfs-chromium \
+            -B build \
+            -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
       - name: Build
-          shell: bash
-          run: |
-            cmake \
-             --build build \
-             --config ${{ matrix.config.build_type }}
+        shell: bash
+        run: cmake --build build --config ${{ matrix.config.build_type }}
