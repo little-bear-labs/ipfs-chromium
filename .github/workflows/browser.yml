@@ -55,8 +55,8 @@ jobs:
         if: startsWith(matrix.config.build_type, 'Release')
         shell: bash
         run: cmake --build build --config ${{ matrix.config.build_type }} --target package
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@master
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SERVICE_KEY }}
