@@ -49,18 +49,18 @@ jobs:
       - name: Build
         shell: bash
         run: cmake --build build --config ${{ matrix.config.build_type }} --target package
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SERVICE_KEY }}
-          export_default_credentials: true
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
           name: static_library
           path: build/library/libipfs_client.a # TODO .lib naming on Windows
           retention-days: 1
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SERVICE_KEY }}
+          export_default_credentials: true
       - name: Check gcloud CLI
         run: gcloud info
       - name: Upload
