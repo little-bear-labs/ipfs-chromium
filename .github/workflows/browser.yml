@@ -1,4 +1,4 @@
-name: Chromium in-tree browser build
+name: Chromium in-tree browser build phase 1
 on:
   pull_request:
     paths:
@@ -50,22 +50,12 @@ jobs:
             -B build \
             -D DOWNLOAD_CHROMIUM=ON \
             -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
-      - name: Build
+      - name: Setup component
         shell: bash
-        run: cmake --build build --config ${{ matrix.config.build_type }} --target chrome_browser
-      - name: Package
-        if: startsWith(matrix.config.build_type, 'Release')
-        shell: bash
-        run: cmake --build build --config ${{ matrix.config.build_type }} --target package_browser
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SERVICE_KEY }}
-          export_default_credentials: true
-      - name: Check gcloud CLI
-        run: gcloud info
+        run: cmake --build build --config ${{ matrix.config.build_type }} --target setup_component
       - name: Upload
-        if: startsWith(matrix.config.build_type, 'Release')
-        shell: bash
-        run: cmake --build build --config ${{ matrix.config.build_type }} --target upload_browser
+        uses: actions/upload-artifact@v3
+        with:
+          name: wholebuildtree
+          path: build/
+          retention-days: 1

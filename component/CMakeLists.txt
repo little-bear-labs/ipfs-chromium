@@ -75,11 +75,16 @@ add_custom_target(patch_file
     COMMENT "Creating patch file (will overwrite)"
 )
 
+add_custom_target(setup_component
+    COMMENT "Building targets necessary to have generated headers used by //components/ipfs"
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" 
+    SOURCES ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn
+  )
 #Chromium ninja.py targets:
 add_custom_target(in_tree_gen
     COMMENT "Building targets necessary to have generated headers used by //components/ipfs"
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" components/ipfs:ipfs_generated_code
-    SOURCES ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn
+    DEPENDS setup_component
   )
 add_custom_target(in_tree_build
     ALL
