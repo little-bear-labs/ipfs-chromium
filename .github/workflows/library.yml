@@ -10,15 +10,21 @@ jobs:
       matrix:
         config:
           - {
-              name: "macOS Latest Clang",
+              name: "macOS",
               os: macos-latest,
-              artifact: "macos_clang.7z",
               build_type: "Release",
               cc: "clang",
               cxx: "clang++",
-              archiver: "7za a",
               generators: "Ninja"
             }
+          - {
+            name: "Ubuntu",
+            os: ubuntu-latest,
+            build_type: "Release",
+            cc: "gcc",
+            cxx: "g++",
+            generators: "Ninja"
+          }
     steps:
       - uses: actions/checkout@v3
       - name: Print env
@@ -29,10 +35,16 @@ jobs:
           git status
           which python3 
           python3 --version
+      - name: Install dependencies on Ubuntu
+        if: startsWith(matrix.config.os, 'ubuntu')
+        run: |
+          apt-install install cmake ninja
+          ninja --version
+          cmake --version
       - name: Install dependencies on macos
         if: startsWith(matrix.config.os, 'macos')
         run: |
-          brew install p7zip cmake ninja
+          brew install cmake ninja
           ninja --version
           cmake --version
       - name: Configure
@@ -55,20 +67,20 @@ jobs:
           name: static_library.${{ matrix.config.os }}
           path: build/library/libipfs_client.a # TODO .lib naming on Windows
           retention-days: 1
-      - id: 'auth'
-        uses: 'google-github-actions/auth@v1'
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SERVICE_KEY }}
-          export_default_credentials: true
-      - name: Set up Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SERVICE_KEY }}
-          export_default_credentials: true
-      - name: Check gcloud CLI
-        run: gcloud info
-      - name: GCloud Upload
-        shell: bash
-        run: cmake --build build --config ${{ matrix.config.build_type }} --target upload_library
+#      - id: 'auth'
+#        uses: 'google-github-actions/auth@v1'
+#        with:
+#          project_id: ${{ secrets.GCP_PROJECT_ID }}
+#          service_account_key: ${{ secrets.GCP_SERVICE_KEY }}
+#          export_default_credentials: true
+#      - name: Set up Google Cloud SDK
+#        uses: google-github-actions/setup-gcloud@v0
+#        with:
+#          project_id: ${{ secrets.GCP_PROJECT_ID }}
+#          service_account_key: ${{ secrets.GCP_SERVICE_KEY }}
+#          export_default_credentials: true
+#      - name: Check gcloud CLI
+#        run: gcloud info
+#      - name: GCloud Upload
+#        shell: bash
+#        run: cmake --build build --config ${{ matrix.config.build_type }} --target upload_library
