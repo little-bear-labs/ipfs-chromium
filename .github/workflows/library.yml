@@ -39,7 +39,7 @@ jobs:
         if: startsWith(matrix.config.os, 'ubuntu')
         run: |
           sudo apt-get update
-          sudo apt-get install --yes install cmake ninja
+          sudo apt-get install --yes cmake ninja-build
           ninja --version
           cmake --version
           g++ --version
