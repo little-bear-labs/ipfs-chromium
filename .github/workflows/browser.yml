@@ -22,7 +22,7 @@ jobs:
               generators: "Ninja"
             }
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Print env
         run: |
           echo github.event.action: ${{ github.event.action }}
@@ -53,9 +53,12 @@ jobs:
       - name: Setup component
         shell: bash
         run: cmake --build build --config ${{ matrix.config.build_type }} --target setup_component
+      - name: Tar
+        shell: bash
+        run: tar -c -z -f wholebuildtree.tar.gz build/
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
           name: wholebuildtree
-          path: build/
+          path: wholebuildtree.tar.gz
           retention-days: 1

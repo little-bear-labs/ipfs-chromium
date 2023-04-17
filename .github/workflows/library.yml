@@ -20,7 +20,7 @@ jobs:
               generators: "Ninja"
             }
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Print env
         run: |
           echo github.event.action: ${{ github.event.action }}
@@ -52,7 +52,7 @@ jobs:
       - name: Upload
         uses: actions/upload-artifact@v3
         with:
-          name: static_library
+          name: static_library.${{ matrix.config.os }}
           path: build/library/libipfs_client.a # TODO .lib naming on Windows
           retention-days: 1
       - name: Set up Google Cloud SDK
@@ -63,6 +63,6 @@ jobs:
           export_default_credentials: true
       - name: Check gcloud CLI
         run: gcloud info
-      - name: Upload
+      - name: GCloud Upload
         shell: bash
         run: cmake --build build --config ${{ matrix.config.build_type }} --target upload_library
