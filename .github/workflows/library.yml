@@ -38,9 +38,11 @@ jobs:
       - name: Install dependencies on Ubuntu
         if: startsWith(matrix.config.os, 'ubuntu')
         run: |
+          sudo apt-get update
           sudo apt-get install --yes install cmake ninja
           ninja --version
           cmake --version
+          g++ --version
       - name: Install dependencies on macos
         if: startsWith(matrix.config.os, 'macos')
         run: |
