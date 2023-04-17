@@ -1,6 +1,6 @@
 name: Basic library (ipfs_client) build
 on:
-  push:
+  pull_request:
 jobs:
   build:
     name: ${{ matrix.config.name }}

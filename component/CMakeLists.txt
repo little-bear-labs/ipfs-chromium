@@ -77,7 +77,7 @@ add_custom_target(patch_file
 
 
 add_custom_target(setup_component
-    COMMENT "Building targets necessary to have generated headers used by //components/ipfs"
+    COMMENT "Preparing the Chromium repository & build directory, but not building any targets."
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" 
     SOURCES ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn
   )
