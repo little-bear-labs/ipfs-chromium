@@ -104,13 +104,13 @@ if not isdir(ipfs_dir):
 for d in ['component',join('library','include'),join('library','src')]:
     root = join(ipfs_chromium_source_dir,d)
     print('root',root)
-    for cc in glob('**/*.cc', root_dir = root, recursive=True):
+    for cc in glob(f'{root}/**/*.cc' recursive=True):
         f=join(ipfs_chromium_source_dir,d,cc)
         t=join(ipfs_dir,basename(cc))
         if not isfile(t) or getmtime(f) > getmtime(t):
             print('copy',f,t)
             copyfile(f,t)
-    for h in glob('**/*.h', root_dir = root, recursive=True) + glob('**/*.hpp', root_dir = root, recursive=True):
+    for h in glob(f'{root}/**/*.h', recursive=True) + glob(f'{root}/**/*.hpp', recursive=True):
         f=join(ipfs_chromium_source_dir,d,h)
         t=join(ipfs_dir,h)
         hd = dirname(t)
