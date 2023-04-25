@@ -12,6 +12,9 @@
 #pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
 #endif
 
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wimplicit-fallthrough"
+#endif
 //-----------------------------------------------------------------------------
 // Platform-specific functions and macros
 

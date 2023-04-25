@@ -253,8 +253,10 @@ std::string ipfs::GatewayRequests::MimeType(std::string extension,
                                             std::string_view content,
                                             std::string const& url) const {
   std::string result;
-  if (extension.size() &&
-      net::GetWellKnownMimeTypeFromExtension(extension, &result)) {
+  auto fp_ext = base::FilePath::FromUTF8Unsafe(extension).value();
+  if (extension.empty()) {
+    result.clear();
+  } else if (net::GetWellKnownMimeTypeFromExtension(fp_ext, &result)) {
     LOG(INFO) << "Got " << result << " from extension " << extension << " for "
               << url;
   } else {
