@@ -91,9 +91,15 @@ file(GLOB_RECURSE
 find_package(GTest)
 
 if(GTest_FOUND)
+    include(CodeCoverage)
     enable_testing()
+    add_custom_target(run_tests)
     foreach(unit_test_source ${unit_test_sources})
         get_filename_component(name ${unit_test_source} NAME_WE)
+        string(REPLACE _unittest "" source_under_test ${unit_test_source})
+        if(EXISTS "${source_under_test}")
+            list(APPEND unit_test_source "${source_under_test}")
+        endif()
         add_executable(${name}_runner
             ${unit_test_source}
         )
@@ -113,7 +119,8 @@ if(GTest_FOUND)
                 GTest::gtest_main
         )
         with_vocab(${name}_runner)
-        message(STATUS "add_test(${name})")
+        #message(WARNING "Calling append_coverage_compiler_flags_to_target(${name}_runner)")
+        append_coverage_compiler_flags_to_target(${name}_runner)
         add_test(
             NAME ${name}_runner
             COMMAND $<TARGET_FILE:${name}_runner>
@@ -127,6 +134,12 @@ if(GTest_FOUND)
             WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
         )
         list(APPEND test_certificates ${name}_cert)
+        add_custom_target(run_${name}
+          DEPENDS ${name}_runner
+          COMMAND $<TARGET_FILE:${name}_runner>
+          WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+        )
+        add_dependencies(run_tests run_${name})
     endforeach()
     add_custom_target(check_tests
         ALL
@@ -136,3 +149,7 @@ if(GTest_FOUND)
 else()
     message(WARNING "Not running tests - no gtest available.")
 endif()#GTest_FOUND
+setup_target_for_coverage_lcov(
+  NAME cov
+  DEPENDENCIES run_tests
+)
