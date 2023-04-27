@@ -119,8 +119,9 @@ if(GTest_FOUND)
                 GTest::gtest_main
         )
         with_vocab(${name}_runner)
-        #message(WARNING "Calling append_coverage_compiler_flags_to_target(${name}_runner)")
-        append_coverage_compiler_flags_to_target(${name}_runner)
+        if(LCOV_PATH)
+            append_coverage_compiler_flags_to_target(${name}_runner)
+        endif()
         add_test(
             NAME ${name}_runner
             COMMAND $<TARGET_FILE:${name}_runner>
@@ -146,10 +147,12 @@ if(GTest_FOUND)
         SOURCES ${test_certificates}
         COMMAND echo "Tests are up-to-date."
     )
+    if(LCOV_PATH)
+        setup_target_for_coverage_lcov(
+          NAME cov
+          DEPENDENCIES run_tests
+        )
+    endif()
 else()
     message(WARNING "Not running tests - no gtest available.")
 endif()#GTest_FOUND
-setup_target_for_coverage_lcov(
-  NAME cov
-  DEPENDENCIES run_tests
-)

@@ -5,6 +5,8 @@
 
 #include <smhasher/MurmurHash3.h>
 
+#include <vocab/endian.h>
+
 #include "log_macros.h"
 
 #include <absl/strings/match.h>
