@@ -107,10 +107,10 @@ auto ipfs::GatewayRequests::InitiateGatewayRequest(BusyGateway assigned)
   out->loader = network::SimpleURLLoader::Create(std::move(req),
                                                  kTrafficAnnotation, FROM_HERE);
   if (url.find("format=ipns-record") == std::string::npos) {
-    out->loader->SetTimeoutDuration(base::Seconds(8));
+    out->loader->SetTimeoutDuration(base::Seconds(16));
   } else {
     LOG(INFO) << "Doing an IPNS record query, so giving it a long timeout.";
-    out->loader->SetTimeoutDuration(base::Seconds(120));
+    out->loader->SetTimeoutDuration(base::Seconds(128));
   }
   //  out->listener = listener;
   auto cb = base::BindOnce(&ipfs::GatewayRequests::OnResponse,
@@ -157,6 +157,7 @@ bool ipfs::GatewayRequests::ProcessResponse(BusyGateway& gw,
     LOG(ERROR) << "No loader for processing " << gw.url();
     return false;
   }
+  LOG(INFO) << "Neterror(" << ldr->NetError() << ')';
   if (!body) {
     LOG(INFO) << "ProcessResponse(" << gw.url()
               << ") Null body - presumably http error.\n";
@@ -254,6 +255,9 @@ std::string ipfs::GatewayRequests::MimeType(std::string extension,
                                             std::string const& url) const {
   std::string result;
   auto fp_ext = base::FilePath::FromUTF8Unsafe(extension).value();
+  LOG(INFO) << "extension=" << extension;
+  LOG(INFO) << "content.size" << content.size();
+  LOG(INFO) << "url=" << url;
   if (extension.empty()) {
     result.clear();
   } else if (net::GetWellKnownMimeTypeFromExtension(fp_ext, &result)) {

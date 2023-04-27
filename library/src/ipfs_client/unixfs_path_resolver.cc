@@ -1,363 +1,87 @@
 #include "ipfs_client/unixfs_path_resolver.h"
 
-#include "generated_directory_listing.h"
-
-#include "unix_fs/guess_content_type.h"
-#include "unix_fs/plain_directory.h"
-#include "unix_fs/small_file.h"
+#include "unix_fs/node_helper.h"
 
 #include "ipfs_client/block_storage.h"
 #include "ipfs_client/dag_block.h"
-#include "ipfs_client/networking_api.h"
-#include "log_macros.h"
-#include "smhasher/MurmurHash3.h"
+
 #include "vocab/stringify.h"
 
-#include <iomanip>
+#include "log_macros.h"
 
-#include "vocab/endian.h"
+using Self = ipfs::UnixFsPathResolver;
 
-namespace {
-bool starts_with(std::string_view a, std::string_view b) {
-  if (a.size() < b.size()) {
-    return false;
-  }
-  return a.substr(0, b.size()) == b;
-}
-bool ends_with(std::string_view a, std::string_view b) {
-  if (a.size() < b.size()) {
-    return false;
-  }
-  a.remove_prefix(a.size() - b.size());
-  return a == b;
-}
-}  // namespace
-
-void ipfs::UnixFsPathResolver::Step(std::shared_ptr<DagListener> listener) {
-  hrmm_ = listener;
-  LOG(INFO) << "Step(" << cid_ << ',' << path_ << ',' << original_path_ << ')';
-  if (awaiting_.size() && storage_.Get(awaiting_)) {
-    awaiting_.clear();
-  }
+void Self::Step(std::shared_ptr<DagListener> listener) {
+  old_listener_ = listener;
   if (cid_.empty()) {
-    LOG(ERROR) << "No CID?";
     return;
   }
-  if (hamt_hexs_.size()) {
-    LOG(INFO) << "Appear to be mid-Hamt traversal: " << hamt_hexs_.front();
-  }
+  LOG(INFO) << "Step(" << cid_ << ',' << path_ << ',' << original_path_ << ')';
   Block const* block = storage_.Get(cid_);
   if (!block) {
-    LOG(INFO) << "Current block " << cid_ << " not found.";
+    LOG(INFO) << "Current block " << cid_ << " not found. Requesting.";
     Request(listener, cid_, prio_);
     return;
   }
-  LOG(INFO) << "Process block of type " << ipfs::Stringify(block->type());
-  switch (block->type()) {
-    case Block::Type::Directory:
-      unix_fs::ProcessDirectory(*api_, listener, *this, path_, *block);
-      break;
-    case Block::Type::FileChunk:
-      unix_fs::ProcessSmallFile(*api_, *listener, original_path_, *block);
-      cid_.clear();
-      break;
-    case Block::Type::File:
-      ProcessLargeFile(listener, *block);
-      break;
-    case Block::Type::HAMTShard:
-      ProcessDirShard(listener, *block);
-      break;
-    default:
-      LOG(FATAL) << "TODO : Unhandled UnixFS node of type "
-                 << Stringify(block->type());
+  if (!helper_) {
+    GetHelper(block->type());
   }
-}
-void ipfs::UnixFsPathResolver::ProcessLargeFile(
-    std::shared_ptr<DagListener>& listener,
-    Block const& block) {
-  bool writing = false;
-  if (written_through_.empty()) {
-    // First time here, probably
-    // Request any missing blocks
-    block.List([this, &listener](auto, auto child_cid) {
-      if (storage_.Get(child_cid) == nullptr) {
-        Request(listener, child_cid, prio_);
-      }
-      return true;
-    });
-    writing = true;
-  }
-  block.List([&writing, listener, this](auto, auto child_cid) {
-    if (child_cid == written_through_) {
-      // Found written_through_
-      writing = true;
-      return true;
-    }
-    if (!writing) {
-      // Scanning, looking for written_through_
-      return true;
-    }
-    auto child = storage_.Get(child_cid);
-    if (child) {
-      switch (child->type()) {
-        case Block::Type::NonFs:
-          if (head_.empty()) {
-            head_ = child->unparsed();
-          }
-          listener->ReceiveBlockBytes(child->unparsed());
-          break;
-        case Block::Type::FileChunk:
-          if (head_.empty()) {
-            head_ = child->chunk_data();
-          }
-          listener->ReceiveBlockBytes(child->chunk_data());
-          break;
-        default:
-          LOG(FATAL) << " unhandled child-of-file block type: "
-                     << ipfs::Stringify(child->type());
-      }
-      written_through_.assign(child_cid);
-      return true;
-    }
-    // This is the next block to be written, but we don't have it. Wait.
-    return (writing = false);
-  });
-  if (writing) {
-    listener->BlocksComplete(unix_fs::GuessContentType(*api_, original_path_, head_));
-  }
-}
-
-void ipfs::UnixFsPathResolver::ProcessDirShard(
-    std::shared_ptr<DagListener>& listener,
-    Block const& block) {
-  // node.Data.hashType indicates a multihash function to use to digest path
-  // components used for sharding.
-  //  It MUST be murmur3-x64-64 (multihash 0x22).
-  GOOGLE_DCHECK_EQ(block.fsdata().hashtype(), 0x22);
-  auto fanout = block.fsdata().has_fanout() ? block.fsdata().fanout() : 256;
-  L_VAR(fanout);
-  GOOGLE_DCHECK_GT(fanout, 0);
-
-  auto hex_width = 0U;
-  for (auto x = fanout; (x >>= 4); ++hex_width)
-    ;
-  L_VAR(hex_width);
-  if (path_.empty()) {
-    // TODO - there could one day be a HAMT directory with no index.html
-    path_ = "index.html";
-  }
-  /* stolen from spec
-   * ####### Path resolution on HAMTs
-   * Steps:
-   * 1. Take the current path component...
-   */
-  auto non_slash = path_.find_first_not_of("/");
-  if (non_slash && non_slash < path_.size()) {
-    LOG(INFO) << "Removing " << non_slash << " leading slashes from " << path_;
-    path_.erase(0, non_slash);
-  }
-  auto slash = path_.find('/');
-  L_VAR(slash);
-  auto next = path_.substr(0, slash);
-  bool missing_descendents = false;
-  //  RequestHamtDescendents(api, missing_descendents, block, hex_width);
-  if (missing_descendents) {
-    LOG(WARNING)
-        << "Waiting on more blocks before dealing with this HAMT node.";
+  if (!helper_) {
+    listener->FourOhFour(cid_, original_path_);
     return;
   }
-  L_VAR(next)
-  L_VAR(path_)
-  if (next.empty()) {
-    GeneratedDirectoryListing listing{original_path_};
-    if (ListHamt(listener, block, listing, hex_width)) {
-      LOG(INFO) << "Returning generated listing for a HAMT";
-      listener->ReceiveBlockBytes(listing.Finish());
-      listener->BlocksComplete("text/html");
-      this->cid_.clear();
-    }
-    return;
-  }
-  auto component = api_->UnescapeUrlComponent(next);
-  L_VAR(component);
-  if (hamt_hexs_.empty()) {
-    // ...  then hash it using the multihash id provided in Data.hashType.
-    //  absl::uint128 digest{};
-    std::array<std::uint64_t, 2> digest = {0U, 0U};
-    // Rust's fastmurmur3 also passes 0 for seed, and iroh uses that.
-    MurmurHash3_x64_128(component.data(), component.size(), 0, digest.data());
-    auto bug_compatible_digest = htobe64(digest[0]);
-    LOG(INFO) << "Hash: " << digest[0] << ' ' << digest[1] << " -> "
-              << bug_compatible_digest;
-    for (auto d : digest) {
-      auto hash_bits = htobe64(d);
-      while (hash_bits) {
-        // 2. Pop the log2(fanout) lowest bits from the path component hash
-        // digest,...
-        auto popped = hash_bits % fanout;
-        hash_bits /= fanout;
-        //        LOG(INFO) << "popped=" << popped << " remaining digest=" <<
-        //        hash_bits;
-        std::ostringstream oss;
-        // ... then hex encode (using 0-F) using little endian thoses bits ...
-        oss << std::setfill('0') << std::setw(hex_width) << std::uppercase
-            << std::hex << popped;
-        hamt_hexs_.push_back(oss.str());
-      }
-    }
+  LOG(INFO) << "Processing block " << cid_ << " of type "
+            << ipfs::Stringify(block->type());
+  auto requestor = [this, &listener](std::string cid, Priority prio) {
+    this->Request(listener, cid, prio);
+  };
+  std::unique_ptr<unix_fs::NodeHelper> helper;
+  if (helper_->Process(helper, listener, requestor, cid_)) {
+    helper_.swap(helper);
     Step(listener);
-  } else {
-    bool found = false;
-    block.List([&](auto& name, auto cid) {
-      // Fun fact: there is a spec-defined sort order to these children.
-      // We *could* do a binary search.
-      if (!starts_with(name, hamt_hexs_.front())) {
-        //        LOG(INFO) << name << " isn't the right child for " <<
-        //        hamt_hexs_.front() ;
-        return true;
-      }
-      found = true;
-      LOG(INFO) << "As we move down a Hamt, " << cid_ << " -> " << name << " / "
-                << cid << " fanout=" << block.fsdata().fanout();
-      cid_ = cid;
-      if (ends_with(name, component)) {
-        LOG(INFO) << "Found our calling! Leaving the Hamt";
-        hamt_hexs_.clear();
-        auto slash = path_.find('/');
-        if (slash == std::string::npos) {
-          path_.clear();
-        } else {
-          path_.erase(0, slash + 1);
-        }
-      } else if (hamt_hexs_.front() == name) {
-        LOG(INFO) << "One more level down the Hamt";
-        hamt_hexs_.erase(hamt_hexs_.begin());
-      } else {
-        LOG(ERROR) << "Was looking for " << cid_ << '/' << path_
-                   << " and got as far as HAMT hash bits " << hamt_hexs_.front()
-                   << " but the corresponding link is " << name
-                   << " and does not end with " << component;
-        listener->FourOhFour(cid_, hamt_hexs_.front() + component);
-      }
-      return false;
-    });
-    if (found) {
-      Step(listener);
-    } else {
-      listener->FourOhFour(cid_, path_);
-    }
   }
 }
 
-void ipfs::UnixFsPathResolver::RequestHamtDescendents(
-    std::shared_ptr<DagListener> listener,
-    bool& missing_children,
-    Block const& block,
-    unsigned hex_width) const {
-  block.List([this, hex_width, listener, &missing_children](
-                 std::string const& name, auto cid) {
-    GOOGLE_DCHECK_GE(name.size(), hex_width);
-    auto block = storage_.Get(cid);
-    if (block) {
-      if (name.size() == hex_width) {
-        this->RequestHamtDescendents(listener, missing_children, *block,
-                                     hex_width);
-      }
-    } else {
-      api_->RequestByCid(cid, listener, 0);
-    }
-    return true;
-  });
-}
-bool ipfs::UnixFsPathResolver::ListHamt(std::shared_ptr<DagListener>& listener,
-                                        Block const& block,
-                                        GeneratedDirectoryListing& out,
-                                        unsigned hex_width) {
-  LOG(INFO) << hex_width;
-  bool got_all = true;
-  block.List([&](std::string const& link_name, auto cid) {
-    if (link_name.size() > hex_width) {
-      auto entry_name = std::string_view{link_name}.substr(hex_width);
-      if (entry_name == "index.html") {
-        Request(listener, cid, prio_);
-        this->cid_ = cid;
-        this->path_.clear();
-        return got_all = false;
-      } else {
-        out.AddEntry(entry_name);
-      }
-    } else if (auto child = storage_.Get(cid)) {
-      if (!this->ListHamt(listener, *child, out, hex_width)) {
-        got_all = false;
-      }
-    } else {
-      // TODO - can't do an independent listing (no index.html) of a Hamt
-      // without this node
-      //       Request(api, cid, Scheduler::Priority::Optional);
-      got_all = false;
-    }
-    return true;
-  });
-  return got_all;
+void Self::GetHelper(Block::Type typ) {
+  LOG(INFO) << "Encountered " << cid_ << " of type " << ipfs::Stringify(typ);
+  helper_ = unix_fs::NodeHelper::FromBlockType(typ, pop_path());
+  if (helper_) {
+    helper_->cid(cid_);
+    helper_->resolver(*this);
+    helper_->storage(storage_);
+    helper_->api(*api_);
+  }
 }
 
-void ipfs::UnixFsPathResolver::Request(std::shared_ptr<DagListener>& listener,
-                                       std::string const& cid,
-                                       Priority prio) {
+void Self::Request(std::shared_ptr<DagListener>& listener,
+                   std::string const& cid,
+                   Priority prio) {
   if (storage_.Get(cid)) {
     return;
   }
-  LOG(INFO) << "Request(" << cid << ',' << static_cast<long>(prio) << ')';
   if (prio) {
     storage_.AddListening(this);
-    if (cid_ != cid) {
-      awaiting_ = cid;
-    } else {
-      awaiting_.clear();
-    }
   }
   auto it = already_requested_.find(cid);
   auto t = std::time(nullptr);
   if (it == already_requested_.end()) {
+    LOG(INFO) << "Request(" << cid << ',' << static_cast<long>(prio) << ')';
     already_requested_[cid] = {prio, t};
     api_->RequestByCid(cid, listener, prio);
   } else if (prio > it->second.first) {
+    LOG(INFO) << "Increase Request priority(" << cid << ','
+              << static_cast<long>(prio) << ')';
     it->second.first = prio;
     it->second.second = t;
     api_->RequestByCid(cid, listener, prio);
   }
 }
 
-const std::string& ipfs::UnixFsPathResolver::waiting_on() const {
-  if (awaiting_.empty()) {
-    return cid_;
-  } else {
-    return awaiting_;
-  }
-}
-std::string ipfs::UnixFsPathResolver::describe() const {
-  auto rv = original_cid_;
-  rv.append("//")
-      .append(original_path_)
-      .append(" ... ")
-      .append(cid_)
-      .append("//")
-      .append(path_);
-  return rv;
-}
-
-ipfs::UnixFsPathResolver::UnixFsPathResolver(BlockStorage& store,
-                                             Scheduler& sched,
-                                             std::string cid,
-                                             std::string path,
-                                             std::shared_ptr<NetworkingApi> api)
-    : storage_{store},
-      sched_(sched),
-      cid_{cid},
-      path_{path},
-      original_cid_(cid),
-      original_path_(path),
-      api_(api) {
+Self::UnixFsPathResolver(BlockStorage& store,
+                         std::string cid,
+                         std::string path,
+                         std::shared_ptr<NetworkingApi> api)
+    : storage_{store}, cid_{cid}, path_{path}, original_path_(path), api_(api) {
   constexpr std::string_view filename_param{"filename="};
   auto fn = original_path_.find(filename_param);
   if (fn != std::string::npos) {
@@ -368,33 +92,30 @@ ipfs::UnixFsPathResolver::UnixFsPathResolver(BlockStorage& store,
     }
   }
 }
-ipfs::UnixFsPathResolver::~UnixFsPathResolver() noexcept {
-  /*
-#ifdef BASE_DEBUG_STACK_TRACE_H_
-  LOG(ERROR) << base::debug::StackTrace();
-#else
-  LOG(ERROR)
-      << "Don't have stack trace available, but in UnixFsPathResolver dtor";
-#endif
-   */
+Self::~UnixFsPathResolver() noexcept {
   storage_.StopListening(this);
 }
-std::shared_ptr<ipfs::DagListener>
-ipfs::UnixFsPathResolver::MaybeGetPreviousListener() {
-  return hrmm_.lock();
+std::shared_ptr<ipfs::DagListener> Self::MaybeGetPreviousListener() {
+  return old_listener_.lock();
 }
-void ipfs::UnixFsPathResolver::current_path(std::string_view p) {
-  path_.assign(p);
-}
-void ipfs::UnixFsPathResolver::current_cid(std::string_view v) {
-  cid_.assign(v);
-}
-std::string const& ipfs::UnixFsPathResolver::current_cid() const {
+std::string const& Self::current_cid() const {
   return cid_;
 }
-void ipfs::UnixFsPathResolver::original_path(std::string_view p) {
-  original_path_.assign(p);
-}
-std::string const& ipfs::UnixFsPathResolver::original_path() const {
+std::string const& Self::original_path() const {
   return original_path_;
+}
+std::string Self::pop_path() {
+  while (path_.size() && path_.front() == '/') {
+    path_.erase(0, 1);
+  }
+  auto slash = path_.find('/');
+  std::string rv;
+  if (slash > path_.size()) {
+    rv = path_;
+    path_.clear();
+  } else {
+    rv = path_.substr(0, slash);
+    path_.erase(0, slash + 1);
+  }
+  return api_->UnescapeUrlComponent(rv);
 }

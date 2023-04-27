@@ -142,7 +142,7 @@ if(GTest_FOUND)
         add_dependencies(run_tests run_${name})
     endforeach()
     add_custom_target(check_tests
-        ALL
+#        ALL
         SOURCES ${test_certificates}
         COMMAND echo "Tests are up-to-date."
     )

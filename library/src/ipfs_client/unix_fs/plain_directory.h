@@ -1,21 +1,27 @@
 #ifndef IPFS_PLAIN_DIRECTORY_H_
 #define IPFS_PLAIN_DIRECTORY_H_
 
-#include <memory>
-#include <string_view>
+#include "node_helper.h"
 
 namespace ipfs {
-class Block;
-class DagListener;
 class NetworkingApi;
 class UnixFsPathResolver;
 namespace unix_fs {
-void ProcessDirectory(NetworkingApi& api,
-                      std::shared_ptr<DagListener>& listener,
-                      UnixFsPathResolver& resolver,
-                      std::string_view path,
-                      Block const& block);
-}
+class PlainDirectory : public NodeHelper {
+ public:
+  PlainDirectory(std::string next_path_element);
+  ~PlainDirectory() noexcept override;
+
+ private:
+  std::string const next_path_element_;
+
+  bool Process(std::unique_ptr<NodeHelper>&,
+               std::shared_ptr<DagListener>,
+               std::function<void(std::string, Priority)>,
+               std::string&) override;
+};
+
+}  // namespace unix_fs
 }  // namespace ipfs
 
 #endif  // IPFS_PLAIN_DIRECTORY_H_
