@@ -1,0 +1,91 @@
+<!DOCTYPE html><html class="client-js"><head>
+  <meta charset="UTF-8">
+  <title>Wikipedia, the free encyclopedia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    function importScript() { return 1 } // this is to avoid the error from site.js
+  </script>
+  <script>let articleId = 'User:The_other_Kiwix_guy/Landing'</script>
+  <link rel="canonical" href="https://en.wikipedia.org/wiki/User%3AThe_other_Kiwix_guy%2FLanding">
+  <link href="../-/mw/skins.minerva.base.reset|skins.minerva.content.styles|ext.cite.style|site.styles|mobile.app.pagestyles.android|mediawiki.page.gallery.styles|mediawiki.skinning.content.parsoid.css" rel="stylesheet" type="text/css">
+  <link href="../-/style.css" rel="stylesheet" type="text/css"><link href="../-/content.parsoid.css" rel="stylesheet" type="text/css"><link href="../-/inserted_style.css" rel="stylesheet" type="text/css">
+  <script src="../-/script.js"></script><script src="../-/masonry.min.js"></script><script src="../-/article_list_home.js"></script><script src="../-/images_loaded.min.js"></script><script src="../-/node_module/details-element-polyfill/dist/details-element-polyfill.js"></script>
+</head>
+
+<body class="mediawiki mw-hide-empty-elt ns-0 ns-subject stable skin-minerva action-view animations">
+  <div id="mw-mf-viewport" class="feature-header-v2">
+    <div id="mw-mf-page-center">
+      <div id="content" class="mw-body">
+        <a id="top"></a>
+        <div id="bodyContent" class="content mw-parser-output">
+          
+          <div id="mw-content-text" style="direction: ltr;"><section data-mw-section-id="0" id="mwAQ"><meta property="mw:PageProp/displaytitle" content="Welcome" id="mwAg">
+<p id="mwAw"><br id="mwBA"></p>
+<div style="font-size:185%;" id="mwBQ">Welcome to <a href="../A/Wikipedia" title="Wikipedia" id="mwBg">Wikipedia</a></div>
+<div style="font-size:185%;" id="mwBw">The free encyclopedia.</div>
+<p id="mwCA"><b id="mwCQ"><span id="mwCw">6,215,958</span></b> articles in <b id="mwDA"><a href="../A/English_Wikipedia" title="English Wikipedia" id="mwDQ">English</a></b></p>
+
+</section><section data-mw-section-id="1" id="mwDg"><h2 id="Arts">Arts</h2>
+<p id="mwDw"><a href="../A/Architecture" title="Architecture" id="mwEA">Architecture</a> &#x2022; <a href="../A/Books" title="Books" class="mw-redirect" id="mwEQ">Books</a> &#x2022; <a href="../A/Cinematography" title="Cinematography" id="mwEg">Cinematography</a>  &#x2022; <a href="../A/Dance" title="Dance" id="mwEw">Dance</a> &#x2022; <a href="../A/Design" title="Design" id="mwFA">Design</a> &#x2022; <a href="../A/Fashion" title="Fashion" id="mwFQ">Fashion</a> &#x2022; <a href="../A/Films" title="Films" class="mw-redirect" id="mwFg">Films</a> &#x2022; <a href="../A/Gastronomy" title="Gastronomy" id="mwFw">Gastronomy</a> &#x2022; <a href="../A/Literature" title="Literature" id="mwGA">Literature</a> &#x2022; <a href="../A/Magic_(illusion)" title="Magic (illusion)" id="mwGQ">Magic (illusion)</a> &#x2022; <a href="../A/Music" title="Music" id="mwGg">Music</a> &#x2022; <a href="../A/Painting" title="Painting" id="mwGw">Painting</a> &#x2022; <a href="../A/Photography" title="Photography" id="mwHA">Photography</a> &#x2022; <a href="../A/Poetry" title="Poetry" id="mwHQ">Poetry</a> &#x2022; <a href="../A/Sculpture" title="Sculpture" id="mwHg">Sculpture</a> &#x2022; <a href="../A/Theatre" title="Theatre" id="mwHw">Theatre</a><br id="mwIA"></p>
+
+</section><section data-mw-section-id="2" id="mwIQ"><h2 id="Geography">Geography</h2>
+<p id="mwIg"><a href="../A/Africa" title="Africa" id="mwIw">Africa</a> &#x2022; <a href="../A/Antarctica" title="Antarctica" id="mwJA">Antarctica</a> &#x2022; <a href="../A/Arctic" title="Arctic" id="mwJQ">Arctic</a> &#x2022; <a href="../A/Asia" title="Asia" id="mwJg">Asia</a> &#x2022; <a href="../A/Caribbean" title="Caribbean" id="mwJw">Caribbean</a> &#x2022; <a href="../A/Central_America" title="Central America" id="mwKA">Central America</a> &#x2022; <a href="../A/Europe" title="Europe" id="mwKQ">Europe</a> &#x2022; <a href="../A/Latin_America" title="Latin America" id="mwKg">Latin America</a> &#x2022; <a href="../A/Mediterranean" title="Mediterranean" class="mw-redirect" id="mwKw">Mediterranean</a> &#x2022; <a href="../A/Middle_East" title="Middle East" id="mwLA">Middle East</a> &#x2022; <a href="../A/North_America" title="North America" id="mwLQ">North America</a> &#x2022; <a href="../A/Oceania" title="Oceania" id="mwLg">Oceania</a> &#x2022; <a href="../A/South_America" title="South America" id="mwLw">South America</a>  &#x2022; <a href="../A/Cartography" title="Cartography" id="mwMA">Cartography</a></p>
+
+</section><section data-mw-section-id="3" id="mwMQ"><h2 id="History">History</h2>
+<p id="mwMg"><a href="../A/Ancient_Egypt" title="Ancient Egypt" id="mwMw">Ancient Egypt</a> &#x2022; <a href="../A/Ancient_Greece" title="Ancient Greece" id="mwNA">Ancient Greece</a> &#x2022; <a href="../A/Ancient_Near_East" title="Ancient Near East" id="mwNQ">Ancient Near East</a> &#x2022; <a href="../A/Ancient_Rome" title="Ancient Rome" id="mwNg">Ancient Rome</a> &#x2022; <a href="../A/Archaeology" title="Archaeology" id="mwNw">Archaeology</a> &#x2022; <a href="../A/British_Empire" title="British Empire" id="mwOA">British Empire</a> &#x2022; <a href="../A/Byzantine_Empire" title="Byzantine Empire" id="mwOQ">Byzantine Empire</a> &#x2022; <a href="../A/Colonialism" title="Colonialism" id="mwOg">Colonialism</a> &#x2022; <a href="../A/Crusades" title="Crusades" id="mwOw">Crusades</a> &#x2022; <a href="../A/Heraldry" title="Heraldry" id="mwPA">Heraldry</a> &#x2022; <a href="../A/History_of_science" title="History of science" id="mwPQ">History of science</a> &#x2022; <a href="../A/History_of_China#Imperial_China" title="History of China" id="mwPg">Imperial China</a> &#x2022; <a href="../A/Indian_independence_movement" title="Indian independence movement" id="mwPw">Indian independence movement</a> &#x2022; <a href="../A/History_of_Japan" title="History of Japan" id="mwQA">Japan</a> &#x2022; <a href="../A/Middle_Ages" title="Middle Ages" id="mwQQ">Middle Ages</a> &#x2022; <a href="../A/Mughal_Empire" title="Mughal Empire" id="mwQg">Mughal Empire</a> &#x2022; <a href="../A/Ottoman_Empire" title="Ottoman Empire" id="mwQw">Ottoman Empire</a> &#x2022; <a href="../A/Russian_Empire" title="Russian Empire" id="mwRA">Russian Empire</a> &#x2022; <a href="../A/Sasanian_Empire" title="Sasanian Empire" id="mwRQ">Sasanian Empire</a> &#x2022; <a href="../A/Seljuk_Empire" title="Seljuk Empire" id="mwRg">Seljuk Empire</a> &#x2022; <a href="../A/Soviet_Union" title="Soviet Union" id="mwRw">Soviet Union</a> &#x2022; <a href="../A/War" title="War" id="mwSA">War</a></p>
+
+</section><section data-mw-section-id="4" id="mwSQ"><h2 id="Sciences">Sciences</h2>
+<p id="mwSg"><a href="../A/Agriculture" title="Agriculture" id="mwSw">Agriculture</a> &#x2022; <a href="../A/Applied_mathematics" title="Applied mathematics" id="mwTA">Applied mathematics</a> &#x2022; <a href="../A/Architecture" title="Architecture" id="mwTQ">Architecture</a> &#x2022; <a href="../A/Computer_science" title="Computer science" id="mwTg">Computer science</a> &#x2022; <a href="../A/Engineering" title="Engineering" id="mwTw">Engineering</a> &#x2022; <a href="../A/Forensics" title="Forensics" class="mw-redirect" id="mwUA">Forensics</a> &#x2022; <a href="../A/Optics" title="Optics" id="mwUQ">Optics</a> &#x2022; <a href="../A/Dentistry" title="Dentistry" id="mwUg">Dentistry</a> &#x2022; <a href="../A/Medicine" title="Medicine" id="mwUw">Medicine</a> &#x2022; <a href="../A/Nursing" title="Nursing" id="mwVA">Nursing</a> &#x2022; <a href="../A/Pharmacy" title="Pharmacy" id="mwVQ">Pharmacy</a> &#x2022; <a href="../A/Social_work" title="Social work" id="mwVg">Social work</a> &#x2022; <a href="../A/Veterinary_medicine" title="Veterinary medicine" id="mwVw">Veterinary medicine</a> &#x2022; <a href="../A/Astronomy" title="Astronomy" id="mwWA">Astronomy</a> &#x2022; <a href="../A/Biology" title="Biology" id="mwWQ">Biology</a> &#x2022; <a href="../A/Chemistry" title="Chemistry" id="mwWg">Chemistry</a> &#x2022; <a href="../A/Earth_sciences" title="Earth sciences" class="mw-redirect" id="mwWw">Earth sciences</a> &#x2022; <a href="../A/Physics" title="Physics" id="mwXA">Physics</a> &#x2022; <a href="../A/Social_sciences" title="Social sciences" class="mw-redirect" id="mwXQ">Social sciences</a></p>
+
+</section><section data-mw-section-id="5" id="mwXg"><h2 id="Society">Society</h2>
+<p id="mwXw"><a href="../A/Biography" title="Biography" id="mwYA">Biography</a> &#x2022; <a href="../A/Community" title="Community" id="mwYQ">Community</a> &#x2022; <a href="../A/Culture" title="Culture" id="mwYg">Culture</a> &#x2022; <a href="../A/Death" title="Death" id="mwYw">Death</a> &#x2022; <a href="../A/Education" title="Education" id="mwZA">Education</a> &#x2022; <a href="../A/Freedom_of_speech" title="Freedom of speech" id="mwZQ">Freedom of speech</a> &#x2022; <a href="../A/Human_rights" title="Human rights" id="mwZg">Human rights</a> &#x2022; <a href="../A/Internet" title="Internet" id="mwZw">Internet</a> &#x2022; <a href="../A/Law" title="Law" id="mwaA">Law</a> &#x2022; <a href="../A/Philosophy" title="Philosophy" id="mwaQ">Philosophy</a> &#x2022; <a href="../A/Politics" title="Politics" id="mwag">Politics</a> &#x2022; <a href="../A/Religion" title="Religion" id="mwaw">Religion</a> &#x2022; <a href="../A/Social_movement" title="Social movement" id="mwbA">Social movements</a></p>
+
+</section><section data-mw-section-id="6" id="mwbQ"><h2 id="Sports">Sports</h2>
+<p id="mwbg"><a href="../A/Asian_Games" title="Asian Games" id="mwbw">Asian Games</a> &#x2022; <a href="../A/Commonwealth_Games" title="Commonwealth Games" id="mwcA">Commonwealth Games</a> &#x2022; <a href="../A/Olympics" title="Olympics" class="mw-redirect" id="mwcQ">Olympics</a> &#x2022; <a href="../A/Paralympics" title="Paralympics" class="mw-redirect" id="mwcg">Paralympics</a> &#x2022; <a href="../A/American_football" title="American football" id="mwcw">American football</a> &#x2022; <a href="../A/Association_football" title="Association football" id="mwdA">Association football</a> &#x2022; <a href="../A/Sport_of_athletics" title="Sport of athletics" id="mwdQ">Sport of athletics</a> &#x2022; <a href="../A/Badminton" title="Badminton" id="mwdg">Badminton</a> &#x2022; <a href="../A/Baseball" title="Baseball" id="mwdw">Baseball</a> &#x2022; <a href="../A/Basketball" title="Basketball" id="mweA">Basketball</a> &#x2022; <a href="../A/Cricket" title="Cricket" id="mweQ">Cricket</a> &#x2022; <a href="../A/Gymnastics" title="Gymnastics" id="mweg">Gymnastics</a> &#x2022; <a href="../A/Martial_arts" title="Martial arts" id="mwew">Martial arts</a> &#x2022; <a href="../A/Motorcycle_sport" title="Motorcycle sport" id="mwfA">Motorcycle sport</a> &#x2022; <a href="../A/Professional_wrestling" title="Professional wrestling" id="mwfQ">Professional wrestling</a> &#x2022; <a href="../A/Rugby_league" title="Rugby league" id="mwfg">Rugby league</a> &#x2022; <a href="../A/Rugby_union" title="Rugby union" id="mwfw">Rugby union</a> &#x2022; <a href="../A/Swimming" title="Swimming" id="mwgA">Swimming</a> &#x2022; <a href="../A/Tennis" title="Tennis" id="mwgQ">Tennis</a></p>
+
+</section><section data-mw-section-id="7" id="mwgg"><h2 id="Technology">Technology</h2>
+<p id="mwgw"><a href="../A/Agriculture" title="Agriculture" id="mwhA">Agriculture</a> &#x2022; <a href="../A/Astronomy" title="Astronomy" id="mwhQ">Astronomy</a> &#x2022; <a href="../A/Aviation" title="Aviation" id="mwhg">Aviation</a> &#x2022; <a href="../A/Biotechnology" title="Biotechnology" id="mwhw">Biotechnology</a> &#x2022; <a href="../A/Computer_science" title="Computer science" id="mwiA">Computer science</a> &#x2022; <a href="../A/Electronics" title="Electronics" id="mwiQ">Electronics</a> &#x2022; <a href="../A/Energy" title="Energy" id="mwig">Energy</a> &#x2022; <a href="../A/Engineering" title="Engineering" id="mwiw">Engineering</a> &#x2022; <a href="../A/Infrastructure" title="Infrastructure" id="mwjA">Infrastructure</a> &#x2022; <a href="../A/Information_technology" title="Information technology" id="mwjQ">Information technology</a> &#x2022; <a href="../A/Nanotechnology" title="Nanotechnology" id="mwjg">Nanotechnology</a> &#x2022; <a href="../A/Philosophy_of_science" title="Philosophy of science" id="mwjw">Philosophy of science</a> &#x2022; <a href="../A/Radio" title="Radio" id="mwkA">Radio</a> &#x2022; <a href="../A/Renewable_energy" title="Renewable energy" id="mwkQ">Renewable energy</a> &#x2022; <a href="../A/Robotics" title="Robotics" id="mwkg">Robotics</a> &#x2022; <a href="../A/Software" title="Software" id="mwkw">Software</a> &#x2022; <a href="../A/Spaceflight" title="Spaceflight" id="mwlA">Spaceflight</a> &#x2022; <a href="../A/Sustainable_development" title="Sustainable development" id="mwlQ">Sustainable development</a> &#x2022; <a href="../A/Telecom" title="Telecom" class="mw-disambig" id="mwlg">Telecom</a> &#x2022; <a href="../A/Trains" title="Trains" class="mw-redirect" id="mwlw">Trains</a> &#x2022; <a href="../A/Transport" title="Transport" id="mwmA">Transport</a></p>
+
+<!--&#x2D;&#x2D; Kiwix&#x2D;&#x2D;-->
+</section><section data-mw-section-id="8" id="mwmQ"><h2 id="Kiwix"><figure-inline id="mwmg"><span id="mwmw"><img alt src="../I/Kiwix_logo_v3.svg.png.webp" data-file-width="512" data-file-height="512" data-file-type="drawing" height="38" width="38" id="mwnA" loading="lazy"></span></figure-inline> Kiwix</h2>
+<p id="mwnQ"><b id="mwng"><a href="../A/Kiwix" title="Kiwix" id="mwnw">Kiwix</a></b> is a <a href="../A/Free_and_open-source" title="Free and open-source" class="mw-redirect" id="mwoA">free and open-source</a> offline web browser. It was first launched to allow offline access to <a href="../A/Wikipedia" title="Wikipedia" id="mwoQ">Wikipedia</a>, but has since expanded to include other projects from the <a href="../A/Wikimedia_foundation" title="Wikimedia foundation" class="mw-redirect" id="mwog">Wikimedia foundation</a> as well as other contents like TED talks, MOOCs and public domain books. Kiwix is currently available in more than 100 languages.</p>
+
+<p id="mwow"><span class id="mwpA">See more at <b id="mwpQ"><a href="http://www.kiwix.org" class="external text external" id="mwpg">kiwix.org</a></b></span></p>
+<p id="mwpw">
+<!--&#x2D;&#x2D; Wikipedia&#x2D;&#x2D;-->
+<br id="mwqA"></p>
+</section><section data-mw-section-id="9" id="mwqQ"><h2 id="Wikipedia"><figure-inline id="mwqg"><span id="mwqw"><img alt src="../I/W-circle.svg.png.webp" data-file-width="1500" data-file-height="1500" data-file-type="drawing" height="38" width="38" id="mwrA" loading="lazy"></span></figure-inline> Wikipedia</h2>
+<p id="mwrQ"><b id="mwrg">Wikipedia</b> is a free <a href="../A/Online_encyclopedia" title="Online encyclopedia" id="mwrw">online encyclopedia</a> that allows its users to edit almost any article. Wikipedia is the largest and most popular general <a href="../A/Reference_work" title="Reference work" id="mwsA">reference work</a> on the Internet and is ranked among the ten most popular websites. Wikipedia is owned by the nonprofit <a href="../A/Wikimedia_Foundation" title="Wikimedia Foundation" id="mwsQ">Wikimedia Foundation</a>.</p>
+
+<p id="mwsg"><a href="../A/English_Wikipedia" title="English Wikipedia" id="mwsw">English Wikipedia</a> is the largest out of more than 290 versions of encyclopedias on Wikipedia. Overall, Wikipedia consists of more than 40 million articles.</p>
+
+<!--&#x2D;&#x2D; Other Projects&#x2D;&#x2D;-->
+<!--&#x2D;
+==[[File:Crystal Clear app Internet Connection Tools.svg|28px|link=|alt=]]  Download other projects==
+{| 
+|[[Image:Wiktprintable without text.svg|35px|link=http://download.kiwix.org/zim/wiktionary_en_all.zim|Wiktionnaire]]
+|[[Image:Wikivoyage&#x2D;Logo&#x2D;v3&#x2D;en.svg|30px|link=http://download.kiwix.org/zim/wikivoyage_en_all.zim]]
+|[[Image:TED_three_letter_logo.svg|35px|link=http://download.kiwix.org/zim/ted_en_global_issues.zim]]
+|&#x2D;
+|[http://download.kiwix.org/zim/wiktionary_en_all.zim '''Wiktionary''']<br /&#x3E;The free dictionary (1.3 Gb)
+|[http://download.kiwix.org/zim/wikivoyage_en_all.zim '''Wikivoyage''']<br /&#x3E;Travel guide (580 Mb)
+|[http://download.kiwix.org/zim/ted_en_global_issues.zim '''TED global''']<br /&#x3E;Conferences (15 Gb)
+|}
+&#x2D;-->
+<meta property="mw:PageProp/notoc" id="mwtA"></section><!--htdig_noindex--><div><div style="clear:both; background-image:linear-gradient(180deg, #E8E8E8, white); border-top: dashed 2px #AAAAAA; padding: 0.5em 0.5em 0.5em 0.5em; margin-top: 1em; direction: ltr;">
+    This article is issued from <a class="external text" title="Last edited on 2020-07-03" href="https://en.wikipedia.org/wiki/?title=User%3AThe_other_Kiwix_guy%2FLanding&amp;oldid=965781645">Wikipedia</a>. The text is licensed under <a class="external text" href="https://creativecommons.org/licenses/by-sa/4.0/">Creative Commons - Attribution - Sharealike</a>. Additional terms may apply for the media files.
+</div>
+</div><!--/htdig_noindex--></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="../-/mw/jsConfigVars.js"></script>
+  <script src="../-/mw/startup.js"></script>
+<script src="../-/mw/jquery.js"></script>
+<script src="../-/mw/mediawiki.js"></script>
+<script src="../-/mw/site.js"></script>
+
+
+
+</body></html>

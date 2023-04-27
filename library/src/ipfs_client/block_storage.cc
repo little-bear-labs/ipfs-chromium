@@ -10,8 +10,8 @@ bool ipfs::BlockStorage::Store(std::string const& cid, ipfs::Block&& block) {
   if (cid2node_.emplace(cid, std::move(block)).second == false) {
     return false;  // We've already seen this block
   }
-  LOG(INFO) << "Stored a block of type: " << ipfs::Stringify(block.type())
-            << ' ' << cid;
+  //  LOG(INFO) << "Stored a block of type: " << ipfs::Stringify(block.type())
+  //  << ' ' << cid;
   CheckListening();
   return true;
 }
@@ -31,12 +31,12 @@ ipfs::Block const* ipfs::BlockStorage::Get(std::string const& cid) const {
 }
 
 void ipfs::BlockStorage::AddListening(UnixFsPathResolver* p) {
-  LOG(INFO) << "AddListening(" << p->waiting_on() << ')';
+  LOG(INFO) << "AddListening(" << p->current_cid() << ')';
   listening_.insert(p);
 }
 
 void ipfs::BlockStorage::StopListening(UnixFsPathResolver* p) {
-  LOG(INFO) << "StopListening(" << p->waiting_on() << ')';
+  LOG(INFO) << "StopListening(" << p->current_cid() << ')';
   auto e = std::remove(listening_.begin(), listening_.end(), p);
   listening_.erase(e, listening_.end());
 }
@@ -46,7 +46,7 @@ void ipfs::BlockStorage::CheckListening() {
   while (looking) {
     looking = false;
     for (UnixFsPathResolver* ptr : listening_) {
-      auto cid = ptr->waiting_on();
+      auto cid = ptr->current_cid();
       if (cid.empty()) {
         LOG(INFO) << "Kicking a listener out.";
         looking = true;

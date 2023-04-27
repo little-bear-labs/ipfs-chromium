@@ -96,8 +96,7 @@ void ipfs::IpfsUrlLoader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
   }
   LOG(INFO) << "cid=" << cid << " remainder=" << remainder;
   me->resolver_ = std::make_shared<UnixFsPathResolver>(
-      me->state_.storage(), me->api_->scheduler(), std::string{cid}, remainder,
-      me->api_);
+      me->state_.storage(), std::string{cid}, remainder, me->api_);
   me->api_->SetLoaderFactory(lower_loader_factory_);
   me->resolver_->Step(shared_from_this());
 }
@@ -129,9 +128,11 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   if (!head->headers) {
     LOG(ERROR) << "\n\tFailed to create headers!\n";
   }
+  head->headers->SetHeader("Content-Type", mime_type);
   head->parsed_headers =
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});
   head->was_fetched_via_spdy = false;
+  LOG(INFO) << "Sending response with mime type " << head->mime_type;
   client_->OnReceiveResponse(std::move(head), std::move(pipe_cons_),
                              absl::nullopt);
   client_->OnComplete(network::URLLoaderCompletionStatus{});

@@ -1,11 +1,13 @@
 #include <ipfs_client/ipns_names.h>
 
+#include <google/protobuf/stubs/logging.h>
 #include <gtest/gtest.h>
 
 namespace {
 struct IpnsNamesTest : public ::testing::Test {
   IpnsNamesTest();
   ipfs::IpnsNames tested;
+  google::protobuf::LogSilencer no_log;
 };
 }  // namespace
 
