@@ -2,8 +2,43 @@ name: Basic library (ipfs_client) build
 on:
   push:
 jobs:
+  test:
+    name: Run Tests & Publish Coverage Report
+    runs-on: ubuntu-latest
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes cmake ninja-build lcov binutils
+      - name: Configure
+        shell: bash
+        run: |
+          mkdir build
+          cmake \
+            -G Ninja \
+            -S . \
+            -B build \
+            -D CMAKE_BUILD_TYPE=Debug
+      - name: Run Tests
+        shell: bash
+        run: cmake --build build --config Debug --target cov
+      - name: Upload coverage reports to Codecov.com
+        uses: codecov/codecov-action@v3
+        with:
+          files: build/library/cov.info
   build:
     name: ${{ matrix.config.name }}
+    needs: test
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: true
@@ -18,13 +53,30 @@ jobs:
               generators: "Ninja"
             }
           - {
-            name: "Ubuntu",
-            os: ubuntu-latest,
-            build_type: "Release",
-            cc: "gcc",
-            cxx: "g++",
-            generators: "Ninja"
-          }
+              name: "Ubuntu",
+              os: ubuntu-latest,
+              build_type: "Release",
+              cc: "gcc",
+              cxx: "g++",
+              generators: "Ninja"
+            }
+          - {
+              name: "Ubuntu-Debug",
+              os: ubuntu-latest,
+              build_type: "Debug",
+              cc: "gcc",
+              cxx: "g++",
+              generators: "Ninja"
+            }
+#          - {
+#              name: "Windows Latest MinGW",
+#              os: windows-latest,
+#              build_type: "Release",
+#              cc: "gcc",
+#              cxx: "g++",
+#              archiver: "7z a",
+#              generators: "Ninja"
+#            }
     steps:
       - uses: actions/checkout@v3
       - name: Print env
@@ -49,6 +101,16 @@ jobs:
           brew install cmake ninja
           ninja --version
           cmake --version
+      - name: Install dependencies on Windows
+        if: startsWith(matrix.config.os, 'windows')
+        run: |
+          choco install ninja cmake
+          python3 -m pip install --upgrade pip
+          python3 -m pip install conan
+          conan profile detect
+          ninja --version
+          cmake --version
+          conan --version
       - name: Configure
         shell: bash
         run: |
@@ -69,22 +131,3 @@ jobs:
           name: static_library.${{ matrix.config.os }}
           path: build/library/libipfs_client.a # TODO .lib naming on Windows
           retention-days: 1
-      - name: Coverage
-        if: startsWith(matrix.config.os, 'ubuntu')
-        shell: bash
-        run: |
-          sudo apt-get install --yes lcov binutils
-          cmake -B build # So CMake knows lcov etc exists now
-          cmake --build build --config ${{ matrix.config.build_type }} --target cov
-      - name: HTML Preview
-        id: html_preview
-        uses: pavi2410/html-preview-action@v2
-        with:
-          html_file: 'build/library/cov/index.html'
-      - name: Upload Coverage Report
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: 'build/library/cov/'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v1

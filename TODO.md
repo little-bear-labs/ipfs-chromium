@@ -8,7 +8,7 @@
 * User settings
 * ChromiumStyle() (accessors_only())
 * Persist promote/demote (perhaps integrated with user settings)
-* Documentation
+* Documentation (among other things, check up on BUILDING)
 * Code cleanup
 * Robustness (all the other hash algos, etc.)
 * prefetch
