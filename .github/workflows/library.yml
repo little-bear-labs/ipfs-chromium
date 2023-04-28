@@ -1,6 +1,6 @@
 name: Basic library (ipfs_client) build
 on:
-  pull_request:
+  push:
 jobs:
   build:
     name: ${{ matrix.config.name }}
@@ -69,20 +69,22 @@ jobs:
           name: static_library.${{ matrix.config.os }}
           path: build/library/libipfs_client.a # TODO .lib naming on Windows
           retention-days: 1
-#      - id: 'auth'
-#        uses: 'google-github-actions/auth@v1'
-#        with:
-#          project_id: ${{ secrets.GCP_PROJECT_ID }}
-#          service_account_key: ${{ secrets.GCP_SERVICE_KEY }}
-#          export_default_credentials: true
-#      - name: Set up Google Cloud SDK
-#        uses: google-github-actions/setup-gcloud@v0
-#        with:
-#          project_id: ${{ secrets.GCP_PROJECT_ID }}
-#          service_account_key: ${{ secrets.GCP_SERVICE_KEY }}
-#          export_default_credentials: true
-#      - name: Check gcloud CLI
-#        run: gcloud info
-#      - name: GCloud Upload
-#        shell: bash
-#        run: cmake --build build --config ${{ matrix.config.build_type }} --target upload_library
+      - name: Coverage
+        if: startsWith(matrix.config.os, 'ubuntu')
+        shell: bash
+        run: |
+          sudo apt-get install --yes lcov binutils
+          cmake -B build # So CMake knows lcov etc exists now
+          cmake --build build --config ${{ matrix.config.build_type }} --target cov
+      - name: HTML Preview
+        id: html_preview
+        uses: pavi2410/html-preview-action@v2
+        with:
+          html_file: 'build/library/cov/index.html'
+      - name: Upload Coverage Report
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: 'build/library/cov/'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1

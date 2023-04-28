@@ -35,29 +35,39 @@ set_source_files_properties(
 )
 
 add_library(ipfs_client
-    ${sources}
-    ${headers} #Mostly for IDEs' sake - this used to be considered bad practice but... generator expressions and such
-    ${pb_src}
-    ${pb_hdr}
-)
-target_compile_features(ipfs_client
-    PUBLIC
-        cxx_std_${CXX_VERSION}
-)
-target_compile_options(ipfs_client
-    PRIVATE
-        ${WARNING_FLAGS}
-)
-target_include_directories(ipfs_client
-    BEFORE
-    PUBLIC
-        include/
-)
-target_include_directories(ipfs_client
-  PRIVATE
-    src/
-)
-with_vocab(ipfs_client)
+  ${sources}
+  ${headers} #Mostly for IDEs' sake - this used to be considered bad practice but... generator expressions and such
+  ${pb_src}
+  ${pb_hdr}
+  )
+add_library(ipfs_client_covered
+  EXCLUDE_FROM_ALL
+  ${sources}
+  ${headers}
+  ${pb_src}
+  ${pb_hdr}
+  )
+foreach(libname ipfs_client ipfs_client_covered)
+    target_compile_features(${libname}
+        PUBLIC
+            cxx_std_${CXX_VERSION}
+    )
+    target_compile_options(${libname}
+        PRIVATE
+            ${WARNING_FLAGS}
+    )
+    target_include_directories(${libname}
+        BEFORE
+        PUBLIC
+            include/
+    )
+    target_include_directories(${libname}
+      PRIVATE
+        src/
+    )
+    with_vocab(${libname})
+endforeach()
+
 file(
   GLOB pub_incs
   include/*
@@ -83,75 +93,61 @@ add_custom_target(upload_library
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
+include(CodeCoverage)
+append_coverage_compiler_flags_to_target(ipfs_client_covered)
+
 file(GLOB_RECURSE
     unit_test_sources
     CONFIGURE_DEPENDS
     src/*_unittest.cc
 )
 find_package(GTest)
-
 if(GTest_FOUND)
-    include(CodeCoverage)
     enable_testing()
-    add_custom_target(run_tests)
-    foreach(unit_test_source ${unit_test_sources})
-        get_filename_component(name ${unit_test_source} NAME_WE)
-        string(REPLACE _unittest "" source_under_test ${unit_test_source})
-        if(EXISTS "${source_under_test}")
-            list(APPEND unit_test_source "${source_under_test}")
-        endif()
-        add_executable(${name}_runner
-            ${unit_test_source}
-        )
-        target_compile_features(${name}_runner
-            PUBLIC
-                cxx_std_${CXX_VERSION}
-        )
-        target_include_directories(${name}_runner
-          PRIVATE
-            include/
-            src/
-        )
-        target_link_libraries(${name}_runner
-            PUBLIC
-                ipfs_client
-                GTest::gtest
-                GTest::gtest_main
-        )
-        with_vocab(${name}_runner)
-        if(LCOV_PATH)
-            append_coverage_compiler_flags_to_target(${name}_runner)
-        endif()
-        add_test(
-            NAME ${name}_runner
-            COMMAND $<TARGET_FILE:${name}_runner>
-            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-        )
-        add_custom_command(
-            OUTPUT ${name}_cert
-            DEPENDS ${name}_runner
-            COMMAND $<TARGET_FILE:${name}_runner>
-            COMMAND "${CMAKE_COMMAND}" -E touch ${name}_cert
-            WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-        )
-        list(APPEND test_certificates ${name}_cert)
-        add_custom_target(run_${name}
-          DEPENDS ${name}_runner
-          COMMAND $<TARGET_FILE:${name}_runner>
-          WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-        )
-        add_dependencies(run_tests run_${name})
-    endforeach()
-    add_custom_target(check_tests
-#        ALL
-        SOURCES ${test_certificates}
-        COMMAND echo "Tests are up-to-date."
+    add_executable(unit_test_runner
+      EXCLUDE_FROM_ALL
+      ${unit_test_sources}
+    )
+    target_compile_features(unit_test_runner
+      PUBLIC
+      cxx_std_${CXX_VERSION}
+      )
+    target_include_directories(unit_test_runner
+      PRIVATE
+      include/
+      src/
+      )
+    target_link_libraries(unit_test_runner
+      PUBLIC
+      ipfs_client_covered
+      GTest::gtest
+      GTest::gtest_main
+      )
+    with_vocab(unit_test_runner)
+    add_custom_target(run_tests
+      DEPENDS unit_test_runner
+      COMMAND $<TARGET_FILE:unit_test_runner>
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    )
+    add_custom_command(
+      OUTPUT ut.cert
+      DEPENDS unit_test_runner
+      COMMAND $<TARGET_FILE:unit_test_runner>
+      COMMAND "${CMAKE_COMMAND}" -E touch ut.cert
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    )
+    add_custom_target(ut
+      DEPENDS ut.cert
+      COMMAND "${CMAKE_COMMAND}" -E echo "Tests up-to-date"
     )
     if(LCOV_PATH)
         setup_target_for_coverage_lcov(
           NAME cov
           DEPENDENCIES run_tests
+          EXECUTABLE $<TARGET_FILE:unit_test_runner>
         )
+    else()
+        message(WARNING "Cannot provide coverage report without lcov")
     endif()
 else()
     message(WARNING "Not running tests - no gtest available.")

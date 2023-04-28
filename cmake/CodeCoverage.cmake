@@ -146,7 +146,9 @@ find_program( FASTCOV_PATH NAMES fastcov fastcov.py )
 find_program( GENHTML_PATH NAMES genhtml genhtml.perl genhtml.bat )
 find_program( GCOVR_PATH gcovr PATHS ${CMAKE_SOURCE_DIR}/scripts/test)
 find_program( CPPFILT_PATH NAMES c++filt )
-
+if($ENV{DISPLAY})
+    find_program( OPEN_CMD NAMES xdg-open )
+endif()
 if(NOT GCOV_PATH)
     message(FATAL_ERROR "gcov not found! Aborting...")
 endif() # NOT GCOV_PATH
@@ -265,14 +267,11 @@ function(setup_target_for_coverage_lcov)
 
     # Setting up commands which will be run to generate coverage data.
     # Cleanup lcov
-#    set(LCOV_CLEAN_CMD
-#        ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} -directory . -b ${BASEDIR} --zerocounters
-#    )
-    # Create baseline to make sure untouched files show up in the report
-    set(LCOV_BASELINE_CMD
-        ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} -c -i -d . -b
-        ${BASEDIR} -o ${Coverage_NAME}.base
+    set(LCOV_CLEAN_CMD
+        ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} -directory . -b ${BASEDIR} --zerocounters
     )
+    # Create baseline to make sure untouched files show up in the report
+    set(LCOV_BASELINE_CMD ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} -c --no-external -i -d . -b ${BASEDIR} -o ${Coverage_NAME}.base )
     # Run tests
     set(LCOV_EXEC_TESTS_CMD
         ${Coverage_EXECUTABLE} ${Coverage_EXECUTABLE_ARGS}
@@ -280,7 +279,7 @@ function(setup_target_for_coverage_lcov)
     # Capturing lcov counters and generating report
     set(LCOV_CAPTURE_CMD
         ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} --directory . -b
-        ${BASEDIR} --capture --output-file ${Coverage_NAME}.capture
+        ${BASEDIR} --capture --no-external --output-file ${Coverage_NAME}.capture
     )
     # add baseline counters
     set(LCOV_BASELINE_COUNT_CMD
@@ -294,7 +293,7 @@ function(setup_target_for_coverage_lcov)
     )
     # Generate HTML output
     set(LCOV_GEN_HTML_CMD
-        ${GENHTML_PATH} ${GENHTML_EXTRA_ARGS} ${Coverage_GENHTML_ARGS} -o
+        ${GENHTML_PATH} ${GENHTML_EXTRA_ARGS} ${Coverage_GENHTML_ARGS} --prefix "${BASEDIR}" -o
         ${Coverage_NAME} ${Coverage_NAME}.info
     )
     if(${Coverage_SONARQUBE})
@@ -385,7 +384,11 @@ function(setup_target_for_coverage_lcov)
         COMMAND ;
         COMMENT "Open ./${Coverage_NAME}/index.html in your browser to view the coverage report."
     )
-
+    if(OPEN_CMD)
+        add_custom_command(TARGET ${Coverage_NAME} POST_BUILD
+          COMMAND "${OPEN_CMD}" ./${Coverage_NAME}/index.html
+          )
+    endif()
 endfunction() # setup_target_for_coverage_lcov
 
 # Defines a target for running and collection code coverage information
@@ -735,9 +738,7 @@ endfunction() # append_coverage_compiler_flags
 function(append_coverage_compiler_flags_to_target name)
     separate_arguments(_flag_list NATIVE_COMMAND "${COVERAGE_COMPILER_FLAGS}")
     target_compile_options(${name} PRIVATE ${_flag_list})
-    #message(WARNING "In append_coverage_compiler_flags_to_target(${name}), CMAKE_C_COMPILER_ID=${CMAKE_C_COMPILER_ID}")
     if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_Fortran_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         target_link_libraries(${name} PRIVATE gcov)
-        #message(FATAL_ERROR "Linking '${name}' to gcov")
     endif()
 endfunction()
