@@ -270,6 +270,11 @@ std::string ipfs::GatewayRequests::MimeType(std::string extension,
                          net::ForceSniffFileUrlsForHtml::kDisabled, &result)) {
     LOG(INFO) << "Got " << result << " from content of " << url;
   }
+  if (result.empty() || result == "application/octet-stream") {
+    // C'mon, man
+    net::SniffMimeTypeFromLocalData({content.data(), content.size()}, &result);
+    LOG(INFO) << "Falling all the way back to content type " << result;
+  }
   return result;
 }
 std::string ipfs::GatewayRequests::UnescapeUrlComponent(

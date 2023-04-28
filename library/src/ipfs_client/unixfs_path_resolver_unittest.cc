@@ -33,7 +33,7 @@ struct Api final : public ipfs::NetworkingApi {
                     std::shared_ptr<ipfs::DagListener>,
                     ipfs::Priority priority) {
     if (priority) {
-      auto ec = std::system(("./incblock.sh " + cid).c_str());
+      auto ec = std::system(("pwd && ./incblock.sh " + cid).c_str());
       EXPECT_EQ(ec, 0);
       EXPECT_EQ("Nothing additional should be requested", cid);
     }
@@ -46,9 +46,13 @@ struct Api final : public ipfs::NetworkingApi {
                                   std::string const& url) const {
     throw 8;
   }
+  std::size_t head_size = 0UL;
   std::string MimeType(std::string ext,
                        std::string_view cont,
                        std::string const& url) const {
+    if (head_size) {
+      EXPECT_EQ(cont.size(), head_size);
+    }
     LOG(INFO) << "MimeType(ext=" << ext << ",cont.size=" << cont.size()
               << ",url" << url << ')';
     return ext;
@@ -129,9 +133,10 @@ TEST_F(UnixFsPathResolverTest, WikipediaLandingPage) {
               listener->bytes_received.size())
       << listener->bytes_received;
 }
-/*
+
 TEST_F(UnixFsPathResolverTest, ObservedIncorrectMime) {
   setup(api, storage);
+  api->head_size = 262144;
   auto resolver = ipfs::UnixFsPathResolver(
       storage, "QmeVskzFYtigsDBAKuHjtiX1azEUtCtrbXcPi9TK6ES4cX",
       "/assets/index-12705bf9.js", api);
@@ -140,9 +145,9 @@ TEST_F(UnixFsPathResolverTest, ObservedIncorrectMime) {
   EXPECT_EQ(listener->is_done, false);
   resolver.Step(listener);
   EXPECT_EQ(listener->is_done, true);
-  EXPECT_EQ(listener->mime, "text/javascript; charset=utf-8");
+  EXPECT_EQ(listener->mime, "js");
+  //  EXPECT_EQ(listener->mime, "text/javascript; charset=utf-8");
 }
-*/
 namespace {
 using Codec = libp2p::multi::ContentIdentifierCodec;
 void reals(ipfs::BlockStorage& store);

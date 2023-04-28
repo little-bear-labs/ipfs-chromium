@@ -127,14 +127,14 @@ if(GTest_FOUND)
     add_custom_target(run_tests
       DEPENDS unit_test_runner
       COMMAND $<TARGET_FILE:unit_test_runner>
-      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+      WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
     )
     add_custom_command(
       OUTPUT ut.cert
       DEPENDS unit_test_runner
       COMMAND $<TARGET_FILE:unit_test_runner>
       COMMAND "${CMAKE_COMMAND}" -E touch ut.cert
-      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+      WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
     )
     add_custom_target(ut
       DEPENDS ut.cert
