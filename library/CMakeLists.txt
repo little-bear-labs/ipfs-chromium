@@ -19,9 +19,9 @@ file(GLOB_RECURSE
     include/*.h
 )
 file(GLOB
-        protos
-        *.proto
-        )
+    protos
+    components/ipfs/*.proto
+)
 find_package(Protobuf REQUIRED)
 protobuf_generate_cpp(
         pb_src

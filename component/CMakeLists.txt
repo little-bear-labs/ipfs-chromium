@@ -120,3 +120,33 @@ add_custom_command(
   COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome" "${CMAKE_BINARY_DIR}/chrome_browser"
   COMMENT "Symlinking... your browser can be found here: ${CMAKE_BINARY_DIR}/chrome_browser or ${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome"
 )
+
+add_custom_target(inc_link
+  COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/inc_link.py" "${CMAKE_BINARY_DIR}"
+  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+  )
+
+add_library(out_of_tree
+  EXCLUDE_FROM_ALL
+  ${srcs}
+  )
+target_compile_features(out_of_tree
+  PUBLIC
+    #cxx_std_${CXX_VERSION}
+    cxx_std_20
+  )
+target_compile_options(out_of_tree
+  PUBLIC
+    ${WARNING_FLAGS}
+  )
+target_link_libraries(out_of_tree
+  PUBLIC
+    ipfs_client
+  )
+target_include_directories(out_of_tree
+  SYSTEM
+  BEFORE
+  PRIVATE
+    "${CMAKE_CURRENT_BINARY_DIR}/inc_link"
+  )
+add_dependencies(out_of_tree inc_link)

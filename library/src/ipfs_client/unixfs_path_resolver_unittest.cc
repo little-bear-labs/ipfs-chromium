@@ -4,8 +4,8 @@
 #include <ipfs_client/networking_api.h>
 #include <libp2p/multi/content_identifier_codec.hpp>
 #include <libp2p/multi/multibase_codec/codecs/base58.hpp>
-#include "pb_dag.pb.h"
-#include "unix_fs.pb.h"
+#include "components/ipfs/pb_dag.pb.h"
+#include "components/ipfs/unix_fs.pb.h"
 
 #include <gtest/gtest.h>
 

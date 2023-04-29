@@ -3,11 +3,7 @@
 
 #include <vocab/byte_view.h>
 
-#if __has_include("components/ipfs/keys.pb.h")
 #include "components/ipfs/keys.pb.h"
-#else
-#include "keys.pb.h"
-#endif
 
 #include <functional>
 

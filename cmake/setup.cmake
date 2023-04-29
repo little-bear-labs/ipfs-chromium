@@ -120,7 +120,7 @@ function(with_vocab target)
             )
     if(absl_FOUND)
         target_link_libraries(${target}
-            PRIVATE # Can't allow these to propagate to component
+            PUBLIC
                 absl::statusor
         )
     else()
@@ -128,7 +128,7 @@ function(with_vocab target)
     endif()
     if(Boost_FOUND)
         target_link_libraries(${target}
-            PRIVATE
+            PUBLIC
                 Boost::headers
         )
     else()
@@ -136,7 +136,7 @@ function(with_vocab target)
     endif()
     if(OpenSSL_FOUND)
         target_link_libraries(${target}
-            PRIVATE
+            PUBLIC
                 OpenSSL::Crypto
         )
     endif()

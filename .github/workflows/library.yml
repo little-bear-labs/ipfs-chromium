@@ -1,6 +1,6 @@
 name: Basic library (ipfs_client) build
 on:
-  push:
+  pull_request:
 jobs:
   test:
     name: Run Tests & Publish Coverage Report

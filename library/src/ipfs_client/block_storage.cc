@@ -31,7 +31,7 @@ ipfs::Block const* ipfs::BlockStorage::Get(std::string const& cid) const {
 }
 
 void ipfs::BlockStorage::AddListening(UnixFsPathResolver* p) {
-  LOG(INFO) << "AddListening(" << p->current_cid() << ')';
+  //  LOG(INFO) << "AddListening(" << p->current_cid() << ')';
   listening_.insert(p);
 }
 
