@@ -93,8 +93,10 @@ add_custom_target(upload_library
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
-include(CodeCoverage)
-append_coverage_compiler_flags_to_target(ipfs_client_covered)
+if(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+  include(CodeCoverage)
+  append_coverage_compiler_flags_to_target(ipfs_client_covered)
+endif()
 
 file(GLOB_RECURSE
     unit_test_sources

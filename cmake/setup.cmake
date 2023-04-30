@@ -30,15 +30,7 @@ if(HAVE_PIP)
         #How incredibly obnoxious is it that conan 2 dropped support for these envs?
         file(WRITE "${conan_home}/global.conf" core.net.http:timeout=$ENV{CONAN_REQUEST_TIMEOUT})
     endif()
-    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/conan.cmake")
-        file(
-            DOWNLOAD
-                "https://raw.githubusercontent.com/conan-io/cmake-conan/0.18.1/conan.cmake"
-                "${CMAKE_CURRENT_BINARY_DIR}/conan.cmake"
-            TLS_VERIFY ON
-        )
-    endif()
-    include(${CMAKE_CURRENT_BINARY_DIR}/conan.cmake)
+    include("${CMAKE_CURRENT_LIST_DIR}/conan.cmake")
     conan_cmake_configure(
         REQUIRES
             abseil/20220623.1
@@ -47,39 +39,40 @@ if(HAVE_PIP)
             openssl/1.1.1t
             protobuf/3.21.9
         OPTIONS
-            boost/1.81.0:header_only=True
-            boost/1.81.0:without_container=False #ipfs_client may use boost
-            boost/1.81.0:without_filesystem=False #container uses filesystem
-            boost/1.81.0:without_atomic=False #filesystem uses atomic
-            boost/1.81.0:without_system=False #filesystem uses system
-            boost/1.81.0:without_math=True
-            boost/1.81.0:without_wave=True
-            boost/1.81.0:without_contract=True
-            boost/1.81.0:without_exception=True
-            boost/1.81.0:without_graph=True
-            boost/1.81.0:without_iostreams=True
-            boost/1.81.0:without_locale=True
-            boost/1.81.0:without_log=True
-            boost/1.81.0:without_program_options=True
-            boost/1.81.0:without_random=True
-            boost/1.81.0:without_regex=True
-            boost/1.81.0:without_mpi=True
-            boost/1.81.0:without_serialization=True
-            boost/1.81.0:without_coroutine=True
-            boost/1.81.0:without_fiber=True
-            boost/1.81.0:without_context=True
-            boost/1.81.0:without_timer=True
-            boost/1.81.0:without_thread=True
-            boost/1.81.0:without_chrono=True
-            boost/1.81.0:without_date_time=True
-            boost/1.81.0:without_graph_parallel=True
-            boost/1.81.0:without_stacktrace=True
-            boost/1.81.0:without_test=True
-            boost/1.81.0:without_type_erasure=True
+            boost/*:header_only=True
+            boost/*:without_container=False #ipfs_client may use boost
+            boost/*:without_filesystem=False #container uses filesystem
+            boost/*:without_atomic=False #filesystem uses atomic
+            boost/*:without_system=False #filesystem uses system
+            boost/*:without_math=True
+            boost/*:without_wave=True
+            boost/*:without_contract=True
+            boost/*:without_exception=True
+            boost/*:without_graph=True
+            boost/*:without_iostreams=True
+            boost/*:without_locale=True
+            boost/*:without_log=True
+            boost/*:without_program_options=True
+            boost/*:without_random=True
+            boost/*:without_regex=True
+            boost/*:without_mpi=True
+            boost/*:without_serialization=True
+            boost/*:without_coroutine=True
+            boost/*:without_fiber=True
+            boost/*:without_context=True
+            boost/*:without_timer=True
+            boost/*:without_thread=True
+            boost/*:without_chrono=True
+            boost/*:without_date_time=True
+            boost/*:without_graph_parallel=True
+            boost/*:without_stacktrace=True
+            boost/*:without_test=True
+            boost/*:without_type_erasure=True
         GENERATORS
             CMakeDeps
         OUTPUT_QUIET
-        PROFILE_AUTO ALL
+        PROFILE default
+        PROFILE_AUTO build_type
     )
     conan_cmake_autodetect(settings)
     conan_cmake_install(

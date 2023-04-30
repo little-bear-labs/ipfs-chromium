@@ -5,14 +5,6 @@ jobs:
   test:
     name: Run Tests & Publish Coverage Report
     runs-on: ubuntu-latest
-    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
-    permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-    # Deploy to the github-pages environment
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -68,15 +60,14 @@ jobs:
               cxx: "g++",
               generators: "Ninja"
             }
-#          - {
-#              name: "Windows Latest MinGW",
-#              os: windows-latest,
-#              build_type: "Release",
-#              cc: "gcc",
-#              cxx: "g++",
-#              archiver: "7z a",
-#              generators: "Ninja"
-#            }
+          - {
+              name: "Windows-MSVC",
+              os: windows-latest,
+              build_type: "Release",
+              cc: "cl",
+              cxx: "cl",
+              generators: "Visual Studio 17 2022"
+            }
     steps:
       - uses: actions/checkout@v3
       - name: Print env
@@ -108,6 +99,7 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install conan
           conan profile detect
+          Copy-Item ".\.github\msvc.profile" -Destination "C:\Users\runneradmin\.conan2\profiles\default"
           ninja --version
           cmake --version
           conan --version

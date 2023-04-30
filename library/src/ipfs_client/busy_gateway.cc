@@ -68,7 +68,7 @@ void ipfs::BusyGateway::reset() {
       if (reqs.end() != e) {
         reqs.erase(e);
       }
-      scheduler_->UpdateDevPage();
+      //      scheduler_->UpdateDevPage();
     }
     scheduler_ = nullptr;
   }
