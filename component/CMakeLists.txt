@@ -71,9 +71,9 @@ configure_file(
 )
 
 add_custom_target(patch_file
-    COMMAND "${GIT_EXECUTABLE}" -C "${CHROMIUM_SOURCE_TREE}" diff --patch > "${CMAKE_CURRENT_LIST_DIR}/rest_of_chromium.patch"
-    COMMENT "Creating patch file (will overwrite)"
-)
+  COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/patch.py" "${CHROMIUM_SOURCE_TREE}" "${CMAKE_CURRENT_LIST_DIR}/patches" "${GIT_EXECUTABLE}"
+  COMMENT "Creating patch file (will overwrite if already present)."
+  )
 
 
 add_custom_target(setup_component
