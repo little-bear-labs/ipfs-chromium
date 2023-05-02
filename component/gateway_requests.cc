@@ -107,10 +107,10 @@ auto ipfs::GatewayRequests::InitiateGatewayRequest(BusyGateway assigned)
   out->loader = network::SimpleURLLoader::Create(std::move(req),
                                                  kTrafficAnnotation, FROM_HERE);
   if (url.find("format=ipns-record") == std::string::npos) {
-    out->loader->SetTimeoutDuration(base::Seconds(16));
+    out->loader->SetTimeoutDuration(base::Seconds(32));
   } else {
     LOG(INFO) << "Doing an IPNS record query, so giving it a long timeout.";
-    out->loader->SetTimeoutDuration(base::Seconds(128));
+    out->loader->SetTimeoutDuration(base::Seconds(256));
   }
   //  out->listener = listener;
   auto cb = base::BindOnce(&ipfs::GatewayRequests::OnResponse,
