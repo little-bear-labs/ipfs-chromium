@@ -10,6 +10,7 @@
   - Update design.md to as-implemented
 * Maintainability
   - Chromium tag -> patch file mapping
+  - Our scripts switch branches or do checkout on Chromium repo _unless_ they _just_ fetched it 
 * Production features
   - User settings
   - Integrate with chromium cache
@@ -28,3 +29,6 @@
   - Github Action release including uploading library artifacts
   - Discovery doesn't really belong in gateway_requests.cc
   - Streamline Windows release, e.g. package_browser 
+  - library published in Conan
+  - Publish binaries in Conan
+
