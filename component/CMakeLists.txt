@@ -124,6 +124,7 @@ add_custom_command(
 add_custom_target(inc_link
   COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/inc_link.py" "${CMAKE_BINARY_DIR}"
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+  DEPENDS in_tree_gen
   )
 
 add_library(out_of_tree
@@ -148,5 +149,9 @@ target_include_directories(out_of_tree
   BEFORE
   PRIVATE
     "${CMAKE_CURRENT_BINARY_DIR}/inc_link"
+  )
+target_include_directories(out_of_tree
+  PUBLIC
+  ../library/src
   )
 add_dependencies(out_of_tree inc_link)

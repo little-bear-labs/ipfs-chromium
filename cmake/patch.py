@@ -89,12 +89,25 @@ class Patcher:
             return y
         else:
             return x
-    def release_versions(self,channel):
-        parms = {'platform': osname(), 'channel': channel}
+    def release_versions(self,channel, platform = None):
+        if platform is None:
+            platform = osname()
+        parms = {'platform': platform, 'channel': channel}
         resp = requests.get(url='https://chromiumdash.appspot.com/fetch_releases', params=parms)
         result = list(map(lambda x: (x['time'] / 1000, x['version']), resp.json()))
         result.sort(reverse=True)
         return result
+    def unavailable(self):
+        avail = list(self.available())
+        for channel in [ 'Dev', 'Beta', 'Stable', 'Extended' ]:
+            for platform in [ 'Linux', 'Mac', 'Windows' ]:
+                try:
+                    when, version = self.release_versions(channel, platform)[0]
+                    if not version in avail:
+                        print(version,'has been the current',platform,channel,'release since',ctime(when),' and we have no patch file for it.')
+                except IndexError:
+                    pass # One may assume this is Linux Extended
+
 
 if __name__ == '__main__':
     if argv[1] == 'apply':
@@ -102,5 +115,7 @@ if __name__ == '__main__':
     elif argv[1] == 'rec':
         print(osname())
         print(Patcher('/mnt/big/lbl/code/chromium/src','git', argv[2]).recommend())
+    elif argv[1] == 'missing':
+        Patcher('/mnt/big/lbl/code/chromium/src','git', 'Debug').unavailable()
     else:
         Patcher(*argv[1:]).create_patch_file()
