@@ -71,7 +71,7 @@ configure_file(
 )
 
 add_custom_target(patch_file
-  COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/patch.py" "${CHROMIUM_SOURCE_TREE}" "${CMAKE_CURRENT_LIST_DIR}/patches" "${GIT_EXECUTABLE}"
+  COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/patch.py" "${CHROMIUM_SOURCE_TREE}" "${GIT_EXECUTABLE}" "${CMAKE_BUILD_TYPE}"
   COMMENT "Creating patch file (will overwrite if already present)."
   )
 

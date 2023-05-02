@@ -1,15 +1,28 @@
 #!/usr/bin/env python3
 
 from os import listdir
-from os.path import join, realpath, splitext
+from os.path import dirname, join, realpath, splitext
 from subprocess import check_call, check_output
-from sys import argv, stderr
+from sys import argv, platform, stderr
+from time import ctime
+
+import requests
+
+def osname():
+    match platform:
+        case 'linux':
+            return 'Linux'
+        case 'darwn':
+            return 'Mac'
+        case _:
+            return 'Windows'
 
 class Patcher:
-    def __init__(self,chromium_source_dir, patch_dir, git_bin):
+    def __init__(self,chromium_source_dir, git_bin, build_type):
         self.csrc = chromium_source_dir
-        self.pdir = patch_dir
+        self.pdir = realpath(join(dirname(__file__),'..','component','patches'))
         self.gbin = git_bin
+        self.btyp = build_type
     def create_patch_file(self):
         tag = self.tag_name()
         diff = self.git(['diff', '--patch', tag])
@@ -50,10 +63,20 @@ class Patcher:
         a, b = self.distances('HEAD',ref)
         return a + b
     def recommend(self) -> str:
-        w = '111.0.5563.152'
-        for a in self.available():
-            w = self.maybe_newer(a,w)
-        return w
+        channels = [ 'Dev', 'Beta', 'Stable', 'Extended' ]
+        avail = list(self.available())
+        if self.btyp == 'Release':
+            channels.reverse()
+        print('Avail:',avail)
+        for channel in channels:
+            print("Considering channel",channel,file=stderr)
+            versions = self.release_versions(channel)
+            for when, version in versions:
+                print(f"Found a release version: '{version}'",file=stderr)
+                if version in avail:
+                    print('Suggesting version',version,'which was the',osname(),channel,'channel as of',ctime(when),file=stderr)
+                    return version
+        raise EnvironmentError(f"Can't find an appropriate tag for {osname()}, anymore!")
     def available(self):
         return map(lambda p:splitext(p)[0],listdir(self.pdir))
     def distances(self,frm,ref):
@@ -66,11 +89,18 @@ class Patcher:
             return y
         else:
             return x
+    def release_versions(self,channel):
+        parms = {'platform': osname(), 'channel': channel}
+        resp = requests.get(url='https://chromiumdash.appspot.com/fetch_releases', params=parms)
+        result = list(map(lambda x: (x['time'] / 1000, x['version']), resp.json()))
+        result.sort(reverse=True)
+        return result
 
 if __name__ == '__main__':
     if argv[1] == 'apply':
-        Patcher('/mnt/big/lbl/code/chromium/src','/mnt/big/lbl/code/ipfs-chromium/component/patches','git').apply()
+        Patcher('/mnt/big/lbl/code/chromium/src','git', 'Debug').apply()
     elif argv[1] == 'rec':
-        print(Patcher('/mnt/big/lbl/code/chromium/src','/mnt/big/lbl/code/ipfs-chromium/component/patches','git').recommend())
+        print(osname())
+        print(Patcher('/mnt/big/lbl/code/chromium/src','git', argv[2]).recommend())
     else:
         Patcher(*argv[1:]).create_patch_file()
