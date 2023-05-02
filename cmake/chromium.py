@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 from cache_vars import build_dir, vars, verbose
+from patch import Patcher
 
 from glob import glob
 from os import environ, makedirs, remove
-from os.path import basename, dirname, getmtime, isdir, isfile, join, pathsep, relpath
+from os.path import basename, dirname, getmtime, isdir, isfile, join, relpath, pathsep
 from shutil import copyfile, which
 from sys import argv, executable, stderr
 
@@ -16,12 +17,14 @@ src = src.rstrip('/')
 chromium_dir = dirname(src)
 verbose('dirname(',src,')=',chromium_dir)
 ipfs_chromium_source_dir = vars['ipfs-chromium_SOURCE_DIR']
-tag = vars['CHROMIUM_TAG']
 profile = vars['CHROMIUM_PROFILE']
 git_binary = vars['GIT_EXECUTABLE']
 jobs = vars['parallel_jobs']
 gnargs = vars['GN_ARGS']
+build_type = vars['CMAKE_BUILD_TYPE']
 python = executable
+
+patcher = Patcher(src,git_binary,build_type)
 
 def run(args, fail_ok = False):
     if isdir(src):
@@ -84,17 +87,22 @@ runpy(['-m', 'pip', 'install', 'httplib2'],True)
 if not isdir(src):
     verbose(src,'is not a directory. First create',chromium_dir)
     makedirs(chromium_dir)
+    open(join(build_dir,'fresh'), 'a').close()
+
+if isfile(join(build_dir,'fresh')):
     runpy([join(depot_tools_dir,'fetch.py'),'--nohooks','chromium'])
-branch = out([git_binary, 'rev-parse', '--abbrev-ref', 'HEAD'])
-target_branch = 'ipfs-chromium/' + tag
-if branch == target_branch:
-    verbose('On branch',branch)
-else:
-    print('You are on branch',branch,'not',target_branch,file=stderr)
-    run([git_binary,'branch',target_branch,tag],True)
-    run([git_binary,'checkout',target_branch])
-    run([python, join(depot_tools_dir,'gclient.py'), 'sync', '-j', jobs, '--with_branch_heads'])
-    run([python, join(depot_tools_dir,'gclient.py'), 'runhooks', '-j', jobs])
+    branch = out([git_binary, 'rev-parse', '--abbrev-ref', 'HEAD'])
+    tag = patcher.recommend()
+    target_branch = 'ipfs-chromium/' + tag
+    if branch == target_branch:
+        verbose('Already on branch',branch)
+        remove(join(build_dir,'fresh'))
+    else:
+        print('You are on branch',branch,'not',target_branch,file=stderr)
+        run([git_binary,'branch',target_branch,tag],True)
+        run([git_binary,'checkout',target_branch])
+        run([python, join(depot_tools_dir,'gclient.py'), 'sync', '-j', jobs, '--with_branch_heads'])
+        run([python, join(depot_tools_dir,'gclient.py'), 'runhooks', '-j', jobs])
 
 if not isfile(join(src,'.landmines')):
     run([python, join(depot_tools_dir,'gclient.py'), 'runhooks', '-j', jobs])
@@ -105,7 +113,7 @@ with open(join(src,'chrome', 'browser', 'BUILD.gn')) as w:
         verbose('Chromium seems to be already patched.')
     else:
         print('Apply patch file...',file=stderr)
-        run([git_binary, 'apply', '--verbose', join(ipfs_chromium_source_dir,'component','rest_of_chromium.patch')])
+        patcher.apply()
 
 ipfs_dir = join(src,'components','ipfs')
 if not isdir(ipfs_dir):

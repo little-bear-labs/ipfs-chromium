@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 
-from cache_vars import build_dir, vars
+from cache_vars import build_dir, vars, verbose
 
 from glob import glob
-from os import environ, makedirs, symlink
-from os.path import basename, dirname, exists, getmtime, isdir, isfile, join, pathsep, relpath
-from subprocess import Popen, PIPE, STDOUT, run
+from os import environ, listdir, makedirs, readlink, set_blocking, symlink
+from os.path import basename, dirname, exists, getmtime, isdir, isfile, islink, join, pathsep, relpath, splitext
+from subprocess import DEVNULL, Popen, PIPE, run, TimeoutExpired
 from sys import executable, stderr
-from time import sleep
 
-if 'inside_inc_link' in environ:
-    exit(0)
-environ['inside_inc_link'] = "Don't recurse."
+import json
 
 inc_link = join(build_dir,'component','inc_link')
 chromium_src = vars['CHROMIUM_SOURCE_TREE'].rstrip('/')
@@ -39,15 +36,48 @@ def angled(inc):
     inc = inc[inc.index('<')+1:]
     return inc[0:inc.index('>')]
 
-def search():
-    link_count = 0
-    unfound_count = 0
-    task = Popen(['cmake','--build',build_dir,'--target','out_of_tree'],stdout=PIPE,stderr=STDOUT)
-    while task.poll() is None:
-        line = task.stdout.readline().decode('utf-8').strip()
+link_count = 0
+unfound_count = 0
+
+class Command:
+    def __init__(self,c,d):
+        self.command = c
+        self.command[self.command.index('-c')] = '-E'
+        i = self.command.index('-o')
+        del self.command[i:i+2]
+        verbose('Command is now',self.command)
+        self.directory = d
+        self.start()
+
+    def __str__(self):
+        return ' '.join(self.command)
+
+    def start(self):
+        self.retry = False
+        self.dead = False
+        self.task = Popen( self.command, cwd=self.directory, stdout=DEVNULL, stderr=PIPE, text=True )
+        # self.task = Popen( self.command, cwd=self.directory, stdout=DEVNULL, stderr=PIPE, bufsize=1, text=True )
+        self.left_over = ''
+        set_blocking(self.task.stderr.fileno(), False)
+
+    def finished(self) -> bool:
+        if self.task.poll() is None:
+            return False
+        for line in self.task.stderr.readlines():
+            self.eval_line(line)
+        if self.retry:
+            verbose('Retrying',self.command)
+            self.start()
+            return False
+        return True
+
+    def eval_line(self, line) -> bool:
+        global link_count
+        global unfound_count
         pound = line.find('#include')
         if pound == -1:
-            continue
+            return False
+        verbose('Output line',line,self.command)
         line = line[pound:]
         quote = line.find('"')
         angle = line.find('<')
@@ -62,26 +92,99 @@ def search():
         target = join(inc_link,inc)
         if exists(target):
             print('Message',line,'mentioned',inc,'but it already exists as',target,file=stderr)
-            continue
+            return False
         if not exists( dirname(target) ):
             makedirs(dirname(target))
-        unfound = True
         for base in source_bases:
             source = join(base,inc)
             if exists(source):
                 symlink(source, target)
                 print("Symlink",inc,source,'=>',target)
-                unfound = False
+                self.retry = True
                 link_count += 1
-                break
-        if unfound:
-            print('Failed to resolve:',inc,pound,quote,angle,line,file=stderr)
-            unfound_count += 1
+                return True
+        print('Failed to resolve:',inc,pound,quote,angle,line,file=stderr)
+        unfound_count += 1
+        return False
+
+preempt = False
+def search() -> bool:
+    global link_count
+    global unfound_count
+    global preempt
+    link_count = 0
+    unfound_count = 0
+    compile_commands = json.load(open(join(build_dir,'compile_commands.json')))
+    commands = []
+    for command_obj in compile_commands:
+        artifact = command_obj['output']
+        if not 'out_of_tree' in artifact:
+            continue
+        # evaluate_command(command_obj['command'].split(' '), command_obj['directory'])
+        commands.append(Command(command_obj['command'].split(' '), command_obj['directory']))
+    prev_len = 0
+    existing = None
+    existing_dir_map = None
+    while len(commands):
+        if len(commands) != prev_len:
+            prev_len = len(commands)
+            verbose('Remaining',list(map(str,commands)))
+        try:
+            doneso = next(filter(lambda x: x.finished(), commands))
+            verbose('Finished, removing:',doneso)
+            commands.remove(doneso)
+        except StopIteration:
+            if preempt:
+                pass
+            elif existing is None:
+                existing = glob(inc_link+'/**/*.h',recursive=True)
+                verbose('existing=',existing)
+            elif existing_dir_map is None:
+                existing_dir_map = set()
+                for f in existing:
+                    if islink(f):
+                        t = readlink(f)
+                        existing_dir_map.add( (dirname(f), dirname(t)) )
+                verbose('existing_dir_map=',existing_dir_map)
+            elif len(existing_dir_map):
+                t, f = existing_dir_map.pop()
+                for entry in listdir(f):
+                    source = join(f,entry)
+                    target = join(t,entry)
+                    if exists(target):
+                        continue
+                    verbose('Consider source',source)
+                    if isfile(source) and splitext(entry)[-1] == '.h':
+                        symlink(source, target)
+                        print("Premptively symlink",entry,source,'=>',target)
+                        preempt = True
+                        break
+            else:
+                existing = None
+                existing_dir_map = None
     print('Linked',link_count,'new headers. Trouble with',unfound_count,'others.',file=stderr)
     return link_count > unfound_count
 
-slowness = 0
-while search():
-    slowness += 0.01
-    print('Continue to look for more.',slowness,file=stderr)
-    sleep(slowness)
+def flesh_out() -> bool:
+    existing = glob(inc_link+'/**/*.h',recursive=True)
+    existing_dir_map = set()
+    for f in existing:
+        if islink(f):
+            t = readlink(f)
+            existing_dir_map.add( (dirname(f), dirname(t)) )
+    for t, f in existing_dir_map:
+        for entry in listdir(f):
+            source = join(f,entry)
+            target = join(t,entry)
+            if exists(target):
+                continue
+            if isfile(source) and splitext(entry)[-1] == '.h':
+                symlink(source, target)
+                print("Premptively symlink",entry,source,'=>',target)
+                return True
+    return False
+
+if search():
+    search()
+elif not preempt:
+    flesh_out()
