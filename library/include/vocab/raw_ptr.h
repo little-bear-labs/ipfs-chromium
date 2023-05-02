@@ -1,6 +1,8 @@
 #ifndef IPFS_OBSERVER_PTR_H_
 #define IPFS_OBSERVER_PTR_H_
 
+#include "log_macros.h"
+
 #if __has_include("base/memory/raw_ptr.h")
 #include "base/memory/raw_ptr.h"
 
@@ -27,13 +29,15 @@ class raw_ptr {
 
  public:
   // Chromium's raw_ptr has a default ctor whose semantics depend on build
-  // config For components/ipfs purposes, there is no reason to ever default
+  // config. For components/ipfs purposes, there is no reason to ever default
   // construct. Set it to nullptr. We have time needed to assign a word.
   raw_ptr() = delete;
 
   raw_ptr(T* p) : ptr_{p} {}
   raw_ptr(raw_ptr&&) = default;
   raw_ptr(raw_ptr const&) = default;
+
+  raw_ptr& operator=(raw_ptr const&) = default;
 
   T* get() { return ptr_; }
   T const* get() const { return ptr_; }
@@ -43,6 +47,10 @@ class raw_ptr {
   raw_ptr& operator=(T* p) {
     ptr_ = p;
     return *this;
+  }
+  T& operator*() {
+    DCHECK(ptr_);
+    return *ptr_;
   }
 };
 }  // namespace ipfs

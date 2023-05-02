@@ -43,7 +43,7 @@ class Patcher:
             if d < win_dist or (d == win_dist and len(ref) < len(win)):
                 win_dist = d
                 win = ref
-        print('Best patch file is',win)
+        print('Best patch file is',win,file=stderr)
         self.git(['apply','--verbose',join(self.pdir,win+'.patch')],out=False)
     def git(self,args,out=True) -> str:
         print(args,file=stderr)

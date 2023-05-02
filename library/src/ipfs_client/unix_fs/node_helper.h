@@ -4,6 +4,8 @@
 #include <ipfs_client/dag_block.h>
 #include <ipfs_client/networking_api.h>
 
+#include <vocab/raw_ptr.h>
+
 #include <memory>
 #include <string>
 
@@ -31,9 +33,9 @@ class NodeHelper {
 
  protected:
   std::string cid_;
-  BlockStorage* storage_ = nullptr;
-  UnixFsPathResolver* resolver_ = nullptr;
-  NetworkingApi* api_ = nullptr;
+  raw_ptr<BlockStorage> storage_ = nullptr;
+  raw_ptr<UnixFsPathResolver> resolver_ = nullptr;
+  raw_ptr<NetworkingApi> api_ = nullptr;
 
   Block const* block() const;
   void Delegate(NodeHelper&) const;
