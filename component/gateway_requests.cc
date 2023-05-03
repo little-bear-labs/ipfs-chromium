@@ -157,10 +157,10 @@ bool ipfs::GatewayRequests::ProcessResponse(BusyGateway& gw,
     LOG(ERROR) << "No loader for processing " << gw.url();
     return false;
   }
-  LOG(INFO) << "Neterror(" << ldr->NetError() << ')';
+  // LOG(INFO) << "Neterror(" << ldr->NetError() << ')';
   if (!body) {
-    LOG(INFO) << "ProcessResponse(" << gw.url()
-              << ") Null body - presumably http error.\n";
+    //    LOG(INFO) << "ProcessResponse(" << gw.url()
+    //              << ") Null body - presumably http error.\n";
     return false;
   }
   network::mojom::URLResponseHead const* head = ldr->ResponseInfo();
@@ -191,7 +191,7 @@ bool ipfs::GatewayRequests::ProcessResponse(BusyGateway& gw,
   cid_str.erase(0, 5);  // ipfs/
   cid_str.erase(cid_str.find('?'));
   if (state_.storage().Get(cid_str)) {
-    LOG(INFO) << "Got multiple successful responses for " << cid_str;
+    // LOG(INFO) << "Got multiple successful responses for " << cid_str;
     return true;
   }
   auto cid = libp2p::multi::ContentIdentifierCodec::fromString(cid_str);

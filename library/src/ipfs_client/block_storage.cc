@@ -58,8 +58,8 @@ void ipfs::BlockStorage::CheckListening() {
         break;
       }
       if (Get(cid)) {
-        LOG(INFO) << "A resolver was waiting on " << cid
-                  << " which is now available.";
+        //        LOG(INFO) << "A resolver was waiting on " << cid
+        //                  << " which is now available.";
         auto prev = ptr->MaybeGetPreviousListener();
         if (prev) {
           ptr->Step(prev);

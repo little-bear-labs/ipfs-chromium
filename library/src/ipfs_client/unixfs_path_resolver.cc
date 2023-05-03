@@ -16,7 +16,8 @@ void Self::Step(std::shared_ptr<DagListener> listener) {
   if (cid_.empty()) {
     return;
   }
-  LOG(INFO) << "Step(" << cid_ << ',' << path_ << ',' << original_path_ << ')';
+  // LOG(INFO) << "Step(" << cid_ << ',' << path_ << ',' << original_path_ <<
+  // ')';
   Block const* block = storage_.Get(cid_);
   if (!block) {
     LOG(INFO) << "Current block " << cid_ << " not found. Requesting.";
@@ -30,8 +31,8 @@ void Self::Step(std::shared_ptr<DagListener> listener) {
     listener->FourOhFour(cid_, original_path_);
     return;
   }
-  LOG(INFO) << "Processing block " << cid_ << " of type "
-            << ipfs::Stringify(block->type());
+  // LOG(INFO) << "Processing block " << cid_ << " of type "
+  //           << ipfs::Stringify(block->type());
   auto requestor = [this, &listener](std::string cid, Priority prio) {
     this->Request(listener, cid, prio);
   };
@@ -43,7 +44,7 @@ void Self::Step(std::shared_ptr<DagListener> listener) {
 }
 
 void Self::GetHelper(Block::Type typ) {
-  LOG(INFO) << "Encountered " << cid_ << " of type " << ipfs::Stringify(typ);
+  // LOG(INFO) << "Encountered " << cid_ << " of type " << ipfs::Stringify(typ);
   helper_ = unix_fs::NodeHelper::FromBlockType(typ, pop_path());
   if (helper_) {
     helper_->cid(cid_);
@@ -65,7 +66,7 @@ void Self::Request(std::shared_ptr<DagListener>& listener,
   auto it = already_requested_.find(cid);
   auto t = std::time(nullptr);
   if (it == already_requested_.end()) {
-    LOG(INFO) << "Request(" << cid << ',' << static_cast<long>(prio) << ')';
+    // LOG(INFO) << "Request(" << cid << ',' << static_cast<long>(prio) << ')';
     already_requested_[cid] = {prio, t};
     api_->RequestByCid(cid, listener, prio);
   } else if (prio > it->second.first) {

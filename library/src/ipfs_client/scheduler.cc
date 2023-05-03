@@ -87,7 +87,8 @@ bool ipfs::Scheduler::DetectCompleteFailure(std::string task) const {
   auto fail_count =
       std::count_if(gateways_.begin(), gateways_.end(),
                     [&task](auto& g) { return g.PreviouslyFailed(task); });
-  LOG(INFO) << task << " has already failed on " << fail_count << " gateways.";
+  // LOG(INFO) << task << " has already failed on " << fail_count
+  // << "gateways.";
   return fail_count >= static_cast<long>(gateways_.size());
 }
 void ipfs::Scheduler::CheckSwap(std::size_t index) {
@@ -118,7 +119,7 @@ void ipfs::Scheduler::UpdateDevPage() {
 void ipfs::Scheduler::TaskComplete(std::string const& task) {
   auto todo = task2todo_.find(task);
   if (task2todo_.end() == todo) {
-    LOG(WARNING) << "An unknown TODO " << task << " finished.";
+    // LOG(WARNING) << "An unknown TODO " << task << " finished.";
     return;
   }
   LOG(INFO) << "Task " << task << " completed with "

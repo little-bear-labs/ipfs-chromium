@@ -46,7 +46,7 @@ void ipfs::Gateway::TaskSuccess(std::string const& task) {
   ++priority_;
 }
 void ipfs::Gateway::TaskFailed(std::string const& task) {
-  LOG(INFO) << prefix_ << task << " TaskFailed";
+  // LOG(INFO) << prefix_ << task << " TaskFailed";
   failed_requests_.insert(task);
   priority_ /= 2;
   tasks_.erase(task);

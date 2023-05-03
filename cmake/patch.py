@@ -46,7 +46,6 @@ class Patcher:
         print('Best patch file is',win,file=stderr)
         self.git(['apply','--verbose',join(self.pdir,win+'.patch')],out=False)
     def git(self,args,out=True) -> str:
-        print(args,file=stderr)
         if out:
             return check_output([self.gbin, '-C', self.csrc] + args, text=True).strip()
         else:
@@ -99,15 +98,24 @@ class Patcher:
         return result
     def unavailable(self):
         avail = list(self.available())
+        version_set = {}
         for channel in [ 'Dev', 'Beta', 'Stable', 'Extended' ]:
             for platform in [ 'Linux', 'Mac', 'Windows' ]:
                 try:
                     when, version = self.release_versions(channel, platform)[0]
-                    if not version in avail:
-                        print(version,'has been the current',platform,channel,'release since',ctime(when),' and we have no patch file for it.')
+                    if version in avail:
+                        continue
+                    # print(version,'has been the current',platform,channel,'release since',ctime(when),' and we have no patch file for it.')
+                    if not version in version_set:
+                        sortable = [int(c) for c in version.split('.')]
+                        version_set[version] = [sortable,version]
+                    version_set[version].append(f"{channel}-{platform}-{when}")
                 except IndexError:
                     pass # One may assume this is Linux Extended
-
+        result = list(version_set.values())
+        result.sort(reverse=True)
+        #print(result[0],result[0][1:],result,list(map(lambda x: x[1:], result)))
+        return map(lambda x: x[1:], result)
 
 if __name__ == '__main__':
     if argv[1] == 'apply':
@@ -116,6 +124,8 @@ if __name__ == '__main__':
         print(osname())
         print(Patcher('/mnt/big/lbl/code/chromium/src','git', argv[2]).recommend())
     elif argv[1] == 'missing':
-        Patcher('/mnt/big/lbl/code/chromium/src','git', 'Debug').unavailable()
+        missing = Patcher('/mnt/big/lbl/code/chromium/src','git', 'Debug').unavailable()
+        for m in missing:
+            print(m)
     else:
         Patcher(*argv[1:]).create_patch_file()
