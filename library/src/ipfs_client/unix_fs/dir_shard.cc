@@ -17,12 +17,21 @@ bool Self::Process(std::unique_ptr<NodeHelper>& next_helper,
                    std::shared_ptr<DagListener> listener,
                    std::function<void(std::string, Priority)> requestor,
                    std::string& target_cid) {
+  L_VAR((void*)this)
+  L_VAR(next_path_element_)
   if (!block()) {
     requestor(cid_, resolver_->priority());
     return false;
   }
-  SomePrefetch(requestor);
   auto& block = *(this->block());
+  if (!(block.valid())) {
+    LOG(ERROR) << "DirShard dealing with an invalid block: " << cid_ << " / "
+               << resolver_->original_path();
+    listener->FourOhFour(cid_, resolver_->original_path());
+    return false;
+  }
+  SomePrefetch(requestor);
+
   // node.Data.hashType indicates a multihash function to use to digest path
   // components used for sharding.
   //  It MUST be murmur3-x64-64 (multihash 0x22).
@@ -54,6 +63,9 @@ bool Self::Process(std::unique_ptr<NodeHelper>& next_helper,
   //  }
   bool found = false;
   block.List([&](auto& name, auto cid) {
+    LOG(INFO) << "Listing a child node of a HAMT shard node...";
+    L_VAR(name);
+    L_VAR(cid);
     // Fun fact: there is a spec-defined sort order to these children.
     // We *could* do a binary search.
     if (!absl::StartsWith(name, hamt_hexs_.front())) {

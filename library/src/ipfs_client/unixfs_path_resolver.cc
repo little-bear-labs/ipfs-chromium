@@ -16,12 +16,25 @@ void Self::Step(std::shared_ptr<DagListener> listener) {
   if (cid_.empty()) {
     return;
   }
-  // LOG(INFO) << "Step(" << cid_ << ',' << path_ << ',' << original_path_ <<
-  // ')';
+  if (stepping_) {
+    LOG(INFO) << "UnixFsResolver did a recursion! " << cid_ << " / "
+              << original_path_ << " / " << path_;
+    return;
+  }
+  LOG(INFO) << "Stepping... " << cid_ << " / " << original_path_ << " / "
+            << path_;
+  std::unique_ptr<bool, std::function<void(bool*)>> track_stepping{
+      &stepping_, [](bool* b) { *b = false; }};
+  stepping_ = true;
   Block const* block = storage_.Get(cid_);
   if (!block) {
     LOG(INFO) << "Current block " << cid_ << " not found. Requesting.";
     Request(listener, cid_, prio_);
+    return;
+  }
+  if (!block->valid() || block->type() == Block::Type::Invalid) {
+    LOG(ERROR) << "Encountered broken block!! " << cid_;
+    listener->FourOhFour(cid_, original_path_);
     return;
   }
   if (!helper_) {
@@ -31,20 +44,20 @@ void Self::Step(std::shared_ptr<DagListener> listener) {
     listener->FourOhFour(cid_, original_path_);
     return;
   }
-  // LOG(INFO) << "Processing block " << cid_ << " of type "
-  //           << ipfs::Stringify(block->type());
   auto requestor = [this, &listener](std::string cid, Priority prio) {
     this->Request(listener, cid, prio);
   };
   std::unique_ptr<unix_fs::NodeHelper> helper;
   if (helper_->Process(helper, listener, requestor, cid_)) {
     helper_.swap(helper);
+    stepping_ = false;
     Step(listener);
   }
+  stepping_ = false;
 }
 
 void Self::GetHelper(Block::Type typ) {
-  // LOG(INFO) << "Encountered " << cid_ << " of type " << ipfs::Stringify(typ);
+  LOG(INFO) << "Encountered " << cid_ << " of type " << ipfs::Stringify(typ);
   helper_ = unix_fs::NodeHelper::FromBlockType(typ, pop_path());
   if (helper_) {
     helper_->cid(cid_);
@@ -83,6 +96,7 @@ Self::UnixFsPathResolver(BlockStorage& store,
                          std::string path,
                          std::shared_ptr<NetworkingApi> api)
     : storage_{store}, cid_{cid}, path_{path}, original_path_(path), api_(api) {
+  LOG(INFO) << "UnixFsPathResolver(storage@" << (void*)(&store) << ')';
   constexpr std::string_view filename_param{"filename="};
   auto fn = original_path_.find(filename_param);
   if (fn != std::string::npos) {

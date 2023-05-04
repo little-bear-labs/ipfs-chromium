@@ -22,8 +22,14 @@ class BlockStorage {
 
   ~BlockStorage() noexcept;
 
-  bool Store(std::string const& cid, Block&& block);
-  bool Store(Block&& block);
+  bool Store(std::string headers, Block&& block);
+  bool Store(std::string const& cid, std::string headers, std::string body);
+  bool Store(std::string cid_str,
+             Cid const& cid,
+             std::string headers,
+             std::string body);
+  bool Store(Cid const& cid, std::string headers, Block&&);
+  bool Store(std::string cid_str, Cid const& cid, std::string headers, Block&&);
 
   Block const* Get(std::string const& cid) const;
 
@@ -33,9 +39,14 @@ class BlockStorage {
 
   void CheckListening();
 
+  void cache_search_initiator(std::function<void(std::string)>);
+
  private:
-  flat_map<std::string, Block> cid2node_;
+  std::size_t index_ = 0UL;
+  std::array<Block, 128> nodes_;
+  flat_map<std::string, Block*> cid2node_;
   flat_set<UnixFsPathResolver*> listening_;
+  std::function<void(std::string)> cache_search_initiator_ = {};
 };
 }  // namespace ipfs
 

@@ -75,6 +75,8 @@ ipfs::Block::Block(Block const& rhs)
       cid_(rhs.cid_),
       original_bytes_(rhs.original_bytes_) {}
 
+ipfs::Block::Block() = default;
+
 ipfs::Block::~Block() noexcept {}
 
 void ipfs::Block::InitFromRaw(std::string const& content_bytes) {

@@ -35,17 +35,18 @@ set_source_files_properties(
 )
 
 add_library(ipfs_client
-  ${sources}
-  ${headers} #Mostly for IDEs' sake - this used to be considered bad practice but... generator expressions and such
-  ${pb_src}
-  ${pb_hdr}
+  STATIC
+      ${sources}
+      ${headers} #Mostly for IDEs' sake - this used to be considered bad practice but... generator expressions and such
+      ${pb_src}
+      ${pb_hdr}
   )
 add_library(ipfs_client_covered
   EXCLUDE_FROM_ALL
-  ${sources}
-  ${headers}
-  ${pb_src}
-  ${pb_hdr}
+      ${sources}
+      ${headers}
+      ${pb_src}
+      ${pb_hdr}
   )
 foreach(libname ipfs_client ipfs_client_covered)
     target_compile_features(${libname}
@@ -79,7 +80,16 @@ install(
 )
 install(TARGETS ipfs_client)
 
-set(CPACK_GENERATOR TGZ)#;ZIP;DEB;RPM)
+set(CPACK_GENERATOR TGZ)
+find_program(DPKG_BUILDPACKAGE dpkg-buildpackage)
+if(DPKG_BUILDPACKAGE)
+    list(APPEND CPACK_GENERATOR DEB)
+endif()
+find_program(RPMBUILD rpmbuild)
+if(RPMBUILD)
+    list(APPEND CPACK_GENERATOR RPM)
+endif()
+
 set(CPACK_PACKAGE_NAME "ipfs-client-dev-${CMAKE_BUILD_TYPE}")
 set(CPACK_PACKAGE_VERSION "${CMAKE_PROJECT_VERSION}")
 set(CPACK_PACKAGE_VENDOR "LBL")

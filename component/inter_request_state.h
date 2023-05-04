@@ -1,6 +1,8 @@
 #ifndef IPFS_INTER_REQUEST_STATE_H_
 #define IPFS_INTER_REQUEST_STATE_H_
 
+#include "ipfs_block_cache.h"
+
 #include "ipfs_client/block_storage.h"
 #include "ipfs_client/gateways.h"
 #include "ipfs_client/ipns_names.h"
@@ -31,6 +33,7 @@ class InterRequestState : public base::SupportsUserData::Data {
   IpnsNames& names() { return names_; }
   Scheduler& scheduler();
   std::shared_ptr<GatewayRequests> api();
+  BlockCache cache_;
 
   static InterRequestState& FromBrowserContext(content::BrowserContext*);
 };

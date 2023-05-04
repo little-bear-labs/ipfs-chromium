@@ -44,6 +44,7 @@ class UnixFsPathResolver {
   Priority prio_ = 9;
   std::unordered_map<std::string, std::pair<Priority, std::time_t>>
       already_requested_;
+  bool stepping_ = false;
 
   void Request(std::shared_ptr<DagListener>&, std::string const& cid, Priority);
   void GetHelper(Block::Type);

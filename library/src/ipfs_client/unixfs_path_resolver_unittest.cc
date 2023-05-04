@@ -32,6 +32,7 @@ struct Api final : public ipfs::NetworkingApi {
   void RequestByCid(std::string cid,
                     std::shared_ptr<ipfs::DagListener>,
                     ipfs::Priority priority) {
+    EXPECT_GT(cid.size(), 1U);
     if (priority) {
       auto ec = std::system(("pwd && ./incblock.sh " + cid).c_str());
       EXPECT_EQ(ec, 0);
@@ -153,35 +154,40 @@ using Codec = libp2p::multi::ContentIdentifierCodec;
 void reals(ipfs::BlockStorage& store);
 void setup(std::shared_ptr<ipfs::NetworkingApi> api,
            ipfs::BlockStorage& store) {
-  store.Store("QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX",
-              mock_file("QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX",
-                        "Please ignore\n"));
+  store.Store("", mock_file("QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX",
+                            "Please ignore\n"));
   store.Store(
+      "",
       mock_file("bafybeih5h3u5vqle7laz4kpo3imumdedj2n6y4u5s6zadqgtg77l243zny",
                 "Please ignore\n"));
-  store.Store(mock_file("QmcuGriuDDhMb6hRW71Nt87aDLrqMrh6W3sqxg3H76xEoR",
-                        "<html><body><p>Hello</p></body></html>\n"));
+  store.Store("", mock_file("QmcuGriuDDhMb6hRW71Nt87aDLrqMrh6W3sqxg3H76xEoR",
+                            "<html><body><p>Hello</p></body></html>\n"));
   store.Store(
+      "",
       mock_file("bafybeigyl4jx7snmutilxzewapa4l3qfqlvorxi7qibjtzurhtti5dm5aa",
                 "<html><body><p>Hello</p></body></html>\n"));
-  store.Store(mock_file("QmSsWZwmg7ArN7KCn1hYpZyQAK5eAryqkBehbRRWbkisFG",
-                        "Also ignore\n"));
-  store.Store(mock_directory(
-      "Qmdf4ByEwZtD78Wa2jQmXeQM16xM86P94JmBDjSqsuFXwh",
-      {{"ignored.txt", "QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX"},
-       {"index.html", "QmcuGriuDDhMb6hRW71Nt87aDLrqMrh6W3sqxg3H76xEoR"}}));
-  store.Store(mock_directory(
-      "bafybeihdszhm5xieyovwwqi256pltr5tlvfxzgfxnne7qjm54owrbfyrzq",
-      {{"ignored.txt", "QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX"},
-       {"index.html", "QmcuGriuDDhMb6hRW71Nt87aDLrqMrh6W3sqxg3H76xEoR"}}));
-  store.Store(mock_directory(
-      "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH",
-      {{"adir", "Qmdf4ByEwZtD78Wa2jQmXeQM16xM86P94JmBDjSqsuFXwh"}}));
+  store.Store("", mock_file("QmSsWZwmg7ArN7KCn1hYpZyQAK5eAryqkBehbRRWbkisFG",
+                            "Also ignore\n"));
   store.Store(
-      "bafybeidswjht6punszuomoi6ee2jlcyaz5cislrxa2bbc566tsyycdaxea",
+      "",
       mock_directory(
-          "bafybeidswjht6punszuomoi6ee2jlcyaz5cislrxa2bbc566tsyycdaxea",
-          {{"adir", "Qmdf4ByEwZtD78Wa2jQmXeQM16xM86P94JmBDjSqsuFXwh"}}));
+          "Qmdf4ByEwZtD78Wa2jQmXeQM16xM86P94JmBDjSqsuFXwh",
+          {{"ignored.txt", "QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX"},
+           {"index.html", "QmcuGriuDDhMb6hRW71Nt87aDLrqMrh6W3sqxg3H76xEoR"}}));
+  store.Store(
+      "",
+      mock_directory(
+          "bafybeihdszhm5xieyovwwqi256pltr5tlvfxzgfxnne7qjm54owrbfyrzq",
+          {{"ignored.txt", "QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX"},
+           {"index.html", "QmcuGriuDDhMb6hRW71Nt87aDLrqMrh6W3sqxg3H76xEoR"}}));
+  store.Store(
+      "", mock_directory(
+              "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH",
+              {{"adir", "Qmdf4ByEwZtD78Wa2jQmXeQM16xM86P94JmBDjSqsuFXwh"}}));
+  store.Store(
+      "", mock_directory(
+              "bafybeidswjht6punszuomoi6ee2jlcyaz5cislrxa2bbc566tsyycdaxea",
+              {{"adir", "Qmdf4ByEwZtD78Wa2jQmXeQM16xM86P94JmBDjSqsuFXwh"}}));
   reals(store);
 }
 ipfs::Block mock_directory(std::string cid_str, std::vector<entry> entries) {
@@ -222,7 +228,7 @@ void reals(ipfs::BlockStorage& store) {
       auto cid_str = e.path().filename();
       auto cid = Codec::fromString(cid_str).value();
       std::ifstream f{e.path()};
-      store.Store(ipfs::Block{cid, f});
+      store.Store("", ipfs::Block{cid, f});
     }
   });
 }

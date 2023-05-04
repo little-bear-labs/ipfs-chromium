@@ -20,17 +20,14 @@ using Cid = libp2p::multi::ContentIdentifier;
 class Block {
  public:
   using Multicodec = libp2p::multi::MulticodecType::Code;
-
   Block(Cid const&, std::istream&);
 
   Block(Cid const&, std::string const&);
 
-  // TODO remove these or at least make them private
-  //  Block(Multicodec, std::istream&);
-
-  //  Block(Multicodec, std::string const& binary_data);
-
   Block(Block const&);
+  Block& operator=(Block const&) = default;
+
+  Block();  // Make an invalid block
 
   ~Block() noexcept;
 
@@ -88,10 +85,10 @@ class Block {
  private:
   pb_dag::PBNode node_;
   unix_fs::Data fsdata_;
-  bool valid_;
+  bool valid_ = false;
   bool fs_node_ = false;
   std::string mime_ = {};
-  std::optional<Cid> cid_;
+  std::optional<Cid> cid_ = std::nullopt;
   std::string original_bytes_;
 
   static std::string LinkCid(ipfs::ByteView);

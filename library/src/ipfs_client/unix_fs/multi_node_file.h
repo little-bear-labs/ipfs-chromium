@@ -17,15 +17,16 @@ class MultiNodeFile : public NodeHelper {
  private:
   std::vector<std::pair<std::string, std::optional<MultiNodeFile>>> children_;
   std::size_t written_until_ = 0UL;
+  std::string top_cid_;
 
   bool Process(std::unique_ptr<NodeHelper>&,
                std::shared_ptr<DagListener>,
                std::function<void(std::string, Priority)>,
                std::string&) override;
 
-  void Fetch(std::function<void(std::string, Priority)>);
+  void Fetch(std::function<void(std::string, Priority)>, std::string&);
   bool Write(std::shared_ptr<DagListener>);
-  std::string FirstChunk() const;
+  std::string FirstChunk() ;
 };
 
 }  // namespace unix_fs

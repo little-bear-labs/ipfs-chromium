@@ -18,12 +18,19 @@ auto Self::block() const -> Block const* {
 }
 
 void Self::Delegate(ipfs::unix_fs::NodeHelper& other) const {
+  L_VAR((void*)this);
+  L_VAR((void*)&other);
   other.cid_ = cid_;
+  LOG(INFO) << "NodeHelper::Delegate(storage @" << (void*)(storage_.get())
+            << ')';
   other.storage_ = storage_;
   other.resolver_ = resolver_;
   other.api_ = api_;
 }
-
+void Self::storage(ipfs::BlockStorage& val) {
+  LOG(INFO) << "NodeHelper::storage(@" << (void*)(&val) << ')';
+  storage_ = &val;
+}
 auto Self::FromBlockType(Block::Type typ, std::string path_element)
     -> std::unique_ptr<NodeHelper> {
   switch (typ) {
@@ -36,7 +43,8 @@ auto Self::FromBlockType(Block::Type typ, std::string path_element)
     case Block::Type::HAMTShard:
       return std::make_unique<unix_fs::DirShard>(path_element);
     default:
-      LOG(FATAL) << "TODO : Unhandled UnixFS node of type " << Stringify(typ);
+      LOG(FATAL) << "TODO : Unhandled UnixFS node " << path_element
+                 << " of type " << Stringify(typ);
       return {};
   }
 }

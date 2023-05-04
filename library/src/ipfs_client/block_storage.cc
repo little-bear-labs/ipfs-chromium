@@ -6,28 +6,79 @@
 #include "log_macros.h"
 #include "vocab/stringify.h"
 
-bool ipfs::BlockStorage::Store(std::string const& cid, ipfs::Block&& block) {
-  if (cid2node_.emplace(cid, std::move(block)).second == false) {
-    return false;  // We've already seen this block
+using Codec = libp2p::multi::ContentIdentifierCodec;
+
+bool ipfs::BlockStorage::Store(std::string cid_str,
+                               ipfs::Cid const&,
+                               std::string /*TODO headers*/,
+                               Block&& block) {
+  if (cid2node_.count(cid_str)) {
+    return false;
   }
-  //  LOG(INFO) << "Stored a block of type: " << ipfs::Stringify(block.type())
-  //  << ' ' << cid;
+  auto& n = nodes_[index_];
+  if (n.valid()) {
+    auto old_cid = Codec ::toString(n.cid());
+    if (old_cid.has_value()) {
+      LOG(ERROR) << "Evicting " << old_cid.value() << " to make room for "
+                 << cid_str;
+      cid2node_.erase(old_cid.value());
+    }
+  }
+  n = std::move(block);
+  cid2node_[cid_str] = &n;
+  index_ = (index_ + 1) % nodes_.size();
   CheckListening();
   return true;
 }
-bool ipfs::BlockStorage::Store(Block&& block) {
-  auto cid_res = libp2p::multi::ContentIdentifierCodec::toString(block.cid());
-  DCHECK(cid_res.has_value());
-  return Store(cid_res.value(), std::move(block));
+bool ipfs::BlockStorage::Store(const ipfs::Cid& cid,
+                               std::string headers,
+                               ipfs::Block&& block) {
+  auto cid_val = Codec::toString(cid);
+  if (cid_val.has_value()) {
+    return Store(cid_val.value(), cid, headers, std::move(block));
+  } else {
+    return false;
+  }
 }
-
+bool ipfs::BlockStorage::Store(std::string headers, ipfs::Block&& block) {
+  return Store(block.cid(), headers, std::move(block));
+}
+bool ipfs::BlockStorage::Store(std::string const& cid,
+                               std::string headers,
+                               std::string body) {
+  LOG(INFO) << "Store(cid=" << cid << " headers.size()=" << headers.size()
+            << " body.size()=" << body.size() << ')';
+  DCHECK(headers != body);
+  auto cid_res = Codec::fromString(cid);
+  DCHECK(cid_res.has_value());
+  return Store(cid, cid_res.value(), headers, body);
+}
+bool ipfs::BlockStorage::Store(std::string cid_str,
+                               const ipfs::Cid& cid,
+                               std::string headers,
+                               std::string body) {
+  LOG(INFO) << "Store(cid=" << cid_str
+            << ", <cid obj>, headers.size()=" << headers.size()
+            << " body.size()=" << body.size() << ')';
+  return Store(cid_str, cid, headers, {cid, body});
+}
 ipfs::Block const* ipfs::BlockStorage::Get(std::string const& cid) const {
+  LOG(INFO) << "hit 1 : storage @ " << (void*)this << ", map@"
+            << (void*)(&cid2node_);
   auto it = cid2node_.find(cid);
   if (it == cid2node_.end()) {
-    //    L_WRN("Sorry, I don't have " << cid << " already stored.");
+    if (cache_search_initiator_) {
+      cache_search_initiator_(cid);
+    }
+    LOG(INFO) << "hit 2 : storage @ " << (void*)this << ", map@"
+              << (void*)(&cid2node_);
+    it = cid2node_.find(cid);
+  }
+  if (it == cid2node_.end()) {
     return nullptr;
   }
-  return &(it->second);
+  LOG(INFO) << "L0: " << cid;
+  return it->second;
 }
 
 void ipfs::BlockStorage::AddListening(UnixFsPathResolver* p) {
@@ -58,8 +109,6 @@ void ipfs::BlockStorage::CheckListening() {
         break;
       }
       if (Get(cid)) {
-        //        LOG(INFO) << "A resolver was waiting on " << cid
-        //                  << " which is now available.";
         auto prev = ptr->MaybeGetPreviousListener();
         if (prev) {
           ptr->Step(prev);
@@ -68,6 +117,12 @@ void ipfs::BlockStorage::CheckListening() {
     }
   }
 }
+
+void ipfs::BlockStorage::cache_search_initiator(
+    std::function<void(std::string)> f) {
+  cache_search_initiator_ = f;
+}
+
 ipfs::BlockStorage::BlockStorage() {}
 
 ipfs::BlockStorage::~BlockStorage() noexcept {

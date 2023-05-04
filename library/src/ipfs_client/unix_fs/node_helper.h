@@ -25,7 +25,7 @@ class NodeHelper {
                        std::string& target_cid) = 0;
 
   void cid(std::string const& val) { cid_ = val; }
-  void storage(BlockStorage& val) { storage_ = &val; }
+  void storage(BlockStorage& val);
   void resolver(UnixFsPathResolver& val) { resolver_ = &val; }
   void api(NetworkingApi& val) { api_ = &val; }
 

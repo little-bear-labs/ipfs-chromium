@@ -17,9 +17,9 @@ void ipfs::RegisterProfilePrefs(PrefRegistrySimple* registry,
   auto dflt = Gateways::DefaultGateways();
   base::Value::Dict pref_val;
   for (auto [k, v] : dflt) {
-    std::clog << k << '=' << v << '\n';
+    //    std::clog << k << '=' << v << '\n';
     pref_val.Set(k, v);
   }
-  std::clog << "\n\n\t registering \"net.ipfs.gateways\"\n\n";
+  //  std::clog << "\n\n\t registering \"net.ipfs.gateways\"\n\n";
   registry->RegisterDictionaryPref("net.ipfs.gateways", std::move(pref_val));
 }

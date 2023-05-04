@@ -1,6 +1,8 @@
 #ifndef IPFS_GATEWAY_REQUESTS_H_
 #define IPFS_GATEWAY_REQUESTS_H_
 
+#include "ipfs_block_cache.h"
+
 #include <ipfs_client/block_storage.h>
 #include <ipfs_client/networking_api.h>
 #include <ipfs_client/scheduler.h>

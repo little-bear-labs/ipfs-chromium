@@ -2,6 +2,7 @@
 
 #include "crypto_api.h"
 #include "inter_request_state.h"
+#include "ipfs_block_cache.h"
 #include "ipns_cbor.h"
 
 #include "base/strings/escape.h"
@@ -12,7 +13,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
-#include <ipfs_client/block_storage.h>
 #include <ipfs_client/dag_block.h>
 #include <ipfs_client/ipns_record.h>
 
@@ -224,8 +224,9 @@ bool ipfs::GatewayRequests::ProcessResponse(BusyGateway& gw,
   } else {
     Block block{cid.value(), *body};
     if (block.cid_matches_data()) {
-      LOG(INFO) << "Storing CID=" << cid_str;
-      state_.storage().Store(cid_str, std::move(block));
+      LOG(INFO) << "L3: Storing CID=" << cid_str;
+      state_.storage().Store(head->headers->raw_headers(), std::move(block));
+      state_.cache_.Store(cid_str, head->headers->raw_headers(), *body);
       scheduler().IssueRequests(shared_from_this());
       return true;
     } else {

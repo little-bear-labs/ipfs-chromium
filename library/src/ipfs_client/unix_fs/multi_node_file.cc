@@ -16,11 +16,18 @@ bool Self::Process(std::unique_ptr<NodeHelper>&,
                    std::shared_ptr<DagListener> listener,
                    std::function<void(std::string, Priority)> requestor,
                    std::string& target_cid) {
+  if (top_cid_.empty()) {
+    top_cid_ = cid_;
+  }
   if (!block()) {
     requestor(cid_, resolver_->priority());
     return false;
   }
-  Fetch(requestor);
+  if (!storage_->Get(top_cid_)) {
+    requestor(top_cid_, resolver_->priority());
+    return false;
+  }
+  Fetch(requestor, target_cid);
   if (Write(listener)) {
     listener->BlocksComplete(
         GuessContentType(*api_, resolver_->original_path(), FirstChunk()));
@@ -30,16 +37,24 @@ bool Self::Process(std::unique_ptr<NodeHelper>&,
   return false;
 }
 
-void Self::Fetch(std::function<void(std::string, Priority)> requestor) {
+void Self::Fetch(std::function<void(std::string, Priority)> requestor,
+                 std::string& target) {
   auto idx = -1L;
-  block()->List([this, requestor, &idx](auto&, auto cid) {
+  auto* top = storage_->Get(top_cid_);
+  if (!top) {
+    requestor(top_cid_, resolver_->priority());
+    return;
+  }
+  top->List([this, requestor, &idx, &target](auto&, auto cid) {
     ++idx;
     if (idx >= static_cast<long>(children_.size())) {
       children_.emplace_back(cid, std::nullopt);
     }
+    L_VAR(cid);
     auto child_block = storage_->Get(cid);
     if (!child_block) {
       requestor(cid, resolver_->priority());
+      target = cid;
       return true;
     }
     if (child_block->type() != Block::Type::File) {
@@ -50,8 +65,9 @@ void Self::Fetch(std::function<void(std::string, Priority)> requestor) {
       child = MultiNodeFile();
       Delegate(*child);
       child->cid(cid);
+      child->top_cid_ = cid;
     }
-    child->Fetch(requestor);
+    child->Fetch(requestor, target);
     return true;
   });
 }
@@ -59,7 +75,7 @@ bool Self::Write(std::shared_ptr<DagListener> listener) {
   LOG(INFO) << "Write:" << cid_ << " have children: " << children_.size();
   for (; written_until_ < children_.size(); ++written_until_) {
     auto& child = children_[written_until_];
-    //    LOG(INFO) << "child[" << written_until_ << "]:" << child.first;
+    LOG(INFO) << "child[" << written_until_ << "]:" << child.first;
     if (child.second.has_value()) {
       if (child.second->Write(listener)) {
         LOG(INFO) << "Successfully recursed.";
@@ -91,7 +107,7 @@ bool Self::Write(std::shared_ptr<DagListener> listener) {
   DCHECK_EQ(written_until_, children_.size());
   return true;
 }
-std::string Self::FirstChunk() const {
+std::string Self::FirstChunk() {
   if (children_.empty()) {
     return {};
   }

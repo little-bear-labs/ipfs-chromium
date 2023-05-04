@@ -34,16 +34,14 @@ std::shared_ptr<ipfs::GatewayRequests> ipfs::InterRequestState::api() {
   if (existing) {
     return existing;
   }
-  /*
- if (api_) {
-   return api_;
- }*/
   auto created = std::make_shared<ipfs::GatewayRequests>(*this);
   api_ = created;
   auto t = std::time(nullptr);
-  if (t - last_discovery_ > 9) {
+  if (t - last_discovery_ > 300) {
     created->Discover([this](auto v) { gws_.AddGateways(v); });
     last_discovery_ = t;
+    storage_.cache_search_initiator(
+        [this](std::string cid) { this->cache_.Load(cid, &(this->storage_)); });
   }
   return created;
 }

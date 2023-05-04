@@ -147,7 +147,7 @@ target_link_libraries(out_of_tree
 target_include_directories(out_of_tree
   SYSTEM
   BEFORE
-  PRIVATE
+  PUBLIC
     "${CMAKE_CURRENT_BINARY_DIR}/inc_link"
   )
 target_include_directories(out_of_tree
@@ -155,3 +155,4 @@ target_include_directories(out_of_tree
   ../library/src
   )
 add_dependencies(out_of_tree inc_link)
+
