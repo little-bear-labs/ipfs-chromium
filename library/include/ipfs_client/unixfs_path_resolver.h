@@ -32,6 +32,7 @@ class UnixFsPathResolver {
   std::string const& current_cid() const;
   std::string const& original_path() const;
   Priority priority() const { return prio_; }
+  std::vector<std::string> const& involved_cids() { return involved_cids_; }
 
  private:
   BlockStorage& storage_;
@@ -42,9 +43,12 @@ class UnixFsPathResolver {
   std::unique_ptr<unix_fs::NodeHelper> helper_;
   std::weak_ptr<DagListener> old_listener_;
   Priority prio_ = 9;
-  std::unordered_map<std::string, std::pair<Priority, std::time_t>>
-      already_requested_;
-  bool stepping_ = false;
+  struct PriorReq {
+    Priority prio;
+    std::time_t when;
+  };
+  std::unordered_map<std::string, PriorReq> already_requested_;
+  std::vector<std::string> involved_cids_;
 
   void Request(std::shared_ptr<DagListener>&, std::string const& cid, Priority);
   void GetHelper(Block::Type);

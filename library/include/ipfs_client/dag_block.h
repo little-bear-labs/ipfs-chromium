@@ -91,7 +91,7 @@ class Block {
   std::optional<Cid> cid_ = std::nullopt;
   std::string original_bytes_;
 
-  static std::string LinkCid(ipfs::ByteView);
+  std::string LinkCid(ipfs::ByteView) const;
 
   void InitFromRaw(std::string const& content_bytes);
 };

@@ -4,9 +4,9 @@
 #include "dag_block.h"
 #include "vocab/flat_mapset.h"
 
+#include <list>
 #include <string>
 #include <string_view>
-#include <vector>
 
 namespace ipfs {
 class DagListener;
@@ -31,7 +31,8 @@ class BlockStorage {
   bool Store(Cid const& cid, std::string headers, Block&&);
   bool Store(std::string cid_str, Cid const& cid, std::string headers, Block&&);
 
-  Block const* Get(std::string const& cid) const;
+  Block const* Get(std::string const& cid, bool deep = true);
+  std::string const* GetHeaders(std::string const& cid);
 
   void AddListening(UnixFsPathResolver*);
 
@@ -42,11 +43,25 @@ class BlockStorage {
   void cache_search_initiator(std::function<void(std::string)>);
 
  private:
-  std::size_t index_ = 0UL;
-  std::array<Block, 128> nodes_;
-  flat_map<std::string, Block*> cid2node_;
+  struct Record {
+    Record();
+    ~Record() noexcept;
+    std::time_t last_access = 0;
+    std::string cid_str = {};
+    Block block = {};
+    std::string headers = {};
+  };
+  std::list<Record> records_;
+  using Iter = decltype(records_)::iterator;
+  Iter reuse_ = records_.end();
+  flat_map<std::string, Record*> cid2record_;
   flat_set<UnixFsPathResolver*> listening_;
+  flat_set<std::string> checking_;
   std::function<void(std::string)> cache_search_initiator_ = {};
+
+  Record const* GetInternal(std::string const&, bool);
+  Record* FindFree(std::time_t);
+  Record* Allocate();
 };
 }  // namespace ipfs
 

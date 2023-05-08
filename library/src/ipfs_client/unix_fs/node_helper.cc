@@ -13,7 +13,7 @@
 
 using Self = ipfs::unix_fs::NodeHelper;
 
-auto Self::block() const -> Block const* {
+auto Self::block() -> Block const* {
   return storage_->Get(cid_);
 }
 

@@ -37,7 +37,7 @@ class NodeHelper {
   raw_ptr<UnixFsPathResolver> resolver_ = nullptr;
   raw_ptr<NetworkingApi> api_ = nullptr;
 
-  Block const* block() const;
+  Block const* block();
   void Delegate(NodeHelper&) const;
 };
 }  // namespace unix_fs

@@ -20,11 +20,11 @@
 
 ### Near-term tasks
 
-See [TODO.md](TODO.md)
+See [doc/todo.md](doc/todo.md)
 
-## Planned Design
+## Originally Planned Design
 
-See [DESIGN.md](DESIGN.md)
+See [doc/original_design.md](doc/original_design.md)
 
 ## Building
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from os import listdir
+from os import listdir, remove
 from os.path import dirname, join, realpath, splitext
 from subprocess import check_call, check_output
 from sys import argv, platform, stderr
@@ -77,6 +77,10 @@ class Patcher:
                     return version
         raise EnvironmentError(f"Can't find an appropriate tag for {osname()}, anymore!")
     def available(self):
+        for f in listdir(self.pdir):
+            if splitext(f)[1] != '.patch':
+                print(f"Warning: {f} does not belong in {self.pdir}. Removing.", file=stderr)
+                remove(join(self.pdir,f))
         return map(lambda p:splitext(p)[0],listdir(self.pdir))
     def distances(self,frm,ref):
         a = int(self.git(['rev-list','--count',frm+'..'+ref]))

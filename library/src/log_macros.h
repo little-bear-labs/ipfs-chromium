@@ -16,6 +16,8 @@
 #define DCHECK_EQ GOOGLE_DCHECK_EQ
 #define DCHECK GOOGLE_DCHECK
 #define LOG GOOGLE_LOG
+// TODO
+#define VLOG(X) GOOGLE_LOG(INFO - X)
 
 #endif
 

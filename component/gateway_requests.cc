@@ -190,7 +190,7 @@ bool ipfs::GatewayRequests::ProcessResponse(BusyGateway& gw,
   auto cid_str = gw.task();
   cid_str.erase(0, 5);  // ipfs/
   cid_str.erase(cid_str.find('?'));
-  if (state_.storage().Get(cid_str)) {
+  if (state_.storage().Get(cid_str, false)) {
     // LOG(INFO) << "Got multiple successful responses for " << cid_str;
     return true;
   }
@@ -257,7 +257,7 @@ std::string ipfs::GatewayRequests::MimeType(std::string extension,
   std::string result;
   auto fp_ext = base::FilePath::FromUTF8Unsafe(extension).value();
   LOG(INFO) << "extension=" << extension;
-  LOG(INFO) << "content.size" << content.size();
+  LOG(INFO) << "content.size()=" << content.size();
   LOG(INFO) << "url=" << url;
   if (extension.empty()) {
     result.clear();
