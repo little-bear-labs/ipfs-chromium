@@ -84,15 +84,6 @@ bool ipfs::BlockStorage::Store(std::string cid_str,
 }
 auto ipfs::BlockStorage::GetInternal(std::string const& cid) -> Record const* {
   auto it = cid2record_.find(cid);
-  /*
-  if (it == cid2record_.end() && deep) {
-    LOG(INFO) << "Check serialized cache for " << cid;
-    if (cache_search_initiator_) {
-      cache_search_initiator_(cid);
-    }
-    it = cid2record_.find(cid);
-  }
-  */
   if (it == cid2record_.end()) {
     VLOG(1) << "Data not found in immediate object storage for " << cid;
     return nullptr;
@@ -108,7 +99,7 @@ auto ipfs::BlockStorage::GetInternal(std::string const& cid) -> Record const* {
   rec->last_access = std::time(nullptr);
   return rec;
 }
-ipfs::Block const* ipfs::BlockStorage::Get(std::string const& cid, bool) {
+ipfs::Block const* ipfs::BlockStorage::Get(std::string const& cid) {
   VLOG(1) << "Get(" << cid << ')';
   auto* result = GetInternal(cid);
   if (result) {

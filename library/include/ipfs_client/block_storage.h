@@ -38,7 +38,7 @@ class BlockStorage {
              std::string const& body,
              Block&&);
 
-  Block const* Get(std::string const& cid, bool deep = true);
+  Block const* Get(std::string const& cid);
   std::string const* GetHeaders(std::string const& cid);
 
   void AddListening(UnixFsPathResolver*);

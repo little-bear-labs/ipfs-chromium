@@ -24,7 +24,7 @@ void Self::Step(std::shared_ptr<DagListener> listener) {
       std::find(involved_cids_.begin(), involved_cids_.end(), cid_)) {
     involved_cids_.push_back(cid_);
   }
-  Block const* block = storage_.Get(cid_, true);
+  Block const* block = storage_.Get(cid_);
   if (!block) {
     LOG(INFO) << "Current block " << cid_ << " not found. Requesting.";
     Request(listener, cid_, prio_);
