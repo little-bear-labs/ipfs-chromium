@@ -1,5 +1,7 @@
-#include "ipfs_client/gateways.h"
-#include "ipfs_client/context_api.h"
+#include <ipfs_client/gateways.h>
+
+#include <ipfs_client/context_api.h>
+
 #include "log_macros.h"
 
 #include <algorithm>
@@ -31,7 +33,7 @@ void ipfs::Gateways::promote(std::string const& key) {
     LOG(ERROR) << "Can't promote (" << key
                << ") because I don't know that one.";
   } else {
-    VLOG(1) << "promote(" << key << ")";
+    LOG(INFO) << "promote(" << key << ")";
     known_gateways_.at(key)++;
   }
 }

@@ -187,7 +187,7 @@ bool Self::ProcessResponse(BusyGateway& gw,
   auto cid_str = gw.task();
   cid_str.erase(0, 5);  // ipfs/
   cid_str.erase(cid_str.find('?'));
-  if (state_.storage().Get(cid_str, false)) {
+  if (state_.storage().Get(cid_str)) {
     // LOG(INFO) << "Got multiple successful responses for " << cid_str;
     return true;
   }
