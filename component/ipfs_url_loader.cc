@@ -132,6 +132,9 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   head->parsed_headers =
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});
   head->was_fetched_via_spdy = false;
+  for (auto& cid : resolver_->involved_cids()) {
+    LOG(INFO) << cid << " was involved in resolving " << original_url_;
+  }
   LOG(INFO) << "Sending response with mime type " << head->mime_type;
   client_->OnReceiveResponse(std::move(head), std::move(pipe_cons_),
                              absl::nullopt);

@@ -6,11 +6,12 @@
 * Documentation
   - Re-record demo video with updated/more links?
   - Publish blog
-  - Document re-use of library/
+  - Document re-use of library/ipfs_client classes (doxygen/cldoc/doxypress/standardese?)
   - Update design.md to as-implemented
 * Maintainability
   - Chromium tag -> patch file mapping
-  - Our scripts switch branches or do checkout on Chromium repo _unless_ they _just_ fetched it 
+  - Our scripts switch branches or do checkout on Chromium repo _unless_ they _just_ fetched it
+  - Rename classes to better fit their responsibility (see class-level doc for inspiration)
 * Production features
   - User settings
   - Integrate with chromium cache
@@ -31,4 +32,6 @@
   - Streamline Windows release, e.g. package_browser 
   - library published in Conan
   - Publish binaries in Conan
+  - Allow library/ users to set log level in a normalish way and don't prefix everything with pb
+
 

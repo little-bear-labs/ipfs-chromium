@@ -58,6 +58,10 @@ bool Self::Process(std::unique_ptr<NodeHelper>& next_helper,
     LOG(INFO) << "Had no hexes, hash path element: " << next_path_element_;
     HashPathElement(fanout);
   }
+  if (hamt_hexs_.empty()) {
+    LOG(ERROR) << "Somehow failed to hash out the path element?";
+    return false;
+  }
   //  for (auto& h : hamt_hexs_) {
   //    LOG(INFO) << "Hex: " << h;
   //  }
@@ -66,6 +70,7 @@ bool Self::Process(std::unique_ptr<NodeHelper>& next_helper,
     LOG(INFO) << "Listing a child node of a HAMT shard node...";
     L_VAR(name);
     L_VAR(cid);
+    L_VAR(hamt_hexs_.front());
     // Fun fact: there is a spec-defined sort order to these children.
     // We *could* do a binary search.
     if (!absl::StartsWith(name, hamt_hexs_.front())) {
@@ -127,8 +132,7 @@ void Self::HashPathElement(std::uint64_t fanout) {
       // digest,...
       auto popped = hash_bits % fanout;
       hash_bits /= fanout;
-      //        LOG(INFO) << "popped=" << popped << " remaining digest=" <<
-      //        hash_bits;
+      L_VAR(hash_bits);
       std::ostringstream oss;
       // ... then hex encode (using 0-F) using little endian thoses bits ...
       oss << std::setfill('0') << std::setw(hex_width) << std::uppercase
@@ -140,6 +144,7 @@ void Self::HashPathElement(std::uint64_t fanout) {
 void Self::SomePrefetch(std::function<void(std::string, Priority)> requestor) {
   auto i = 0;
   block()->List([this, requestor, &i](auto&, auto cid) {
+    //    if (storage_->Get(cid, false)) {
     if (storage_->Get(cid)) {
       return true;
     }

@@ -2,6 +2,7 @@
 
 #include "unix_fs/node_helper.h"
 
+#include <libp2p/multi/content_identifier_codec.hpp>
 #include "ipfs_client/block_storage.h"
 #include "ipfs_client/dag_block.h"
 
@@ -16,17 +17,9 @@ void Self::Step(std::shared_ptr<DagListener> listener) {
   if (cid_.empty()) {
     return;
   }
-  if (stepping_) {
-    LOG(INFO) << "UnixFsResolver did a recursion! " << cid_ << " / "
-              << original_path_ << " / " << path_;
-    return;
-  }
   LOG(INFO) << "Stepping... " << cid_ << " / " << original_path_ << " / "
             << path_;
-  std::unique_ptr<bool, std::function<void(bool*)>> track_stepping{
-      &stepping_, [](bool* b) { *b = false; }};
-  stepping_ = true;
-  Block const* block = storage_.Get(cid_);
+  Block const* block = storage_.Get(cid_, false);
   if (!block) {
     LOG(INFO) << "Current block " << cid_ << " not found. Requesting.";
     Request(listener, cid_, prio_);
@@ -47,13 +40,14 @@ void Self::Step(std::shared_ptr<DagListener> listener) {
   auto requestor = [this, &listener](std::string cid, Priority prio) {
     this->Request(listener, cid, prio);
   };
+  using Codec = libp2p::multi::ContentIdentifierCodec;
+  DCHECK_EQ(cid_, Codec::toString(block->cid()).value());
   std::unique_ptr<unix_fs::NodeHelper> helper;
   if (helper_->Process(helper, listener, requestor, cid_)) {
     helper_.swap(helper);
-    stepping_ = false;
+    LOG(INFO) << "Taking another step for " << cid_;
     Step(listener);
   }
-  stepping_ = false;
 }
 
 void Self::GetHelper(Block::Type typ) {
@@ -70,23 +64,25 @@ void Self::GetHelper(Block::Type typ) {
 void Self::Request(std::shared_ptr<DagListener>& listener,
                    std::string const& cid,
                    Priority prio) {
+  LOG(INFO) << "Request(" << cid << ',' << prio << ')';
   if (storage_.Get(cid)) {
     return;
-  }
-  if (prio) {
-    storage_.AddListening(this);
   }
   auto it = already_requested_.find(cid);
   auto t = std::time(nullptr);
   if (it == already_requested_.end()) {
-    // LOG(INFO) << "Request(" << cid << ',' << static_cast<long>(prio) << ')';
+    VLOG(1) << "Request(" << cid << ',' << static_cast<long>(prio) << ')';
     already_requested_[cid] = {prio, t};
     api_->RequestByCid(cid, listener, prio);
-  } else if (prio > it->second.first) {
+    if (prio) {
+      storage_.AddListening(this);
+      involved_cids_.push_back(cid);
+    }
+  } else if (prio > it->second.prio) {
     LOG(INFO) << "Increase Request priority(" << cid << ','
               << static_cast<long>(prio) << ')';
-    it->second.first = prio;
-    it->second.second = t;
+    it->second.prio = prio;
+    it->second.when = t;
     api_->RequestByCid(cid, listener, prio);
   }
 }

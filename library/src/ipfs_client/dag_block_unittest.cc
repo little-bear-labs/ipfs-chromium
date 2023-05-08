@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include <libp2p/multi/content_identifier_codec.hpp>
+#include "log_macros.h"
 
 #include <filesystem>
 #include <fstream>
@@ -33,12 +34,21 @@ TEST(BlockTest, AdHoc) {
   using namespace std::filesystem;
   std::for_each(directory_iterator("."), directory_iterator(), [](auto e) {
     if (is_regular_file(e) && e.path().extension() == ".block") {
+      LOG(INFO) << e.path();
       auto cid = Codec ::fromString(e.path().stem()).value();
       std::ifstream f{e.path()};
       std::stringstream buffer;
       buffer << f.rdbuf();
       ipfs::Block block{cid, buffer.str()};
       EXPECT_TRUE(block.cid_matches_data()) << e.path();
+      L_VAR(static_cast<long>(block.type()));
+      block.List([](auto& name, auto cid) {
+        L_VAR(name);
+        L_VAR(cid);
+        EXPECT_GT(name.size(), 0U);
+        EXPECT_GT(cid.size(), 0U);
+        return true;
+      });
     }
   });
 }

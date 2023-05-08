@@ -148,15 +148,19 @@ void ipfs::Block::mime_type(std::string_view val) {
   mime_.assign(val);
 }
 
-std::string ipfs::Block::LinkCid(ipfs::ByteView binary_link_hash) {
+std::string ipfs::Block::LinkCid(ipfs::ByteView binary_link_hash) const {
   using Codec = libp2p::multi::ContentIdentifierCodec;
   auto result = Codec::decode(binary_link_hash);
   if (!result.has_value()) {
-    LOG(FATAL) << Stringify(result.error());
+    LOG(FATAL) << "Failed to decode link CID as binary ( link from "
+               << Codec::toString(cid()).value()
+               << "): " << Stringify(result.error());
   }
   auto str_res = Codec::toString(result.value());
   if (!str_res.has_value()) {
-    LOG(FATAL) << Stringify(str_res.error());
+    LOG(FATAL) << "Failed to decode binary link CID as string (link from "
+               << Codec::toString(cid()).value()
+               << "): " << Stringify(result.error());
   }
   return str_res.value();
 }
