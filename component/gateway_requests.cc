@@ -2,7 +2,6 @@
 
 #include "crypto_api.h"
 #include "inter_request_state.h"
-#include "ipfs_block_cache.h"
 #include "ipns_cbor.h"
 
 #include "base/strings/escape.h"
@@ -21,6 +20,8 @@
 
 #include <base/logging.h>
 
+using Self = ipfs::GatewayRequests;
+
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("ipfs_gateway_request", R"(
       semantics {
@@ -37,13 +38,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         setting: "Currently, this feature cannot be disabled by settings. TODO"
       }
     )");
-void ipfs::GatewayRequests::RequestByCid(std::string cid,
-                                         std::shared_ptr<DagListener> listener,
-                                         Priority prio) {
-  scheduler().Enqueue(shared_from_this(), listener, {},
-                      "ipfs/" + cid + "?format=raw", prio);
-  scheduler().IssueRequests(shared_from_this());
-}
 namespace {
 std::unique_ptr<network::SimpleURLLoader> discovery_loader;
 void parse_discover_response(std::function<void(std::vector<std::string>)> cb,
@@ -70,8 +64,7 @@ void parse_discover_response(std::function<void(std::vector<std::string>)> cb,
   discovery_loader.reset();
 }
 }  // namespace
-void ipfs::GatewayRequests::Discover(
-    std::function<void(std::vector<std::string>)> cb) {
+void Self::Discover(std::function<void(std::vector<std::string>)> cb) {
   if (!loader_factory_) {
     LOG(INFO) << "Can't discover as I have no loader factory.";
     disc_cb_ = cb;
@@ -93,7 +86,7 @@ void ipfs::GatewayRequests::Discover(
       loader_factory_, std::move(bound));
 }
 
-auto ipfs::GatewayRequests::InitiateGatewayRequest(BusyGateway assigned)
+auto Self::InitiateGatewayRequest(BusyGateway assigned)
     -> std::shared_ptr<GatewayRequest> {
   auto url = assigned.url();
 
@@ -112,9 +105,10 @@ auto ipfs::GatewayRequests::InitiateGatewayRequest(BusyGateway assigned)
     LOG(INFO) << "Doing an IPNS record query, so giving it a long timeout.";
     out->loader->SetTimeoutDuration(base::Seconds(256));
   }
+  auto start_time = base::TimeTicks::Now();
   //  out->listener = listener;
-  auto cb = base::BindOnce(&ipfs::GatewayRequests::OnResponse,
-                           base::Unretained(this), shared_from_this(), out);
+  auto cb = base::BindOnce(&Self::OnResponse, base::Unretained(this),
+                           shared_from_this(), out, start_time);
   //  LOG(INFO) << "InitiateGatewayRequest(" << url << ")";
   DCHECK(loader_factory_);
   // TODO - proper requesting with full features (SetPriority, etc.).
@@ -122,9 +116,10 @@ auto ipfs::GatewayRequests::InitiateGatewayRequest(BusyGateway assigned)
                                                                std::move(cb));
   return out;
 }
-void ipfs::GatewayRequests::OnResponse(std::shared_ptr<NetworkingApi> api,
-                                       std::shared_ptr<GatewayUrlLoader> req,
-                                       std::unique_ptr<std::string> body) {
+void Self::OnResponse(std::shared_ptr<ContextApi> api,
+                      std::shared_ptr<GatewayUrlLoader> req,
+                      base::TimeTicks start_time,
+                      std::unique_ptr<std::string> body) {
   DCHECK(req);
   auto task = req->task();
   if (task.empty()) {
@@ -136,7 +131,7 @@ void ipfs::GatewayRequests::OnResponse(std::shared_ptr<NetworkingApi> api,
   auto& bg = req->gateway;
   auto& ldr = req->loader;
   //  auto listener = req->listener;
-  if (ProcessResponse(bg, ldr.get(), body.get())) {
+  if (ProcessResponse(bg, ldr.get(), body.get(), start_time)) {
     bg.Success(state_.gateways(), shared_from_this());
   } else {
     bg.Failure(state_.gateways(), shared_from_this());
@@ -145,9 +140,11 @@ void ipfs::GatewayRequests::OnResponse(std::shared_ptr<NetworkingApi> api,
   state_.scheduler().IssueRequests(api);
 }
 
-bool ipfs::GatewayRequests::ProcessResponse(BusyGateway& gw,
-                                            network::SimpleURLLoader* ldr,
-                                            std::string* body) {
+bool Self::ProcessResponse(BusyGateway& gw,
+                           network::SimpleURLLoader* ldr,
+                           std::string* body,
+                           base::TimeTicks start_time) {
+  auto end_time = base::TimeTicks::Now();
   if (!gw) {
     LOG(ERROR) << "No gateway.";
     return false;
@@ -224,9 +221,18 @@ bool ipfs::GatewayRequests::ProcessResponse(BusyGateway& gw,
   } else {
     Block block{cid.value(), *body};
     if (block.cid_matches_data()) {
+      auto dur = (end_time - start_time).InMillisecondsRoundedUp();
+      head->headers->SetHeader("Block-Source",
+                               cid_str + ", " + gw->url_prefix() + " @" +
+                                   std::to_string(std::time(nullptr)));
       LOG(INFO) << "L3: Storing CID=" << cid_str;
-      state_.storage().Store(head->headers->raw_headers(), std::move(block));
-      state_.cache_.Store(cid_str, head->headers->raw_headers(), *body);
+      // Note this header is added _after_ storing in long-term cache
+      head->headers->SetHeader(
+          "Server-Timing",
+          "gateway-fetch-" + cid_str + ";desc=\"" + gw->url_prefix() +
+              " : load over http(s)\";dur=" + std::to_string(dur));
+      state_.storage().Store(cid_str, cid.value(), head->headers->raw_headers(),
+                             *body);
       scheduler().IssueRequests(shared_from_this());
       return true;
     } else {
@@ -238,11 +244,10 @@ bool ipfs::GatewayRequests::ProcessResponse(BusyGateway& gw,
   }
 }
 
-auto ipfs::GatewayRequests::scheduler() -> Scheduler& {
+auto Self::scheduler() -> Scheduler& {
   return sched_;
 }
-void ipfs::GatewayRequests::SetLoaderFactory(
-    network::mojom::URLLoaderFactory& lf) {
+void Self::SetLoaderFactory(network::mojom::URLLoaderFactory& lf) {
   loader_factory_ = &lf;
   if (disc_cb_) {
     LOG(INFO) << "Have loader factory, calling Discover";
@@ -251,14 +256,14 @@ void ipfs::GatewayRequests::SetLoaderFactory(
   }
 }
 
-std::string ipfs::GatewayRequests::MimeType(std::string extension,
-                                            std::string_view content,
-                                            std::string const& url) const {
+std::string Self::MimeType(std::string extension,
+                           std::string_view content,
+                           std::string const& url) const {
   std::string result;
   auto fp_ext = base::FilePath::FromUTF8Unsafe(extension).value();
   LOG(INFO) << "extension=" << extension;
   LOG(INFO) << "content.size()=" << content.size();
-  LOG(INFO) << "url=" << url;
+  LOG(INFO) << "(as-if) url for mime type:" << url;
   if (extension.empty()) {
     result.clear();
   } else if (net::GetWellKnownMimeTypeFromExtension(fp_ext, &result)) {
@@ -278,8 +283,7 @@ std::string ipfs::GatewayRequests::MimeType(std::string extension,
   }
   return result;
 }
-std::string ipfs::GatewayRequests::UnescapeUrlComponent(
-    std::string_view comp) const {
+std::string Self::UnescapeUrlComponent(std::string_view comp) const {
   using Rule = base::UnescapeRule;
   auto rules = Rule::PATH_SEPARATORS |
                Rule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS | Rule::SPACES;
@@ -287,14 +291,21 @@ std::string ipfs::GatewayRequests::UnescapeUrlComponent(
   LOG(INFO) << "UnescapeUrlComponent(" << comp << ")->'" << result << "'";
   return result;
 }
+void Self::RequestByCid(std::string cid,
+                        std::shared_ptr<DagListener> listener,
+                        Priority prio) {
+  auto me = shared_from_this();
+  sched_.Enqueue(me, listener, {}, "ipfs/" + cid + "?format=raw", prio);
+  sched_.IssueRequests(me);
+}
 
-ipfs::GatewayRequests::GatewayRequests(InterRequestState& state)
+Self::GatewayRequests(InterRequestState& state)
     : state_{state},
       sched_([this]() { return state_.gateways().GenerateList(); }) {}
-ipfs::GatewayRequests::~GatewayRequests() {
+Self::~GatewayRequests() {
   LOG(WARNING) << "API dtor - are all URIs loaded?";
 }
 
-ipfs::GatewayRequests::GatewayUrlLoader::GatewayUrlLoader(BusyGateway&& bg)
+Self::GatewayUrlLoader::GatewayUrlLoader(BusyGateway&& bg)
     : GatewayRequest(std::move(bg)) {}
-ipfs::GatewayRequests::GatewayUrlLoader::~GatewayUrlLoader() {}
+Self::GatewayUrlLoader::~GatewayUrlLoader() noexcept {}

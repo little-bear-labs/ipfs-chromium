@@ -148,10 +148,12 @@ if(GTest_FOUND)
       COMMAND "${CMAKE_COMMAND}" -E touch ut.cert
       WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
     )
-    add_custom_target(ut
-      DEPENDS ut.cert
-      COMMAND "${CMAKE_COMMAND}" -E echo "Tests up-to-date"
-    )
+    if(TEST_BY_DEFAULT)
+        add_custom_target(ut
+          DEPENDS ut.cert
+          COMMAND "${CMAKE_COMMAND}" -E echo "Tests up-to-date"
+        )
+    endif()
     if(LCOV_PATH)
         setup_target_for_coverage_lcov(
           NAME cov

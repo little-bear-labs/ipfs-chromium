@@ -14,7 +14,7 @@
 
 namespace ipfs {
 using GatewayList = std::vector<Gateway>;
-class NetworkingApi;
+class ContextApi;
 
 class Gateways {
   flat_map<std::string, int> known_gateways_;

@@ -1,4 +1,5 @@
 #include <ipfs_client/busy_gateway.h>
+#include <ipfs_client/context_api.h>
 
 #include "log_macros.h"
 
@@ -75,8 +76,7 @@ void ipfs::BusyGateway::reset() {
   prefix_.clear();
   suffix_.clear();
 }
-void ipfs::BusyGateway::Success(Gateways& g,
-                                std::shared_ptr<NetworkingApi> api) {
+void ipfs::BusyGateway::Success(Gateways& g, std::shared_ptr<ContextApi> api) {
   if (prefix_.empty()) {
     return;
   }
@@ -91,8 +91,7 @@ void ipfs::BusyGateway::Success(Gateways& g,
   reset();
   sched->IssueRequests(api);
 }
-void ipfs::BusyGateway::Failure(Gateways& g,
-                                std::shared_ptr<NetworkingApi> api) {
+void ipfs::BusyGateway::Failure(Gateways& g, std::shared_ptr<ContextApi> api) {
   DCHECK(prefix_.size() > 0U);
   g.demote(prefix_);
   get()->TaskFailed(suffix_);

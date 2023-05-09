@@ -1,7 +1,7 @@
 #include <ipfs_client/scheduler.h>
 
+#include <ipfs_client/context_api.h>
 #include <ipfs_client/name_listener.h>
-#include <ipfs_client/networking_api.h>
 
 #include "log_macros.h"
 
@@ -18,14 +18,13 @@ ipfs::Scheduler::~Scheduler() {
   LOG(INFO) << "Scheduler dtor";
 }
 
-void ipfs::Scheduler::Enqueue(std::shared_ptr<NetworkingApi> api,
+void ipfs::Scheduler::Enqueue(std::shared_ptr<ContextApi> api,
                               std::shared_ptr<DagListener> dag_listener,
                               std::shared_ptr<NameListener> name_listener,
                               std::string const& suffix,
                               Priority p) {
   if (suffix.empty()) {
     LOG(ERROR) << "Do not issue a request with no task!";
-
   } else {
     auto& todo = task2todo_[suffix];
     todo.priority = std::max(todo.priority, p);
@@ -38,7 +37,7 @@ void ipfs::Scheduler::Enqueue(std::shared_ptr<NetworkingApi> api,
   }
   IssueRequests(api);
 }
-void ipfs::Scheduler::IssueRequests(std::shared_ptr<NetworkingApi> api) {
+void ipfs::Scheduler::IssueRequests(std::shared_ptr<ContextApi> api) {
   //  LOG(INFO) << "Scheduler::IssueRequests";
   decltype(task2todo_)::value_type* unmet = nullptr;
   auto assign = [this, api](auto& gw, auto& task, auto& todo, auto need) {

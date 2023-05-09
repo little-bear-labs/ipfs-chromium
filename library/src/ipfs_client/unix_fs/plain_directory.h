@@ -4,7 +4,7 @@
 #include "node_helper.h"
 
 namespace ipfs {
-class NetworkingApi;
+class ContextApi;
 class UnixFsPathResolver;
 namespace unix_fs {
 class PlainDirectory : public NodeHelper {

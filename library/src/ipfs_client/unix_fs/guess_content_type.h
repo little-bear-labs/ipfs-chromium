@@ -5,9 +5,9 @@
 #include <string_view>
 
 namespace ipfs {
-class NetworkingApi;
+class ContextApi;
 namespace unix_fs {
-std::string GuessContentType(NetworkingApi& api,
+std::string GuessContentType(ContextApi& api,
                              std::string_view path,
                              std::string_view content);
 }

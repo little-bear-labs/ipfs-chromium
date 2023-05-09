@@ -1,4 +1,4 @@
-#include <ipfs_client/networking_api.h>
+#include <ipfs_client/context_api.h>
 
 #include <ipfs_client/gateway.h>
 

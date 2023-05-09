@@ -6,6 +6,7 @@
 #include "ipfs_client/gateways.h"
 #include "ipfs_client/unixfs_path_resolver.h"
 
+#include "base/debug/stack_trace.h"
 #include "base/notreached.h"
 #include "base/threading/platform_thread.h"
 #include "services/network/public/cpp/parsed_headers.h"
@@ -96,7 +97,8 @@ void ipfs::IpfsUrlLoader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
   }
   LOG(INFO) << "cid=" << cid << " remainder=" << remainder;
   me->resolver_ = std::make_shared<UnixFsPathResolver>(
-      me->state_.storage(), std::string{cid}, remainder, me->api_);
+      me->state_.storage(), me->state_.requestor(), std::string{cid}, remainder,
+      me->api_);
   me->api_->SetLoaderFactory(lower_loader_factory_);
   me->resolver_->Step(shared_from_this());
 }
@@ -117,6 +119,7 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
     LOG(ERROR) << " ERROR: TaskFailed to create data pipe: " << result;
     return;
   }
+  complete_ = true;
   auto head = network::mojom::URLResponseHead::New();
   head->mime_type = mime_type;
   std::uint32_t byte_count = partial_block_.size();
@@ -129,17 +132,26 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
     LOG(ERROR) << "\n\tFailed to create headers!\n";
   }
   head->headers->SetHeader("Content-Type", mime_type);
+  head->headers->SetHeader("Access-Control-Allow-Origin", "*");
+  // TODO:
+  //   If we're ipns://, ipns_url_loader should have sent us an expiration date
+  //   If we're ipfs://, cache eternally?
+  //  head->headers->SetHeader("Cache-Control",
+  //                           "public, max-age=31449600, immutable");
+  head->was_fetched_via_spdy = false;
+  for (auto& part_cid : resolver_->involved_cids()) {
+    // L_VAR(part_cid);
+    AppendGatewayHeaders(part_cid, *head->headers);
+  }
   head->parsed_headers =
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});
-  head->was_fetched_via_spdy = false;
-  for (auto& cid : resolver_->involved_cids()) {
-    LOG(INFO) << cid << " was involved in resolving " << original_url_;
-  }
-  LOG(INFO) << "Sending response with mime type " << head->mime_type;
+  LOG(INFO) << "Sending response for " << original_url_ << " with mime type "
+            << head->mime_type << " @" << (void*)(this)
+      //<< " stack: " << base::debug::StackTrace()
+      ;
   client_->OnReceiveResponse(std::move(head), std::move(pipe_cons_),
                              absl::nullopt);
   client_->OnComplete(network::URLLoaderCompletionStatus{});
-  complete_ = true;
 }
 
 void ipfs::IpfsUrlLoader::FourOhFour(std::string_view cid,
@@ -152,4 +164,40 @@ void ipfs::IpfsUrlLoader::FourOhFour(std::string_view cid,
 
 void ipfs::IpfsUrlLoader::ReceiveBlockBytes(std::string_view content) {
   partial_block_.append(content);
+}
+
+void ipfs::IpfsUrlLoader::AppendGatewayHeaders(std::string const& cid,
+                                               net::HttpResponseHeaders& out) {
+  VLOG(1) << cid << " was involved in resolving " << original_url_;
+  auto* raw = state_.storage().GetHeaders(cid);
+  if (!raw || raw->empty()) {
+    LOG(ERROR) << "Trouble fetching headers from gateway response " << cid;
+    return;
+  }
+  //  auto gw_heads = net::HttpResponseHeaders::TryToCreate(*raw);
+  auto gw_heads = base::MakeRefCounted<net::HttpResponseHeaders>(*raw);
+  if (!gw_heads) {
+    std::ostringstream escaped;
+    for (auto c : *raw) {
+      if (std::isgraph(c)) {
+        escaped << c;
+      } else {
+        escaped << '<' << std::hex << std::setw(2) << std::setfill('0')
+                << static_cast<unsigned>(c) << '>';
+      }
+    }
+    LOG(ERROR) << "Failed to parse raw string as headers for " << cid << " : "
+               << escaped.str();
+    return;
+  }
+  std::size_t i = 0UL;
+  std::string name, value;
+  while (gw_heads->EnumerateHeaderLines(&i, &name, &value)) {
+    VLOG(1) << cid << ' ' << name << ' ' << value;
+    if (name == "Server-Timing" || name == "Block-Source") {
+      out.AddHeader(name, value);
+    } else {
+      out.SetHeader("ZZZ-" + cid + "-" + name, value);
+    }
+  }
 }

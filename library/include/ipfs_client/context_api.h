@@ -1,5 +1,5 @@
-#ifndef IPFS_NETWORKING_API_H_
-#define IPFS_NETWORKING_API_H_
+#ifndef IPFS_CONTEXT_API_H_
+#define IPFS_CONTEXT_API_H_
 
 #include "busy_gateway.h"
 
@@ -7,10 +7,6 @@
 #include <memory>
 
 namespace ipfs {
-
-using Priority = std::uint_least16_t;
-
-class DagListener;
 
 class GatewayRequest {
  public:
@@ -26,15 +22,8 @@ class GatewayRequest {
  * @brief Subclass to provide functionality from whatever
  *    environment you're using this library in.
  */
-class NetworkingApi : public std::enable_shared_from_this<NetworkingApi> {
+class ContextApi : public std::enable_shared_from_this<ContextApi> {
  public:
-  // Request a single block from gateway(s).
-  // The DagListener is mostly about lifetime extension, since it's waiting on
-  // something which is waiting on this
-  virtual void RequestByCid(std::string cid,
-                            std::shared_ptr<DagListener>,
-                            Priority priority) = 0;
-
   // Send a single http request to its gateway as scheduled
   virtual std::shared_ptr<GatewayRequest> InitiateGatewayRequest(
       BusyGateway) = 0;

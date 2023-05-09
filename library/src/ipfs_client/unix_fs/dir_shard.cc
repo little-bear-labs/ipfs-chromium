@@ -67,10 +67,8 @@ bool Self::Process(std::unique_ptr<NodeHelper>& next_helper,
   //  }
   bool found = false;
   block.List([&](auto& name, auto cid) {
-    LOG(INFO) << "Listing a child node of a HAMT shard node...";
-    L_VAR(name);
-    L_VAR(cid);
-    L_VAR(hamt_hexs_.front());
+    VLOG(1) << "Listing a child node of a HAMT shard node... " << name << '='
+            << cid << " next hex=" << hamt_hexs_.front();
     // Fun fact: there is a spec-defined sort order to these children.
     // We *could* do a binary search.
     if (!absl::StartsWith(name, hamt_hexs_.front())) {
@@ -132,7 +130,7 @@ void Self::HashPathElement(std::uint64_t fanout) {
       // digest,...
       auto popped = hash_bits % fanout;
       hash_bits /= fanout;
-      L_VAR(hash_bits);
+      // L_VAR(hash_bits);
       std::ostringstream oss;
       // ... then hex encode (using 0-F) using little endian thoses bits ...
       oss << std::setfill('0') << std::setw(hex_width) << std::uppercase

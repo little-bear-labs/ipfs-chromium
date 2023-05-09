@@ -1,7 +1,7 @@
 #include "plain_file.h"
 
 #include <ipfs_client/dag_block.h>
-#include <ipfs_client/networking_api.h>
+#include <ipfs_client/context_api.h>
 #include <ipfs_client/unixfs_path_resolver.h>
 
 #include "guess_content_type.h"
