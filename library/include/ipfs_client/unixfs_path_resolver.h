@@ -11,8 +11,9 @@
 
 namespace ipfs {
 
+class BlockRequestor;
 class BlockStorage;
-class NetworkingApi;
+class ContextApi;
 class GeneratedDirectoryListing;
 
 namespace unix_fs {
@@ -22,9 +23,10 @@ class NodeHelper;
 class UnixFsPathResolver {
  public:
   UnixFsPathResolver(BlockStorage&,
+                     BlockRequestor&,
                      std::string cid,
                      std::string path,
-                     std::shared_ptr<NetworkingApi>);
+                     std::shared_ptr<ContextApi>);
   ~UnixFsPathResolver() noexcept;
 
   void Step(std::shared_ptr<DagListener>);
@@ -36,10 +38,11 @@ class UnixFsPathResolver {
 
  private:
   BlockStorage& storage_;
+  BlockRequestor& requestor_;
   std::string cid_;
   std::string path_;
   std::string original_path_;
-  std::shared_ptr<NetworkingApi> api_;
+  std::shared_ptr<ContextApi> api_;
   std::unique_ptr<unix_fs::NodeHelper> helper_;
   std::weak_ptr<DagListener> old_listener_;
   Priority prio_ = 9;

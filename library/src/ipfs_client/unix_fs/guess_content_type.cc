@@ -1,10 +1,10 @@
 #include "guess_content_type.h"
 
-#include <ipfs_client/networking_api.h>
+#include <ipfs_client/context_api.h>
 
 #include "log_macros.h"
 
-std::string ipfs::unix_fs::GuessContentType(NetworkingApi& api,
+std::string ipfs::unix_fs::GuessContentType(ContextApi& api,
                                             std::string_view path,
                                             std::string_view content) {
   auto dot = path.rfind('.');

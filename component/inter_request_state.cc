@@ -1,6 +1,7 @@
 #include "inter_request_state.h"
 
 #include "gateway_requests.h"
+#include "network_requestor.h"
 
 #include "base/logging.h"
 #include "content/public/browser/browser_context.h"
@@ -29,6 +30,26 @@ auto ipfs::InterRequestState::FromBrowserContext(
   context->SetUserData(user_data_key, std::move(owned));
   return *raw;
 }
+auto ipfs::InterRequestState::requestor() -> BlockRequestor& {
+  if (!mem_) {
+    auto p = mem_ =
+        std::make_shared<CacheRequestor>(net::CacheType::MEMORY_CACHE, *this);
+    storage().AddStorageHook(
+        [p](auto c, auto h, auto b) { p->Store(c, h, b); });
+  }
+  if (!dsk_) {
+    auto p = dsk_ =
+        std::make_shared<CacheRequestor>(net::CacheType::DISK_CACHE, *this);
+    storage().AddStorageHook(
+        [p](auto c, auto h, auto b) { p->Store(c, h, b); });
+  }
+  if (!requestor_.Valid()) {
+    requestor_.Add(mem_);
+    requestor_.Add(dsk_);
+    requestor_.Add(std::make_shared<NetworkRequestor>(*this));
+  }
+  return requestor_;
+}
 std::shared_ptr<ipfs::GatewayRequests> ipfs::InterRequestState::api() {
   auto existing = api_.lock();
   if (existing) {
@@ -40,8 +61,6 @@ std::shared_ptr<ipfs::GatewayRequests> ipfs::InterRequestState::api() {
   if (t - last_discovery_ > 300) {
     created->Discover([this](auto v) { gws_.AddGateways(v); });
     last_discovery_ = t;
-    storage_.cache_search_initiator(
-        [this](std::string cid) { this->cache_.Load(cid, &(this->storage_)); });
   }
   return created;
 }

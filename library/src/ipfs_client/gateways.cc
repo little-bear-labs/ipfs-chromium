@@ -1,5 +1,5 @@
 #include "ipfs_client/gateways.h"
-#include "ipfs_client/networking_api.h"
+#include "ipfs_client/context_api.h"
 #include "log_macros.h"
 
 #include <algorithm>
@@ -31,7 +31,7 @@ void ipfs::Gateways::promote(std::string const& key) {
     LOG(ERROR) << "Can't promote (" << key
                << ") because I don't know that one.";
   } else {
-    LOG(INFO) << "promote(" << key << ")";
+    VLOG(1) << "promote(" << key << ")";
     known_gateways_.at(key)++;
   }
 }
@@ -67,19 +67,19 @@ std::vector<std::pair<std::string, int>> ipfs::Gateways::DefaultGateways() {
           {"https://dweb.link/"s, 885},
           {"https://jcsl.hopto.org/"s, 873},
           {"https://ipfs.joaoleitao.org/"s, 816},
-          {"https://jorropo.net/"s, 335},
-          {"https://ipfs.jpu.jp/"s, 321},
-          {"https://gateway.pinata.cloud/"s, 289},
-          {"https://ipfs.runfission.com/"s, 220},
+          {"https://jorropo.net/"s, 333},
+          {"https://ipfs.jpu.jp/"s, 319},
+          {"https://gateway.pinata.cloud/"s, 288},
+          {"https://ipfs.runfission.com/"s, 218},
           {"https://nftstorage.link/"s, 175},
           {"https://w3s.link/"s, 142},
-          {"https://ipfs.soul-network.com/"s, 74},
-          {"https://ipfs.scalaproject.io/"s, 72},
-          {"https://storry.tv/"s, 53},
-          {"https://hardbin.com/"s, 48},
+          {"https://ipfs.soul-network.com/"s, 72},
+          {"https://ipfs.scalaproject.io/"s, 70},
+          {"https://storry.tv/"s, 51},
+          {"https://hardbin.com/"s, 47},
           {"https://ipfs.fleek.co/"s, 46},
           {"https://permaweb.eu.org/"s, 43},
-          {"https://ipfs-gateway.cloud/"s, 33},
-          {"https://ipfs.storry.tv/"s, 13},
+          {"https://ipfs-gateway.cloud/"s, 31},
+          {"https://ipfs.storry.tv/"s, 11},
           {"https://ipfs.anonymize.com/"s, 0}};
 }

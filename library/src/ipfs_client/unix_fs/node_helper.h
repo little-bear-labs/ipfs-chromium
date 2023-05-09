@@ -2,7 +2,7 @@
 #define IPFS_NODE_HELPER_H_
 
 #include <ipfs_client/dag_block.h>
-#include <ipfs_client/networking_api.h>
+#include <ipfs_client/block_requestor.h>
 
 #include <vocab/raw_ptr.h>
 
@@ -10,9 +10,12 @@
 #include <string>
 
 namespace ipfs {
+
 class BlockStorage;
+class ContextApi;
 class DagListener;
 class UnixFsPathResolver;
+
 namespace unix_fs {
 class NodeHelper {
  public:
@@ -27,7 +30,7 @@ class NodeHelper {
   void cid(std::string const& val) { cid_ = val; }
   void storage(BlockStorage& val);
   void resolver(UnixFsPathResolver& val) { resolver_ = &val; }
-  void api(NetworkingApi& val) { api_ = &val; }
+  void api(ContextApi& val) { api_ = &val; }
 
   virtual ~NodeHelper() noexcept;
 
@@ -35,7 +38,7 @@ class NodeHelper {
   std::string cid_;
   raw_ptr<BlockStorage> storage_ = nullptr;
   raw_ptr<UnixFsPathResolver> resolver_ = nullptr;
-  raw_ptr<NetworkingApi> api_ = nullptr;
+  raw_ptr<ContextApi> api_ = nullptr;
 
   Block const* block();
   void Delegate(NodeHelper&) const;

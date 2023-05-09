@@ -9,7 +9,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-#include <ipfs_client/networking_api.h>
+#include <ipfs_client/context_api.h>
 
 #include <libp2p/multi/content_identifier_codec.hpp>
 #include <libp2p/peer/peer_id.hpp>

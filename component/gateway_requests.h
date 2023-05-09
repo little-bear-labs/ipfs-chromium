@@ -1,11 +1,11 @@
 #ifndef IPFS_GATEWAY_REQUESTS_H_
 #define IPFS_GATEWAY_REQUESTS_H_
 
-#include "ipfs_block_cache.h"
-
 #include <ipfs_client/block_storage.h>
-#include <ipfs_client/networking_api.h>
+#include <ipfs_client/context_api.h>
 #include <ipfs_client/scheduler.h>
+
+#include <base/time/time.h>
 
 #include <vocab/raw_ptr.h>
 
@@ -20,8 +20,9 @@ class URLLoaderFactory;
 
 namespace ipfs {
 class InterRequestState;
+class NetworkRequestor;
 
-class GatewayRequests final : public NetworkingApi {
+class GatewayRequests final : public ContextApi {
   struct GatewayUrlLoader : public ipfs::GatewayRequest {
     GatewayUrlLoader(BusyGateway&&);
     GatewayUrlLoader(GatewayRequest&&);
@@ -35,19 +36,25 @@ class GatewayRequests final : public NetworkingApi {
   std::function<void(std::vector<std::string>)> disc_cb_;
 
   void Request(std::string task, std::shared_ptr<DagListener>, Priority);
-  void RequestByCid(std::string cid,
-                    std::shared_ptr<DagListener>,
-                    Priority) override;
   std::shared_ptr<GatewayRequest> InitiateGatewayRequest(BusyGateway) override;
   std::string MimeType(std::string extension,
                        std::string_view content,
                        std::string const& url) const override;
   std::string UnescapeUrlComponent(std::string_view) const override;
 
-  void OnResponse(std::shared_ptr<NetworkingApi>,
+  void OnResponse(std::shared_ptr<ContextApi>,
                   std::shared_ptr<GatewayUrlLoader>,
+                  base::TimeTicks,
                   std::unique_ptr<std::string>);
-  bool ProcessResponse(BusyGateway&, network::SimpleURLLoader*, std::string*);
+  bool ProcessResponse(BusyGateway&,
+                       network::SimpleURLLoader*,
+                       std::string*,
+                       base::TimeTicks);
+  friend class NetworkRequestor;
+
+  void RequestByCid(std::string cid,
+                    std::shared_ptr<DagListener>,
+                    Priority);
 
  public:
   GatewayRequests(InterRequestState&);

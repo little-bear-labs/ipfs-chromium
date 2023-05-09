@@ -1,7 +1,7 @@
 #include <ipfs_client/unixfs_path_resolver.h>
 
 #include <ipfs_client/block_storage.h>
-#include <ipfs_client/networking_api.h>
+#include <ipfs_client/context_api.h>
 #include <libp2p/multi/content_identifier_codec.hpp>
 #include <libp2p/multi/multibase_codec/codecs/base58.hpp>
 #include "components/ipfs/pb_dag.pb.h"
@@ -18,9 +18,9 @@ namespace {
 using entry = std::pair<std::string, std::string>;  // name to CID
 ipfs::Block mock_directory(std::string, std::vector<entry>);
 ipfs::Block mock_file(std::string, std::string content);
-void setup(std::shared_ptr<ipfs::NetworkingApi>, ipfs::BlockStorage& store);
+void setup(std::shared_ptr<ipfs::ContextApi>, ipfs::BlockStorage& store);
 ipfs::GatewayList gwl();
-struct Api final : public ipfs::NetworkingApi {
+struct Api final : public ipfs::ContextApi {
   std::vector<ipfs::BusyGateway> bgws;
   //  void InitiateGatewayRequest(ipfs::BusyGateway) {
   std::shared_ptr<ipfs::GatewayRequest> InitiateGatewayRequest(
@@ -28,16 +28,6 @@ struct Api final : public ipfs::NetworkingApi {
     EXPECT_EQ("It was called!",
               "InitiateGatewayRequest should not have been called.");
     return {};
-  }
-  void RequestByCid(std::string cid,
-                    std::shared_ptr<ipfs::DagListener>,
-                    ipfs::Priority priority) {
-    EXPECT_GT(cid.size(), 1U);
-    if (priority) {
-      auto ec = std::system(("pwd && ./incblock.sh " + cid).c_str());
-      EXPECT_EQ(ec, 0);
-      EXPECT_EQ("Nothing additional should be requested", cid);
-    }
   }
   void Discover(std::function<void(std::vector<std::string>)>) {}
   std::string MimeTypeFromExtension(std::string extension) const {
@@ -73,9 +63,23 @@ struct Listener : public ipfs::DagListener {
   }
   void FourOhFour(std::string_view, std::string_view) {}
 };
+struct Requestor : public ipfs::BlockRequestor {
+  void RequestByCid(std::string cid,
+                    std::shared_ptr<ipfs::DagListener>,
+                    ipfs::Priority priority) {
+    EXPECT_GT(cid.size(), 1U);
+    if (priority) {
+      auto ec = std::system(("pwd && ./incblock.sh " + cid).c_str());
+      EXPECT_EQ(ec, 0);
+      EXPECT_EQ("Nothing additional should be requested", cid);
+    }
+  }
+};
+
 struct UnixFsPathResolverTest : public ::testing::Test {
   google::protobuf::LogSilencer no_log;
   std::shared_ptr<Api> api = std::make_shared<Api>();
+  Requestor reqr_;
   std::shared_ptr<Listener> listener = std::make_shared<Listener>();
   ipfs::Scheduler sched{gwl};
   ipfs::BlockStorage storage;
@@ -85,7 +89,8 @@ TEST_F(UnixFsPathResolverTest, ResolveDirectoryToIndexHtml) {
   setup(api, storage);
 
   ipfs::UnixFsPathResolver resolver(
-      storage, "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH", "/adir/", api);
+      storage, reqr_, "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH",
+      "/adir/", api);
   EXPECT_EQ("QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH",
             resolver.current_cid());
   EXPECT_EQ(listener->is_done, false);
@@ -97,7 +102,7 @@ TEST_F(UnixFsPathResolverTest, ResolveDirectoryToIndexHtml) {
 TEST_F(UnixFsPathResolverTest, ReassemblesMultiNodeFile) {
   setup(api, storage);
   auto cid = "bafybeihlj5ay4hmckxzgy43qfnaifjcqoioyw2a6o3pn2ktrlhlqu3df6m";
-  ipfs::UnixFsPathResolver resolver(storage, cid, "", api);
+  ipfs::UnixFsPathResolver resolver(storage, reqr_, cid, "", api);
   EXPECT_EQ(cid, resolver.current_cid());
   EXPECT_EQ(listener->is_done, false);
   resolver.Step(listener);
@@ -110,7 +115,8 @@ TEST_F(UnixFsPathResolverTest, ReassemblesMultiNodeFile) {
 TEST_F(UnixFsPathResolverTest, ResolveDirectoryToGeneratedListing) {
   setup(api, storage);
   auto resolver = ipfs::UnixFsPathResolver(
-      storage, "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH", "/", api);
+      storage, reqr_, "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH", "/",
+      api);
   EXPECT_EQ("QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH",
             resolver.current_cid());
   EXPECT_EQ(listener->is_done, false);
@@ -123,8 +129,9 @@ TEST_F(UnixFsPathResolverTest, ResolveDirectoryToGeneratedListing) {
 TEST_F(UnixFsPathResolverTest, WikipediaLandingPage) {
   setup(api, storage);
   auto resolver = ipfs::UnixFsPathResolver(
-      storage, "bafybeiaysi4s6lnjev27ln5icwm6tueaw2vdykrtjkwiphwekaywqhcjze",
-      "/wiki/", api);
+      storage, reqr_,
+      "bafybeiaysi4s6lnjev27ln5icwm6tueaw2vdykrtjkwiphwekaywqhcjze", "/wiki/",
+      api);
   EXPECT_EQ(resolver.current_cid(),
             "bafybeiaysi4s6lnjev27ln5icwm6tueaw2vdykrtjkwiphwekaywqhcjze");
   EXPECT_EQ(listener->is_done, false);
@@ -139,7 +146,7 @@ TEST_F(UnixFsPathResolverTest, ObservedIncorrectMime) {
   setup(api, storage);
   api->head_size = 262144;
   auto resolver = ipfs::UnixFsPathResolver(
-      storage, "QmeVskzFYtigsDBAKuHjtiX1azEUtCtrbXcPi9TK6ES4cX",
+      storage, reqr_, "QmeVskzFYtigsDBAKuHjtiX1azEUtCtrbXcPi9TK6ES4cX",
       "/assets/index-12705bf9.js", api);
   EXPECT_EQ(resolver.current_cid(),
             "QmeVskzFYtigsDBAKuHjtiX1azEUtCtrbXcPi9TK6ES4cX");
@@ -152,42 +159,46 @@ TEST_F(UnixFsPathResolverTest, ObservedIncorrectMime) {
 namespace {
 using Codec = libp2p::multi::ContentIdentifierCodec;
 void reals(ipfs::BlockStorage& store);
-void setup(std::shared_ptr<ipfs::NetworkingApi> api,
-           ipfs::BlockStorage& store) {
-  store.Store("", mock_file("QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX",
-                            "Please ignore\n"));
+void setup(std::shared_ptr<ipfs::ContextApi> api, ipfs::BlockStorage& store) {
+  store.Store("", "",
+              mock_file("QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX",
+                        "Please ignore\n"));
   store.Store(
-      "",
+      "", "",
       mock_file("bafybeih5h3u5vqle7laz4kpo3imumdedj2n6y4u5s6zadqgtg77l243zny",
                 "Please ignore\n"));
-  store.Store("", mock_file("QmcuGriuDDhMb6hRW71Nt87aDLrqMrh6W3sqxg3H76xEoR",
-                            "<html><body><p>Hello</p></body></html>\n"));
+  store.Store("", "",
+              mock_file("QmcuGriuDDhMb6hRW71Nt87aDLrqMrh6W3sqxg3H76xEoR",
+                        "<html><body><p>Hello</p></body></html>\n"));
   store.Store(
-      "",
+      "", "",
       mock_file("bafybeigyl4jx7snmutilxzewapa4l3qfqlvorxi7qibjtzurhtti5dm5aa",
                 "<html><body><p>Hello</p></body></html>\n"));
-  store.Store("", mock_file("QmSsWZwmg7ArN7KCn1hYpZyQAK5eAryqkBehbRRWbkisFG",
-                            "Also ignore\n"));
+  store.Store("", "",
+              mock_file("QmSsWZwmg7ArN7KCn1hYpZyQAK5eAryqkBehbRRWbkisFG",
+                        "Also ignore\n"));
   store.Store(
-      "",
+      "", "",
       mock_directory(
           "Qmdf4ByEwZtD78Wa2jQmXeQM16xM86P94JmBDjSqsuFXwh",
           {{"ignored.txt", "QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX"},
            {"index.html", "QmcuGriuDDhMb6hRW71Nt87aDLrqMrh6W3sqxg3H76xEoR"}}));
   store.Store(
-      "",
+      "", "",
       mock_directory(
           "bafybeihdszhm5xieyovwwqi256pltr5tlvfxzgfxnne7qjm54owrbfyrzq",
           {{"ignored.txt", "QmfPDVqow93WH4PjW8PyddPs7D3c6h7njaXGBzpbSgQBZX"},
            {"index.html", "QmcuGriuDDhMb6hRW71Nt87aDLrqMrh6W3sqxg3H76xEoR"}}));
   store.Store(
-      "", mock_directory(
-              "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH",
-              {{"adir", "Qmdf4ByEwZtD78Wa2jQmXeQM16xM86P94JmBDjSqsuFXwh"}}));
+      "", "",
+      mock_directory(
+          "QmW4NtHG2Q85KaCzPQJrziWATQ2T2SQUQEnVzsN9YocNTH",
+          {{"adir", "Qmdf4ByEwZtD78Wa2jQmXeQM16xM86P94JmBDjSqsuFXwh"}}));
   store.Store(
-      "", mock_directory(
-              "bafybeidswjht6punszuomoi6ee2jlcyaz5cislrxa2bbc566tsyycdaxea",
-              {{"adir", "Qmdf4ByEwZtD78Wa2jQmXeQM16xM86P94JmBDjSqsuFXwh"}}));
+      "", "",
+      mock_directory(
+          "bafybeidswjht6punszuomoi6ee2jlcyaz5cislrxa2bbc566tsyycdaxea",
+          {{"adir", "Qmdf4ByEwZtD78Wa2jQmXeQM16xM86P94JmBDjSqsuFXwh"}}));
   reals(store);
 }
 ipfs::Block mock_directory(std::string cid_str, std::vector<entry> entries) {
@@ -228,7 +239,7 @@ void reals(ipfs::BlockStorage& store) {
       auto cid_str = e.path().filename();
       auto cid = Codec::fromString(cid_str).value();
       std::ifstream f{e.path()};
-      store.Store("", ipfs::Block{cid, f});
+      store.Store("", "", ipfs::Block{cid, f});
     }
   });
 }

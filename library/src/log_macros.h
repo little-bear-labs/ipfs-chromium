@@ -8,6 +8,7 @@
 #if __has_include("base/logging.h")
 
 #include "base/logging.h"
+#include "base/check_op.h"
 
 #else
 
@@ -17,7 +18,12 @@
 #define DCHECK GOOGLE_DCHECK
 #define LOG GOOGLE_LOG
 // TODO
-#define VLOG(X) GOOGLE_LOG(INFO - X)
+#define VLOG(X)                                       \
+  ::google::protobuf::internal::LogFinisher() =       \
+      ::google::protobuf::internal::LogMessage(       \
+          static_cast<::google::protobuf::LogLevel>(  \
+              ::google::protobuf::LOGLEVEL_INFO - X), \
+          __FILE__, __LINE__)
 
 #endif
 

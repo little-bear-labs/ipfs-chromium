@@ -83,6 +83,8 @@ class IpfsUrlLoader final : public network::mojom::URLLoader,
   void FourOhFour(std::string_view cid, std::string_view path) override;
 
   void StartUnixFsProc(ptr, std::string_view);
+  void AppendGatewayHeaders(std::string const& cid, net::HttpResponseHeaders&);
+  void AppendGatewayInfoHeader(std::string const&, net::HttpResponseHeaders&);
 };
 
 }  // namespace ipfs

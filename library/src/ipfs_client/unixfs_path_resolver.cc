@@ -2,9 +2,10 @@
 
 #include "unix_fs/node_helper.h"
 
+#include <ipfs_client/block_storage.h>
+#include <ipfs_client/context_api.h>
+#include <ipfs_client/dag_block.h>
 #include <libp2p/multi/content_identifier_codec.hpp>
-#include "ipfs_client/block_storage.h"
-#include "ipfs_client/dag_block.h"
 
 #include "vocab/stringify.h"
 
@@ -19,7 +20,11 @@ void Self::Step(std::shared_ptr<DagListener> listener) {
   }
   LOG(INFO) << "Stepping... " << cid_ << " / " << original_path_ << " / "
             << path_;
-  Block const* block = storage_.Get(cid_, false);
+  if (involved_cids_.end() ==
+      std::find(involved_cids_.begin(), involved_cids_.end(), cid_)) {
+    involved_cids_.push_back(cid_);
+  }
+  Block const* block = storage_.Get(cid_, true);
   if (!block) {
     LOG(INFO) << "Current block " << cid_ << " not found. Requesting.";
     Request(listener, cid_, prio_);
@@ -64,7 +69,7 @@ void Self::GetHelper(Block::Type typ) {
 void Self::Request(std::shared_ptr<DagListener>& listener,
                    std::string const& cid,
                    Priority prio) {
-  LOG(INFO) << "Request(" << cid << ',' << prio << ')';
+  VLOG(1) << "Request(" << cid << ',' << prio << ')';
   if (storage_.Get(cid)) {
     return;
   }
@@ -73,7 +78,7 @@ void Self::Request(std::shared_ptr<DagListener>& listener,
   if (it == already_requested_.end()) {
     VLOG(1) << "Request(" << cid << ',' << static_cast<long>(prio) << ')';
     already_requested_[cid] = {prio, t};
-    api_->RequestByCid(cid, listener, prio);
+    requestor_.RequestByCid(cid, listener, prio);
     if (prio) {
       storage_.AddListening(this);
       involved_cids_.push_back(cid);
@@ -83,15 +88,21 @@ void Self::Request(std::shared_ptr<DagListener>& listener,
               << static_cast<long>(prio) << ')';
     it->second.prio = prio;
     it->second.when = t;
-    api_->RequestByCid(cid, listener, prio);
+    requestor_.RequestByCid(cid, listener, prio);
   }
 }
 
 Self::UnixFsPathResolver(BlockStorage& store,
+                         BlockRequestor& requestor,
                          std::string cid,
                          std::string path,
-                         std::shared_ptr<NetworkingApi> api)
-    : storage_{store}, cid_{cid}, path_{path}, original_path_(path), api_(api) {
+                         std::shared_ptr<ContextApi> api)
+    : storage_{store},
+      requestor_{requestor},
+      cid_{cid},
+      path_{path},
+      original_path_(path),
+      api_(api) {
   LOG(INFO) << "UnixFsPathResolver(storage@" << (void*)(&store) << ')';
   constexpr std::string_view filename_param{"filename="};
   auto fn = original_path_.find(filename_param);

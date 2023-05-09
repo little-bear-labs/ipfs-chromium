@@ -1,9 +1,9 @@
 #ifndef IPFS_SCHEDULER_H_
 #define IPFS_SCHEDULER_H_
 
+#include "block_requestor.h"
 #include "busy_gateway.h"
 #include "gateways.h"
-#include "networking_api.h"
 
 #include <ctime>
 #include <functional>
@@ -15,8 +15,9 @@
 namespace ipfs {
 class DagListener;
 class NameListener;
-class NetworkingApi;
+class ContextApi;
 class Gateway;
+class GatewayRequest;
 class Scheduler;
 
 class Scheduler {
@@ -24,12 +25,12 @@ class Scheduler {
   explicit Scheduler(std::function<GatewayList()> list_gen);
   ~Scheduler();
   enum Result { Scheduled, InProgress, Failed };
-  void Enqueue(std::shared_ptr<NetworkingApi>,
+  void Enqueue(std::shared_ptr<ContextApi>,
                std::shared_ptr<DagListener>,
                std::shared_ptr<NameListener>,
                std::string const& suffix,
                Priority);
-  void IssueRequests(std::shared_ptr<NetworkingApi>);
+  void IssueRequests(std::shared_ptr<ContextApi>);
   bool DetectCompleteFailure(std::string task) const;
   void TaskComplete(std::string const&);
 
@@ -49,7 +50,7 @@ class Scheduler {
   std::map<std::string, Todo> task2todo_;
   bool loaded_ = false;
 
-  void Issue(std::shared_ptr<NetworkingApi>,
+  void Issue(std::shared_ptr<ContextApi>,
              std::shared_ptr<DagListener>&,
              std::vector<Todo> todos,
              unsigned up_to);

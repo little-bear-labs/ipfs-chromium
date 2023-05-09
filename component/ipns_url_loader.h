@@ -24,7 +24,7 @@ class URLLoaderClient;
 }  // namespace network
 
 namespace ipfs {
-class NetworkingApi;
+class ContextApi;
 class InterRequestState;
 class IpnsUrlLoader : public network::ResolveHostClientBase,
                       public network::mojom::URLLoader,

@@ -10,7 +10,7 @@ namespace ipfs {
 class DagListener;
 class Gateway;
 class Gateways;
-class NetworkingApi;
+class ContextApi;
 class Scheduler;
 class BusyGateway {
  public:
@@ -25,8 +25,8 @@ class BusyGateway {
   void reset();
   bool operator==(BusyGateway const&) const;
 
-  void Success(Gateways&, std::shared_ptr<NetworkingApi>);
-  void Failure(Gateways&, std::shared_ptr<NetworkingApi>);
+  void Success(Gateways&, std::shared_ptr<ContextApi>);
+  void Failure(Gateways&, std::shared_ptr<ContextApi>);
 
   std::string const& task() const { return suffix_; }
   std::string url() const { return prefix_ + suffix_; }
