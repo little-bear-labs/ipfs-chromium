@@ -36,6 +36,7 @@ class InterRequestState : public base::SupportsUserData::Data {
   IpnsNames& names() { return names_; }
   Scheduler& scheduler();
   std::shared_ptr<GatewayRequests> api();
+  std::array<std::shared_ptr<CacheRequestor>,2> serialized_caches();
 
   static InterRequestState& FromBrowserContext(content::BrowserContext*);
 };

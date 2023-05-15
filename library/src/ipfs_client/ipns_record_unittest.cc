@@ -66,5 +66,6 @@ TEST(IpnsRecordTest, AKnownKuboRecord) {
       known_record, my_name, [](auto, auto, auto, auto) { return true; }, [](auto){ipfs::IpnsCborEntry e; e.value = "/ipfs/bafybeig57t2dp435aupttilimd6767kppfebaa3gnunmqden66dgkhugwi"; return e;});
   std::string_view expected{
       "/ipfs/bafybeig57t2dp435aupttilimd6767kppfebaa3gnunmqden66dgkhugwi"};
-  EXPECT_EQ(result, expected);
+  EXPECT_EQ(result.has_value(), true);
+  EXPECT_EQ(result.value().value, expected);
 }

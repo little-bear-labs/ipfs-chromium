@@ -22,19 +22,27 @@ class CacheRequestor : public BlockRequestor {
   CacheRequestor(net::CacheType, InterRequestState&);
   virtual ~CacheRequestor() noexcept;
   void Store(std::string cid, std::string headers, std::string body);
+  void FetchEntry(std::string key,
+                net::RequestPriority priority,
+                std::function<void(std::string_view, std::string_view)> hit,
+                std::function<void()> miss);
+
+  std::string_view name() const;
 
  private:
   struct Task {
     Task();
     Task(Task const&);
     ~Task() noexcept;
-    std::string cid;
+    std::string key;
     std::shared_ptr<DagListener> listener;
     base::TimeTicks start = base::TimeTicks::Now();
     std::string header;
     std::string body;
     scoped_refptr<net::IOBufferWithSize> buf;
     std::shared_ptr<disk_cache::Entry> entry;
+    std::function<void(std::string_view, std::string_view)> hit;
+    std::function<void()> miss;
 
     void SetHeaders(std::string_view);
     void Fail();
@@ -51,7 +59,7 @@ class CacheRequestor : public BlockRequestor {
   void Start();
 
   base::FilePath path() const;
-  std::string_view name() const;
+  void StartFetch(Task& t, net::RequestPriority priority);
   void Assign(disk_cache::BackendResult);
   void OnOpen(Task, disk_cache::EntryResult);
   void OnHeaderRead(Task, int);

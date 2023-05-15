@@ -69,7 +69,7 @@ void ipfs::IpnsUrlLoader::OnTextResults(
     LOG(ERROR)
         << "_dnslink. domain exists, but contains no /ipfs or /ipns entry";
   } else {
-    state_.names().AssignName(host_, result);
+    state_.names().AssignDnsLink(host_, result);
   }
 }
 void ipfs::IpnsUrlLoader::OnComplete(
@@ -208,14 +208,48 @@ bool ipfs::IpnsUrlLoader::RequestIpnsRecord() {
     state_.scheduler().IssueRequests(api_);
     return true;
   }
+  auto key = "ipns/" + this->host_;
+  auto caches = state_.serialized_caches();
+  auto hit = [this](auto body, auto /*header*/) {
+    LOG(INFO) << "IPNS cache hit! " << this->host_ << "=" << body;
+    auto result = ValidatedIpns::Deserialize(std::string{body});
+    this->state_.names().AssignName(this->host_, result);
+    this->Complete();
+  };
+  auto check =
+      [hit, key](
+          std::function<void()> fail,
+          std::shared_ptr<CacheRequestor> cache) -> std::function<void()> {
+    return [=]() {
+      LOG(INFO) << "Attempting to fetch IPNS record from " << cache->name();
+      cache->FetchEntry(key, net::HIGHEST, hit, fail);
+    };
+  };
+  std::function<void()> last_resort = [this]() {
+    LOG(INFO) << "All caches missed for " << this->host_;
+    this->RequestFromGateway();
+  };
+  auto chain =
+      std::accumulate(caches.rbegin(), caches.rend(), last_resort, check);
+  chain();
+  return true;
+}
+void ipfs::IpnsUrlLoader::RequestFromGateway() {
   api_ = state_.api();
   api_->SetLoaderFactory(http_loader_);
   state_.scheduler().Enqueue(api_, {}, shared_from_this(),
                              "ipns/" + host_ + "?format=ipns-record", 3);
   state_.scheduler().IssueRequests(api_);
-  return true;
 }
 void ipfs::IpnsUrlLoader::Complete() {
   LOG(INFO) << "NameListener's Complete called for an IpnsLoader!";
+  auto* entry = state_.names().Entry(host_);
+  DCHECK(entry);
+  auto caches = state_.serialized_caches();
+  LOG(INFO) << "Storing the resolution of ipns://" << host_ << " in "
+            << caches.size() << " cache backends.";
+  for (auto cache : caches) {
+    cache->Store("ipns/" + host_, "IPNS", entry->Serialize());
+  }
   Next();
 }

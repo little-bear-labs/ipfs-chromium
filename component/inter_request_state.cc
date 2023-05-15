@@ -30,7 +30,8 @@ auto ipfs::InterRequestState::FromBrowserContext(
   context->SetUserData(user_data_key, std::move(owned));
   return *raw;
 }
-auto ipfs::InterRequestState::requestor() -> BlockRequestor& {
+auto ipfs::InterRequestState::serialized_caches()
+    -> std::array<decltype(mem_), 2> {
   if (!mem_) {
     auto p = mem_ =
         std::make_shared<CacheRequestor>(net::CacheType::MEMORY_CACHE, *this);
@@ -43,7 +44,11 @@ auto ipfs::InterRequestState::requestor() -> BlockRequestor& {
     storage().AddStorageHook(
         [p](auto c, auto h, auto b) { p->Store(c, h, b); });
   }
+  return {mem_, dsk_};
+}
+auto ipfs::InterRequestState::requestor() -> BlockRequestor& {
   if (!requestor_.Valid()) {
+    serialized_caches();
     requestor_.Add(mem_);
     requestor_.Add(dsk_);
     requestor_.Add(std::make_shared<NetworkRequestor>(*this));

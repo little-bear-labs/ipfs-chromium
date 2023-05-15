@@ -206,16 +206,17 @@ bool Self::ProcessResponse(BusyGateway& gw,
       return false;
     }
     auto* bytes = reinterpret_cast<Byte const*>(body->data());
-    auto target =
+    auto record =
         ValidateIpnsRecord({bytes, body->size()}, as_peer.value(),
                            crypto_api::VerifySignature, ParseCborIpns);
-    if (target.empty()) {
+    if (!record.has_value()) {
       LOG(ERROR) << "IPNS record failed to validate! From: " << gw.url();
       return false;
     }
+    auto& target = record.value().value;
     LOG(INFO) << "IPNS record from " << gw.url() << " points " << cid_str
               << " to " << target;
-    state_.names().AssignName(cid_str, target.substr(1UL));
+    state_.names().AssignName(cid_str, std::move(record.value()));
     scheduler().IssueRequests(shared_from_this());
     return true;
   } else {

@@ -18,7 +18,7 @@
   - Devtools (network tab doesn't show enough)
   - MDNS discovery of gateways
 * QoI
-  - BlockStorage API becomes async, resolver waits (indirectly) for disk cache response one way or the other before proceeding
+  - Handle different types of errors differently (don't always call DagListener::FourOhFour)
   - Persist promote/demote (perhaps integrated with user settings)
   - Real URLLoader (not just Simple*) for gateway requests (SetPriority, pause, etc.)
   - Implement SetPriority, having it Scheduler parameters
@@ -27,6 +27,7 @@
   - Enforce maximum block size
   - IPNS name resolution - receive multiple records and pick highest sequence #
   - Etag
+  - Resolve identity CIDs internally
 * Dev QoL
   - Docker builds verifying every documented build approach
   - Github Action release including uploading library artifacts
