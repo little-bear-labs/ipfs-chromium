@@ -67,6 +67,7 @@ class IpnsUrlLoader : public network::ResolveHostClientBase,
   void FailNameResolution();
   network::mojom::URLLoader& under();
   bool RequestIpnsRecord();
+  void RequestFromGateway();
 
   void FollowRedirect(
       std::vector<std::string> const& removed_headers,

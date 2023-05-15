@@ -42,23 +42,36 @@ void Self::Assign(dc::BackendResult res) {
     Start();
   }
 }
+void Self::FetchEntry(
+    std::string key,
+    net::RequestPriority priority,
+    std::function<void(std::string_view, std::string_view)> hit,
+    std::function<void()> miss) {
+  Task task;
+  task.key = key;
+  task.hit = hit;
+  task.miss = miss;
+  StartFetch(task, priority);
+}
 void Self::RequestByCid(std::string cid,
                         std::shared_ptr<DagListener> listen,
                         Priority prio) {
   VLOG(1) << "RequestByCid(" << name() << ',' << cid << ',' << prio << ')';
   DCHECK(listen);
   Task task;
-  task.cid = cid;
+  task.key = cid;
   task.listener = listen;
+  auto p = std::min(prio + 0, net::MAXIMUM_PRIORITY + 0);
+  StartFetch(task, static_cast<net::RequestPriority>(p));
+}
+void Self::StartFetch(Task& task, net::RequestPriority priority) {
   if (pending_) {
     Start();
     task.Fail();
     return;
   }
-  auto p = static_cast<net::RequestPriority>(
-      std::min(prio + 0, net::MAXIMUM_PRIORITY + 0));
-  auto res = cache_->OpenEntry(
-      cid, p, base::BindOnce(&Self::OnOpen, base::Unretained(this), task));
+  auto bound = base::BindOnce(&Self::OnOpen, base::Unretained(this), task);
+  auto res = cache_->OpenEntry(task.key, priority, std::move(bound));
   if (res.net_error() != net::ERR_IO_PENDING) {
     OnOpen(task, std::move(res));
   }
@@ -79,7 +92,7 @@ std::shared_ptr<dc::Entry> GetEntry(dc::EntryResult& result) {
 void Self::OnOpen(Task task, dc::EntryResult res) {
   VLOG(1) << "OnOpen(" << res.net_error() << ")";
   if (res.net_error() != net::OK) {
-    LOG(ERROR) << "Failed to find " << task.cid << " in " << name();
+    LOG(ERROR) << "Failed to find " << task.key << " in " << name();
     task.Fail();
     return;
   }
@@ -98,7 +111,7 @@ void Self::OnOpen(Task task, dc::EntryResult res) {
 
 void Self::OnHeaderRead(Task task, int code) {
   if (code <= 0) {
-    LOG(ERROR) << "Failed to read headers for entry " << task.cid << " in "
+    LOG(ERROR) << "Failed to read headers for entry " << task.key << " in "
                << name();
     task.Fail();
     return;
@@ -113,21 +126,25 @@ void Self::OnHeaderRead(Task task, int code) {
 }
 void Self::OnBodyRead(Task task, int code) {
   if (code <= 0) {
-    LOG(ERROR) << "Failed to read body for entry " << task.cid << " in "
+    LOG(ERROR) << "Failed to read body for entry " << task.key << " in "
                << name();
     task.Fail();
     return;
   }
   task.body.assign(task.buf->data(), static_cast<std::size_t>(code));
-  task.SetHeaders(name());
-  auto& stor = state_.storage();
-  stor.Store(task.cid, std::move(task.header), std::move(task.body));
-  state_.scheduler().IssueRequests(state_.api());
+  if (task.listener) {
+    task.SetHeaders(name());
+    auto& stor = state_.storage();
+    stor.Store(task.key, std::move(task.header), std::move(task.body));
+    state_.scheduler().IssueRequests(state_.api());
+  } else {
+    task.hit(task.body, task.header);
+  }
 }
 
 void Self::Store(std::string cid, std::string headers, std::string body) {
-  VLOG(1) << "Store(" << name() << ',' << cid << ',' << headers.size() << ','
-          << body.size() << ')';
+  LOG(INFO) << "Store(" << name() << ',' << cid << ',' << headers.size() << ','
+            << body.size() << ')';
   auto bound = base::BindOnce(&Self::OnEntryCreated, base::Unretained(this),
                               cid, headers, body);
   auto res = cache_->OpenOrCreateEntry(cid, net::LOW, std::move(bound));
@@ -195,20 +212,25 @@ std::string_view Self::name() const {
 }
 
 void Self::Task::Fail() {
-  listener->FourOhFour(cid, "<any/all>");
+  if (listener) {
+    listener->FourOhFour(key, "<any/all>");
+  }
+  if (miss) {
+    miss();
+  }
 }
 void Self::Task::SetHeaders(std::string_view source) {
   auto heads = base::MakeRefCounted<net::HttpResponseHeaders>(header);
   DCHECK(heads);
   std::string value{"blockcache-"};
-  value.append(cid);
+  value.append(key);
   value.append(";desc=\"Load from local browser block cache\";dur=");
   auto dur = base::TimeTicks::Now() - start;
   value.append(std::to_string(dur.InMillisecondsRoundedUp()));
   heads->SetHeader("Server-Timing", value);
-  LOG(INFO) << "From cache: Server-Timing: " << value << "; Block-Cache-" << cid
+  LOG(INFO) << "From cache: Server-Timing: " << value << "; Block-Cache-" << key
             << ": " << source;
-  heads->SetHeader("Block-Cache-" + cid, source);
+  heads->SetHeader("Block-Cache-" + key, source);
   header = heads->raw_headers();
 }
 

@@ -24,10 +24,11 @@ bool matches(libp2p::multi::Multihash const& hash,
                     hash.getHash().end());
 }
 }  // namespace
-std::string ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
-                                     libp2p::peer::PeerId const& name,
-                                     CryptoSignatureVerifier verify,
-                                     CborDeserializer dser) {
+auto ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
+                              libp2p::peer::PeerId const& name,
+                              CryptoSignatureVerifier verify,
+                              CborDeserializer dser)
+    -> std::optional<IpnsCborEntry> {
   // https://github.com/ipfs/specs/blob/main/ipns/IPNS.md#record-verification
 
   // Before parsing the protobuf, confirm that the serialized IpnsEntry bytes
@@ -108,9 +109,32 @@ std::string ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
                      pk.data().size()};
   if (verify(pk.type(), signature, bytes, key_bytes)) {
     LOG(INFO) << "Verification passed.";
-    return entry.value();
+    return parsed;
   } else {
     LOG(ERROR) << "Verification failed!!";
     return {};
   }
+}
+
+ipfs::ValidatedIpns::ValidatedIpns() = default;
+ipfs::ValidatedIpns::ValidatedIpns(IpnsCborEntry const& e)
+    : value{e.value}, sequence{e.sequence} {
+  std::istringstream ss{e.validity};
+  std::tm t;
+  ss >> std::get_time(&t, "%Y-%m-%dT%H:%M:%S");
+  use_until = std::mktime(&t);
+  cache_until = std::time(nullptr) + (e.ttl / 1'000'000'000UL) + 1;
+}
+
+std::string ipfs::ValidatedIpns::Serialize() const {
+  std::ostringstream ss;
+  ss << std::hex << sequence << ' ' << use_until << ' ' << cache_until << ' '
+     << value;
+  return ss.str();
+}
+auto ipfs::ValidatedIpns::Deserialize(std::string s) -> ValidatedIpns {
+  std::istringstream ss(s);
+  ValidatedIpns e;
+  ss >> std::hex >> e.sequence >> e.use_until >> e.cache_until >> e.value;
+  return e;
 }

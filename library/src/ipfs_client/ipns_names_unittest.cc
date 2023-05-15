@@ -8,6 +8,7 @@ struct IpnsNamesTest : public ::testing::Test {
   IpnsNamesTest();
   ipfs::IpnsNames tested;
   google::protobuf::LogSilencer no_log;
+  void fake(std::string n, std::string t);
 };
 }  // namespace
 
@@ -32,11 +33,17 @@ TEST_F(IpnsNamesTest, MultiStepCycleResolvesToEmpty) {
 
 namespace {
 IpnsNamesTest::IpnsNamesTest() {
-  tested.AssignName("2", "ipns/1");
-  tested.AssignName("1", "ipfs/cid");
-  tested.AssignName("cycle1", "ipns/cycle1");
-  tested.AssignName("cycle2", "ipns/cycle2b");
-  tested.AssignName("cycle2b", "ipns/cycle2");
-  tested.AssignName("dangle", "ipns/NoSuchName");
+  fake("2", "ipns/1");
+  fake("1", "ipfs/cid");
+  fake("cycle1", "ipns/cycle1");
+  fake("cycle2", "ipns/cycle2b");
+  fake("cycle2b", "ipns/cycle2");
+  fake("dangle", "ipns/NoSuchName");
+}
+void IpnsNamesTest::fake(std::string n, std::string t) {
+  ipfs::ValidatedIpns e;
+  e.value = t;
+  e.use_until = 9876543210;
+  tested.AssignName(n, e);
 }
 }  // namespace

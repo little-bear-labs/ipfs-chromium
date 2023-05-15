@@ -3,10 +3,16 @@
 #include <libp2p/multi/content_identifier_codec.hpp>
 #include "log_macros.h"
 
-void ipfs::IpnsNames::NoSuchName(std::string const& name) {
+using Self = ipfs::IpnsNames;
+
+void Self::NoSuchName(std::string const& name) {
   names_[name];  // If it already exists, leave it.
 }
-void ipfs::IpnsNames::AssignName(std::string const& name, std::string res) {
+void Self::AssignName(std::string const& name, ValidatedIpns entry) {
+  auto& res = entry.value;
+  if (res.size() && res.front() == '/') {
+    res.erase(0, 1);
+  }
   auto endofcid = res.find_first_of("/?#", 6);
   using namespace libp2p::multi;
   auto cid_str = res.substr(5, endofcid);
@@ -33,23 +39,41 @@ void ipfs::IpnsNames::AssignName(std::string const& name, std::string res) {
       desensitized.append(extra);
     }
     LOG(INFO) << name << " now resolves to (desensitized)" << desensitized;
-    names_[name] = std::move(desensitized);
+    entry.value = desensitized;
   } else {
     LOG(INFO) << name << " now resolves to (extra level)" << res;
-    names_[name] = std::move(res);
+  }
+  auto it = names_.find(name);
+  if (it == names_.end()) {
+    names_.emplace(name, std::move(entry));
+  } else if (it->second.sequence < entry.sequence) {
+    LOG(INFO) << "Updating IPNS record for " << name << " from sequence "
+              << it->second.sequence << " where it pointed to "
+              << it->second.value << " to sequence " << entry.sequence
+              << " where it points to " << entry.value;
+    it->second = entry;
+  } else {
+    LOG(INFO) << "Discarding redundant IPNS record for " << name;
   }
 }
+void Self::AssignDnsLink(std::string const& name, std::string_view target) {
+  ValidatedIpns v;
+  v.value.assign(target);
+  auto t = std::time(nullptr);
+  v.use_until = v.cache_until = t + 300;
+  AssignName(name, std::move(v));
+}
 
-std::string_view ipfs::IpnsNames::NameResolvedTo(
-    std::string_view original_name) const {
+std::string_view Self::NameResolvedTo(std::string_view original_name) const {
   std::string name{original_name};
   std::string_view prev = "";
   auto trailer = names_.end();
   auto trail_step = false;
+  auto now = std::time(nullptr);
   while (true) {
     auto it = names_.find(name);
     if (names_.end() == it) {
-      LOG(WARNING) << "Host not already cached: " << name << " ("
+      LOG(WARNING) << "Host not in immediate access map: " << name << " ("
                    << std::string{original_name} << ')';
       return prev;
     } else if (it == trailer) {
@@ -57,24 +81,32 @@ std::string_view ipfs::IpnsNames::NameResolvedTo(
                  << ' ' << name;
       return "";
     }
-    if (it->second.empty()) {
+    auto& target = it->second.value;
+    if (target.empty()) {
       return kNoSuchName;
     }
-    if (it->second.at(2) == 'f') {
-      return it->second;
+    if (target.at(2) == 'f') {
+      return target;
+    }
+    if (it->second.use_until < now) {
+      return prev;
     }
     if (trail_step) {
       if (trailer == names_.end()) {
         trailer = names_.find(name);
       } else {
-        trailer = names_.find(trailer->second.substr(5));
+        trailer = names_.find(trailer->second.value.substr(5));
       }
     }
     trail_step = !trail_step;
-    prev = it->second;
+    prev = it->second.value;
     name.assign(prev, 5);
   }
 }
+auto Self::Entry(std::string const& name) -> ValidatedIpns const* {
+  auto it = names_.find(name);
+  return it == names_.end() ? nullptr : &(it->second);
+}
 
-ipfs::IpnsNames::IpnsNames() {}
-ipfs::IpnsNames::~IpnsNames() {}
+Self::IpnsNames() {}
+Self::~IpnsNames() {}
