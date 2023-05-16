@@ -106,6 +106,10 @@ void ipfs::IpfsUrlLoader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
 void ipfs::IpfsUrlLoader::OverrideUrl(GURL u) {
   original_url_ = u.spec();
 }
+void ipfs::IpfsUrlLoader::AddHeader(std::string_view a, std::string_view b) {
+  LOG(INFO) << "AddHeader(" << a << ',' << b << ')';
+  additional_outgoing_headers_.emplace_back(a, b);
+}
 
 void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   LOG(INFO) << "Resolved from unix-fs dag a file of type: " << mime_type
@@ -142,6 +146,10 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   for (auto& part_cid : resolver_->involved_cids()) {
     // L_VAR(part_cid);
     AppendGatewayHeaders(part_cid, *head->headers);
+  }
+  for (auto& [n, v] : additional_outgoing_headers_) {
+    L_VAR(n);
+    head->headers->AddHeader(n, v);
   }
   head->parsed_headers =
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});

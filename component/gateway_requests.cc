@@ -196,6 +196,7 @@ bool Self::ProcessResponse(BusyGateway& gw,
     LOG(ERROR) << "Invalid CID '" << cid_str << "'.";
     return false;
   }
+  auto duration = (end_time - start_time).InMillisecondsRoundedUp();
   if (cid.value().content_type ==
       libp2p::multi::MulticodecType::Code::LIBP2P_KEY) {
     auto as_peer = libp2p::peer::PeerId::fromHash(cid.value().content_address);
@@ -213,16 +214,17 @@ bool Self::ProcessResponse(BusyGateway& gw,
       LOG(ERROR) << "IPNS record failed to validate! From: " << gw.url();
       return false;
     }
-    auto& target = record.value().value;
     LOG(INFO) << "IPNS record from " << gw.url() << " points " << cid_str
-              << " to " << target;
-    state_.names().AssignName(cid_str, std::move(record.value()));
+              << " to " << record.value().value;
+    ValidatedIpns entry{record.value()};
+    entry.resolution_ms = duration;
+    entry.gateway_source = gw->url_prefix();
+    state_.names().AssignName(cid_str, std::move(entry));
     scheduler().IssueRequests(shared_from_this());
     return true;
   } else {
     Block block{cid.value(), *body};
     if (block.cid_matches_data()) {
-      auto dur = (end_time - start_time).InMillisecondsRoundedUp();
       head->headers->SetHeader("Block-Source",
                                cid_str + ", " + gw->url_prefix() + " @" +
                                    std::to_string(std::time(nullptr)));
@@ -231,7 +233,7 @@ bool Self::ProcessResponse(BusyGateway& gw,
       head->headers->SetHeader(
           "Server-Timing",
           "gateway-fetch-" + cid_str + ";desc=\"" + gw->url_prefix() +
-              " : load over http(s)\";dur=" + std::to_string(dur));
+              " : load over http(s)\";dur=" + std::to_string(duration));
       state_.storage().Store(cid_str, cid.value(), head->headers->raw_headers(),
                              *body);
       scheduler().IssueRequests(shared_from_this());

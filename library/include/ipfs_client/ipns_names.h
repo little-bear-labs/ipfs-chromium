@@ -15,7 +15,7 @@ class IpnsNames {
   ~IpnsNames();
 
   std::string_view NameResolvedTo(std::string_view name) const;
-  void AssignName(std::string const&, ValidatedIpns);
+  void AssignName(std::string const& name, ValidatedIpns);
   void AssignDnsLink(std::string const&, std::string_view);
   void NoSuchName(std::string const&);
   ValidatedIpns const* Entry(std::string const& name);

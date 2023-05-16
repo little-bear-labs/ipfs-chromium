@@ -58,6 +58,7 @@ class IpfsUrlLoader final : public network::mojom::URLLoader,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
   void OverrideUrl(GURL);
+  void AddHeader(std::string_view,std::string_view);
   void extra(std::shared_ptr<network::mojom::URLLoader> xtra) { extra_ = xtra; }
 
  private:
@@ -74,6 +75,7 @@ class IpfsUrlLoader final : public network::mojom::URLLoader,
   std::string original_url_;
   std::shared_ptr<ipfs::UnixFsPathResolver> resolver_;
   std::string partial_block_;
+  std::vector<std::pair<std::string,std::string>> additional_outgoing_headers_;
   std::shared_ptr<network::mojom::URLLoader> extra_;
 
   void CreateBlockRequest(std::string cid);

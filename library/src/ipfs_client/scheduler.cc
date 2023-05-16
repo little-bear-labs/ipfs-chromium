@@ -118,7 +118,7 @@ void ipfs::Scheduler::UpdateDevPage() {
 void ipfs::Scheduler::TaskComplete(std::string const& task) {
   auto todo = task2todo_.find(task);
   if (task2todo_.end() == todo) {
-    // LOG(WARNING) << "An unknown TODO " << task << " finished.";
+    LOG(INFO) << "An unknown TODO " << task << " finished.";
     return;
   }
   LOG(INFO) << "Task " << task << " completed with "

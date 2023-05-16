@@ -134,6 +134,16 @@ void ipfs::IpnsUrlLoader::DoIpfs() {
   GURL to_url{to};
   LOG(WARNING) << "Treating " << from_url << " as " << to_url;
   ipfs_loader_->OverrideUrl(from_url);
+  auto* entry = state_.names().Entry(host_);
+  if (entry) {
+    auto duration = entry->resolution_ms;
+    ipfs_loader_->AddHeader(
+        "Server-Timing",
+        "ipns;desc=\"IPNS record request\";dur=" + std::to_string(duration));
+    ipfs_loader_->AddHeader(
+        "IPNS-Name-Source",
+        entry->gateway_source + " @" + std::to_string(entry->fetch_time));
+  }
   request_.value().url = to_url;
   ipfs::IpfsUrlLoader::StartRequest(ipfs_loader_, *request_,
                                     std::move(loader_receiver_),

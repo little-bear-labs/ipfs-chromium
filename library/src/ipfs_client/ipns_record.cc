@@ -117,6 +117,10 @@ auto ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
 }
 
 ipfs::ValidatedIpns::ValidatedIpns() = default;
+ipfs::ValidatedIpns::ValidatedIpns(ValidatedIpns&&) = default;
+ipfs::ValidatedIpns::ValidatedIpns(ValidatedIpns const&) = default;
+auto ipfs::ValidatedIpns::operator=(ValidatedIpns const&)
+    -> ValidatedIpns& = default;
 ipfs::ValidatedIpns::ValidatedIpns(IpnsCborEntry const& e)
     : value{e.value}, sequence{e.sequence} {
   std::istringstream ss{e.validity};
@@ -127,14 +131,18 @@ ipfs::ValidatedIpns::ValidatedIpns(IpnsCborEntry const& e)
 }
 
 std::string ipfs::ValidatedIpns::Serialize() const {
+  DCHECK_EQ(value.find(' '), std::string::npos);
+  DCHECK_EQ(gateway_source.find(' '), std::string::npos);
   std::ostringstream ss;
   ss << std::hex << sequence << ' ' << use_until << ' ' << cache_until << ' '
-     << value;
+     << fetch_time << ' ' << resolution_ms << ' ' << value << ' '
+     << gateway_source;
   return ss.str();
 }
 auto ipfs::ValidatedIpns::Deserialize(std::string s) -> ValidatedIpns {
   std::istringstream ss(s);
   ValidatedIpns e;
-  ss >> std::hex >> e.sequence >> e.use_until >> e.cache_until >> e.value;
+  ss >> std::hex >> e.sequence >> e.use_until >> e.cache_until >>
+      e.fetch_time >> e.resolution_ms >> e.value >> e.gateway_source;
   return e;
 }

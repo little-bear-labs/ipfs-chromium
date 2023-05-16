@@ -51,7 +51,7 @@ void Self::AssignName(std::string const& name, ValidatedIpns entry) {
               << it->second.sequence << " where it pointed to "
               << it->second.value << " to sequence " << entry.sequence
               << " where it points to " << entry.value;
-    it->second = entry;
+    it->second = std::move(entry);
   } else {
     LOG(INFO) << "Discarding redundant IPNS record for " << name;
   }

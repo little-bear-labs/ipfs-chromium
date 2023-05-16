@@ -44,6 +44,6 @@ void IpnsNamesTest::fake(std::string n, std::string t) {
   ipfs::ValidatedIpns e;
   e.value = t;
   e.use_until = 9876543210;
-  tested.AssignName(n, e);
+  tested.AssignName(n, std::move(e));
 }
 }  // namespace

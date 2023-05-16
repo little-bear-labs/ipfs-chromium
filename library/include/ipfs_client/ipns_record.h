@@ -40,9 +40,15 @@ struct ValidatedIpns {
   std::time_t use_until;
   std::time_t cache_until;
   std::uint64_t sequence;
+  std::int64_t resolution_ms;
+  std::time_t fetch_time = std::time(nullptr);
+  std::string gateway_source;
 
   ValidatedIpns(IpnsCborEntry const&);
   ValidatedIpns();
+  ValidatedIpns(ValidatedIpns&&);
+  ValidatedIpns(ValidatedIpns const&);
+  ValidatedIpns& operator=(ValidatedIpns const&);
   std::string Serialize() const;
   static ValidatedIpns Deserialize(std::string);
 };
