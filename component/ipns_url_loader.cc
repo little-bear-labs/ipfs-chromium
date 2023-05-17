@@ -208,20 +208,15 @@ bool ipfs::IpnsUrlLoader::RequestIpnsRecord() {
     state_.scheduler().IssueRequests(api_);
     return true;
   }
-  auto key = "ipns/" + this->host_;
+  auto key = "ipns/" + host_;
   auto caches = state_.serialized_caches();
-  auto hit = [this](auto body, auto /*header*/) {
-    LOG(INFO) << "IPNS cache hit! " << this->host_ << "=" << body;
-    auto result = ValidatedIpns::Deserialize(std::string{body});
-    this->state_.names().AssignName(this->host_, result);
-    this->Complete();
-  };
   auto check =
-      [hit, key](
+      [this, key](
           std::function<void()> fail,
           std::shared_ptr<CacheRequestor> cache) -> std::function<void()> {
-    return [=]() {
+    return [this, key, fail, cache]() {
       LOG(INFO) << "Attempting to fetch IPNS record from " << cache->name();
+      auto hit = [this, cache](auto b, auto) { CacheHit(cache, b); };
       cache->FetchEntry(key, net::HIGHEST, hit, fail);
     };
   };
@@ -233,6 +228,20 @@ bool ipfs::IpnsUrlLoader::RequestIpnsRecord() {
       std::accumulate(caches.rbegin(), caches.rend(), last_resort, check);
   chain();
   return true;
+}
+void ipfs::IpnsUrlLoader::CacheHit(std::shared_ptr<CacheRequestor> cache,
+                                   std::string_view body) {
+  LOG(INFO) << "IPNS cache hit! " << host_ << "=" << body;
+  auto result = ValidatedIpns::Deserialize(std::string{body});
+  if (result.use_until < std::time(nullptr)) {
+    LOG(WARNING) << "Unfortunately, the cache entry for " << host_
+                 << " is too old - it expired at " << result.use_until;
+    cache->Expire("ipns/" + host_);
+    RequestFromGateway();
+  } else {
+    state_.names().AssignName(host_, result);
+    Complete();
+  }
 }
 void ipfs::IpnsUrlLoader::RequestFromGateway() {
   api_ = state_.api();

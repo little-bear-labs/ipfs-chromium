@@ -24,8 +24,10 @@ class URLLoaderClient;
 }  // namespace network
 
 namespace ipfs {
+class CacheRequestor;
 class ContextApi;
 class InterRequestState;
+
 class IpnsUrlLoader : public network::ResolveHostClientBase,
                       public network::mojom::URLLoader,
                       public NameListener {
@@ -68,6 +70,7 @@ class IpnsUrlLoader : public network::ResolveHostClientBase,
   network::mojom::URLLoader& under();
   bool RequestIpnsRecord();
   void RequestFromGateway();
+  void CacheHit(std::shared_ptr<CacheRequestor>,std::string_view);
 
   void FollowRedirect(
       std::vector<std::string> const& removed_headers,

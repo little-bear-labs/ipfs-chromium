@@ -92,7 +92,7 @@ std::shared_ptr<dc::Entry> GetEntry(dc::EntryResult& result) {
 void Self::OnOpen(Task task, dc::EntryResult res) {
   VLOG(1) << "OnOpen(" << res.net_error() << ")";
   if (res.net_error() != net::OK) {
-    LOG(ERROR) << "Failed to find " << task.key << " in " << name();
+    LOG(WARNING) << "Failed to find " << task.key << " in " << name();
     task.Fail();
     return;
   }
@@ -143,8 +143,8 @@ void Self::OnBodyRead(Task task, int code) {
 }
 
 void Self::Store(std::string cid, std::string headers, std::string body) {
-  LOG(INFO) << "Store(" << name() << ',' << cid << ',' << headers.size() << ','
-            << body.size() << ')';
+  VLOG(1) << "Store(" << name() << ',' << cid << ',' << headers.size() << ','
+          << body.size() << ')';
   auto bound = base::BindOnce(&Self::OnEntryCreated, base::Unretained(this),
                               cid, headers, body);
   auto res = cache_->OpenOrCreateEntry(cid, net::LOW, std::move(bound));
@@ -232,6 +232,11 @@ void Self::Task::SetHeaders(std::string_view source) {
             << ": " << source;
   heads->SetHeader("Block-Cache-" + key, source);
   header = heads->raw_headers();
+}
+void Self::Expire(std::string const& key) {
+  if (cache_ && !pending_) {
+    cache_->DoomEntry(key, net::RequestPriority::LOWEST, base::DoNothing());
+  }
 }
 
 Self::Task::Task() = default;

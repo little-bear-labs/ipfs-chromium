@@ -26,6 +26,7 @@ class CacheRequestor : public BlockRequestor {
                 net::RequestPriority priority,
                 std::function<void(std::string_view, std::string_view)> hit,
                 std::function<void()> miss);
+  void Expire(std::string const& key);
 
   std::string_view name() const;
 
