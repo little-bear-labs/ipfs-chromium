@@ -100,7 +100,7 @@ auto ipfs::BlockStorage::GetInternal(std::string const& cid) -> Record const* {
   return rec;
 }
 ipfs::Block const* ipfs::BlockStorage::Get(std::string const& cid) {
-  VLOG(1) << "Get(" << cid << ')';
+  VLOG(2) << "Get(" << cid << ')';
   auto* result = GetInternal(cid);
   if (result) {
     return &(result->block);

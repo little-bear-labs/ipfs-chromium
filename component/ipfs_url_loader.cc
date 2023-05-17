@@ -193,7 +193,7 @@ void ipfs::IpfsUrlLoader::AppendGatewayHeaders(std::string const& cid,
   std::size_t i = 0UL;
   std::string name, value;
   while (gw_heads->EnumerateHeaderLines(&i, &name, &value)) {
-    VLOG(1) << cid << ' ' << name << ' ' << value;
+    VLOG(2) << cid << ' ' << name << ' ' << value;
     if (name == "Server-Timing" || name == "Block-Source") {
       out.AddHeader(name, value);
     } else {
