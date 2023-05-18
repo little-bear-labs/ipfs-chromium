@@ -4,12 +4,10 @@
   - Intent to prototype
   - [ChromiumStyle](https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md)
 * Documentation
-  - Re-record demo video with updated/more links?
   - Publish blog
   - Document re-use of library/ipfs_client classes (doxygen/cldoc/doxypress/standardese?)
   - Update design.md to as-implemented
 * Maintainability
-  - Chromium tag -> patch file mapping
   - Our scripts switch branches or do checkout on Chromium repo _unless_ they _just_ fetched it
   - Rename classes to better fit their responsibility (see class-level doc for inspiration)
 * Production features

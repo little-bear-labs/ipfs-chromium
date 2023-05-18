@@ -230,7 +230,7 @@ void Self::Task::SetHeaders(std::string_view source) {
   heads->SetHeader("Server-Timing", value);
   LOG(INFO) << "From cache: Server-Timing: " << value << "; Block-Cache-" << key
             << ": " << source;
-  heads->SetHeader("Block-Cache-" + key, source);
+  heads->SetHeader("Block-Cache-" + key, {source.data(), source.size()});
   header = heads->raw_headers();
 }
 void Self::Expire(std::string const& key) {
