@@ -19,7 +19,7 @@ class InterRequestState;
 
 class CacheRequestor : public BlockRequestor {
  public:
-  CacheRequestor(net::CacheType, InterRequestState&);
+  CacheRequestor(net::CacheType, InterRequestState&, base::FilePath);
   virtual ~CacheRequestor() noexcept;
   void Store(std::string cid, std::string headers, std::string body);
   void FetchEntry(std::string key,
@@ -52,6 +52,7 @@ class CacheRequestor : public BlockRequestor {
   InterRequestState& state_;
   std::unique_ptr<disk_cache::Backend> cache_;
   bool pending_ = false;
+  base::FilePath path_;
 
   void RequestByCid(std::string cid,
                     std::shared_ptr<DagListener>,
@@ -59,7 +60,6 @@ class CacheRequestor : public BlockRequestor {
 
   void Start();
 
-  base::FilePath path() const;
   void StartFetch(Task& t, net::RequestPriority priority);
   void Assign(disk_cache::BackendResult);
   void OnOpen(Task, disk_cache::EntryResult);

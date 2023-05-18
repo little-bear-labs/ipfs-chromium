@@ -11,8 +11,13 @@
 using Self = ipfs::CacheRequestor;
 namespace dc = disk_cache;
 
-Self::CacheRequestor(net::CacheType typ, InterRequestState& state)
+Self::CacheRequestor(net::CacheType typ,
+                     InterRequestState& state,
+                     base::FilePath base)
     : type_{typ}, state_{state} {
+  if (!base.empty()) {
+    path_ = base.Append("IpfsBlockCache");
+  }
   Start();
 }
 void Self::Start() {
@@ -20,7 +25,7 @@ void Self::Start() {
     return;
   }
   auto result = dc::CreateCacheBackend(
-      type_, net::CACHE_BACKEND_DEFAULT, {}, path(), 0,
+      type_, net::CACHE_BACKEND_DEFAULT, {}, path_, 0,
       dc::ResetHandling::kNeverReset,
       //     dc::ResetHandling::kResetOnError,
       nullptr, base::BindOnce(&Self::Assign, base::Unretained(this)));
@@ -92,7 +97,7 @@ std::shared_ptr<dc::Entry> GetEntry(dc::EntryResult& result) {
 void Self::OnOpen(Task task, dc::EntryResult res) {
   VLOG(1) << "OnOpen(" << res.net_error() << ")";
   if (res.net_error() != net::OK) {
-    LOG(WARNING) << "Failed to find " << task.key << " in " << name();
+    LOG(INFO) << "Failed to find " << task.key << " in " << name();
     task.Fail();
     return;
   }
@@ -192,14 +197,6 @@ void Self::OnHeaderWritten(scoped_refptr<net::StringIOBuffer> buf,
   entry->WriteData(1, 0, buf.get(), buf->size(), std::move(bound), true);
 }
 
-base::FilePath Self::path() const {
-  if (type_ == net::MEMORY_CACHE) {
-    return {};
-  } else {
-    // TODO : obviously
-    return base::FilePath{"/home/lbl/.config/chromium/IpfsBlocks"};
-  }
-}
 std::string_view Self::name() const {
   switch (type_) {
     case net::CacheType::DISK_CACHE:

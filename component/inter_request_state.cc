@@ -16,7 +16,7 @@ auto ipfs::InterRequestState::FromBrowserContext(
     content::BrowserContext* context) -> InterRequestState& {
   if (!context) {
     LOG(WARNING) << "No browser context! Using a default IPFS state.";
-    static ipfs::InterRequestState static_state;
+    static ipfs::InterRequestState static_state({});
     return static_state;
   }
   base::SupportsUserData::Data* existing = context->GetUserData(user_data_key);
@@ -25,7 +25,7 @@ auto ipfs::InterRequestState::FromBrowserContext(
     return *static_cast<ipfs::InterRequestState*>(existing);
   }
   LOG(INFO) << "Creating new IPFS state for this browser context.";
-  auto owned = std::make_unique<ipfs::InterRequestState>();
+  auto owned = std::make_unique<ipfs::InterRequestState>(context->GetPath());
   ipfs::InterRequestState* raw = owned.get();
   context->SetUserData(user_data_key, std::move(owned));
   return *raw;
@@ -33,14 +33,14 @@ auto ipfs::InterRequestState::FromBrowserContext(
 auto ipfs::InterRequestState::serialized_caches()
     -> std::array<decltype(mem_), 2> {
   if (!mem_) {
-    auto p = mem_ =
-        std::make_shared<CacheRequestor>(net::CacheType::MEMORY_CACHE, *this);
+    auto p = mem_ = std::make_shared<CacheRequestor>(
+        net::CacheType::MEMORY_CACHE, *this, base::FilePath{});
     storage().AddStorageHook(
         [p](auto c, auto h, auto b) { p->Store(c, h, b); });
   }
   if (!dsk_) {
-    auto p = dsk_ =
-        std::make_shared<CacheRequestor>(net::CacheType::DISK_CACHE, *this);
+    auto p = dsk_ = std::make_shared<CacheRequestor>(net::CacheType::DISK_CACHE,
+                                                     *this, disk_path_);
     storage().AddStorageHook(
         [p](auto c, auto h, auto b) { p->Store(c, h, b); });
   }
@@ -75,5 +75,5 @@ auto ipfs::InterRequestState::scheduler() -> Scheduler& {
   return api->scheduler();
 }
 
-ipfs::InterRequestState::InterRequestState() {}
+ipfs::InterRequestState::InterRequestState(base::FilePath p) : disk_path_{p} {}
 ipfs::InterRequestState::~InterRequestState() noexcept {}

@@ -63,9 +63,28 @@ TEST(IpnsRecordTest, AKnownKuboRecord) {
   ASSERT_TRUE(my_name_res.has_value());
   auto& my_name = my_name_res.value();
   auto result = ipfs::ValidateIpnsRecord(
-      known_record, my_name, [](auto, auto, auto, auto) { return true; }, [](auto){ipfs::IpnsCborEntry e; e.value = "/ipfs/bafybeig57t2dp435aupttilimd6767kppfebaa3gnunmqden66dgkhugwi"; return e;});
+      known_record, my_name, [](auto, auto, auto, auto) { return true; },
+      [](auto) {
+        ipfs::IpnsCborEntry e;
+        e.value =
+            "/ipfs/bafybeig57t2dp435aupttilimd6767kppfebaa3gnunmqden66dgkhugwi";
+        return e;
+      });
   std::string_view expected{
       "/ipfs/bafybeig57t2dp435aupttilimd6767kppfebaa3gnunmqden66dgkhugwi"};
   EXPECT_EQ(result.has_value(), true);
   EXPECT_EQ(result.value().value, expected);
+}
+TEST(IpnsRecordTest, SerializeValidatedIpns) {
+  ipfs::ValidatedIpns v;
+  v.sequence = 1;
+  v.use_until = 2;
+  v.cache_until = 3;
+  v.fetch_time = 4;
+  v.resolution_ms = 5;
+  v.gateway_source = "gateway_source";
+  v.value = "value";
+  auto actual = v.Serialize();
+  auto expected = "1 2 3 4 5 value gateway_source";
+  EXPECT_EQ(actual, expected);
 }

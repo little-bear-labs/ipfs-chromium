@@ -25,9 +25,10 @@ class InterRequestState : public base::SupportsUserData::Data {
   std::weak_ptr<GatewayRequests> api_;
   std::time_t last_discovery_ = 0;
   std::shared_ptr<CacheRequestor> mem_, dsk_;
+  base::FilePath const disk_path_;
 
  public:
-  InterRequestState();
+  InterRequestState(base::FilePath);
   ~InterRequestState() noexcept override;
 
   Gateways& gateways() { return gws_; }
