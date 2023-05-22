@@ -8,11 +8,9 @@
   - Document re-use of library/ipfs_client classes (doxygen/cldoc/doxypress/standardese?)
   - Update design.md to as-implemented
 * Maintainability
-  - Our scripts switch branches or do checkout on Chromium repo _unless_ they _just_ fetched it
   - Rename classes to better fit their responsibility (see class-level doc for inspiration)
 * Production features
   - User settings
-  - Integrate with chromium cache
   - Devtools (network tab doesn't show enough)
   - MDNS discovery of gateways
 * QoI
@@ -26,6 +24,7 @@
   - IPNS name resolution - receive multiple records and pick highest sequence #
   - Etag
   - Resolve identity CIDs internally
+  - Different headers for IPNS name resolution requests if they came from cache
 * Dev QoL
   - Docker builds verifying every documented build approach
   - Github Action release including uploading library artifacts
@@ -33,4 +32,3 @@
   - Streamline Windows release, e.g. package_browser 
   - library published in Conan
   - Publish binaries in Conan
-  - Allow library/ users to set log level in a normalish way and don't prefix everything with pb

@@ -39,6 +39,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       }
     )");
 namespace {
+constexpr std::size_t MB = 1'000'000UL;
 std::unique_ptr<network::SimpleURLLoader> discovery_loader;
 void parse_discover_response(std::function<void(std::vector<std::string>)> cb,
                              std::unique_ptr<std::string> body) {
@@ -82,8 +83,7 @@ void Self::Discover(std::function<void(std::vector<std::string>)> cb) {
   auto bound = base::BindOnce(&parse_discover_response, cb);
   LOG(INFO) << "Issuing discovery request to: "
                "https://orchestrator.strn.pl/nodes/nearby";
-  discovery_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      loader_factory_, std::move(bound));
+  discovery_loader->DownloadToString(loader_factory_, std::move(bound), MB);
 }
 
 auto Self::InitiateGatewayRequest(BusyGateway assigned)
@@ -112,8 +112,7 @@ auto Self::InitiateGatewayRequest(BusyGateway assigned)
   //  LOG(INFO) << "InitiateGatewayRequest(" << url << ")";
   DCHECK(loader_factory_);
   // TODO - proper requesting with full features (SetPriority, etc.).
-  out->loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(loader_factory_,
-                                                               std::move(cb));
+  out->loader->DownloadToString(loader_factory_, std::move(cb), 2UL * MB);
   return out;
 }
 void Self::OnResponse(std::shared_ptr<ContextApi> api,
