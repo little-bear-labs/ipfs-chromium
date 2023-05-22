@@ -121,7 +121,8 @@ void ipfs::BlockStorage::AddListening(UnixFsPathResolver* p) {
 }
 
 void ipfs::BlockStorage::StopListening(UnixFsPathResolver* p) {
-  LOG(INFO) << "StopListening(" << p->current_cid() << ')';
+  LOG(INFO) << "StopListening(" << p->current_cid() << ',' << p->original_path()
+            << ')';
   auto e = std::remove(listening_.begin(), listening_.end(), p);
   listening_.erase(e, listening_.end());
 }
@@ -155,6 +156,7 @@ void ipfs::BlockStorage::CheckListening() {
           looking = true;
         }
       }
+      VLOG(1) << ptr->original_path() << " still waiting on " << cid;
     }
   }
   checking_ = false;

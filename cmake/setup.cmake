@@ -65,7 +65,6 @@ if(HAVE_PIP)
             boost/*:without_chrono=True
             boost/*:without_date_time=True
             boost/*:without_graph_parallel=True
-            boost/*:without_stacktrace=True
             boost/*:without_test=True
             boost/*:without_type_erasure=True
         GENERATORS

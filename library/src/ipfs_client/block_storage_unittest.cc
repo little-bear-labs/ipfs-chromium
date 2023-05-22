@@ -13,7 +13,7 @@ namespace {
 struct TestListener : public ipfs::DagListener {
   void ReceiveBlockBytes(std::string_view) override {}
   void BlocksComplete(std::string mime_type) override {}
-  void FourOhFour(std::string_view cid, std::string_view path) override {}
+  void DoesNotExist(std::string_view cid, std::string_view path) override {}
 };
 
 struct BlockStorageTest : public testing::Test {

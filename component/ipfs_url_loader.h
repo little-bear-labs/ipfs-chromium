@@ -5,6 +5,7 @@
 #include "ipfs_client/scheduler.h"
 
 #include "base/debug/debugging_buildflags.h"
+#include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
@@ -77,16 +78,19 @@ class IpfsUrlLoader final : public network::mojom::URLLoader,
   std::string partial_block_;
   std::vector<std::pair<std::string,std::string>> additional_outgoing_headers_;
   std::shared_ptr<network::mojom::URLLoader> extra_;
+  std::unique_ptr<base::RepeatingTimer> stepper_;
 
   void CreateBlockRequest(std::string cid);
 
   void ReceiveBlockBytes(std::string_view) override;
   void BlocksComplete(std::string mime_type) override;
-  void FourOhFour(std::string_view cid, std::string_view path) override;
+  void DoesNotExist(std::string_view cid, std::string_view path) override;
+  void NotHere(std::string_view cid, std::string_view path) override;
 
   void StartUnixFsProc(ptr, std::string_view);
   void AppendGatewayHeaders(std::string const& cid, net::HttpResponseHeaders&);
   void AppendGatewayInfoHeader(std::string const&, net::HttpResponseHeaders&);
+  void TakeStep();
 };
 
 }  // namespace ipfs

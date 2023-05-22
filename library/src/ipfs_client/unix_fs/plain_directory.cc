@@ -56,7 +56,7 @@ bool Self::Process(std::unique_ptr<NodeHelper>&,
     // Found the element in the directory, descending the path.
   } else {
     // There was a specific element requested and it does not exist. 404
-    listener->FourOhFour(target_cid, resolver_->original_path());
+    listener->DoesNotExist(target_cid, resolver_->original_path());
     target_cid.clear();
   }
   return true;

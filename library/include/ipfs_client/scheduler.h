@@ -30,7 +30,7 @@ class Scheduler {
                std::shared_ptr<NameListener>,
                std::string const& suffix,
                Priority);
-  void IssueRequests(std::shared_ptr<ContextApi>);
+  bool IssueRequests(std::shared_ptr<ContextApi>);
   bool DetectCompleteFailure(std::string task) const;
   void TaskComplete(std::string const&);
 
@@ -48,7 +48,7 @@ class Scheduler {
     long under_target() const;
   };
   std::map<std::string, Todo> task2todo_;
-  bool loaded_ = false;
+  bool saturated_ = false;
 
   void Issue(std::shared_ptr<ContextApi>,
              std::shared_ptr<DagListener>&,

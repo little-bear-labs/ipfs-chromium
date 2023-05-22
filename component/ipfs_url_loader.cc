@@ -24,7 +24,10 @@ ipfs::IpfsUrlLoader::IpfsUrlLoader(
     InterRequestState& state)
     : state_{state}, lower_loader_factory_{handles_http}, api_{state_.api()} {}
 ipfs::IpfsUrlLoader::~IpfsUrlLoader() noexcept {
-  LOG(INFO) << "IPFS URLLoader dtor, uri was '" << original_url_ << "'";
+  if (!complete_) {
+    LOG(ERROR) << "Premature IPFS URLLoader dtor, uri was '" << original_url_
+               << "' " << base::debug::StackTrace();
+  }
 }
 
 void ipfs::IpfsUrlLoader::FollowRedirect(
@@ -100,7 +103,21 @@ void ipfs::IpfsUrlLoader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
       me->state_.storage(), me->state_.requestor(), std::string{cid}, remainder,
       me->api_);
   me->api_->SetLoaderFactory(lower_loader_factory_);
-  me->resolver_->Step(shared_from_this());
+  me->stepper_ = std::make_unique<base::RepeatingTimer>();
+  me->stepper_->Start(FROM_HERE, base::Seconds(1),
+                      base::BindRepeating(&IpfsUrlLoader::TakeStep, me));
+  me->TakeStep();
+}
+
+void ipfs::IpfsUrlLoader::TakeStep() {
+  if (complete_) {
+    LOG(INFO) << "Timed step(" << original_url_ << "): done.";
+    stepper_->Stop();
+    stepper_.reset();
+  } else {
+    LOG(INFO) << "Timed step(" << original_url_ << "): still going.";
+    resolver_->Step(shared_from_this());
+  }
 }
 
 void ipfs::IpfsUrlLoader::OverrideUrl(GURL u) {
@@ -162,12 +179,15 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   client_->OnComplete(network::URLLoaderCompletionStatus{});
 }
 
-void ipfs::IpfsUrlLoader::FourOhFour(std::string_view cid,
-                                     std::string_view path) {
+void ipfs::IpfsUrlLoader::DoesNotExist(std::string_view cid,
+                                       std::string_view path) {
   LOG(ERROR) << "Immutable data 404 for " << cid << '/' << path;
   complete_ = true;
   client_->OnComplete(
       network::URLLoaderCompletionStatus{net::ERR_FILE_NOT_FOUND});
+}
+void ipfs::IpfsUrlLoader::NotHere(std::string_view cid, std::string_view path) {
+  LOG(INFO) << "TODO " << __func__ << '(' << cid << ',' << path << ')';
 }
 
 void ipfs::IpfsUrlLoader::ReceiveBlockBytes(std::string_view content) {

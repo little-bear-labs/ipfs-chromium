@@ -25,7 +25,7 @@ bool Self::Process(std::unique_ptr<NodeHelper>& next_helper,
   if (!(block.valid())) {
     LOG(ERROR) << "DirShard dealing with an invalid block: " << cid_ << " / "
                << resolver_->original_path();
-    listener->FourOhFour(cid_, resolver_->original_path());
+    listener->NotHere(cid_, resolver_->original_path());
     return false;
   }
   SomePrefetch(requestor);
@@ -97,7 +97,7 @@ bool Self::Process(std::unique_ptr<NodeHelper>& next_helper,
   if (found) {
     return true;
   }
-  listener->FourOhFour(cid_, resolver_->original_path());
+  listener->DoesNotExist(cid_, resolver_->original_path());
   return false;
 }
 

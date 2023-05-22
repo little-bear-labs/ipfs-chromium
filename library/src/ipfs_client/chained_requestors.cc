@@ -25,13 +25,19 @@ void Self::RequestByCid(std::string cid,
     std::size_t index = 0UL;
     std::string cid;
     void ReceiveBlockBytes(std::string_view b) override {
+      LOG(INFO) << "L" << (index + 1) << ": bytes " << b.size();
       real->ReceiveBlockBytes(b);
     }
     void BlocksComplete(std::string mime_type) override {
       LOG(INFO) << "L" << (index + 1) << ": hit" << cid;
       real->BlocksComplete(mime_type);
     }
-    void FourOhFour(std::string_view c, std::string_view path) override {
+    void DoesNotExist(std::string_view c, std::string_view path) override {
+      LOG(INFO) << "L" << (index + 1) << ": " << c << '/' << path
+                << " DOES NOT EXIST";
+      real->DoesNotExist(c, path);
+    }
+    void NotHere(std::string_view c, std::string_view path) override {
       DCHECK_EQ(c, cid);
       if (++index < chain->chain_.size()) {
         VLOG(1) << cid << " / " << path << " missed on approach #" << index;
@@ -39,7 +45,7 @@ void Self::RequestByCid(std::string cid,
         next->RequestByCid(std::string{cid}, me.lock(), prio);
       } else {
         LOG(ERROR) << cid << " / " << path << " has failed completely.";
-        real->FourOhFour(cid, path);
+        real->NotHere(cid, path);
       }
     }
     NextChainLinkListener(Self* c) : chain{c} {}

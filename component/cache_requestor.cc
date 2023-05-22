@@ -138,6 +138,7 @@ void Self::OnBodyRead(Task task, int code) {
   }
   task.body.assign(task.buf->data(), static_cast<std::size_t>(code));
   if (task.listener) {
+    LOG(INFO) << "Cache hit on " << task.key;
     task.SetHeaders(name());
     auto& stor = state_.storage();
     stor.Store(task.key, std::move(task.header), std::move(task.body));
@@ -209,8 +210,9 @@ std::string_view Self::name() const {
 }
 
 void Self::Task::Fail() {
+  LOG(INFO) << "TaskFail for key: " << key;
   if (listener) {
-    listener->FourOhFour(key, "<any/all>");
+    listener->NotHere(key, "<any/all>");
   }
   if (miss) {
     miss();

@@ -37,7 +37,7 @@ void ipfs::Scheduler::Enqueue(std::shared_ptr<ContextApi> api,
   }
   IssueRequests(api);
 }
-void ipfs::Scheduler::IssueRequests(std::shared_ptr<ContextApi> api) {
+bool ipfs::Scheduler::IssueRequests(std::shared_ptr<ContextApi> api) {
   //  LOG(INFO) << "Scheduler::IssueRequests";
   decltype(task2todo_)::value_type* unmet = nullptr;
   auto assign = [this, api](auto& gw, auto& task, auto& todo, auto need) {
@@ -72,14 +72,15 @@ void ipfs::Scheduler::IssueRequests(std::shared_ptr<ContextApi> api) {
     }
   }
   if (unmet) {
-    if (!loaded_) {
+    if (!saturated_) {
       LOG(INFO) << "Saturated.";
-      loaded_ = true;
+      saturated_ = true;
     }
   } else {
-    loaded_ = false;
+    saturated_ = false;
   }
   //  UpdateDevPage();
+  return !unmet;
 }
 
 bool ipfs::Scheduler::DetectCompleteFailure(std::string task) const {

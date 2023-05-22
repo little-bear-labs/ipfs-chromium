@@ -61,7 +61,8 @@ struct Listener : public ipfs::DagListener {
     is_done = true;
     mime = m;
   }
-  void FourOhFour(std::string_view, std::string_view) {}
+  void DoesNotExist(std::string_view, std::string_view) {}
+  void NotHere(std::string_view, std::string_view) {}
 };
 struct Requestor : public ipfs::BlockRequestor {
   void RequestByCid(std::string cid,

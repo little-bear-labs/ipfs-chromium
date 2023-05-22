@@ -32,14 +32,14 @@ void Self::Step(std::shared_ptr<DagListener> listener) {
   }
   if (!block->valid() || block->type() == Block::Type::Invalid) {
     LOG(ERROR) << "Encountered broken block!! " << cid_;
-    listener->FourOhFour(cid_, original_path_);
+    listener->NotHere(cid_, original_path_);
     return;
   }
   if (!helper_) {
     GetHelper(block->type());
   }
   if (!helper_) {
-    listener->FourOhFour(cid_, original_path_);
+    listener->NotHere(cid_, original_path_);
     return;
   }
   auto requestor = [this, &listener](std::string cid, Priority prio) {
@@ -115,6 +115,8 @@ Self::UnixFsPathResolver(BlockStorage& store,
   }
 }
 Self::~UnixFsPathResolver() noexcept {
+  std::clog << "~UnixFsPathResolver: " << involved_cids_.size() << ' ' << cid_
+            << '/' << original_path();
   storage_.StopListening(this);
 }
 std::shared_ptr<ipfs::DagListener> Self::MaybeGetPreviousListener() {
