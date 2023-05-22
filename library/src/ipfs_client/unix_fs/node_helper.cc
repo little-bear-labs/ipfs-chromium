@@ -28,7 +28,7 @@ void Self::Delegate(ipfs::unix_fs::NodeHelper& other) const {
   other.api_ = api_;
 }
 void Self::storage(ipfs::BlockStorage& val) {
-  LOG(INFO) << "NodeHelper::storage(@" << (void*)(&val) << ')';
+  VLOG(1) << "NodeHelper::storage(@" << (void*)(&val) << ')';
   storage_ = &val;
 }
 auto Self::FromBlockType(Block::Type typ, std::string path_element)

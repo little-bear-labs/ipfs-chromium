@@ -61,7 +61,7 @@ void Self::FetchEntry(
 void Self::RequestByCid(std::string cid,
                         std::shared_ptr<DagListener> listen,
                         Priority prio) {
-  VLOG(1) << "RequestByCid(" << name() << ',' << cid << ',' << prio << ')';
+  VLOG(2) << "RequestByCid(" << name() << ',' << cid << ',' << prio << ')';
   DCHECK(listen);
   Task task;
   task.key = cid;
@@ -97,7 +97,7 @@ std::shared_ptr<dc::Entry> GetEntry(dc::EntryResult& result) {
 void Self::OnOpen(Task task, dc::EntryResult res) {
   VLOG(1) << "OnOpen(" << res.net_error() << ")";
   if (res.net_error() != net::OK) {
-    LOG(INFO) << "Failed to find " << task.key << " in " << name();
+    VLOG(1) << "Failed to find " << task.key << " in " << name();
     task.Fail();
     return;
   }
@@ -191,7 +191,7 @@ void Self::OnHeaderWritten(scoped_refptr<net::StringIOBuffer> buf,
   buf = base::MakeRefCounted<net::StringIOBuffer>(body);
   DCHECK(buf);
   auto f = [](scoped_refptr<net::StringIOBuffer>, int c) {
-    LOG(INFO) << "body write " << c;
+    VLOG(1) << "body write " << c;
   };
   auto bound = base::BindOnce(f, buf);
   entry->WriteData(1, 0, buf.get(), buf->size(), std::move(bound), true);
@@ -225,8 +225,8 @@ void Self::Task::SetHeaders(std::string_view source) {
   auto dur = base::TimeTicks::Now() - start;
   value.append(std::to_string(dur.InMillisecondsRoundedUp()));
   heads->SetHeader("Server-Timing", value);
-  LOG(INFO) << "From cache: Server-Timing: " << value << "; Block-Cache-" << key
-            << ": " << source;
+  VLOG(1) << "From cache: Server-Timing: " << value << "; Block-Cache-" << key
+          << ": " << source;
   heads->SetHeader("Block-Cache-" + key, {source.data(), source.size()});
   header = heads->raw_headers();
 }

@@ -34,5 +34,3 @@
   - library published in Conan
   - Publish binaries in Conan
   - Allow library/ users to set log level in a normalish way and don't prefix everything with pb
-
-

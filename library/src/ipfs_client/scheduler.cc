@@ -118,11 +118,11 @@ void ipfs::Scheduler::UpdateDevPage() {
 void ipfs::Scheduler::TaskComplete(std::string const& task) {
   auto todo = task2todo_.find(task);
   if (task2todo_.end() == todo) {
-    LOG(INFO) << "An unknown TODO " << task << " finished.";
+    VLOG(1) << "An unknown TODO " << task << " finished.";
     return;
   }
-  LOG(INFO) << "Task " << task << " completed with "
-            << todo->second.name_listeners.size() << " name listeners.";
+  VLOG(1) << "Task " << task << " completed with "
+          << todo->second.name_listeners.size() << " name listeners.";
   // Don't need to call back on dag listeners because storage covered that
   for (auto& nl : todo->second.name_listeners) {
     LOG(INFO) << "Notifying a name listener that its listener is ready.";

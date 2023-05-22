@@ -6,6 +6,7 @@
 #include <string>
 
 namespace ipfs {
+
 class Gateway {
   std::string prefix_;
   flat_set<std::string> failed_requests_;

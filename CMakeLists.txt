@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.22)
+include(cmake/version.cmake)
 project(ipfs-chromium
-  VERSION 0.0.0.2
+  VERSION ${version}
   DESCRIPTION "An ipfs client library intended for use in browsers, and a Chromium component which uses it."
   HOMEPAGE_URL https://github.com/little-bear-labs/ipfs-chromium
   LANGUAGES CXX
   )
-
 #The cache variables in all-caps are meant for you to customize the build.
 #They are all here, so you don't need to hunt.
 set(DOWNLOAD_CHROMIUM FALSE CACHE BOOL

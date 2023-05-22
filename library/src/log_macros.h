@@ -1,16 +1,15 @@
 #ifndef IPFS_LOG_MACROS_H_
 #define IPFS_LOG_MACROS_H_
 
-#ifndef IPFS_CLIENT_LOGGING_ENABLED
-#define IPFS_CLIENT_LOGGING_ENABLED 1
-#endif
 
-#if __has_include("base/logging.h")
+#if __has_include("base/logging.h") //In Chromium
 
 #include "base/logging.h"
 #include "base/check_op.h"
 
-#else
+#else // Not in Chromium
+
+#include <ipfs_client/logger.h>
 
 #include <google/protobuf/stubs/logging.h>
 
@@ -25,7 +24,14 @@
               ::google::protobuf::LOGLEVEL_INFO - X), \
           __FILE__, __LINE__)
 
-#endif
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
+namespace {
+static bool is_logging_initialized = ::ipfs::log::IsInitialized();
+}
+#pragma GCC diagnostic pop
+
+#endif //Chromium in-tree check
 
 #define L_VAR(X) LOG(INFO) << "VAR " << #X << "='" << (X) << '\'';
 

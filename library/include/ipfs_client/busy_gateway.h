@@ -6,6 +6,10 @@
 #include <memory>
 #include <string>
 
+namespace {
+struct TestParams;
+}
+
 namespace ipfs {
 class DagListener;
 class Gateway;
@@ -30,6 +34,8 @@ class BusyGateway {
 
   std::string const& task() const { return suffix_; }
   std::string url() const { return prefix_ + suffix_; }
+
+  static void TestAccess(TestParams*);
 
  private:
   friend class Scheduler;

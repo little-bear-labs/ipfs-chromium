@@ -13,7 +13,7 @@ bool ipfs::BlockStorage::Store(std::string cid_str,
                                std::string headers,
                                std::string const& body,
                                Block&& block) {
-  LOG(INFO) << "Store(" << cid_str << ')';
+  VLOG(1) << "Store(" << cid_str << ')';
   auto t = std::time(nullptr);
   auto it = cid2record_.find(cid_str);
   if (it != cid2record_.end()) {
@@ -77,9 +77,9 @@ bool ipfs::BlockStorage::Store(std::string cid_str,
                                const ipfs::Cid& cid,
                                std::string headers,
                                std::string body) {
-  LOG(INFO) << "Store(cid=" << cid_str
-            << ", <cid obj>, headers.size()=" << headers.size()
-            << " body.size()=" << body.size() << ')';
+  VLOG(1) << "Store(cid=" << cid_str
+          << ", <cid obj>, headers.size()=" << headers.size()
+          << " body.size()=" << body.size() << ')';
   return Store(cid_str, cid, headers, body, {cid, body});
 }
 auto ipfs::BlockStorage::GetInternal(std::string const& cid) -> Record const* {
@@ -100,7 +100,6 @@ auto ipfs::BlockStorage::GetInternal(std::string const& cid) -> Record const* {
   return rec;
 }
 ipfs::Block const* ipfs::BlockStorage::Get(std::string const& cid) {
-  VLOG(2) << "Get(" << cid << ')';
   auto* result = GetInternal(cid);
   if (result) {
     return &(result->block);
@@ -187,7 +186,7 @@ void ipfs::BlockStorage::AddStorageHook(SerializedStorageHook h) {
 
 ipfs::BlockStorage::BlockStorage() {}
 ipfs::BlockStorage::~BlockStorage() noexcept {
-  LOG(WARNING) << "BlockStorage dtor!";
+  LOG(INFO) << "BlockStorage dtor!";
 }
 
 ipfs::BlockStorage::Record::Record() = default;

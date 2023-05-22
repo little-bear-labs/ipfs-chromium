@@ -40,7 +40,7 @@ void ipfs::Gateways::promote(std::string const& key) {
 void ipfs::Gateways::demote(std::string const& key) {
   auto it = known_gateways_.find(key);
   if (known_gateways_.end() == it) {
-    LOG(WARNING) << "Can't demote " << key << " as I don't have that gateway.";
+    LOG(INFO) << "Can't demote " << key << " as I don't have that gateway.";
   } else if (it->second) {
     it->second--;
     LOG(INFO) << "Demote(" << key << ") to " << it->second;

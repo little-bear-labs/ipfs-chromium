@@ -17,8 +17,6 @@ bool Self::Process(std::unique_ptr<NodeHelper>& next_helper,
                    std::shared_ptr<DagListener> listener,
                    std::function<void(std::string, Priority)> requestor,
                    std::string& target_cid) {
-  L_VAR((void*)this)
-  L_VAR(next_path_element_)
   if (!block()) {
     requestor(cid_, resolver_->priority());
     return false;
@@ -52,7 +50,6 @@ bool Self::Process(std::unique_ptr<NodeHelper>& next_helper,
         << "Waiting on more blocks before dealing with this HAMT node.";
     return false;
   }
-  L_VAR(next_path_element_)
   auto fanout = block.fsdata().has_fanout() ? block.fsdata().fanout() : 256;
   if (hamt_hexs_.empty()) {
     LOG(INFO) << "Had no hexes, hash path element: " << next_path_element_;
@@ -62,9 +59,6 @@ bool Self::Process(std::unique_ptr<NodeHelper>& next_helper,
     LOG(ERROR) << "Somehow failed to hash out the path element?";
     return false;
   }
-  //  for (auto& h : hamt_hexs_) {
-  //    LOG(INFO) << "Hex: " << h;
-  //  }
   bool found = false;
   block.List([&](auto& name, auto cid) {
     VLOG(2) << "Listing a child node of a HAMT shard node... " << name << '='

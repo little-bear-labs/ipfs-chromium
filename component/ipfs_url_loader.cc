@@ -95,7 +95,7 @@ void ipfs::IpfsUrlLoader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
   } else if (qmark && qmark < ipfs_ref.size()) {
     remainder.append(ipfs_ref.substr(qmark));
   }
-  LOG(INFO) << "cid=" << cid << " remainder=" << remainder;
+  VLOG(1) << "cid=" << cid << " remainder=" << remainder;
   me->resolver_ = std::make_shared<UnixFsPathResolver>(
       me->state_.storage(), me->state_.requestor(), std::string{cid}, remainder,
       me->api_);
@@ -107,7 +107,7 @@ void ipfs::IpfsUrlLoader::OverrideUrl(GURL u) {
   original_url_ = u.spec();
 }
 void ipfs::IpfsUrlLoader::AddHeader(std::string_view a, std::string_view b) {
-  LOG(INFO) << "AddHeader(" << a << ',' << b << ')';
+  VLOG(1) << "AddHeader(" << a << ',' << b << ')';
   additional_outgoing_headers_.emplace_back(a, b);
 }
 

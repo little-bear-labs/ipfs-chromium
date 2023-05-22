@@ -64,17 +64,10 @@ foreach(proto ${protos} )
     set(gn_protos "${gn_protos}  \"${basename}\",\n  ")
 endforeach()
 
-configure_file(
-    BUILD.gn.in
-    ${CMAKE_CURRENT_BINARY_DIR}/BUILD.gn
-    @ONLY
-)
-
 add_custom_target(patch_file
   COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/patch.py" "${CHROMIUM_SOURCE_TREE}" "${GIT_EXECUTABLE}" "${CMAKE_BUILD_TYPE}"
   COMMENT "Creating patch file (will overwrite if already present)."
   )
-
 
 add_custom_target(setup_component
     COMMENT "Preparing the Chromium repository & build directory, but not building any targets."
@@ -93,7 +86,7 @@ add_custom_target(in_tree_build
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" components/ipfs:ipfs
     DEPENDS in_tree_gen
   )
-add_custom_target(chrome_browser
+add_custom_target(build_browser
     COMMENT "Building 'chrome' in Chromium source tree, output in out/${CHROMIUM_PROFILE}"
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" chrome
     DEPENDS in_tree_build
@@ -103,7 +96,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     add_custom_target(package_browser
         COMMENT "Packaging"
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" "chrome/installer"
-        DEPENDS chrome_browser
+        DEPENDS build_browser
       )
     add_custom_target(upload_browser
       DEPENDS package_browser
@@ -115,7 +108,7 @@ endif()
 
 #Symlink for convenience
 add_custom_command(
-  TARGET chrome_browser
+  TARGET build_browser
   POST_BUILD
   COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome" "${CMAKE_BINARY_DIR}/chrome_browser"
   COMMENT "Symlinking... your browser can be found here: ${CMAKE_BINARY_DIR}/chrome_browser or ${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome"

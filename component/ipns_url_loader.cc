@@ -132,7 +132,7 @@ void ipfs::IpnsUrlLoader::DoIpfs() {
     to.append(from_url.ref());
   }
   GURL to_url{to};
-  LOG(WARNING) << "Treating " << from_url << " as " << to_url;
+  LOG(INFO) << "Treating " << from_url << " as " << to_url;
   ipfs_loader_->OverrideUrl(from_url);
   auto* entry = state_.names().Entry(host_);
   if (entry) {

@@ -21,7 +21,7 @@ auto ipfs::InterRequestState::FromBrowserContext(
   }
   base::SupportsUserData::Data* existing = context->GetUserData(user_data_key);
   if (existing) {
-    LOG(INFO) << "Re-using existing IPFS state.";
+    VLOG(1) << "Re-using existing IPFS state.";
     return *static_cast<ipfs::InterRequestState*>(existing);
   }
   LOG(INFO) << "Creating new IPFS state for this browser context.";

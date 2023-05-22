@@ -228,7 +228,7 @@ bool Self::ProcessResponse(BusyGateway& gw,
       head->headers->SetHeader("Block-Source",
                                cid_str + ", " + gw->url_prefix() + " @" +
                                    std::to_string(std::time(nullptr)));
-      LOG(INFO) << "L3: Storing CID=" << cid_str;
+      VLOG(1) << "L3: Storing CID=" << cid_str;
       // Note this header is added _after_ storing in long-term cache
       head->headers->SetHeader(
           "Server-Timing",
@@ -291,7 +291,7 @@ std::string Self::UnescapeUrlComponent(std::string_view comp) const {
   auto rules = Rule::PATH_SEPARATORS |
                Rule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS | Rule::SPACES;
   auto result = base::UnescapeURLComponent({comp.data(), comp.size()}, rules);
-  LOG(INFO) << "UnescapeUrlComponent(" << comp << ")->'" << result << "'";
+  VLOG(1) << "UnescapeUrlComponent(" << comp << ")->'" << result << "'";
   return result;
 }
 void Self::RequestByCid(std::string cid,

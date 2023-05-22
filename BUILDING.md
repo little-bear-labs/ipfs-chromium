@@ -68,7 +68,7 @@ To enable testing, these are also required:
     - CHROMIUM_PROFILE - the profile you're building. Defaults to ${CMAKE_BUILD_TYPE}. ${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE} should exist.
     - DEPOT_TOOLS_DIRECTORY - Path to scripts like gn, autoninja, and ninja.py. If these are executable and in your `PATH` environment variable, you can leave this as its default value which is "DETECT_FROM_PATH" and does what one might expect.
     - If ipfs is not mentioned in //chrome/browser/BUILD.gn , this command will apply the patch file presumably adding //components/ipfs as a dependency to //chrome/browser
-* `cmake --build /an/ipfs-chromium/build/dir --target chrome_browser`
+* `cmake --build /an/ipfs-chromium/build/dir --target build_browser`
 
 ### If you want ipfs-chromium's build do all your setup for you.
 
@@ -95,7 +95,7 @@ However, here we cannot make that assumption. So...
   -[Windows](https://chromium.googlesource.com/chromium/src/+/main/docs/windows_build_instructions.md#Setting-up-Windows)
     - Make any upgrades/installations mentioned in the "Setting up Windows" section mentioned in the doc that you don't already have.
     - Note: building on Windows isn't fully tested. Our released Windows builds were cross-compiled.
-* `cmake --build /an/ipfs-chromium/build/dir --target chrome_browser`
+* `cmake --build /an/ipfs-chromium/build/dir --target build_browser`
   - This will take much, much longer than you're used to.
 * At this point you should be able to run the binary. If you used the above command it could be found at: /an/ipfs-chromium/build/dir/chromium/src/out/Debug/chrome
 * To put a bow on it, you could `ninja package_browser`.
