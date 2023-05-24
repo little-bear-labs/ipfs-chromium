@@ -169,8 +169,8 @@ auto ipfs::BlockStorage::FindFree(std::time_t now) -> Record* {
     VLOG(1) << records_.back().last_access << " is too old.";
     return &records_.back();
   }
-  LOG(INFO) << "Not ready to kick out @ " << (void*)&records_.back()
-            << " yet: " << records_.back().last_access;
+  VLOG(1) << "Not ready to kick out @ " << (void*)&records_.back()
+          << " yet: " << records_.back().last_access;
   if (now - records_.front().last_access > 300) {
     return FindFree(now);
   }

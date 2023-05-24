@@ -20,6 +20,7 @@ class Gateways {
   flat_map<std::string, int> known_gateways_;
   std::default_random_engine random_engine_;
   std::geometric_distribution<unsigned> dist_;
+  int up_log_ = 1;
 
  public:
   static std::vector<std::pair<std::string, int>> DefaultGateways();

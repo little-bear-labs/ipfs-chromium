@@ -83,14 +83,15 @@ if 'PATH' in environ:
 else:
     environ['PATH'] = depot_tools_dir
 
-runpy(['-m', 'pip', 'install', 'httplib2'],True)
+runpy(['-m', 'pip', 'install', 'httplib2'], True)
 if not isdir(src):
     verbose(src,'is not a directory. First create',chromium_dir)
     makedirs(chromium_dir)
     open(join(build_dir,'fresh'), 'a').close()
 
 if isfile(join(build_dir,'fresh')):
-    runpy([join(depot_tools_dir,'fetch.py'),'--nohooks','chromium'])
+    if not isdir(join(src,'.git')):
+        runpy([join(depot_tools_dir,'fetch.py'),'--nohooks','chromium'])
     branch = out([git_binary, 'rev-parse', '--abbrev-ref', 'HEAD'])
     tag = patcher.recommend()
     target_branch = 'ipfs-chromium/' + tag

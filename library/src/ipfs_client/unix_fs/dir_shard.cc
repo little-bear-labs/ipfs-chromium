@@ -71,8 +71,8 @@ bool Self::Process(std::unique_ptr<NodeHelper>& next_helper,
       return true;
     }
     found = true;
-    LOG(INFO) << "As we move down a Hamt, " << cid_ << " -> " << name << " / "
-              << cid << " fanout=" << block.fsdata().fanout();
+    VLOG(1) << "As we move down a Hamt, " << cid_ << " -> " << name << " / "
+            << cid << " fanout=" << block.fsdata().fanout();
     target_cid = cid;
     if (absl::EndsWith(name, next_path_element_)) {
       LOG(INFO) << "Found our calling! Leaving the Hamt in favor of " << name;
