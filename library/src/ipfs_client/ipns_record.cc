@@ -126,8 +126,13 @@ ipfs::ValidatedIpns::ValidatedIpns(IpnsCborEntry const& e)
   std::istringstream ss{e.validity};
   std::tm t;
   ss >> std::get_time(&t, "%Y-%m-%dT%H:%M:%S");
+  long ttl = (e.ttl / 1'000'000'000UL) + 1;
   use_until = std::mktime(&t);
-  cache_until = std::time(nullptr) + (e.ttl / 1'000'000'000UL) + 1;
+  cache_until = std::time(nullptr) + ttl;
+  if (use_until < cache_until) {
+    LOG(WARNING) << "IPNS record expiring!";
+    use_until = cache_until;
+  }
 }
 
 std::string ipfs::ValidatedIpns::Serialize() const {

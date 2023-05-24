@@ -18,7 +18,7 @@ bool ipfs::BlockStorage::Store(std::string cid_str,
   auto it = cid2record_.find(cid_str);
   if (it != cid2record_.end()) {
     if (it->second) {
-      LOG(INFO) << cid_str << " already stored.";
+      VLOG(1) << cid_str << " already stored.";
       it->second->last_access = t;
       CheckListening();
       return false;
@@ -29,7 +29,7 @@ bool ipfs::BlockStorage::Store(std::string cid_str,
   auto* into = FindFree(t);
   cid2record_[cid_str] = into;
   if (into->cid_str.empty()) {
-    LOG(INFO) << "Storing " << cid_str << " in fresh node @" << (void*)into;
+    VLOG(1) << "Storing " << cid_str << " in fresh node @" << (void*)into;
   } else {
     LOG(INFO) << "Evicting " << into->cid_str << " to make room for "
               << cid_str;
@@ -66,8 +66,8 @@ bool ipfs::BlockStorage::Store(std::string headers,
 bool ipfs::BlockStorage::Store(std::string const& cid,
                                std::string headers,
                                std::string body) {
-  LOG(INFO) << "Store(cid=" << cid << " headers.size()=" << headers.size()
-            << " body.size()=" << body.size() << ')';
+  VLOG(1) << "Store(cid=" << cid << " headers.size()=" << headers.size()
+          << " body.size()=" << body.size() << ')';
   DCHECK(headers != body);
   auto cid_res = Codec::fromString(cid);
   DCHECK(cid_res.has_value());
@@ -85,7 +85,7 @@ bool ipfs::BlockStorage::Store(std::string cid_str,
 auto ipfs::BlockStorage::GetInternal(std::string const& cid) -> Record const* {
   auto it = cid2record_.find(cid);
   if (it == cid2record_.end()) {
-    VLOG(1) << "Data not found in immediate object storage for " << cid;
+    VLOG(2) << "Data not found in immediate object storage for " << cid;
     return nullptr;
   }
   auto* rec = it->second;
@@ -151,12 +151,11 @@ void ipfs::BlockStorage::CheckListening() {
       if (it != cid2record_.end() && it->second && it->second->cid_str == cid) {
         auto prev = ptr->MaybeGetPreviousListener();
         if (prev) {
-          LOG(INFO) << "Stepping listener of (" << cid << ")";
+          VLOG(1) << "Stepping listener of (" << cid << ")";
           ptr->Step(prev);
           looking = true;
         }
       }
-      VLOG(1) << ptr->original_path() << " still waiting on " << cid;
     }
   }
   checking_ = false;
@@ -167,7 +166,7 @@ auto ipfs::BlockStorage::FindFree(std::time_t now) -> Record* {
   l.splice(l.end(), records_, records_.begin());
   records_.splice(records_.end(), l);
   if (now - records_.back().last_access > 300) {
-    LOG(INFO) << records_.back().last_access << " is too old.";
+    VLOG(1) << records_.back().last_access << " is too old.";
     return &records_.back();
   }
   LOG(INFO) << "Not ready to kick out @ " << (void*)&records_.back()
@@ -178,7 +177,7 @@ auto ipfs::BlockStorage::FindFree(std::time_t now) -> Record* {
   return Allocate();
 }
 auto ipfs::BlockStorage::Allocate() -> Record* {
-  LOG(INFO) << "Expanding store size to " << (records_.size() + 1UL);
+  VLOG(1) << "Expanding store size to " << (records_.size() + 1UL);
   records_.emplace_back();
   return &records_.back();
 }

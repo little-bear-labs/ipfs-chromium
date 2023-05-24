@@ -110,8 +110,8 @@ endif()
 add_custom_command(
   TARGET build_browser
   POST_BUILD
-  COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome" "${CMAKE_BINARY_DIR}/chrome_browser"
-  COMMENT "Symlinking... your browser can be found here: ${CMAKE_BINARY_DIR}/chrome_browser or ${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome"
+  COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome" "${CMAKE_BINARY_DIR}/browser"
+  COMMENT "Symlinking... your browser can be found here: ${CMAKE_BINARY_DIR}/browser or ${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome"
 )
 
 add_custom_target(inc_link

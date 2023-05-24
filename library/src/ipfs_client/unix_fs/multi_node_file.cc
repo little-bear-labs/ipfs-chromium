@@ -50,7 +50,6 @@ void Self::Fetch(std::function<void(std::string, Priority)> requestor,
     if (idx >= static_cast<long>(children_.size())) {
       children_.emplace_back(cid, std::nullopt);
     }
-    L_VAR(cid);
     auto child_block = storage_->Get(cid);
     if (!child_block) {
       requestor(cid, resolver_->priority());

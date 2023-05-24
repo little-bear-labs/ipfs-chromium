@@ -11,20 +11,24 @@ enum class Level {
   INFO = 0,
   WARN = 1,
   ERROR = 2,
-  FATAL = 3
+  FATAL = 3,
+  OFF
 };
 
 void SetLevel(Level);
 
-using Handler = void(*)(std::string const&,char const*,int,Level);
+using Handler = void (*)(std::string const&, char const*, int, Level);
 void SetHandler(Handler);
 
-void DefaultHandler(std::string const& message, char const* source_file, int source_line, Level for_prefix);
+void DefaultHandler(std::string const& message,
+                    char const* source_file,
+                    int source_line,
+                    Level for_prefix);
 
 std::string_view LevelDescriptor(Level);
 
 bool IsInitialized();
 
-}
+}  // namespace ipfs::log
 
-#endif // LOGGER_H
+#endif  // LOGGER_H

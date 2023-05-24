@@ -17,6 +17,7 @@ bool Self::Valid() const {
 void Self::RequestByCid(std::string cid,
                         std::shared_ptr<DagListener> listen,
                         Priority priority) {
+  DCHECK(Valid());
   struct NextChainLinkListener : public ipfs::DagListener {
     Priority prio;
     std::shared_ptr<DagListener> real;

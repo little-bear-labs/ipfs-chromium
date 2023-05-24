@@ -150,6 +150,12 @@ if(GTest_FOUND)
     )
     if(TEST_BY_DEFAULT)
         add_custom_target(ut
+          ALL
+          DEPENDS ut.cert
+          COMMAND "${CMAKE_COMMAND}" -E echo "Tests up-to-date"
+        )
+    else()
+        add_custom_target(ut
           DEPENDS ut.cert
           COMMAND "${CMAKE_COMMAND}" -E echo "Tests up-to-date"
         )

@@ -95,7 +95,7 @@ std::shared_ptr<dc::Entry> GetEntry(dc::EntryResult& result) {
 }  // namespace
 
 void Self::OnOpen(Task task, dc::EntryResult res) {
-  VLOG(1) << "OnOpen(" << res.net_error() << ")";
+  VLOG(2) << "OnOpen(" << res.net_error() << ")";
   if (res.net_error() != net::OK) {
     VLOG(1) << "Failed to find " << task.key << " in " << name();
     task.Fail();
@@ -138,7 +138,7 @@ void Self::OnBodyRead(Task task, int code) {
   }
   task.body.assign(task.buf->data(), static_cast<std::size_t>(code));
   if (task.listener) {
-    LOG(INFO) << "Cache hit on " << task.key;
+    VLOG(1) << "Cache hit on " << task.key;
     task.SetHeaders(name());
     auto& stor = state_.storage();
     stor.Store(task.key, std::move(task.header), std::move(task.body));
@@ -163,8 +163,8 @@ void Self::OnEntryCreated(std::string cid,
                           std::string body,
                           disk_cache::EntryResult result) {
   if (result.opened()) {
-    LOG(INFO) << "No need to write an entry for " << cid << " in " << name()
-              << " as it is already there and immutable.";
+    VLOG(1) << "No need to write an entry for " << cid << " in " << name()
+            << " as it is already there and immutable.";
   } else if (result.net_error() == net::OK) {
     auto entry = GetEntry(result);
     auto buf = base::MakeRefCounted<net::StringIOBuffer>(headers);
@@ -210,7 +210,7 @@ std::string_view Self::name() const {
 }
 
 void Self::Task::Fail() {
-  LOG(INFO) << "TaskFail for key: " << key;
+  VLOG(1) << "TaskFail for key: " << key;
   if (listener) {
     listener->NotHere(key, "<any/all>");
   }

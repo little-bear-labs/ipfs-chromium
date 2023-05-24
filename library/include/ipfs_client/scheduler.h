@@ -48,7 +48,6 @@ class Scheduler {
     long under_target() const;
   };
   std::map<std::string, Todo> task2todo_;
-  bool saturated_ = false;
 
   void Issue(std::shared_ptr<ContextApi>,
              std::shared_ptr<DagListener>&,

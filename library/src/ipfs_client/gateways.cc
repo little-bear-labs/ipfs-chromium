@@ -33,17 +33,20 @@ void ipfs::Gateways::promote(std::string const& key) {
     LOG(ERROR) << "Can't promote (" << key
                << ") because I don't know that one.";
   } else {
-    LOG(INFO) << "promote(" << key << ")";
-    known_gateways_.at(key)++;
+    auto l = known_gateways_.at(key)++;
+    if (l % (++up_log_ / 2) <= 9) {
+      LOG(INFO) << "Promote(" << key << ")";
+    }
   }
 }
 void ipfs::Gateways::demote(std::string const& key) {
   auto it = known_gateways_.find(key);
   if (known_gateways_.end() == it) {
-    LOG(INFO) << "Can't demote " << key << " as I don't have that gateway.";
+    VLOG(1) << "Can't demote " << key << " as I don't have that gateway.";
   } else if (it->second) {
-    it->second--;
-    LOG(INFO) << "Demote(" << key << ") to " << it->second;
+    if (it->second-- % 3 == 0) {
+      LOG(INFO) << "Demote(" << key << ") to " << it->second;
+    }
   } else {
     LOG(INFO) << "Demoted(" << key << ") for the last time - dropping.";
     known_gateways_.erase(it);
@@ -63,25 +66,25 @@ void ipfs::Gateways::AddGateways(std::vector<std::string> v) {
 }
 
 std::vector<std::pair<std::string, int>> ipfs::Gateways::DefaultGateways() {
-  return {{"http://localhost:8080/"s, 899},
-          {"https://ipfs.io/"s, 897},
-          {"https://gateway.ipfs.io/"s, 896},
-          {"https://dweb.link/"s, 891},
-          {"https://jcsl.hopto.org/"s, 883},
-          {"https://ipfs.joaoleitao.org/"s, 851},
-          {"https://jorropo.net/"s, 330},
-          {"https://ipfs.jpu.jp/"s, 327},
-          {"https://gateway.pinata.cloud/"s, 292},
-          {"https://ipfs.runfission.com/"s, 257},
-          {"https://nftstorage.link/"s, 214},
-          {"https://w3s.link/"s, 178},
-          {"https://ipfs.scalaproject.io/"s, 70},
-          {"https://ipfs.soul-network.com/"s, 70},
-          {"https://ipfs.fleek.co/"s, 48},
-          {"https://permaweb.eu.org/"s, 47},
-          {"https://storry.tv/"s, 47},
-          {"https://hardbin.com/"s, 38},
-          {"https://ipfs-gateway.cloud/"s, 30},
-          {"https://ipfs.storry.tv/"s, 10},
+  return {{"http://localhost:8080/"s, 906},
+          {"https://ipfs.io/"s, 902},
+          {"https://gateway.ipfs.io/"s, 901},
+          {"https://dweb.link/"s, 896},
+          {"https://jcsl.hopto.org/"s, 894},
+          {"https://ipfs.joaoleitao.org/"s, 858},
+          {"https://ipfs.jpu.jp/"s, 328},
+          {"https://jorropo.net/"s, 310},
+          {"https://gateway.pinata.cloud/"s, 293},
+          {"https://ipfs.runfission.com/"s, 256},
+          {"https://nftstorage.link/"s, 195},
+          {"https://w3s.link/"s, 135},
+          {"https://ipfs.scalaproject.io/"s, 69},
+          {"https://ipfs.soul-network.com/"s, 63},
+          {"https://ipfs.fleek.co/"s, 61},
+          {"https://permaweb.eu.org/"s, 51},
+          {"https://storry.tv/"s, 41},
+          {"https://hardbin.com/"s, 31},
+          {"https://ipfs-gateway.cloud/"s, 20},
+          {"https://ipfs.storry.tv/"s, 9},
           {"https://ipfs.anonymize.com/"s, 0}};
 }

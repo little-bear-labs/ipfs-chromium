@@ -22,9 +22,11 @@
 
 See [doc/todo.md](doc/todo.md)
 
-## Originally Planned Design
+## Design
 
-See [doc/original_design.md](doc/original_design.md)
+See [doc/original_design.md](doc/original_design.md) for original intent, and a reasonable overview of the big picture.
+
+See [doc/design_notes.md](doc/design_notes.md) for more detailed notes on some of the more critical features, as-implemented.
 
 ## Building
 

@@ -1,5 +1,5 @@
 * Upstreaming
-  - Link to blog in existing Chromium ticket
+  - Link to blog in existing [Chromium ticket](https://bugs.chromium.org/p/chromium/issues/detail?id=1440503)
   - Intent to intent to prototype precursor emails
   - Intent to prototype
   - [ChromiumStyle](https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md)

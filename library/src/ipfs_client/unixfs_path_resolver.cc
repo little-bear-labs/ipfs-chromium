@@ -18,16 +18,21 @@ void Self::Step(std::shared_ptr<DagListener> listener) {
   if (cid_.empty()) {
     return;
   }
-  VLOG(1) << "Stepping... " << cid_ << " / " << original_path_ << " / "
-          << path_;
+  LOG(INFO) << "Stepping... " << cid_ << " / " << original_path_ << " / "
+            << path_;
   if (involved_cids_.end() ==
       std::find(involved_cids_.begin(), involved_cids_.end(), cid_)) {
     involved_cids_.push_back(cid_);
   }
   Block const* block = storage_.Get(cid_);
   if (!block) {
-    LOG(INFO) << "Current block " << cid_ << " not found. Requesting.";
-    Request(listener, cid_, prio_);
+    auto it = already_requested_.find(cid_);
+    if (it == already_requested_.end()) {
+      VLOG(1) << "Current block " << cid_ << " not found. Requesting.";
+      Request(listener, cid_, prio_);
+    } else {
+      already_requested_.erase(it);
+    }
     return;
   }
   if (!block->valid() || block->type() == Block::Type::Invalid) {
@@ -115,7 +120,7 @@ Self::UnixFsPathResolver(BlockStorage& store,
   }
 }
 Self::~UnixFsPathResolver() noexcept {
-  std::clog << "~UnixFsPathResolver: " << involved_cids_.size() << ' ' << cid_
+  LOG(INFO) << "~UnixFsPathResolver: " << involved_cids_.size() << ' ' << cid_
             << '/' << original_path();
   storage_.StopListening(this);
 }

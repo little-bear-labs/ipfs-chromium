@@ -104,7 +104,7 @@ void ipfs::IpfsUrlLoader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
       me->api_);
   me->api_->SetLoaderFactory(lower_loader_factory_);
   me->stepper_ = std::make_unique<base::RepeatingTimer>();
-  me->stepper_->Start(FROM_HERE, base::Seconds(1),
+  me->stepper_->Start(FROM_HERE, base::Milliseconds(500),
                       base::BindRepeating(&IpfsUrlLoader::TakeStep, me));
   me->TakeStep();
 }
@@ -115,7 +115,7 @@ void ipfs::IpfsUrlLoader::TakeStep() {
     stepper_->Stop();
     stepper_.reset();
   } else {
-    LOG(INFO) << "Timed step(" << original_url_ << "): still going.";
+    VLOG(1) << "Timed step(" << original_url_ << "): still going.";
     resolver_->Step(shared_from_this());
   }
 }
@@ -165,7 +165,7 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
     AppendGatewayHeaders(part_cid, *head->headers);
   }
   for (auto& [n, v] : additional_outgoing_headers_) {
-    L_VAR(n);
+    // L_VAR(n);
     head->headers->AddHeader(n, v);
   }
   head->parsed_headers =
@@ -177,6 +177,7 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   client_->OnReceiveResponse(std::move(head), std::move(pipe_cons_),
                              absl::nullopt);
   client_->OnComplete(network::URLLoaderCompletionStatus{});
+  stepper_.reset();
 }
 
 void ipfs::IpfsUrlLoader::DoesNotExist(std::string_view cid,
@@ -185,6 +186,7 @@ void ipfs::IpfsUrlLoader::DoesNotExist(std::string_view cid,
   complete_ = true;
   client_->OnComplete(
       network::URLLoaderCompletionStatus{net::ERR_FILE_NOT_FOUND});
+  stepper_.reset();
 }
 void ipfs::IpfsUrlLoader::NotHere(std::string_view cid, std::string_view path) {
   LOG(INFO) << "TODO " << __func__ << '(' << cid << ',' << path << ')';
