@@ -3,20 +3,20 @@
 from os import listdir, remove
 from os.path import dirname, join, realpath, splitext
 from subprocess import check_call, check_output
-from sys import argv, platform, stderr
+from sys import argv, executable, platform, stderr
 from time import ctime
 
-import requests
+try:
+    import requests
+except ModuleNotFoundError:
+    check_call([executable, '-m', 'pip', 'install', 'requests'])
+    import requests
 
 
 def osname():
-    match platform:
-        case 'linux':
-            return 'Linux'
-        case 'darwn':
-            return 'Mac'
-        case _:
-            return 'Windows'
+    if platform == 'linux': return 'Linux'
+    if platform == 'darwin': return 'Mac'
+    return 'Windows'
 
 
 class Patcher:
@@ -160,5 +160,11 @@ if __name__ == '__main__':
         missing = Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug').unavailable()
         for m in missing:
             print(m)
+    elif argv[1] == 'releases':
+        p = Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug')
+        for chan in ['Dev', 'Beta', 'Stable', 'Extended']:
+            rels = p.release_versions(chan)
+            for rel in rels:
+                print(chan, rel)
     else:
         Patcher(*argv[1:]).create_patch_file()

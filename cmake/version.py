@@ -28,10 +28,15 @@ def tag_to_version(tag):
         return 0
 
 
+def on_tag():
+    git(['fetch', '--all', '--tags'])
+    return git(['describe', '--tags', '--exact-match', 'HEAD'])
+
+
 def deduce():
-    on_tag = git(['describe', '--tags', '--exact-match', 'HEAD'])
-    if on_tag and tag_to_version(on_tag) > 0:
-        return on_tag
+    tag = on_tag()
+    if tag and tag_to_version(tag) > 0:
+        return tag
     git(['fetch', '--tags'])
     tags = git(['tag']).splitlines()
     versions = map(tag_to_version, tags)

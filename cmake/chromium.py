@@ -24,7 +24,7 @@ gnargs = vars['GN_ARGS']
 build_type = vars['CMAKE_BUILD_TYPE']
 python = executable
 
-patcher = Patcher(src,git_binary,build_type)
+patcher = Patcher(src, git_binary, build_type)
 
 def run(args, fail_ok = False):
     if isdir(src):
