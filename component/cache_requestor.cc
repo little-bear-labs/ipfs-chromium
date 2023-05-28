@@ -16,7 +16,7 @@ Self::CacheRequestor(net::CacheType typ,
                      base::FilePath base)
     : type_{typ}, state_{state} {
   if (!base.empty()) {
-    path_ = base.Append("IpfsBlockCache");
+    path_ = base.AppendASCII("IpfsBlockCache");
   }
   Start();
 }

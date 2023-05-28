@@ -4,14 +4,12 @@
 from version import deduce, on_tag
 
 from os import chdir, environ, getcwd, listdir
-from os.path import join, isdir, isfile, splitext
+from os.path import join, isdir, isfile
 from subprocess import check_call, check_output
-from sys import executable, stderr
+from sys import argv, executable, stderr
 
 GITHUB_ORG = 'little-bear-labs'
 GITHUB_REPO = 'ipfs-chromium'
-# GITHUB_ORG = 'John-LittleBearLabs'
-# GITHUB_REPO = 'temp'
 
 try:
     from ghapi.all import GhApi
@@ -22,14 +20,27 @@ except ModuleNotFoundError:
 build_dir = getcwd()
 
 
+def cli_arg(a):
+    if a in argv:
+        argv.remove(a)
+        return True
+    return False
+
+
+library_only = cli_arg('--library-only')
+if len(argv) > 1:
+    print('Unrecognized arguments!', argv[1:], file=stderr)
+    exit(1)
+
+
 def build_target(target):
-    argv = ['cmake', '--build', build_dir, '--target', target]
-    check_call(args=argv)
+    argvs = ['cmake', '--build', build_dir, '--target', target]
+    check_call(args=argvs)
 
 
 if not isfile('CMakeCache.txt'):
     print(__file__, 'must be run from inside the build directory.', file=stderr)
-    exit(1)
+    exit(2)
 
 
 def line_to_var(line):
@@ -51,11 +62,12 @@ if tok:
     gh = GhApi()
 else:
     print('GITHUB_TOKEN not set!', file=stderr)
-    exit(2)
-build_target('package_browser')
-if not isdir(chromium_out):
-    print(chromium_out, 'is not a directory?!', file=stderr)
     exit(3)
+if not library_only:
+    build_target('package_browser')
+    if not isdir(chromium_out):
+        print(chromium_out, 'is not a directory?!', file=stderr)
+        exit(4)
 build_target('package')
 version = deduce()
 if on_tag():
@@ -64,7 +76,7 @@ if on_tag():
 else:
     print('Creating brand new release!')
     gh_rel = gh.repos.create_release(owner=GITHUB_ORG, repo=GITHUB_REPO, tag_name=version)
-artifact_extensions = ['.tar.gz', '.rpm', '.deb', '.dmg']
+artifact_extensions = ['.tar.gz', '.rpm', '.deb', '.dmg', '.zip']
 
 
 def upload(contains):
@@ -79,5 +91,7 @@ def upload(contains):
 
 
 upload('client')
+if library_only:
+    exit(0)
 chdir(chromium_out)
 upload('unstable')

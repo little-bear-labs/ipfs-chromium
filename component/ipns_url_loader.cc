@@ -91,7 +91,7 @@ void ipfs::IpnsUrlLoader::Next() {
   auto resolved = state_.names().NameResolvedTo(host_);
   if (resolved.empty()) {
     if (!RequestIpnsRecord()) {
-      LOG(INFO) << "Treatin '" << host_ << "' as a DNSLink host.";
+      LOG(INFO) << "Treating '" << host_ << "' as a DNSLink host.";
       QueryDns(host_);
     }
   } else if (resolved == IpnsNames::kNoSuchName) {

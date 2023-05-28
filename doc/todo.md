@@ -25,6 +25,7 @@
   - Etag
   - Resolve identity CIDs internally
   - Different headers for IPNS name resolution requests if they came from cache
+  - IPNS recursion limit
 * Dev QoL
   - Docker builds verifying every documented build approach
   - Github Action release including uploading library artifacts

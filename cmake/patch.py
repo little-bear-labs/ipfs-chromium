@@ -14,8 +14,10 @@ except ModuleNotFoundError:
 
 
 def osname():
-    if platform == 'linux': return 'Linux'
-    if platform == 'darwin': return 'Mac'
+    if platform == 'linux':
+        return 'Linux'
+    if platform == 'darwin':
+        return 'Mac'
     return 'Windows'
 
 
@@ -162,9 +164,10 @@ if __name__ == '__main__':
             print(m)
     elif argv[1] == 'releases':
         p = Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug')
-        for chan in ['Dev', 'Beta', 'Stable', 'Extended']:
-            rels = p.release_versions(chan)
-            for rel in rels:
-                print(chan, rel)
+        for os in ['Linux', 'Mac', 'Windows']:
+            for chan in ['Dev', 'Beta', 'Stable', 'Extended']:
+                rels = p.release_versions(chan, os)
+                for rel in rels:
+                    print(chan, os, rel)
     else:
         Patcher(*argv[1:]).create_patch_file()

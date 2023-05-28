@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 from os.path import dirname, join
+from sys import argv
+
 import subprocess
 
 here = join(dirname(__file__), '..')
@@ -28,8 +30,19 @@ def tag_to_version(tag):
         return 0
 
 
+git(['fetch', '--all', '--tags'])
+
+
+def dist(x):
+    return int(git(['rev-list', '--count', f'{x}..HEAD']))
+
+
+def recent():
+    tags = [(dist(x), x) for x in git(['tag']).splitlines() if tag_to_version(x) > 0]
+    return min(tags)[1]
+
+
 def on_tag():
-    git(['fetch', '--all', '--tags'])
     return git(['describe', '--tags', '--exact-match', 'HEAD'])
 
 
@@ -50,4 +63,7 @@ def deduce():
 
 
 if __name__ == "__main__":
-    print(deduce(), end='')
+    if len(argv) > 1 and argv[1] == 'recent':
+        print(recent(), end='')
+    else:
+        print(deduce(), end='')

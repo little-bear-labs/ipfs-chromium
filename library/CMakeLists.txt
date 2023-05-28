@@ -80,7 +80,7 @@ install(
 )
 install(TARGETS ipfs_client)
 
-set(CPACK_GENERATOR TGZ)
+set(CPACK_GENERATOR TGZ;ZIP)
 find_program(DPKG_BUILDPACKAGE dpkg-buildpackage)
 if(DPKG_BUILDPACKAGE)
     list(APPEND CPACK_GENERATOR DEB)
@@ -101,6 +101,7 @@ endif()
 set(CPACK_PACKAGE_VERSION "${CMAKE_PROJECT_VERSION}")
 set(CPACK_PACKAGE_VENDOR "LBL")
 set(CPACK_PACKAGE_CONTACT "john@littlebearlabs.io")
+set(CPACK_ARCHIVE_FILE_NAME "ipfs-client")
 include(CPack)
 
 add_custom_target(upload_library

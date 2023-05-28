@@ -1,6 +1,8 @@
 name: Basic library (ipfs_client) build
 on:
   pull_request:
+  release:
+      types: [created]
 jobs:
   test:
     name: Run Tests & Publish Coverage Report
@@ -117,9 +119,11 @@ jobs:
       - name: Build
         shell: bash
         run: cmake --build build --config ${{ matrix.config.build_type }} --target package
-      - name: Upload
-        uses: actions/upload-artifact@v3
-        with:
-          name: static_library.${{ matrix.config.os }}
-          path: build/library/libipfs_client.a # TODO .lib naming on Windows
-          retention-days: 1
+      - name: Upload to release
+        if: github.event_name == 'release' && matrix.config.build_type == 'Release'
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: |
+          cd build
+          python3 ../cmake/release.py --library-only
