@@ -32,3 +32,19 @@ TEST_F(BlockStorageTest, StoringADuplicate) {
   ret = under_test.Store("", "abc", ipfs::Block{abc_cid, "abc"s});
   EXPECT_EQ(ret, false);
 }
+
+TEST_F(BlockStorageTest, IdentityNotPreviouslyStored) {
+  namespace m = libp2p::multi;
+  ipfs::ByteView data{reinterpret_cast<ipfs::Byte const*>("abc"), 3UL};
+  ipfs::Cid id(ipfs::Cid::Version::V1, m::MulticodecType::Code::IDENTITY,
+               m::Multihash::create(m::HashType::identity, data).value());
+  auto res = Codec::toString(id);
+  EXPECT_TRUE(res.has_value());
+  auto cid_str = res.value();
+  //  EXPECT_EQ(cid_str,
+  //  "bafkreiepinbumzepnoln7co5vea4kf3lcctnqolb3u6bvsellgznymt2uq");
+  EXPECT_EQ(cid_str, "baeaaaa3bmjrq");
+  auto* result = under_test.Get(cid_str);
+  EXPECT_TRUE(result);
+  EXPECT_EQ(result->chunk_data(), "abc");
+}

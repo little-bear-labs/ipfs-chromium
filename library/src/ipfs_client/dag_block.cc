@@ -43,13 +43,14 @@ std::pair<bool, bool> InitBlock(Multicodec c,
       }
       break;
     case Multicodec::RAW:
+    case Multicodec::IDENTITY:
       d.set_type(ipfs::unix_fs::Data_DataType_File);
       d.set_data(get_bytes(from));
       d.set_filesize(d.data().size());
       n.set_data(d.SerializeAsString());
       return {true, true};
     default:
-      LOG(FATAL) << "Stream-initialization unsupported for multicodec: "
+      LOG(FATAL) << "Block-initialization unsupported for multicodec: "
                  << static_cast<unsigned>(c) << '('
                  << std::string{MC::getName(c)} << ')';
   }

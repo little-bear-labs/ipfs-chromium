@@ -7,6 +7,7 @@
 #include "vocab/stringify.h"
 
 using Codec = libp2p::multi::ContentIdentifierCodec;
+using MultiCodec = libp2p::multi::MulticodecType::Code;
 
 bool ipfs::BlockStorage::Store(std::string cid_str,
                                ipfs::Cid const&,
@@ -85,6 +86,15 @@ bool ipfs::BlockStorage::Store(std::string cid_str,
 auto ipfs::BlockStorage::GetInternal(std::string const& cid) -> Record const* {
   auto it = cid2record_.find(cid);
   if (it == cid2record_.end()) {
+    auto parsed = Codec::fromString(cid);
+    if (parsed.has_value()) {
+      if (parsed.value().content_type == MultiCodec::IDENTITY) {
+        return StoreIdentity(cid, parsed.value());
+      }
+    } else {
+      LOG(ERROR) << " '" << cid << "' is not even a valid CID";
+      return nullptr;
+    }
     VLOG(2) << "Data not found in immediate object storage for " << cid;
     return nullptr;
   }
@@ -183,6 +193,17 @@ auto ipfs::BlockStorage::Allocate() -> Record* {
 }
 void ipfs::BlockStorage::AddStorageHook(SerializedStorageHook h) {
   hooks_.push_back(h);
+}
+auto ipfs::BlockStorage::StoreIdentity(std::string const& cid_str,
+                                       Cid const& cid) -> Record* {
+  auto now = std::time(nullptr);
+  auto* record = FindFree(now);
+  record->cid_str = cid_str;
+  record->last_access = now + 9999;
+  auto data = cid.content_address.getHash();
+  auto* p = reinterpret_cast<char const*>(data.data());
+  record->block = Block{cid, std::string{p, data.size()}};
+  return record;
 }
 
 ipfs::BlockStorage::BlockStorage() {}

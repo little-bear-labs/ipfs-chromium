@@ -11,17 +11,14 @@
   - Rename classes to better fit their responsibility (see class-level doc for inspiration)
 * Production features
   - User settings
-  - Devtools (network tab doesn't show enough)
   - MDNS discovery of gateways
 * QoI
-  - Handle different types of errors differently (don't always call DagListener::FourOhFour)
   - Persist promote/demote (perhaps integrated with user settings)
   - Real URLLoader (not just Simple*) for gateway requests (SetPriority, pause, etc.)
   - Implement SetPriority, having it Scheduler parameters
   - Other hash algos
   - Other multibase encodings
-  - Enforce maximum block size
-  - IPNS name resolution - receive multiple records and pick highest sequence #
+  - IPNS name resolution - receive multiple records and pick highest sequence # (partial)
   - Etag
   - Resolve identity CIDs internally
   - Different headers for IPNS name resolution requests if they came from cache

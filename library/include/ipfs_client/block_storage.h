@@ -8,6 +8,10 @@
 #include <string>
 #include <string_view>
 
+namespace libp2p::multi {
+struct ContentIdentifier;
+}
+
 namespace ipfs {
 class DagListener;
 class ContextApi;
@@ -70,6 +74,7 @@ class BlockStorage {
   Record const* GetInternal(std::string const&);
   Record* FindFree(std::time_t);
   Record* Allocate();
+  Record* StoreIdentity(std::string const&, Cid const&);
 };
 }  // namespace ipfs
 
