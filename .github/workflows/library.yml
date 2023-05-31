@@ -3,6 +3,8 @@ on:
   pull_request:
   release:
       types: [created]
+permissions:
+  contents: write
 jobs:
   test:
     name: Run Tests & Publish Coverage Report
@@ -13,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --yes cmake ninja-build lcov binutils
+          sudo apt-get install --yes cmake ninja-build lcov binutils doxygen graphviz
       - name: Configure
         shell: bash
         run: |
@@ -30,6 +32,15 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           files: build/library/cov.info
+      - name: Run Doxygen
+        run: |
+          cmake --build build --config Debug --target doxy
+          find build/ -type f -name index.html
+          readlink -f build/library/doxy/html
+      - name: UpDoc
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build/library/doxy/html
   build:
     name: ${{ matrix.config.name }}
     needs: test
@@ -40,7 +51,7 @@ jobs:
         config:
           - {
               name: "macOS",
-              os: macos-latest,
+              os: macos-12,
               build_type: "Release",
               cc: "clang",
               cxx: "clang++",
@@ -90,10 +101,29 @@ jobs:
           g++ --version
       - name: Install dependencies on macos
         if: startsWith(matrix.config.os, 'macos')
+        shell: bash
         run: |
           brew install cmake ninja
           ninja --version
           cmake --version
+          which c++
+          which clang++
+          c++ --version
+          clang++ --version
+          /usr/bin/clang++ --version
+          export CC=/usr/bin/clang
+          export CXX=/usr/bin/clang++
+          python3 -m pip install --upgrade pip
+          python3 -m pip install --upgrade conan
+          conan profile detect
+          conan profile show
+          conan profile path default
+          grep -n . `conan profile path default`
+          echo "compiler=apple-clang" >> `conan profile path default`
+          echo "compiler.cppstd=17" >> `conan profile path default`
+          echo "compiler.libcxx=libc++" >> `conan profile path default`
+          echo "compiler.version=14.0" >> `conan profile path default`
+          conan profile show
       - name: Install dependencies on Windows
         if: startsWith(matrix.config.os, 'windows')
         run: |

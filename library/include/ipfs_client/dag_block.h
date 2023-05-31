@@ -17,22 +17,45 @@ namespace ipfs {
 
 using Cid = libp2p::multi::ContentIdentifier;
 
+/*!
+ * \brief Something to which a CID may refer directly.
+ * \details A block may be "raw" - just a bunch of bytes.
+ *    Or it could be an UnixFS-encoded node in a DAG
+ *    Or it could be something else, like DAG-CBOR
+ *    But this class really only handles the first 2 so far.
+ */
 class Block {
  public:
   using Multicodec = libp2p::multi::MulticodecType::Code;
-  Block(Cid const&, std::istream&);
 
-  Block(Cid const&, std::string const&);
+  /*!
+   * \brief Initialize from stream
+   * \param cid    - The Content IDentifier
+   * \param stream - Stream from which one can read the bytes of the block
+   */
+  Block(Cid const& cid, std::istream& stream);
+
+  /*!
+   * \brief Initialize from block of bytes
+   * \param cid   - The Content IDentifier
+   * \param bytes - The bytes to be interpreted as a maybe-node
+   * \note It's not really a string - certainly not text in any way.
+   *    It's just a container of arbitrary bytes.
+   */
+  Block(Cid const& cid, std::string const& bytes);
 
   Block(Block const&);
   Block& operator=(Block const&) = default;
 
-  Block();  // Make an invalid block
+  Block();  ///< Construct an invalid block
 
   ~Block() noexcept;
 
-  bool valid() const;
+  bool valid() const;  ///< Check if the block appears valid
 
+  /*!
+   * \brief The kinds of things a block may be representing
+   */
   enum class Type {
     Raw,
     Directory,
@@ -45,30 +68,43 @@ class Block {
     Invalid,
   };
 
-  Type type() const;
+  Type type() const;  ///< Accessor for this block's type
 
-  bool is_file() const;
+  bool is_file() const;  ///< type() == File || type() == FileChunk
 
-  bool is_directory() const;
+  bool is_directory() const;  ///< type() == Directory
 
+  /*!
+   * \brief Get file size from the UnixFS node data
+   * \return zero if such data is not available, e.g. for raw or directory
+   */
   std::uint64_t file_size() const;
 
-  std::string const& chunk_data() const;
+  std::string const& chunk_data() const;  ///< data field from a UnixFS node
 
-  std::string const& unparsed() const;
+  std::string const& unparsed() const;  ///< Original bytes (with protobuf bits)
 
+  /*!
+   * \brief Accessor for all UnixFS data as a protobuf object
+   * \deprecated
+   */
   unix_fs::Data const& fsdata() const { return fsdata_; }
 
-  Cid const& cid() const;
+  Cid const& cid() const;  ///< Getter for Content IDentifier
 
-  void mime_type(std::string_view);
+  void mime_type(std::string_view);  ///< mime type setter - not managed
 
-  std::string const& mime_type() const;
+  std::string const& mime_type() const;  ///< Getter for mime type
 
-  bool cid_matches_data() const;
+  bool cid_matches_data() const;  ///< Basic validation
 
-  std::basic_string<Byte> binary_hash(libp2p::multi::HashType) const;
-
+  /*!
+   * \brief Iterate through the links of this UnixFS node
+   * \param foo - Called for each link with (name, cid)
+   *    should return converts-to-bool
+   *    name is convertable from std::string const&
+   *    cid  is convertable from std::string&&
+   */
   template <class Functor>
   void List(Functor foo) const {
     for (auto& link : node_.links()) {
@@ -94,6 +130,7 @@ class Block {
   std::string LinkCid(ipfs::ByteView) const;
 
   void InitFromRaw(std::string const& content_bytes);
+  std::basic_string<Byte> binary_hash(libp2p::multi::HashType) const;
 };
 
 }  // namespace ipfs

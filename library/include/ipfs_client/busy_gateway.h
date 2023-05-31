@@ -16,23 +16,55 @@ class Gateway;
 class Gateways;
 class ContextApi;
 class Scheduler;
+
+/*!
+ * \brief RAII class embodying the assignment of a given task to a given gateway
+ */
 class BusyGateway {
  public:
   BusyGateway(BusyGateway const&) = delete;
   BusyGateway(BusyGateway&&);
   ~BusyGateway();
+
+  /*!
+   * \name Gateway Access
+   *    Pointer semantics to access the underlying gateway.
+   */
+  ///@{
   Gateway& operator*();
   Gateway* operator->();
   Gateway const* operator->() const;
   Gateway* get();
   explicit operator bool() const;
   void reset();
-  bool operator==(BusyGateway const&) const;
+  ///@}
 
-  void Success(Gateways&, std::shared_ptr<ContextApi>);
+  //  bool operator==(BusyGateway const&) const;
+
+  /*!
+   * \brief Indicate that the task has successfully completed
+   * \param gws - a list that may be modified as a result
+   * \param api - usable access to the context
+   */
+  void Success(Gateways& gws, std::shared_ptr<ContextApi> api);
+
+  /*!
+   * \brief Indicate that the task has unsuccessfully completed
+   * \param gws - a list that may be modified as a result
+   * \param api - usable access to the context
+   */
   void Failure(Gateways&, std::shared_ptr<ContextApi>);
 
+  /*!
+   * \brief What task does this refer to?
+   * \return Suffix to the URL being fetched
+   */
   std::string const& task() const { return suffix_; }
+
+  /*!
+   * \brief The full url intended to be fetched here
+   * \return get()->url_prefix() + task()
+   */
   std::string url() const { return prefix_ + suffix_; }
 
   static void TestAccess(TestParams*);

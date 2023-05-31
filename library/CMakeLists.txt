@@ -180,3 +180,5 @@ if(GTest_FOUND)
 else()
     message(WARNING "Not running tests - no gtest available.")
 endif()#GTest_FOUND
+
+include(doxy)
