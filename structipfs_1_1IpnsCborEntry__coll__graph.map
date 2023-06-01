@@ -1,5 +1,5 @@
 <map id="ipfs::IpnsCborEntry" name="ipfs::IpnsCborEntry">
-<area shape="rect" id="node1" title=" " alt="" coords="25,124,170,151"/>
+<area shape="rect" id="node1" title="Parsed out data contained in the CBOR data of an IPNS record." alt="" coords="25,124,170,151"/>
 <area shape="rect" id="node2" title=" " alt="" coords="5,5,80,32"/>
 <area shape="rect" id="node3" title=" " alt="" coords="124,5,183,32"/>
 </map>

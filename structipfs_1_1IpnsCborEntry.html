@@ -72,12 +72,17 @@ $(function() {
 <div class="title">ipfs::IpnsCborEntry Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Parsed out data contained in the CBOR data of an IPNS record.  
+ <a href="structipfs_1_1IpnsCborEntry.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ipns__record_8h_source.html">library/include/ipfs_client/ipns_record.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for ipfs::IpnsCborEntry:</div>
 <div class="dyncontent">
 <div class="center"><img src="structipfs_1_1IpnsCborEntry__coll__graph.png" border="0" usemap="#aipfs_1_1IpnsCborEntry_coll__map" alt="Collaboration graph"/></div>
 <map name="aipfs_1_1IpnsCborEntry_coll__map" id="aipfs_1_1IpnsCborEntry_coll__map">
-<area shape="rect" title=" " alt="" coords="25,124,170,151"/>
+<area shape="rect" title="Parsed out data contained in the CBOR data of an IPNS record." alt="" coords="25,124,170,151"/>
 <area shape="rect" title=" " alt="" coords="5,5,80,32"/>
 <area shape="rect" title=" " alt="" coords="124,5,183,32"/>
 </map>
@@ -86,22 +91,29 @@ Collaboration diagram for ipfs::IpnsCborEntry:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:af8bc58e9ebc44afd97ed81a353efd588"><td class="memItemLeft" align="right" valign="top"><a id="af8bc58e9ebc44afd97ed81a353efd588"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>value</b></td></tr>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1IpnsCborEntry.html#af8bc58e9ebc44afd97ed81a353efd588">value</a></td></tr>
+<tr class="memdesc:af8bc58e9ebc44afd97ed81a353efd588"><td class="mdescLeft">&#160;</td><td class="mdescRight">The "value" (target) the name points at. <br /></td></tr>
 <tr class="separator:af8bc58e9ebc44afd97ed81a353efd588"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad0cbbb2c8235b02d87a60ee3de46caa1"><td class="memItemLeft" align="right" valign="top"><a id="ad0cbbb2c8235b02d87a60ee3de46caa1"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>validity</b></td></tr>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1IpnsCborEntry.html#ad0cbbb2c8235b02d87a60ee3de46caa1">validity</a></td></tr>
+<tr class="memdesc:ad0cbbb2c8235b02d87a60ee3de46caa1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Value to compare for validity (i.e. expiration) <br /></td></tr>
 <tr class="separator:ad0cbbb2c8235b02d87a60ee3de46caa1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31db7b54ab37f849481861700aa4f62f"><td class="memItemLeft" align="right" valign="top"><a id="a31db7b54ab37f849481861700aa4f62f"></a>
-std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>validityType</b></td></tr>
+std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1IpnsCborEntry.html#a31db7b54ab37f849481861700aa4f62f">validityType</a></td></tr>
+<tr class="memdesc:a31db7b54ab37f849481861700aa4f62f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Way to deterimine current validity. <br /></td></tr>
 <tr class="separator:a31db7b54ab37f849481861700aa4f62f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8a4a90517e3370dff6a7193a6c58acd"><td class="memItemLeft" align="right" valign="top"><a id="ad8a4a90517e3370dff6a7193a6c58acd"></a>
-std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>sequence</b></td></tr>
+std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1IpnsCborEntry.html#ad8a4a90517e3370dff6a7193a6c58acd">sequence</a></td></tr>
+<tr class="memdesc:ad8a4a90517e3370dff6a7193a6c58acd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Distinguish other IPNS records for the same name. <br /></td></tr>
 <tr class="separator:ad8a4a90517e3370dff6a7193a6c58acd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ed80270b760af94c80aaff2ed3c7525"><td class="memItemLeft" align="right" valign="top"><a id="a9ed80270b760af94c80aaff2ed3c7525"></a>
-std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>ttl</b></td></tr>
+std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1IpnsCborEntry.html#a9ed80270b760af94c80aaff2ed3c7525">ttl</a></td></tr>
+<tr class="memdesc:a9ed80270b760af94c80aaff2ed3c7525"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recommended caching time. <br /></td></tr>
 <tr class="separator:a9ed80270b760af94c80aaff2ed3c7525"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this struct was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Parsed out data contained in the CBOR data of an IPNS record. </p>
+</div><hr/>The documentation for this struct was generated from the following file:<ul>
 <li>library/include/ipfs_client/<a class="el" href="ipns__record_8h_source.html">ipns_record.h</a></li>
 </ul>
 </div><!-- contents -->
