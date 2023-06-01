@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My Project: ipfs::Block Class Reference</title>
+<title>ipfs-chromium: ipfs::Block Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">My Project
+   <div id="projectname">ipfs-chromium
    </div>
   </td>
  </tr>
@@ -165,12 +165,9 @@ std::string const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a c
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#abf18bac471e5245dd782ad9388c9c0a2">cid_matches_data</a> () const</td></tr>
 <tr class="memdesc:abf18bac471e5245dd782ad9388c9c0a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Basic validation. <br /></td></tr>
 <tr class="separator:abf18bac471e5245dd782ad9388c9c0a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66bc72ac4baf04f7a4e12a2c68ea7178"><td class="memItemLeft" align="right" valign="top"><a id="a66bc72ac4baf04f7a4e12a2c68ea7178"></a>
-std::basic_string&lt; Byte &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>binary_hash</b> (libp2p::multi::HashType) const</td></tr>
-<tr class="separator:a66bc72ac4baf04f7a4e12a2c68ea7178"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8344f0e15846950ccb8804086c7fd4db"><td class="memTemplParams" colspan="2"><a id="a8344f0e15846950ccb8804086c7fd4db"></a>
-template&lt;class Functor &gt; </td></tr>
-<tr class="memitem:a8344f0e15846950ccb8804086c7fd4db"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><b>List</b> (Functor foo) const</td></tr>
+<tr class="memitem:a8344f0e15846950ccb8804086c7fd4db"><td class="memTemplParams" colspan="2">template&lt;class Functor &gt; </td></tr>
+<tr class="memitem:a8344f0e15846950ccb8804086c7fd4db"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#a8344f0e15846950ccb8804086c7fd4db">List</a> (Functor foo) const</td></tr>
+<tr class="memdesc:a8344f0e15846950ccb8804086c7fd4db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterate through the links of this UnixFS node.  <a href="classipfs_1_1Block.html#a8344f0e15846950ccb8804086c7fd4db">More...</a><br /></td></tr>
 <tr class="separator:a8344f0e15846950ccb8804086c7fd4db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -298,6 +295,42 @@ template&lt;class Functor &gt; </td></tr>
 
 <p>Accessor for all UnixFS data as a protobuf object. </p>
 <dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd></dd></dl>
+
+</div>
+</div>
+<a id="a8344f0e15846950ccb8804086c7fd4db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8344f0e15846950ccb8804086c7fd4db">&#9670;&nbsp;</a></span>List()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class Functor &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ipfs::Block::List </td>
+          <td>(</td>
+          <td class="paramtype">Functor&#160;</td>
+          <td class="paramname"><em>foo</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Iterate through the links of this UnixFS node. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">foo</td><td>- Called for each link with (name, cid) should return converts-to-bool name is convertable from std::string const&amp; cid is convertable from std::string&amp;&amp; </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

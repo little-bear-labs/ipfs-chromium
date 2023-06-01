@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My Project: ipfs::Gateway Class Reference</title>
+<title>ipfs-chromium: ipfs::Gateway Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">My Project
+   <div id="projectname">ipfs-chromium
    </div>
   </td>
  </tr>
@@ -72,40 +72,253 @@ $(function() {
 <div class="title">ipfs::Gateway Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>A known http gateway serving up blocks &amp; IPNS records.  
+ <a href="classipfs_1_1Gateway.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="gateway_8h_source.html">library/include/ipfs_client/gateway.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a595eb85e5eeff700dd639f3b5a206237"><td class="memItemLeft" align="right" valign="top"><a id="a595eb85e5eeff700dd639f3b5a206237"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Gateway</b> (std::string url_prefix, unsigned priority)</td></tr>
+<tr class="memitem:a595eb85e5eeff700dd639f3b5a206237"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Gateway.html#a595eb85e5eeff700dd639f3b5a206237">Gateway</a> (std::string <a class="el" href="classipfs_1_1Gateway.html#ab34481e2d6b4af901fa56d9b4e453e4a">url_prefix</a>, unsigned priority)</td></tr>
+<tr class="memdesc:a595eb85e5eeff700dd639f3b5a206237"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a new gateway.  <a href="classipfs_1_1Gateway.html#a595eb85e5eeff700dd639f3b5a206237">More...</a><br /></td></tr>
 <tr class="separator:a595eb85e5eeff700dd639f3b5a206237"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a787eb1267553ff00b4112b990558f905"><td class="memItemLeft" align="right" valign="top"><a id="a787eb1267553ff00b4112b990558f905"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Gateway</b> (<a class="el" href="classipfs_1_1Gateway.html">Gateway</a> const &amp;)</td></tr>
 <tr class="separator:a787eb1267553ff00b4112b990558f905"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab34481e2d6b4af901fa56d9b4e453e4a"><td class="memItemLeft" align="right" valign="top"><a id="ab34481e2d6b4af901fa56d9b4e453e4a"></a>
-std::string const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>url_prefix</b> () const</td></tr>
+std::string const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Gateway.html#ab34481e2d6b4af901fa56d9b4e453e4a">url_prefix</a> () const</td></tr>
+<tr class="memdesc:ab34481e2d6b4af901fa56d9b4e453e4a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get this gateway's identity. <br /></td></tr>
 <tr class="separator:ab34481e2d6b4af901fa56d9b4e453e4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a156b9cf5f86e2df7d44049edbfa7a950"><td class="memItemLeft" align="right" valign="top"><a id="a156b9cf5f86e2df7d44049edbfa7a950"></a>
-long&#160;</td><td class="memItemRight" valign="bottom"><b>load</b> () const</td></tr>
+long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Gateway.html#a156b9cf5f86e2df7d44049edbfa7a950">load</a> () const</td></tr>
+<tr class="memdesc:a156b9cf5f86e2df7d44049edbfa7a950"><td class="mdescLeft">&#160;</td><td class="mdescRight">How busy is it currently with outstanding requests. <br /></td></tr>
 <tr class="separator:a156b9cf5f86e2df7d44049edbfa7a950"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a91dda866833c7d9010236bf8d4f63fce"><td class="memItemLeft" align="right" valign="top"><a id="a91dda866833c7d9010236bf8d4f63fce"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>accept</b> (std::string const &amp;suffix, long need)</td></tr>
+<tr class="memitem:a91dda866833c7d9010236bf8d4f63fce"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Gateway.html#a91dda866833c7d9010236bf8d4f63fce">accept</a> (std::string const &amp;suffix, long need)</td></tr>
+<tr class="memdesc:a91dda866833c7d9010236bf8d4f63fce"><td class="mdescLeft">&#160;</td><td class="mdescRight">accept a new task  <a href="classipfs_1_1Gateway.html#a91dda866833c7d9010236bf8d4f63fce">More...</a><br /></td></tr>
 <tr class="separator:a91dda866833c7d9010236bf8d4f63fce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a352a4c6ae419e3b63d4e53527f3b0ee3"><td class="memItemLeft" align="right" valign="top"><a id="a352a4c6ae419e3b63d4e53527f3b0ee3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>TaskSuccess</b> (std::string const &amp;)</td></tr>
-<tr class="separator:a352a4c6ae419e3b63d4e53527f3b0ee3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae38d2b426f0b28cb367fdab7d6d2a2ff"><td class="memItemLeft" align="right" valign="top"><a id="ae38d2b426f0b28cb367fdab7d6d2a2ff"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>TaskFailed</b> (std::string const &amp;)</td></tr>
+<tr class="memitem:a6032695f25a42e20d4f84374e963d430"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Gateway.html#a6032695f25a42e20d4f84374e963d430">TaskSuccess</a> (std::string const &amp;ts)</td></tr>
+<tr class="memdesc:a6032695f25a42e20d4f84374e963d430"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicate a task completed successfully.  <a href="classipfs_1_1Gateway.html#a6032695f25a42e20d4f84374e963d430">More...</a><br /></td></tr>
+<tr class="separator:a6032695f25a42e20d4f84374e963d430"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae38d2b426f0b28cb367fdab7d6d2a2ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Gateway.html#ae38d2b426f0b28cb367fdab7d6d2a2ff">TaskFailed</a> (std::string const &amp;)</td></tr>
+<tr class="memdesc:ae38d2b426f0b28cb367fdab7d6d2a2ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicate a task completed unsuccessfully.  <a href="classipfs_1_1Gateway.html#ae38d2b426f0b28cb367fdab7d6d2a2ff">More...</a><br /></td></tr>
 <tr class="separator:ae38d2b426f0b28cb367fdab7d6d2a2ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92f54171a5f8cf667b364ef208d2c792"><td class="memItemLeft" align="right" valign="top"><a id="a92f54171a5f8cf667b364ef208d2c792"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>TaskCancelled</b> (std::string const &amp;)</td></tr>
+<tr class="memitem:a92f54171a5f8cf667b364ef208d2c792"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Gateway.html#a92f54171a5f8cf667b364ef208d2c792">TaskCancelled</a> (std::string const &amp;)</td></tr>
+<tr class="memdesc:a92f54171a5f8cf667b364ef208d2c792"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicate a task was cancelled.  <a href="classipfs_1_1Gateway.html#a92f54171a5f8cf667b364ef208d2c792">More...</a><br /></td></tr>
 <tr class="separator:a92f54171a5f8cf667b364ef208d2c792"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3481eceb9f0e89c736ad5d09e5d7cc9e"><td class="memItemLeft" align="right" valign="top"><a id="a3481eceb9f0e89c736ad5d09e5d7cc9e"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>PreviouslyFailed</b> (std::string const &amp;suffix) const</td></tr>
+<tr class="memitem:a3481eceb9f0e89c736ad5d09e5d7cc9e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Gateway.html#a3481eceb9f0e89c736ad5d09e5d7cc9e">PreviouslyFailed</a> (std::string const &amp;suffix) const</td></tr>
+<tr class="memdesc:a3481eceb9f0e89c736ad5d09e5d7cc9e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether this gateway has previously failed to serve that task.  <a href="classipfs_1_1Gateway.html#a3481eceb9f0e89c736ad5d09e5d7cc9e">More...</a><br /></td></tr>
 <tr class="separator:a3481eceb9f0e89c736ad5d09e5d7cc9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc4a1547ba8b1ebfd0575003e6d9a191"><td class="memItemLeft" align="right" valign="top"><a id="abc4a1547ba8b1ebfd0575003e6d9a191"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>operator&lt;</b> (<a class="el" href="classipfs_1_1Gateway.html">Gateway</a> const &amp;) const</td></tr>
+<tr class="memitem:abc4a1547ba8b1ebfd0575003e6d9a191"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Gateway.html#abc4a1547ba8b1ebfd0575003e6d9a191">operator&lt;</a> (<a class="el" href="classipfs_1_1Gateway.html">Gateway</a> const &amp;) const</td></tr>
 <tr class="separator:abc4a1547ba8b1ebfd0575003e6d9a191"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>A known http gateway serving up blocks &amp; IPNS records. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a595eb85e5eeff700dd639f3b5a206237"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a595eb85e5eeff700dd639f3b5a206237">&#9670;&nbsp;</a></span>Gateway()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ipfs::Gateway::Gateway </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>url_prefix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned&#160;</td>
+          <td class="paramname"><em>priority</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Construct a new gateway. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">url_prefix</td><td>- including at least full origin not including path parts like ipfs/ or ipns/ as those will be added It must end in a slash (/) </td></tr>
+    <tr><td class="paramname">priority</td><td>- Performs 2 duties:<ul>
+<li>Relative to other gateways, how preferred it is for new requests.</li>
+<li>How many concurrent requests before it's considered overloaded and completely ineligible. </li>
+</ul>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a href="md_library_src_ipfs_client_scoring.html">scoring</a> </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a91dda866833c7d9010236bf8d4f63fce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91dda866833c7d9010236bf8d4f63fce">&#9670;&nbsp;</a></span>accept()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ipfs::Gateway::accept </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>suffix</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">long&#160;</td>
+          <td class="paramname"><em>need</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>accept a new task </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">suffix</td><td>- Appended to <a class="el" href="classipfs_1_1Gateway.html#ab34481e2d6b4af901fa56d9b4e453e4a" title="Get this gateway&#39;s identity.">url_prefix()</a> provides the URL of the request </td></tr>
+    <tr><td class="paramname">need</td><td>- How important is this task </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>whether the task was accepted </dd></dl>
+
+</div>
+</div>
+<a id="abc4a1547ba8b1ebfd0575003e6d9a191"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc4a1547ba8b1ebfd0575003e6d9a191">&#9670;&nbsp;</a></span>operator&lt;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ipfs::Gateway::operator&lt; </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classipfs_1_1Gateway.html">Gateway</a> const &amp;&#160;</td>
+          <td class="paramname"><em>rhs</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>Whether this gateway should be generally preferred over another </dd></dl>
+
+</div>
+</div>
+<a id="a3481eceb9f0e89c736ad5d09e5d7cc9e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3481eceb9f0e89c736ad5d09e5d7cc9e">&#9670;&nbsp;</a></span>PreviouslyFailed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool ipfs::Gateway::PreviouslyFailed </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>suffix</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Whether this gateway has previously failed to serve that task. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">suffix</td><td>- The suffix of the task </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a92f54171a5f8cf667b364ef208d2c792"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92f54171a5f8cf667b364ef208d2c792">&#9670;&nbsp;</a></span>TaskCancelled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ipfs::Gateway::TaskCancelled </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>task</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Indicate a task was cancelled. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ts</td><td>- The suffix of the task </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae38d2b426f0b28cb367fdab7d6d2a2ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae38d2b426f0b28cb367fdab7d6d2a2ff">&#9670;&nbsp;</a></span>TaskFailed()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ipfs::Gateway::TaskFailed </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>task</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Indicate a task completed unsuccessfully. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ts</td><td>- The suffix of the task </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a6032695f25a42e20d4f84374e963d430"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6032695f25a42e20d4f84374e963d430">&#9670;&nbsp;</a></span>TaskSuccess()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ipfs::Gateway::TaskSuccess </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>ts</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Indicate a task completed successfully. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ts</td><td>- The suffix of the task </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>library/include/ipfs_client/<a class="el" href="gateway_8h_source.html">gateway.h</a></li>
 <li>library/src/ipfs_client/gateway.cc</li>

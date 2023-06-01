@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['mime_5ftype_36',['mime_type',['../classipfs_1_1Block.html#ae94522280efa01d4d0f6d7f802c80a15',1,'ipfs::Block::mime_type(std::string_view)'],['../classipfs_1_1Block.html#a582250c2bf8d5b295a4cb21036a25136',1,'ipfs::Block::mime_type() const']]],
-  ['mimetype_37',['MimeType',['../classipfs_1_1ContextApi.html#a67c029b3a659deeda252fbc0229e7cc4',1,'ipfs::ContextApi']]],
-  ['multinodefile_38',['MultiNodeFile',['../classipfs_1_1unix__fs_1_1MultiNodeFile.html',1,'ipfs::unix_fs']]]
+  ['list_39',['List',['../classipfs_1_1Block.html#a8344f0e15846950ccb8804086c7fd4db',1,'ipfs::Block']]],
+  ['load_40',['load',['../classipfs_1_1Gateway.html#a156b9cf5f86e2df7d44049edbfa7a950',1,'ipfs::Gateway']]]
 ];

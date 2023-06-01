@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My Project: ipfs::DagListener Class Reference</title>
+<title>ipfs-chromium: ipfs::DagListener Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -21,7 +21,7 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
-   <div id="projectname">My Project
+   <div id="projectname">ipfs-chromium
    </div>
   </td>
  </tr>
@@ -72,12 +72,17 @@ $(function() {
 <div class="title">ipfs::DagListener Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Implemented by things waiting on a particular path through a DAG.  
+ <a href="classipfs_1_1DagListener.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="dag__listener_8h_source.html">library/include/ipfs_client/dag_listener.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for ipfs::DagListener:</div>
 <div class="dyncontent">
 <div class="center"><img src="classipfs_1_1DagListener__inherit__graph.png" border="0" usemap="#aipfs_1_1DagListener_inherit__map" alt="Inheritance graph"/></div>
 <map name="aipfs_1_1DagListener_inherit__map" id="aipfs_1_1DagListener_inherit__map">
-<area shape="rect" title=" " alt="" coords="39,95,171,121"/>
+<area shape="rect" title="Implemented by things waiting on a particular path through a DAG." alt="" coords="39,95,171,121"/>
 <area shape="rect" title=" " alt="" coords="5,5,204,47"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
@@ -86,26 +91,189 @@ Collaboration diagram for ipfs::DagListener:</div>
 <div class="dyncontent">
 <div class="center"><img src="classipfs_1_1DagListener__coll__graph.png" border="0" usemap="#aipfs_1_1DagListener_coll__map" alt="Collaboration graph"/></div>
 <map name="aipfs_1_1DagListener_coll__map" id="aipfs_1_1DagListener_coll__map">
-<area shape="rect" title=" " alt="" coords="39,95,171,121"/>
+<area shape="rect" title="Implemented by things waiting on a particular path through a DAG." alt="" coords="39,95,171,121"/>
 <area shape="rect" title=" " alt="" coords="5,5,204,47"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a33011c1b4788e97b7e6e72c08a060a6e"><td class="memItemLeft" align="right" valign="top"><a id="a33011c1b4788e97b7e6e72c08a060a6e"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>ReceiveBlockBytes</b> (std::string_view)=0</td></tr>
-<tr class="separator:a33011c1b4788e97b7e6e72c08a060a6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4828dd07c64933f4052e5a8dc2bfa107"><td class="memItemLeft" align="right" valign="top"><a id="a4828dd07c64933f4052e5a8dc2bfa107"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>BlocksComplete</b> (std::string mime_type)=0</td></tr>
+<tr class="memitem:aef396ef3a0ed6fcd6d0dcb862839197f"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1DagListener.html#aef396ef3a0ed6fcd6d0dcb862839197f">ReceiveBlockBytes</a> (std::string_view bytes)=0</td></tr>
+<tr class="memdesc:aef396ef3a0ed6fcd6d0dcb862839197f"><td class="mdescLeft">&#160;</td><td class="mdescRight">You're receiving the next N bytes of a requested file.  <a href="classipfs_1_1DagListener.html#aef396ef3a0ed6fcd6d0dcb862839197f">More...</a><br /></td></tr>
+<tr class="separator:aef396ef3a0ed6fcd6d0dcb862839197f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4828dd07c64933f4052e5a8dc2bfa107"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1DagListener.html#a4828dd07c64933f4052e5a8dc2bfa107">BlocksComplete</a> (std::string mime_type)=0</td></tr>
+<tr class="memdesc:a4828dd07c64933f4052e5a8dc2bfa107"><td class="mdescLeft">&#160;</td><td class="mdescRight">The file you were receiving in ReceiveBlockBytes is done.  <a href="classipfs_1_1DagListener.html#a4828dd07c64933f4052e5a8dc2bfa107">More...</a><br /></td></tr>
 <tr class="separator:a4828dd07c64933f4052e5a8dc2bfa107"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af95a83465868e63f166668ae1c97ae33"><td class="memItemLeft" align="right" valign="top"><a id="af95a83465868e63f166668ae1c97ae33"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>NotHere</b> (std::string_view cid, std::string_view path)=0</td></tr>
+<tr class="memitem:af95a83465868e63f166668ae1c97ae33"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1DagListener.html#af95a83465868e63f166668ae1c97ae33">NotHere</a> (std::string_view cid, std::string_view path)=0</td></tr>
+<tr class="memdesc:af95a83465868e63f166668ae1c97ae33"><td class="mdescLeft">&#160;</td><td class="mdescRight">There was a general failure getting the blocks.  <a href="classipfs_1_1DagListener.html#af95a83465868e63f166668ae1c97ae33">More...</a><br /></td></tr>
 <tr class="separator:af95a83465868e63f166668ae1c97ae33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ace24cf8d0ecb96f9e576cff559d53c5a"><td class="memItemLeft" align="right" valign="top"><a id="ace24cf8d0ecb96f9e576cff559d53c5a"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>DoesNotExist</b> (std::string_view cid, std::string_view path)=0</td></tr>
+<tr class="memitem:ace24cf8d0ecb96f9e576cff559d53c5a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1DagListener.html#ace24cf8d0ecb96f9e576cff559d53c5a">DoesNotExist</a> (std::string_view cid, std::string_view path)=0</td></tr>
+<tr class="memdesc:ace24cf8d0ecb96f9e576cff559d53c5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">The requested path DOES NOT EXIST, conclusively, regardless of gateway.  <a href="classipfs_1_1DagListener.html#ace24cf8d0ecb96f9e576cff559d53c5a">More...</a><br /></td></tr>
 <tr class="separator:ace24cf8d0ecb96f9e576cff559d53c5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Implemented by things waiting on a particular path through a DAG. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a4828dd07c64933f4052e5a8dc2bfa107"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4828dd07c64933f4052e5a8dc2bfa107">&#9670;&nbsp;</a></span>BlocksComplete()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void ipfs::DagListener::BlocksComplete </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>mime_type</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The file you were receiving in ReceiveBlockBytes is done. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">mime_type</td><td>- a guess at what the mime type of the file may be </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ace24cf8d0ecb96f9e576cff559d53c5a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace24cf8d0ecb96f9e576cff559d53c5a">&#9670;&nbsp;</a></span>DoesNotExist()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void ipfs::DagListener::DoesNotExist </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>cid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>The requested path DOES NOT EXIST, conclusively, regardless of gateway. </p>
+<p>Cannot occur without a path, as it indicates a directory (sharded or otherwise) was successfully retrieved but lacked the link necessary to descend farther down the path. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cid</td><td>- String representation of the root of the DAG </td></tr>
+    <tr><td class="paramname">path</td><td>- The path that could not be resolved. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section see"><dt>See also</dt><dd><a class="el" href="classipfs_1_1DagListener.html#af95a83465868e63f166668ae1c97ae33" title="There was a general failure getting the blocks.">NotHere</a> - the parameters carry the same meaning. </dd></dl>
+
+</div>
+</div>
+<a id="af95a83465868e63f166668ae1c97ae33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af95a83465868e63f166668ae1c97ae33">&#9670;&nbsp;</a></span>NotHere()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void ipfs::DagListener::NotHere </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>cid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>There was a general failure getting the blocks. </p>
+<p>Though used internally, when viewed externally this usually means you're requesting a CID which was simply not found on your gateways. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cid</td><td>- String representation of the root of the DAG </td></tr>
+    <tr><td class="paramname">path</td><td>- The path that could not be resolved. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>Unfortunately right now path is always the full requested path. If an intermediary directory failed, it should probably just be the path up to that point. And may in the future be so. </dd></dl>
+
+</div>
+</div>
+<a id="aef396ef3a0ed6fcd6d0dcb862839197f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aef396ef3a0ed6fcd6d0dcb862839197f">&#9670;&nbsp;</a></span>ReceiveBlockBytes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void ipfs::DagListener::ReceiveBlockBytes </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>bytes</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>You're receiving the next N bytes of a requested file. </p>
+<p>This is called once per block, which may be the entire file. </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bytes</td><td>- the bytes you are receiving </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/<a class="el" href="dag__listener_8h_source.html">dag_listener.h</a></li>
 </ul>
