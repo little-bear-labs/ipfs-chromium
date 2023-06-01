@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['gateway_124',['gateway',['../classipfs_1_1GatewayRequest.html#aeef061b6aa94a18011340e404af461f8',1,'ipfs::GatewayRequest']]]
+  ['gateway_126',['gateway',['../classipfs_1_1GatewayRequest.html#aeef061b6aa94a18011340e404af461f8',1,'ipfs::GatewayRequest']]]
 ];
