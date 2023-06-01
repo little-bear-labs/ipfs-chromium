@@ -81,7 +81,7 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a046d9b979b4f67ea605b918d0e98b41e"><td class="memItemLeft" align="right" valign="top"><a id="a046d9b979b4f67ea605b918d0e98b41e"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Type</b> { <br />
+<tr class="memitem:a046d9b979b4f67ea605b918d0e98b41e"><td class="memItemLeft" align="right" valign="top"><a id="a046d9b979b4f67ea605b918d0e98b41e"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">Type</a> { <br />
 &#160;&#160;<b>Raw</b>
 , <b>Directory</b>
 , <b>File</b>
@@ -95,6 +95,7 @@ Public Types</h2></td></tr>
 &#160;&#160;<b>Invalid</b>
 <br />
  }</td></tr>
+<tr class="memdesc:a046d9b979b4f67ea605b918d0e98b41e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The kinds of things a block may be representing. <br /></td></tr>
 <tr class="separator:a046d9b979b4f67ea605b918d0e98b41e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8f9f9d73be42440ce21e9be680f6a93"><td class="memItemLeft" align="right" valign="top"><a id="ac8f9f9d73be42440ce21e9be680f6a93"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>Multicodec</b> = libp2p::multi::MulticodecType::Code</td></tr>
@@ -123,22 +124,27 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:ab8252491c2d9c805fd074267d34891e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if the block appears valid. <br /></td></tr>
 <tr class="separator:ab8252491c2d9c805fd074267d34891e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a068a5ff05f02d811d1f7fb76f2e40674"><td class="memItemLeft" align="right" valign="top"><a id="a068a5ff05f02d811d1f7fb76f2e40674"></a>
-Type&#160;</td><td class="memItemRight" valign="bottom"><b>type</b> () const</td></tr>
+<a class="el" href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#a068a5ff05f02d811d1f7fb76f2e40674">type</a> () const</td></tr>
+<tr class="memdesc:a068a5ff05f02d811d1f7fb76f2e40674"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accessor for this block's type. <br /></td></tr>
 <tr class="separator:a068a5ff05f02d811d1f7fb76f2e40674"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23264e6906ed7558c94cbcc985d286c2"><td class="memItemLeft" align="right" valign="top"><a id="a23264e6906ed7558c94cbcc985d286c2"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_file</b> () const</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#a23264e6906ed7558c94cbcc985d286c2">is_file</a> () const</td></tr>
+<tr class="memdesc:a23264e6906ed7558c94cbcc985d286c2"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classipfs_1_1Block.html#a068a5ff05f02d811d1f7fb76f2e40674" title="Accessor for this block&#39;s type.">type()</a> == File || <a class="el" href="classipfs_1_1Block.html#a068a5ff05f02d811d1f7fb76f2e40674" title="Accessor for this block&#39;s type.">type()</a> == FileChunk <br /></td></tr>
 <tr class="separator:a23264e6906ed7558c94cbcc985d286c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac3320a4781777b6bd96f4bf34fc6923b"><td class="memItemLeft" align="right" valign="top"><a id="ac3320a4781777b6bd96f4bf34fc6923b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_directory</b> () const</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#ac3320a4781777b6bd96f4bf34fc6923b">is_directory</a> () const</td></tr>
+<tr class="memdesc:ac3320a4781777b6bd96f4bf34fc6923b"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classipfs_1_1Block.html#a068a5ff05f02d811d1f7fb76f2e40674" title="Accessor for this block&#39;s type.">type()</a> == Directory <br /></td></tr>
 <tr class="separator:ac3320a4781777b6bd96f4bf34fc6923b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad822fbd69b65bd3e958c8f33ad346599"><td class="memItemLeft" align="right" valign="top"><a id="ad822fbd69b65bd3e958c8f33ad346599"></a>
-std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>file_size</b> () const</td></tr>
+<tr class="memitem:ad822fbd69b65bd3e958c8f33ad346599"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#ad822fbd69b65bd3e958c8f33ad346599">file_size</a> () const</td></tr>
+<tr class="memdesc:ad822fbd69b65bd3e958c8f33ad346599"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get file size from the UnixFS node data.  <a href="classipfs_1_1Block.html#ad822fbd69b65bd3e958c8f33ad346599">More...</a><br /></td></tr>
 <tr class="separator:ad822fbd69b65bd3e958c8f33ad346599"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3b5a934d1925ad98228650fc4fb3e6f6"><td class="memItemLeft" align="right" valign="top"><a id="a3b5a934d1925ad98228650fc4fb3e6f6"></a>
-std::string const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>chunk_data</b> () const</td></tr>
+std::string const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#a3b5a934d1925ad98228650fc4fb3e6f6">chunk_data</a> () const</td></tr>
+<tr class="memdesc:a3b5a934d1925ad98228650fc4fb3e6f6"><td class="mdescLeft">&#160;</td><td class="mdescRight">data field from a UnixFS node <br /></td></tr>
 <tr class="separator:a3b5a934d1925ad98228650fc4fb3e6f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9fbbfa4679da83ae03aac455a1afd972"><td class="memItemLeft" align="right" valign="top"><a id="a9fbbfa4679da83ae03aac455a1afd972"></a>
-std::string const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>unparsed</b> () const</td></tr>
+std::string const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#a9fbbfa4679da83ae03aac455a1afd972">unparsed</a> () const</td></tr>
+<tr class="memdesc:a9fbbfa4679da83ae03aac455a1afd972"><td class="mdescLeft">&#160;</td><td class="mdescRight">Original bytes (with protobuf bits) <br /></td></tr>
 <tr class="separator:a9fbbfa4679da83ae03aac455a1afd972"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac17705547b9ba01e1b24ff4a2e8c6ac3"><td class="memItemLeft" align="right" valign="top"><a id="ac17705547b9ba01e1b24ff4a2e8c6ac3"></a>
 unix_fs::Data const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>fsdata</b> () const</td></tr>
@@ -239,6 +245,27 @@ template&lt;class Functor &gt; </td></tr>
   </dd>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>It's not really a string - certainly not text in any way. It's just a container of arbitrary bytes. </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ad822fbd69b65bd3e958c8f33ad346599"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad822fbd69b65bd3e958c8f33ad346599">&#9670;&nbsp;</a></span>file_size()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t ipfs::Block::file_size </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get file size from the UnixFS node data. </p>
+<dl class="section return"><dt>Returns</dt><dd>zero if such data is not available, e.g. for raw or directory </dd></dl>
 
 </div>
 </div>

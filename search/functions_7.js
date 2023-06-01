@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['mimetype_94',['MimeType',['../classipfs_1_1ContextApi.html#a67c029b3a659deeda252fbc0229e7cc4',1,'ipfs::ContextApi']]]
+  ['mimetype_105',['MimeType',['../classipfs_1_1ContextApi.html#a67c029b3a659deeda252fbc0229e7cc4',1,'ipfs::ContextApi']]]
 ];

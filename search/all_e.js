@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['valid_53',['Valid',['../classipfs_1_1ChainedRequestors.html#ac29702a11f0d06586d88b038155a43eb',1,'ipfs::ChainedRequestors']]],
-  ['valid_54',['valid',['../classipfs_1_1Block.html#ab8252491c2d9c805fd074267d34891e7',1,'ipfs::Block']]],
-  ['validatedipns_55',['ValidatedIpns',['../structipfs_1_1ValidatedIpns.html',1,'ipfs']]]
+  ['valid_60',['Valid',['../classipfs_1_1ChainedRequestors.html#ac29702a11f0d06586d88b038155a43eb',1,'ipfs::ChainedRequestors']]],
+  ['valid_61',['valid',['../classipfs_1_1Block.html#ab8252491c2d9c805fd074267d34891e7',1,'ipfs::Block']]],
+  ['validatedipns_62',['ValidatedIpns',['../structipfs_1_1ValidatedIpns.html',1,'ipfs']]]
 ];
