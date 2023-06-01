@@ -5,11 +5,29 @@
 #include <string_view>
 
 namespace ipfs {
+
+/*!
+ * \brief An index.html listing out a directory node's content
+ */
 class GeneratedDirectoryListing {
  public:
+
+  /*!
+   * \brief Get the HTML preamble going
+   * \param base_path - The path _to_ this directory
+   */
   GeneratedDirectoryListing(std::string_view base_path);
 
+  /*!
+   * \brief Add an entry to the list
+   * \param name - The directory's way of referring to that CID
+   */
   void AddEntry(std::string_view name);
+
+  /*!
+   * \brief Finish up all the HTML stuff at the end.
+   * \return The generated HTML
+   */
   std::string const& Finish();
 
  private:

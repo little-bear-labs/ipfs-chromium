@@ -23,6 +23,10 @@ using raw_ptr = std::experimental::observer_ptr<T>;
 #else
 
 namespace ipfs {
+
+/*!
+ * \brief Just an observing (non-owning) pointer.
+ */
 template <class T>
 class raw_ptr {
   T* ptr_;

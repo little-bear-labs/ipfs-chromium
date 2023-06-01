@@ -37,13 +37,14 @@ class BlockStorage {
    * \param cid     - The Content IDentifier
    * \param headers - Associated HTTP headers
    * \param body    - The raw bytes of the block
+   * \param block   - The block being stored
    * \return Whether this block is now stored in *this
    */
   bool Store(std::string cid_str,
              Cid const& cid,
              std::string headers,
              std::string const& body,
-             Block&&);
+             Block&& block);
 
   /*!
    * \name Store (Convenience)

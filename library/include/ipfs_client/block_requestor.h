@@ -7,6 +7,14 @@
 
 namespace ipfs {
 
+/*!
+ * \brief The urgency of a gateway request
+ * \details Determines how many gateways should be involved, and how burdened a
+ *    gateway should be before not also taking this one on concurrently. Zero is
+ *    a special value that indicates the block isn't actually required now, but
+ *    rather might be required soonish (prefetch). There are some cases of
+ *    special handling for that.
+ */
 using Priority = std::uint_least16_t;
 
 class DagListener;
@@ -23,11 +31,14 @@ class BlockRequestor {
  public:
   /**
    * \brief Request a single block from gateway(s).
+   * \param cid      - MB-MH string representation of the Content IDentifier
+   * \param dl       - Someone who may be interested
+   * \param priority - Urgency of the request
    * \note The DagListener is mostly about lifetime extension, since it's
    *    waiting on something which is waiting on this
    */
   virtual void RequestByCid(std::string cid,
-                            std::shared_ptr<DagListener>,
+                            std::shared_ptr<DagListener> dl,
                             Priority priority) = 0;
 };
 }  // namespace ipfs

@@ -7,8 +7,17 @@ namespace ipfs {
 class ContextApi;
 class UnixFsPathResolver;
 namespace unix_fs {
+
+/*!
+ * \brief Process a sharded directory (likely over multiple blocks)
+ */
 class DirShard : public NodeHelper {
  public:
+  /*!
+   * \brief Create the object to descend past the HAMT
+   * \param Element meaning the thing delimited by /, this is the name of the
+   *    directory entry we're looking for.
+   */
   DirShard(std::string next_path_element);
   ~DirShard() noexcept override;
 

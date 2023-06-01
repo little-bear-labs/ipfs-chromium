@@ -15,3 +15,4 @@ HIDE_IN_BODY_DOCS = YES
 EXCLUDE_PATTERNS = *test.cc */library/*/libp2p/*.*
 FILE_PATTERNS = *.h *.cc *.md
 PROJECT_NAME = ipfs-chromium
+WARN_NO_PARAMDOC = YES

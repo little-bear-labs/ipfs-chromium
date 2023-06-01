@@ -3,6 +3,9 @@
 
 #include "node_helper.h"
 
+/*!
+ * \brief Helper for a single-block file
+ */
 namespace ipfs {
 class ContextApi;
 class UnixFsPathResolver;

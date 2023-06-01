@@ -8,6 +8,10 @@
 
 namespace ipfs {
 namespace unix_fs {
+
+/*!
+ * \brief Process a file that's not a block but an almagation of blocks
+ */
 class MultiNodeFile : public NodeHelper {
  public:
   MultiNodeFile();

@@ -7,8 +7,16 @@ namespace ipfs {
 class ContextApi;
 class UnixFsPathResolver;
 namespace unix_fs {
+
+/*!
+ * \brief Helper for a normal UnixFS directory
+ */
 class PlainDirectory : public NodeHelper {
  public:
+  /*!
+   * \brief Construct with the entry desired
+   * \param The name of the next file/directory after this.
+   */
   PlainDirectory(std::string next_path_element);
   ~PlainDirectory() noexcept override;
 
