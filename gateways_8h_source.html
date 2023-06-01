@@ -87,26 +87,34 @@ $(function() {
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">using</span> GatewayList = std::vector&lt;Gateway&gt;;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">class </span>ContextApi;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="classipfs_1_1Gateways.html">   19</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1Gateways.html">Gateways</a> {</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  flat_map&lt;std::string, int&gt; known_gateways_;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  std::default_random_engine random_engine_;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  std::geometric_distribution&lt;unsigned&gt; dist_;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keywordtype">int</span> up_log_ = 1;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keyword">static</span> std::vector&lt;std::pair&lt;std::string, int&gt;&gt; DefaultGateways();</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classipfs_1_1Gateways.html">   22</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1Gateways.html">Gateways</a> {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  flat_map&lt;std::string, int&gt; known_gateways_;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  std::default_random_engine random_engine_;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  std::geometric_distribution&lt;unsigned&gt; dist_;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keywordtype">int</span> up_log_ = 1;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <a class="code" href="classipfs_1_1Gateways.html">Gateways</a>();</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  ~<a class="code" href="classipfs_1_1Gateways.html">Gateways</a>();</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  GatewayList GenerateList();</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordtype">void</span> promote(std::string <span class="keyword">const</span>&amp;);</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordtype">void</span> demote(std::string <span class="keyword">const</span>&amp;);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordtype">void</span> AddGateways(std::vector&lt;std::string&gt;);</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;};</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// CHROMIUM_IPFS_GATEWAYS_H_</span></div>
-<div class="ttc" id="aclassipfs_1_1Gateways_html"><div class="ttname"><a href="classipfs_1_1Gateways.html">ipfs::Gateways</a></div><div class="ttdef"><b>Definition:</b> gateways.h:19</div></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keyword">static</span> std::vector&lt;std::pair&lt;std::string, int&gt;&gt; <a class="code" href="classipfs_1_1Gateways.html#a76b0fd7d947788f7983574552b5a8e75">DefaultGateways</a>();</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <a class="code" href="classipfs_1_1Gateways.html">Gateways</a>();</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  ~<a class="code" href="classipfs_1_1Gateways.html">Gateways</a>();</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  GatewayList <a class="code" href="classipfs_1_1Gateways.html#a384c3975f70e2db7baefcb04efb2bbd4">GenerateList</a>();  </div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1Gateways.html#adab386521eef3497215c666ad770ce26">promote</a>(std::string <span class="keyword">const</span>&amp; prefix);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1Gateways.html#a936c7d1639a33de2623e18ccf85210b9">demote</a>(std::string <span class="keyword">const</span>&amp; prefix);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1Gateways.html#ad5cf5869f8cadbb64fd9f011964091ad">AddGateways</a>(std::vector&lt;std::string&gt; prefices);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;};</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// CHROMIUM_IPFS_GATEWAYS_H_</span></div>
+<div class="ttc" id="aclassipfs_1_1Gateways_html"><div class="ttname"><a href="classipfs_1_1Gateways.html">ipfs::Gateways</a></div><div class="ttdoc">All known IPFS gateways.</div><div class="ttdef"><b>Definition:</b> gateways.h:22</div></div>
+<div class="ttc" id="aclassipfs_1_1Gateways_html_a384c3975f70e2db7baefcb04efb2bbd4"><div class="ttname"><a href="classipfs_1_1Gateways.html#a384c3975f70e2db7baefcb04efb2bbd4">ipfs::Gateways::GenerateList</a></div><div class="ttdeci">GatewayList GenerateList()</div><div class="ttdoc">Get a sorted list of gateways for requesting.</div><div class="ttdef"><b>Definition:</b> gateways.cc:21</div></div>
+<div class="ttc" id="aclassipfs_1_1Gateways_html_a76b0fd7d947788f7983574552b5a8e75"><div class="ttname"><a href="classipfs_1_1Gateways.html#a76b0fd7d947788f7983574552b5a8e75">ipfs::Gateways::DefaultGateways</a></div><div class="ttdeci">static std::vector&lt; std::pair&lt; std::string, int &gt; &gt; DefaultGateways()</div><div class="ttdoc">The hard-coded list of gateways at startup.</div><div class="ttdef"><b>Definition:</b> gateways.cc:68</div></div>
+<div class="ttc" id="aclassipfs_1_1Gateways_html_a936c7d1639a33de2623e18ccf85210b9"><div class="ttname"><a href="classipfs_1_1Gateways.html#a936c7d1639a33de2623e18ccf85210b9">ipfs::Gateways::demote</a></div><div class="ttdeci">void demote(std::string const &amp;prefix)</div><div class="ttdoc">Bad gateway, move toward the back of the line.</div><div class="ttdef"><b>Definition:</b> gateways.cc:42</div></div>
+<div class="ttc" id="aclassipfs_1_1Gateways_html_ad5cf5869f8cadbb64fd9f011964091ad"><div class="ttname"><a href="classipfs_1_1Gateways.html#ad5cf5869f8cadbb64fd9f011964091ad">ipfs::Gateways::AddGateways</a></div><div class="ttdeci">void AddGateways(std::vector&lt; std::string &gt; prefices)</div><div class="ttdoc">Bulk load a bunch of new gateways.</div><div class="ttdef"><b>Definition:</b> gateways.cc:56</div></div>
+<div class="ttc" id="aclassipfs_1_1Gateways_html_adab386521eef3497215c666ad770ce26"><div class="ttname"><a href="classipfs_1_1Gateways.html#adab386521eef3497215c666ad770ce26">ipfs::Gateways::promote</a></div><div class="ttdeci">void promote(std::string const &amp;prefix)</div><div class="ttdoc">Good gateway, handle more!</div><div class="ttdef"><b>Definition:</b> gateways.cc:30</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

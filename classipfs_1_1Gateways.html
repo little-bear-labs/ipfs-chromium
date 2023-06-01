@@ -73,28 +73,134 @@ $(function() {
 <div class="title">ipfs::Gateways Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>All known IPFS gateways.  
+ <a href="classipfs_1_1Gateways.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="gateways_8h_source.html">library/include/ipfs_client/gateways.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a384c3975f70e2db7baefcb04efb2bbd4"><td class="memItemLeft" align="right" valign="top"><a id="a384c3975f70e2db7baefcb04efb2bbd4"></a>
-GatewayList&#160;</td><td class="memItemRight" valign="bottom"><b>GenerateList</b> ()</td></tr>
+GatewayList&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Gateways.html#a384c3975f70e2db7baefcb04efb2bbd4">GenerateList</a> ()</td></tr>
+<tr class="memdesc:a384c3975f70e2db7baefcb04efb2bbd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a sorted list of gateways for requesting. <br /></td></tr>
 <tr class="separator:a384c3975f70e2db7baefcb04efb2bbd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae1b504726adca5e4bb38128460e77a90"><td class="memItemLeft" align="right" valign="top"><a id="ae1b504726adca5e4bb38128460e77a90"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>promote</b> (std::string const &amp;)</td></tr>
-<tr class="separator:ae1b504726adca5e4bb38128460e77a90"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ca8934dbd72f8d930abc95d1b9ea0ff"><td class="memItemLeft" align="right" valign="top"><a id="a2ca8934dbd72f8d930abc95d1b9ea0ff"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>demote</b> (std::string const &amp;)</td></tr>
-<tr class="separator:a2ca8934dbd72f8d930abc95d1b9ea0ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a086616f030265a28d842f4f018219f81"><td class="memItemLeft" align="right" valign="top"><a id="a086616f030265a28d842f4f018219f81"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>AddGateways</b> (std::vector&lt; std::string &gt;)</td></tr>
-<tr class="separator:a086616f030265a28d842f4f018219f81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adab386521eef3497215c666ad770ce26"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Gateways.html#adab386521eef3497215c666ad770ce26">promote</a> (std::string const &amp;prefix)</td></tr>
+<tr class="memdesc:adab386521eef3497215c666ad770ce26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Good gateway, handle more!  <a href="classipfs_1_1Gateways.html#adab386521eef3497215c666ad770ce26">More...</a><br /></td></tr>
+<tr class="separator:adab386521eef3497215c666ad770ce26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a936c7d1639a33de2623e18ccf85210b9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Gateways.html#a936c7d1639a33de2623e18ccf85210b9">demote</a> (std::string const &amp;prefix)</td></tr>
+<tr class="memdesc:a936c7d1639a33de2623e18ccf85210b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bad gateway, move toward the back of the line.  <a href="classipfs_1_1Gateways.html#a936c7d1639a33de2623e18ccf85210b9">More...</a><br /></td></tr>
+<tr class="separator:a936c7d1639a33de2623e18ccf85210b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5cf5869f8cadbb64fd9f011964091ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Gateways.html#ad5cf5869f8cadbb64fd9f011964091ad">AddGateways</a> (std::vector&lt; std::string &gt; prefices)</td></tr>
+<tr class="memdesc:ad5cf5869f8cadbb64fd9f011964091ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bulk load a bunch of new gateways.  <a href="classipfs_1_1Gateways.html#ad5cf5869f8cadbb64fd9f011964091ad">More...</a><br /></td></tr>
+<tr class="separator:ad5cf5869f8cadbb64fd9f011964091ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a76b0fd7d947788f7983574552b5a8e75"><td class="memItemLeft" align="right" valign="top"><a id="a76b0fd7d947788f7983574552b5a8e75"></a>
-static std::vector&lt; std::pair&lt; std::string, int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>DefaultGateways</b> ()</td></tr>
+static std::vector&lt; std::pair&lt; std::string, int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Gateways.html#a76b0fd7d947788f7983574552b5a8e75">DefaultGateways</a> ()</td></tr>
+<tr class="memdesc:a76b0fd7d947788f7983574552b5a8e75"><td class="mdescLeft">&#160;</td><td class="mdescRight">The hard-coded list of gateways at startup. <br /></td></tr>
 <tr class="separator:a76b0fd7d947788f7983574552b5a8e75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>All known IPFS gateways. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="ad5cf5869f8cadbb64fd9f011964091ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5cf5869f8cadbb64fd9f011964091ad">&#9670;&nbsp;</a></span>AddGateways()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ipfs::Gateways::AddGateways </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; std::string &gt;&#160;</td>
+          <td class="paramname"><em>prefices</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bulk load a bunch of new gateways. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">prefices</td><td>- list of URL gateways by prefix </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a936c7d1639a33de2623e18ccf85210b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a936c7d1639a33de2623e18ccf85210b9">&#9670;&nbsp;</a></span>demote()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ipfs::Gateways::demote </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>prefix</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bad gateway, move toward the back of the line. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">prefix</td><td>- identify the gateway by its URL prefix </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classipfs_1_1Gateways_a936c7d1639a33de2623e18ccf85210b9_icgraph.png" border="0" usemap="#aclassipfs_1_1Gateways_a936c7d1639a33de2623e18ccf85210b9_icgraph" alt=""/></div>
+<map name="aclassipfs_1_1Gateways_a936c7d1639a33de2623e18ccf85210b9_icgraph" id="aclassipfs_1_1Gateways_a936c7d1639a33de2623e18ccf85210b9_icgraph">
+<area shape="rect" title="Bad gateway, move toward the back of the line." alt="" coords="204,13,381,39"/>
+<area shape="rect" href="classipfs_1_1BusyGateway.html#a1aa850cb2e39c9b234c05d4d88e09e08" title="Indicate that the task has unsuccessfully completed." alt="" coords="5,5,156,47"/>
+</map>
+</div>
+
+</div>
+</div>
+<a id="adab386521eef3497215c666ad770ce26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adab386521eef3497215c666ad770ce26">&#9670;&nbsp;</a></span>promote()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ipfs::Gateways::promote </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>prefix</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Good gateway, handle more! </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">prefix</td><td>- identify the gateway by its URL prefix </td></tr>
+  </table>
+  </dd>
+</dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><img src="classipfs_1_1Gateways_adab386521eef3497215c666ad770ce26_icgraph.png" border="0" usemap="#aclassipfs_1_1Gateways_adab386521eef3497215c666ad770ce26_icgraph" alt=""/></div>
+<map name="aclassipfs_1_1Gateways_adab386521eef3497215c666ad770ce26_icgraph" id="aclassipfs_1_1Gateways_adab386521eef3497215c666ad770ce26_icgraph">
+<area shape="rect" title="Good gateway, handle more!" alt="" coords="204,13,387,39"/>
+<area shape="rect" href="classipfs_1_1BusyGateway.html#a7174447d442be540ba43e079bcee3c79" title="Indicate that the task has successfully completed." alt="" coords="5,5,156,47"/>
+</map>
+</div>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>library/include/ipfs_client/<a class="el" href="gateways_8h_source.html">gateways.h</a></li>
 <li>library/src/ipfs_client/gateways.cc</li>

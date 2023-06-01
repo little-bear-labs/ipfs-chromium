@@ -1,0 +1,4 @@
+<map id="ipfs::BusyGateway::Failure" name="ipfs::BusyGateway::Failure">
+<area shape="rect" id="node1" title="Indicate that the task has unsuccessfully completed." alt="" coords="5,5,156,47"/>
+<area shape="rect" id="node2" href="$classipfs_1_1Gateways.html#a936c7d1639a33de2623e18ccf85210b9" title="Bad gateway, move toward the back of the line." alt="" coords="204,13,381,39"/>
+</map>

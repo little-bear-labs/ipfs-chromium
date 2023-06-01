@@ -1,0 +1,4 @@
+<map id="ipfs::Gateways::demote" name="ipfs::Gateways::demote">
+<area shape="rect" id="node1" title="Bad gateway, move toward the back of the line." alt="" coords="204,13,381,39"/>
+<area shape="rect" id="node2" href="$classipfs_1_1BusyGateway.html#a1aa850cb2e39c9b234c05d4d88e09e08" title="Indicate that the task has unsuccessfully completed." alt="" coords="5,5,156,47"/>
+</map>
