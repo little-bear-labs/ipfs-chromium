@@ -1,0 +1,4 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classipfs_1_1BlockRequestor.html" title="Interface for classes that can asynchronously fetch a block for a CID." alt="" coords="5,5,161,32"/>
+<area shape="rect" id="node2" href="$classipfs_1_1ChainedRequestors.html" title="A BlockRequestor that chains together BlockRequestors." alt="" coords="209,5,389,32"/>
+</map>

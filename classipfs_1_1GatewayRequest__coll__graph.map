@@ -1,0 +1,4 @@
+<map id="ipfs::GatewayRequest" name="ipfs::GatewayRequest">
+<area shape="rect" id="node1" title="Represents an issued request." alt="" coords="5,95,171,121"/>
+<area shape="rect" id="node2" href="$classipfs_1_1BusyGateway.html" title="RAII class embodying the assignment of a given task to a given gateway." alt="" coords="16,5,160,32"/>
+</map>
