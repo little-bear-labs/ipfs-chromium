@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['scoring_125',['scoring',['../md_library_src_ipfs_client_scoring.html',1,'']]]
+  ['install_20cmake_203_2e22_2b_131',['Install CMake 3.22+',['../md_doc_building.html',1,'']]],
+  ['ipfs_20racing_20multi_2dgateway_20integration_20for_20chromium_132',['IPFS racing multi-gateway integration for Chromium',['../index.html',1,'']]]
 ];

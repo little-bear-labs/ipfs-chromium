@@ -103,10 +103,10 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>Multicodec</b> = lib
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aaae97cdd642eea9386b680e9442f25ca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#aaae97cdd642eea9386b680e9442f25ca">Block</a> (Cid const &amp;cid, std::istream &amp;stream)</td></tr>
+<tr class="memitem:aaae97cdd642eea9386b680e9442f25ca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#aaae97cdd642eea9386b680e9442f25ca">Block</a> (Cid const &amp;<a class="el" href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">cid</a>, std::istream &amp;stream)</td></tr>
 <tr class="memdesc:aaae97cdd642eea9386b680e9442f25ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize from stream.  <a href="classipfs_1_1Block.html#aaae97cdd642eea9386b680e9442f25ca">More...</a><br /></td></tr>
 <tr class="separator:aaae97cdd642eea9386b680e9442f25ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb3d4047f8a38e9b64b58dd17eb492f1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#adb3d4047f8a38e9b64b58dd17eb492f1">Block</a> (Cid const &amp;cid, std::string const &amp;bytes)</td></tr>
+<tr class="memitem:adb3d4047f8a38e9b64b58dd17eb492f1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#adb3d4047f8a38e9b64b58dd17eb492f1">Block</a> (Cid const &amp;<a class="el" href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">cid</a>, std::string const &amp;bytes)</td></tr>
 <tr class="memdesc:adb3d4047f8a38e9b64b58dd17eb492f1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize from block of bytes.  <a href="classipfs_1_1Block.html#adb3d4047f8a38e9b64b58dd17eb492f1">More...</a><br /></td></tr>
 <tr class="separator:adb3d4047f8a38e9b64b58dd17eb492f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4113feb7450a9f1a8f4026af84b8af0e"><td class="memItemLeft" align="right" valign="top"><a id="a4113feb7450a9f1a8f4026af84b8af0e"></a>
@@ -146,17 +146,20 @@ std::string const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a c
 std::string const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#a9fbbfa4679da83ae03aac455a1afd972">unparsed</a> () const</td></tr>
 <tr class="memdesc:a9fbbfa4679da83ae03aac455a1afd972"><td class="mdescLeft">&#160;</td><td class="mdescRight">Original bytes (with protobuf bits) <br /></td></tr>
 <tr class="separator:a9fbbfa4679da83ae03aac455a1afd972"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac17705547b9ba01e1b24ff4a2e8c6ac3"><td class="memItemLeft" align="right" valign="top"><a id="ac17705547b9ba01e1b24ff4a2e8c6ac3"></a>
-unix_fs::Data const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>fsdata</b> () const</td></tr>
+<tr class="memitem:ac17705547b9ba01e1b24ff4a2e8c6ac3"><td class="memItemLeft" align="right" valign="top">unix_fs::Data const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#ac17705547b9ba01e1b24ff4a2e8c6ac3">fsdata</a> () const</td></tr>
+<tr class="memdesc:ac17705547b9ba01e1b24ff4a2e8c6ac3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accessor for all UnixFS data as a protobuf object.  <a href="classipfs_1_1Block.html#ac17705547b9ba01e1b24ff4a2e8c6ac3">More...</a><br /></td></tr>
 <tr class="separator:ac17705547b9ba01e1b24ff4a2e8c6ac3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47f697035e81089ff38d44324bce6aba"><td class="memItemLeft" align="right" valign="top"><a id="a47f697035e81089ff38d44324bce6aba"></a>
-Cid const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>cid</b> () const</td></tr>
+Cid const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">cid</a> () const</td></tr>
+<tr class="memdesc:a47f697035e81089ff38d44324bce6aba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for Content IDentifier. <br /></td></tr>
 <tr class="separator:a47f697035e81089ff38d44324bce6aba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae94522280efa01d4d0f6d7f802c80a15"><td class="memItemLeft" align="right" valign="top"><a id="ae94522280efa01d4d0f6d7f802c80a15"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>mime_type</b> (std::string_view)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#ae94522280efa01d4d0f6d7f802c80a15">mime_type</a> (std::string_view)</td></tr>
+<tr class="memdesc:ae94522280efa01d4d0f6d7f802c80a15"><td class="mdescLeft">&#160;</td><td class="mdescRight">mime type setter - not managed <br /></td></tr>
 <tr class="separator:ae94522280efa01d4d0f6d7f802c80a15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a582250c2bf8d5b295a4cb21036a25136"><td class="memItemLeft" align="right" valign="top"><a id="a582250c2bf8d5b295a4cb21036a25136"></a>
-std::string const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>mime_type</b> () const</td></tr>
+std::string const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#a582250c2bf8d5b295a4cb21036a25136">mime_type</a> () const</td></tr>
+<tr class="memdesc:a582250c2bf8d5b295a4cb21036a25136"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for mime type. <br /></td></tr>
 <tr class="separator:a582250c2bf8d5b295a4cb21036a25136"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf18bac471e5245dd782ad9388c9c0a2"><td class="memItemLeft" align="right" valign="top"><a id="abf18bac471e5245dd782ad9388c9c0a2"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>cid_matches_data</b> () const</td></tr>
@@ -266,6 +269,34 @@ template&lt;class Functor &gt; </td></tr>
 
 <p>Get file size from the UnixFS node data. </p>
 <dl class="section return"><dt>Returns</dt><dd>zero if such data is not available, e.g. for raw or directory </dd></dl>
+
+</div>
+</div>
+<a id="ac17705547b9ba01e1b24ff4a2e8c6ac3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac17705547b9ba01e1b24ff4a2e8c6ac3">&#9670;&nbsp;</a></span>fsdata()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">unix_fs::Data const&amp; ipfs::Block::fsdata </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Accessor for all UnixFS data as a protobuf object. </p>
+<dl class="deprecated"><dt><b><a class="el" href="deprecated.html#_deprecated000001">Deprecated:</a></b></dt><dd></dd></dl>
 
 </div>
 </div>
