@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['knosuchname_198',['kNoSuchName',['../classipfs_1_1IpnsNames.html#acc72608629b918371d3c8039ae913915',1,'ipfs::IpnsNames']]]
+  ['fetch_5ftime_221',['fetch_time',['../structipfs_1_1ValidatedIpns.html#a2848fb8db773402c46dfe9d53303d845',1,'ipfs::ValidatedIpns']]]
 ];

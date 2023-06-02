@@ -91,9 +91,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:adfa90c05290c9ae4f646ed3a3141b4b4"><td class="memItemLeft" align="right" valign="top"><a id="adfa90c05290c9ae4f646ed3a3141b4b4"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>BlockStorage</b> (<a class="el" href="classipfs_1_1BlockStorage.html">BlockStorage</a> const &amp;)=delete</td></tr>
 <tr class="separator:adfa90c05290c9ae4f646ed3a3141b4b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1f0d3168f4f00e72f31492a85b9f3439"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockStorage.html#a1f0d3168f4f00e72f31492a85b9f3439">Store</a> (std::string cid_str, Cid const &amp;cid, std::string headers, std::string const &amp;body, <a class="el" href="classipfs_1_1Block.html">Block</a> &amp;&amp;)</td></tr>
-<tr class="memdesc:a1f0d3168f4f00e72f31492a85b9f3439"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store a <a class="el" href="classipfs_1_1Block.html" title="Something to which a CID may refer directly.">Block</a> for later access.  <a href="classipfs_1_1BlockStorage.html#a1f0d3168f4f00e72f31492a85b9f3439">More...</a><br /></td></tr>
-<tr class="separator:a1f0d3168f4f00e72f31492a85b9f3439"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4a4b1798f6c0c15a5e081ab3520cad5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5">Store</a> (std::string cid_str, Cid const &amp;cid, std::string headers, std::string const &amp;body, <a class="el" href="classipfs_1_1Block.html">Block</a> &amp;&amp;block)</td></tr>
+<tr class="memdesc:ae4a4b1798f6c0c15a5e081ab3520cad5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store a <a class="el" href="classipfs_1_1Block.html" title="Something to which a CID may refer directly.">Block</a> for later access.  <a href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5">More...</a><br /></td></tr>
+<tr class="separator:ae4a4b1798f6c0c15a5e081ab3520cad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86b5317273b0d593121067e96ab9a238"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classipfs_1_1Block.html">Block</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockStorage.html#a86b5317273b0d593121067e96ab9a238">Get</a> (std::string const &amp;cid)</td></tr>
 <tr class="memdesc:a86b5317273b0d593121067e96ab9a238"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a block!  <a href="classipfs_1_1BlockStorage.html#a86b5317273b0d593121067e96ab9a238">More...</a><br /></td></tr>
 <tr class="separator:a86b5317273b0d593121067e96ab9a238"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -116,7 +116,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:a35f051a01eb18bf489bd6e6f12b5d480"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a callback that will be called when any new block goes into storage. <br /></td></tr>
 <tr class="separator:a35f051a01eb18bf489bd6e6f12b5d480"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Store (Convenience)</div></td></tr>
-<tr><td colspan="2"><div class="groupText"><p>Convenience functions for <a class="el" href="classipfs_1_1BlockStorage.html#a1f0d3168f4f00e72f31492a85b9f3439" title="Store a Block for later access.">ipfs::BlockStorage::Store</a>(std::string,Cid const&amp;,std::string,std::string const&amp;,<a class="el" href="classipfs_1_1Block.html" title="Something to which a CID may refer directly.">Block</a>&amp;&amp;) </p>
+<tr><td colspan="2"><div class="groupText"><p>Convenience functions for <a class="el" href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5" title="Store a Block for later access.">ipfs::BlockStorage::Store</a>(std::string,Cid const&amp;,std::string,std::string const&amp;,<a class="el" href="classipfs_1_1Block.html" title="Something to which a CID may refer directly.">Block</a>&amp;&amp;) </p>
 </div></td></tr>
 <tr class="memitem:a78bff7e4c8cc2aa93d2ed1596244f970"><td class="memItemLeft" align="right" valign="top"><a id="a78bff7e4c8cc2aa93d2ed1596244f970"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>Store</b> (std::string headers, std::string const &amp;body, <a class="el" href="classipfs_1_1Block.html">Block</a> &amp;&amp;block)</td></tr>
@@ -180,7 +180,7 @@ Here is the caller graph for this function:</div>
 <div class="center"><img src="classipfs_1_1BlockStorage_a62c0428161a796bc977d5b42d0bd2c73_icgraph.png" border="0" usemap="#aclassipfs_1_1BlockStorage_a62c0428161a796bc977d5b42d0bd2c73_icgraph" alt=""/></div>
 <map name="aclassipfs_1_1BlockStorage_a62c0428161a796bc977d5b42d0bd2c73_icgraph" id="aclassipfs_1_1BlockStorage_a62c0428161a796bc977d5b42d0bd2c73_icgraph">
 <area shape="rect" title="Normally called internally." alt="" coords="193,5,333,47"/>
-<area shape="rect" href="classipfs_1_1BlockStorage.html#a1f0d3168f4f00e72f31492a85b9f3439" title="Store a Block for later access." alt="" coords="5,5,145,47"/>
+<area shape="rect" href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5" title="Store a Block for later access." alt="" coords="5,5,145,47"/>
 </map>
 </div>
 
@@ -240,8 +240,8 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a1f0d3168f4f00e72f31492a85b9f3439"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1f0d3168f4f00e72f31492a85b9f3439">&#9670;&nbsp;</a></span>Store()</h2>
+<a id="ae4a4b1798f6c0c15a5e081ab3520cad5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4a4b1798f6c0c15a5e081ab3520cad5">&#9670;&nbsp;</a></span>Store()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -291,6 +291,7 @@ Here is the caller graph for this function:</div>
     <tr><td class="paramname">cid</td><td>- The Content IDentifier </td></tr>
     <tr><td class="paramname">headers</td><td>- Associated HTTP headers </td></tr>
     <tr><td class="paramname">body</td><td>- The raw bytes of the block </td></tr>
+    <tr><td class="paramname">block</td><td>- The block being stored </td></tr>
   </table>
   </dd>
 </dl>
@@ -298,8 +299,8 @@ Here is the caller graph for this function:</div>
 <div class="dynheader">
 Here is the call graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><img src="classipfs_1_1BlockStorage_a1f0d3168f4f00e72f31492a85b9f3439_cgraph.png" border="0" usemap="#aclassipfs_1_1BlockStorage_a1f0d3168f4f00e72f31492a85b9f3439_cgraph" alt=""/></div>
-<map name="aclassipfs_1_1BlockStorage_a1f0d3168f4f00e72f31492a85b9f3439_cgraph" id="aclassipfs_1_1BlockStorage_a1f0d3168f4f00e72f31492a85b9f3439_cgraph">
+<div class="center"><img src="classipfs_1_1BlockStorage_ae4a4b1798f6c0c15a5e081ab3520cad5_cgraph.png" border="0" usemap="#aclassipfs_1_1BlockStorage_ae4a4b1798f6c0c15a5e081ab3520cad5_cgraph" alt=""/></div>
+<map name="aclassipfs_1_1BlockStorage_ae4a4b1798f6c0c15a5e081ab3520cad5_cgraph" id="aclassipfs_1_1BlockStorage_ae4a4b1798f6c0c15a5e081ab3520cad5_cgraph">
 <area shape="rect" title="Store a Block for later access." alt="" coords="5,5,145,47"/>
 <area shape="rect" href="classipfs_1_1BlockStorage.html#a62c0428161a796bc977d5b42d0bd2c73" title="Normally called internally." alt="" coords="193,5,333,47"/>
 </map>

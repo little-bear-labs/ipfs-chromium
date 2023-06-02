@@ -1,6 +1,4 @@
 var searchData=
 [
-  ['validity_201',['validity',['../structipfs_1_1IpnsCborEntry.html#ad0cbbb2c8235b02d87a60ee3de46caa1',1,'ipfs::IpnsCborEntry']]],
-  ['validitytype_202',['validityType',['../structipfs_1_1IpnsCborEntry.html#a31db7b54ab37f849481861700aa4f62f',1,'ipfs::IpnsCborEntry']]],
-  ['value_203',['value',['../structipfs_1_1IpnsCborEntry.html#af8bc58e9ebc44afd97ed81a353efd588',1,'ipfs::IpnsCborEntry']]]
+  ['resolution_5fms_225',['resolution_ms',['../structipfs_1_1ValidatedIpns.html#a6b30cf75683f0a4e62d38dea2cca5696',1,'ipfs::ValidatedIpns']]]
 ];

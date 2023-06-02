@@ -74,12 +74,17 @@ $(function() {
 <div class="title">ipfs::ValidatedIpns Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Data from IPNS record modulo the verification parts.  
+ <a href="structipfs_1_1ValidatedIpns.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ipns__record_8h_source.html">library/include/ipfs_client/ipns_record.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for ipfs::ValidatedIpns:</div>
 <div class="dyncontent">
 <div class="center"><img src="structipfs_1_1ValidatedIpns__coll__graph.png" border="0" usemap="#aipfs_1_1ValidatedIpns_coll__map" alt="Collaboration graph"/></div>
 <map name="aipfs_1_1ValidatedIpns_coll__map" id="aipfs_1_1ValidatedIpns_coll__map">
-<area shape="rect" title=" " alt="" coords="139,124,282,151"/>
+<area shape="rect" title="Data from IPNS record modulo the verification parts." alt="" coords="139,124,282,151"/>
 <area shape="rect" title=" " alt="" coords="5,5,80,32"/>
 <area shape="rect" title=" " alt="" coords="111,5,169,32"/>
 <area shape="rect" title=" " alt="" coords="249,5,313,32"/>
@@ -89,6 +94,10 @@ Collaboration diagram for ipfs::ValidatedIpns:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a31c5bd8b61786b29ed47eb25d7f78fcb"><td class="memItemLeft" align="right" valign="top"><a id="a31c5bd8b61786b29ed47eb25d7f78fcb"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1ValidatedIpns.html#a31c5bd8b61786b29ed47eb25d7f78fcb">ValidatedIpns</a> ()</td></tr>
+<tr class="memdesc:a31c5bd8b61786b29ed47eb25d7f78fcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an invalid default object. <br /></td></tr>
+<tr class="separator:a31c5bd8b61786b29ed47eb25d7f78fcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1442b7629e5cadf5420605a366dadfe"><td class="memItemLeft" align="right" valign="top"><a id="ae1442b7629e5cadf5420605a366dadfe"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ValidatedIpns</b> (<a class="el" href="structipfs_1_1IpnsCborEntry.html">IpnsCborEntry</a> const &amp;)</td></tr>
 <tr class="separator:ae1442b7629e5cadf5420605a366dadfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -102,39 +111,103 @@ Public Member Functions</h2></td></tr>
 <a class="el" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> const &amp;)</td></tr>
 <tr class="separator:a42268cffd08ffd1567290df1b713a681"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace2f45fb79408347deee98d8b90ddb57"><td class="memItemLeft" align="right" valign="top"><a id="ace2f45fb79408347deee98d8b90ddb57"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>Serialize</b> () const</td></tr>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1ValidatedIpns.html#ace2f45fb79408347deee98d8b90ddb57">Serialize</a> () const</td></tr>
+<tr class="memdesc:ace2f45fb79408347deee98d8b90ddb57"><td class="mdescLeft">&#160;</td><td class="mdescRight">Turn into a well-defined list of bytes. <br /></td></tr>
 <tr class="separator:ace2f45fb79408347deee98d8b90ddb57"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aeb6030340395b931c98b4c4ffd7ca1a8"><td class="memItemLeft" align="right" valign="top"><a id="aeb6030340395b931c98b4c4ffd7ca1a8"></a>
-static <a class="el" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Deserialize</b> (std::string)</td></tr>
-<tr class="separator:aeb6030340395b931c98b4c4ffd7ca1a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabdd2defa62bbc9d1463fd4bef53ec23"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1ValidatedIpns.html#aabdd2defa62bbc9d1463fd4bef53ec23">Deserialize</a> (std::string bytes)</td></tr>
+<tr class="memdesc:aabdd2defa62bbc9d1463fd4bef53ec23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="structipfs_1_1ValidatedIpns.html" title="Data from IPNS record modulo the verification parts.">ValidatedIpns</a> from untyped bytes.  <a href="structipfs_1_1ValidatedIpns.html#aabdd2defa62bbc9d1463fd4bef53ec23">More...</a><br /></td></tr>
+<tr class="separator:aabdd2defa62bbc9d1463fd4bef53ec23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
 <tr class="memitem:ae6de004a615521a7ca1dbf18df0dc028"><td class="memItemLeft" align="right" valign="top"><a id="ae6de004a615521a7ca1dbf18df0dc028"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>value</b></td></tr>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1ValidatedIpns.html#ae6de004a615521a7ca1dbf18df0dc028">value</a></td></tr>
+<tr class="memdesc:ae6de004a615521a7ca1dbf18df0dc028"><td class="mdescLeft">&#160;</td><td class="mdescRight">The path the record claims the IPNS name points to. <br /></td></tr>
 <tr class="separator:ae6de004a615521a7ca1dbf18df0dc028"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7005820591f6108965891bf0bd9e1abb"><td class="memItemLeft" align="right" valign="top"><a id="a7005820591f6108965891bf0bd9e1abb"></a>
-std::time_t&#160;</td><td class="memItemRight" valign="bottom"><b>use_until</b></td></tr>
+std::time_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1ValidatedIpns.html#a7005820591f6108965891bf0bd9e1abb">use_until</a></td></tr>
+<tr class="memdesc:a7005820591f6108965891bf0bd9e1abb"><td class="mdescLeft">&#160;</td><td class="mdescRight">An expiration timestamp. <br /></td></tr>
 <tr class="separator:a7005820591f6108965891bf0bd9e1abb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41a4f4c7cf8f347cf2cd160227e07f98"><td class="memItemLeft" align="right" valign="top"><a id="a41a4f4c7cf8f347cf2cd160227e07f98"></a>
-std::time_t&#160;</td><td class="memItemRight" valign="bottom"><b>cache_until</b></td></tr>
+std::time_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1ValidatedIpns.html#a41a4f4c7cf8f347cf2cd160227e07f98">cache_until</a></td></tr>
+<tr class="memdesc:a41a4f4c7cf8f347cf2cd160227e07f98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inspired by TTL. <br /></td></tr>
 <tr class="separator:a41a4f4c7cf8f347cf2cd160227e07f98"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2011a9f44bb95f9d130c72ba6644b4ba"><td class="memItemLeft" align="right" valign="top"><a id="a2011a9f44bb95f9d130c72ba6644b4ba"></a>
-std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>sequence</b></td></tr>
+<tr class="memitem:a2011a9f44bb95f9d130c72ba6644b4ba"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1ValidatedIpns.html#a2011a9f44bb95f9d130c72ba6644b4ba">sequence</a></td></tr>
+<tr class="memdesc:a2011a9f44bb95f9d130c72ba6644b4ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">The version of the record.  <a href="structipfs_1_1ValidatedIpns.html#a2011a9f44bb95f9d130c72ba6644b4ba">More...</a><br /></td></tr>
 <tr class="separator:a2011a9f44bb95f9d130c72ba6644b4ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b30cf75683f0a4e62d38dea2cca5696"><td class="memItemLeft" align="right" valign="top"><a id="a6b30cf75683f0a4e62d38dea2cca5696"></a>
-std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>resolution_ms</b></td></tr>
+std::int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1ValidatedIpns.html#a6b30cf75683f0a4e62d38dea2cca5696">resolution_ms</a></td></tr>
+<tr class="memdesc:a6b30cf75683f0a4e62d38dea2cca5696"><td class="mdescLeft">&#160;</td><td class="mdescRight">How long it took to fetch the record. <br /></td></tr>
 <tr class="separator:a6b30cf75683f0a4e62d38dea2cca5696"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2848fb8db773402c46dfe9d53303d845"><td class="memItemLeft" align="right" valign="top"><a id="a2848fb8db773402c46dfe9d53303d845"></a>
-std::time_t&#160;</td><td class="memItemRight" valign="bottom"><b>fetch_time</b> = std::time(nullptr)</td></tr>
+std::time_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1ValidatedIpns.html#a2848fb8db773402c46dfe9d53303d845">fetch_time</a> = std::time(nullptr)</td></tr>
+<tr class="memdesc:a2848fb8db773402c46dfe9d53303d845"><td class="mdescLeft">&#160;</td><td class="mdescRight">When the record was fetched. <br /></td></tr>
 <tr class="separator:a2848fb8db773402c46dfe9d53303d845"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5a8535dd643df208082b78751a529f15"><td class="memItemLeft" align="right" valign="top"><a id="a5a8535dd643df208082b78751a529f15"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>gateway_source</b></td></tr>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1ValidatedIpns.html#a5a8535dd643df208082b78751a529f15">gateway_source</a></td></tr>
+<tr class="memdesc:a5a8535dd643df208082b78751a529f15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Who gave us this record? <br /></td></tr>
 <tr class="separator:a5a8535dd643df208082b78751a529f15"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Data from IPNS record modulo the verification parts. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="aabdd2defa62bbc9d1463fd4bef53ec23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabdd2defa62bbc9d1463fd4bef53ec23">&#9670;&nbsp;</a></span>Deserialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto ipfs::ValidatedIpns::Deserialize </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>bytes</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a <a class="el" href="structipfs_1_1ValidatedIpns.html" title="Data from IPNS record modulo the verification parts.">ValidatedIpns</a> from untyped bytes. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bytes</td><td>- Output from a former call to <a class="el" href="structipfs_1_1ValidatedIpns.html#ace2f45fb79408347deee98d8b90ddb57" title="Turn into a well-defined list of bytes.">Serialize()</a> </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>Is used by disk cache </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Recreation of the old object </dd></dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a2011a9f44bb95f9d130c72ba6644b4ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2011a9f44bb95f9d130c72ba6644b4ba">&#9670;&nbsp;</a></span>sequence</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t ipfs::ValidatedIpns::sequence</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The version of the record. </p>
+<p>Higher sequence numbers obsolete lower ones </p>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following files:<ul>
 <li>library/include/ipfs_client/<a class="el" href="ipns__record_8h_source.html">ipns_record.h</a></li>
 <li>library/src/ipfs_client/ipns_record.cc</li>

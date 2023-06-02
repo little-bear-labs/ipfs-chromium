@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['gateway_197',['gateway',['../classipfs_1_1GatewayRequest.html#aeef061b6aa94a18011340e404af461f8',1,'ipfs::GatewayRequest']]]
+  ['cache_5funtil_220',['cache_until',['../structipfs_1_1ValidatedIpns.html#a41a4f4c7cf8f347cf2cd160227e07f98',1,'ipfs::ValidatedIpns']]]
 ];

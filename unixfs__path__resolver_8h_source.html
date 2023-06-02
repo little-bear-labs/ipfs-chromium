@@ -91,51 +91,64 @@ $(function() {
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">class </span>NodeHelper;</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;}</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="classipfs_1_1UnixFsPathResolver.html">   23</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1UnixFsPathResolver.html">UnixFsPathResolver</a> {</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <a class="code" href="classipfs_1_1UnixFsPathResolver.html">UnixFsPathResolver</a>(<a class="code" href="classipfs_1_1BlockStorage.html">BlockStorage</a>&amp;,</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                     <a class="code" href="classipfs_1_1BlockRequestor.html">BlockRequestor</a>&amp;,</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                     std::string cid,</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                     std::string path,</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                     std::shared_ptr&lt;ContextApi&gt;);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  ~<a class="code" href="classipfs_1_1UnixFsPathResolver.html">UnixFsPathResolver</a>() noexcept;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordtype">void</span> Step(std::shared_ptr&lt;DagListener&gt;);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  std::shared_ptr&lt;DagListener&gt; MaybeGetPreviousListener();</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  std::string <span class="keyword">const</span>&amp; current_cid() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  std::string <span class="keyword">const</span>&amp; original_path() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  Priority priority()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> prio_; }</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  std::vector&lt;std::string&gt; <span class="keyword">const</span>&amp; involved_cids() { <span class="keywordflow">return</span> involved_cids_; }</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <a class="code" href="classipfs_1_1BlockStorage.html">BlockStorage</a>&amp; storage_;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <a class="code" href="classipfs_1_1BlockRequestor.html">BlockRequestor</a>&amp; requestor_;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  std::string cid_;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  std::string path_;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  std::string original_path_;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  std::shared_ptr&lt;ContextApi&gt; api_;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  std::unique_ptr&lt;unix_fs::NodeHelper&gt; helper_;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  std::weak_ptr&lt;DagListener&gt; old_listener_;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  Priority prio_ = 9;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keyword">struct </span>PriorReq {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    Priority prio;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    std::time_t when;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  };</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  std::unordered_map&lt;std::string, PriorReq&gt; already_requested_;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  std::vector&lt;std::string&gt; involved_cids_;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordtype">void</span> Request(std::shared_ptr&lt;DagListener&gt;&amp;, std::string <span class="keyword">const</span>&amp; cid, Priority);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordtype">void</span> GetHelper(<a class="code" href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">Block::Type</a>);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  std::string pop_path();</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;};</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_UNIXFS_PATH_RESOLVER_H_</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="classipfs_1_1UnixFsPathResolver.html">   27</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1UnixFsPathResolver.html">UnixFsPathResolver</a> {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="classipfs_1_1UnixFsPathResolver.html#abcd98f1f53831b2ab37353ee526f8d8c">   37</a></span>&#160;  <a class="code" href="classipfs_1_1UnixFsPathResolver.html#abcd98f1f53831b2ab37353ee526f8d8c">UnixFsPathResolver</a>(<a class="code" href="classipfs_1_1BlockStorage.html">BlockStorage</a>&amp; stor,</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                     <a class="code" href="classipfs_1_1BlockRequestor.html">BlockRequestor</a>&amp; req,</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                     std::string cid,</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                     std::string path,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                     std::shared_ptr&lt;ContextApi&gt; api);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  ~<a class="code" href="classipfs_1_1UnixFsPathResolver.html">UnixFsPathResolver</a>() noexcept;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="classipfs_1_1UnixFsPathResolver.html#ae530dadb2b8806ed9d14b701ad062e4a">   49</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1UnixFsPathResolver.html#ae530dadb2b8806ed9d14b701ad062e4a">Step</a>(std::shared_ptr&lt;<a class="code" href="classipfs_1_1DagListener.html">DagListener</a>&gt; dl);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classipfs_1_1UnixFsPathResolver.html#a178c11f6d7b28992d4f5b2dfb656b514">   56</a></span>&#160;  std::shared_ptr&lt;<a class="code" href="classipfs_1_1DagListener.html">DagListener</a>&gt; <a class="code" href="classipfs_1_1UnixFsPathResolver.html#a178c11f6d7b28992d4f5b2dfb656b514">MaybeGetPreviousListener</a>();</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00062"></a><span class="lineno"><a class="line" href="classipfs_1_1UnixFsPathResolver.html#a4f480d5f0ead5f737102a01aa1496e78">   62</a></span>&#160;  std::<span class="keywordtype">string</span> const&amp; <a class="code" href="classipfs_1_1UnixFsPathResolver.html#a4f480d5f0ead5f737102a01aa1496e78">current_cid</a>() const;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
+<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="classipfs_1_1UnixFsPathResolver.html#ab90246b3db7a3347da9657dcc998d9d1">   68</a></span>&#160;  std::<span class="keywordtype">string</span> const&amp; <a class="code" href="classipfs_1_1UnixFsPathResolver.html#ab90246b3db7a3347da9657dcc998d9d1">original_path</a>() const;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
+<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="classipfs_1_1UnixFsPathResolver.html#ad0d812d3f5ef7cf4d0968b50d5f686a1">   74</a></span>&#160;  Priority <a class="code" href="classipfs_1_1UnixFsPathResolver.html#ad0d812d3f5ef7cf4d0968b50d5f686a1">priority</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> prio_; }</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="classipfs_1_1UnixFsPathResolver.html#a98895f8cc468b8f827bc145fe7d063e3">   82</a></span>&#160;  std::vector&lt;std::string&gt; <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1UnixFsPathResolver.html#a98895f8cc468b8f827bc145fe7d063e3">involved_cids</a>() { <span class="keywordflow">return</span> involved_cids_; }</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <a class="code" href="classipfs_1_1BlockStorage.html">BlockStorage</a>&amp; storage_;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <a class="code" href="classipfs_1_1BlockRequestor.html">BlockRequestor</a>&amp; requestor_;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  std::string cid_;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  std::string path_;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  std::string original_path_;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  std::shared_ptr&lt;ContextApi&gt; api_;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  std::unique_ptr&lt;unix_fs::NodeHelper&gt; helper_;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  std::weak_ptr&lt;DagListener&gt; old_listener_;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  Priority prio_ = 9;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="keyword">struct </span>PriorReq {</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    Priority prio;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    std::time_t when;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  };</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  std::unordered_map&lt;std::string, PriorReq&gt; already_requested_;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  std::vector&lt;std::string&gt; involved_cids_;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; </div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keywordtype">void</span> Request(std::shared_ptr&lt;DagListener&gt;&amp;, std::string <span class="keyword">const</span>&amp; cid, Priority);</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="keywordtype">void</span> GetHelper(<a class="code" href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">Block::Type</a>);</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  std::string pop_path();</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;};</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; </div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_UNIXFS_PATH_RESOLVER_H_</span></div>
 <div class="ttc" id="aclassipfs_1_1BlockRequestor_html"><div class="ttname"><a href="classipfs_1_1BlockRequestor.html">ipfs::BlockRequestor</a></div><div class="ttdoc">Interface for classes that can asynchronously fetch a block for a CID.</div><div class="ttdef"><b>Definition:</b> block_requestor.h:22</div></div>
 <div class="ttc" id="aclassipfs_1_1BlockStorage_html"><div class="ttname"><a href="classipfs_1_1BlockStorage.html">ipfs::BlockStorage</a></div><div class="ttdoc">Immediate access to recently-accessed blocks.</div><div class="ttdef"><b>Definition:</b> block_storage.h:26</div></div>
 <div class="ttc" id="aclassipfs_1_1Block_html_a046d9b979b4f67ea605b918d0e98b41e"><div class="ttname"><a href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">ipfs::Block::Type</a></div><div class="ttdeci">Type</div><div class="ttdoc">The kinds of things a block may be representing.</div><div class="ttdef"><b>Definition:</b> dag_block.h:59</div></div>
-<div class="ttc" id="aclassipfs_1_1UnixFsPathResolver_html"><div class="ttname"><a href="classipfs_1_1UnixFsPathResolver.html">ipfs::UnixFsPathResolver</a></div><div class="ttdef"><b>Definition:</b> unixfs_path_resolver.h:23</div></div>
+<div class="ttc" id="aclassipfs_1_1DagListener_html"><div class="ttname"><a href="classipfs_1_1DagListener.html">ipfs::DagListener</a></div><div class="ttdoc">Implemented by things waiting on a particular path through a DAG.</div><div class="ttdef"><b>Definition:</b> dag_listener.h:13</div></div>
+<div class="ttc" id="aclassipfs_1_1UnixFsPathResolver_html"><div class="ttname"><a href="classipfs_1_1UnixFsPathResolver.html">ipfs::UnixFsPathResolver</a></div><div class="ttdoc">Asynchronously descend a UnixFS dag given a root CID and a path. Get the file the combo refers to.</div><div class="ttdef"><b>Definition:</b> unixfs_path_resolver.h:27</div></div>
+<div class="ttc" id="aclassipfs_1_1UnixFsPathResolver_html_a178c11f6d7b28992d4f5b2dfb656b514"><div class="ttname"><a href="classipfs_1_1UnixFsPathResolver.html#a178c11f6d7b28992d4f5b2dfb656b514">ipfs::UnixFsPathResolver::MaybeGetPreviousListener</a></div><div class="ttdeci">std::shared_ptr&lt; DagListener &gt; MaybeGetPreviousListener()</div><div class="ttdoc">Fetch the listener previously passed to UnixFsPathResolver::Step.</div></div>
+<div class="ttc" id="aclassipfs_1_1UnixFsPathResolver_html_a4f480d5f0ead5f737102a01aa1496e78"><div class="ttname"><a href="classipfs_1_1UnixFsPathResolver.html#a4f480d5f0ead5f737102a01aa1496e78">ipfs::UnixFsPathResolver::current_cid</a></div><div class="ttdeci">std::string const  &amp; current_cid() const</div><div class="ttdoc">The CID of the block currently being waited upon.</div></div>
+<div class="ttc" id="aclassipfs_1_1UnixFsPathResolver_html_a98895f8cc468b8f827bc145fe7d063e3"><div class="ttname"><a href="classipfs_1_1UnixFsPathResolver.html#a98895f8cc468b8f827bc145fe7d063e3">ipfs::UnixFsPathResolver::involved_cids</a></div><div class="ttdeci">std::vector&lt; std::string &gt; const  &amp; involved_cids()</div><div class="ttdoc">All CIDs that were parsed to resolve the path.</div><div class="ttdef"><b>Definition:</b> unixfs_path_resolver.h:82</div></div>
+<div class="ttc" id="aclassipfs_1_1UnixFsPathResolver_html_ab90246b3db7a3347da9657dcc998d9d1"><div class="ttname"><a href="classipfs_1_1UnixFsPathResolver.html#ab90246b3db7a3347da9657dcc998d9d1">ipfs::UnixFsPathResolver::original_path</a></div><div class="ttdeci">std::string const  &amp; original_path() const</div><div class="ttdoc">Simple getter.</div></div>
+<div class="ttc" id="aclassipfs_1_1UnixFsPathResolver_html_abcd98f1f53831b2ab37353ee526f8d8c"><div class="ttname"><a href="classipfs_1_1UnixFsPathResolver.html#abcd98f1f53831b2ab37353ee526f8d8c">ipfs::UnixFsPathResolver::UnixFsPathResolver</a></div><div class="ttdeci">UnixFsPathResolver(BlockStorage &amp;stor, BlockRequestor &amp;req, std::string cid, std::string path, std::shared_ptr&lt; ContextApi &gt; api)</div><div class="ttdoc">Create a new UnixFsPathResolver.</div></div>
+<div class="ttc" id="aclassipfs_1_1UnixFsPathResolver_html_ad0d812d3f5ef7cf4d0968b50d5f686a1"><div class="ttname"><a href="classipfs_1_1UnixFsPathResolver.html#ad0d812d3f5ef7cf4d0968b50d5f686a1">ipfs::UnixFsPathResolver::priority</a></div><div class="ttdeci">Priority priority() const</div><div class="ttdoc">Simple getter.</div><div class="ttdef"><b>Definition:</b> unixfs_path_resolver.h:74</div></div>
+<div class="ttc" id="aclassipfs_1_1UnixFsPathResolver_html_ae530dadb2b8806ed9d14b701ad062e4a"><div class="ttname"><a href="classipfs_1_1UnixFsPathResolver.html#ae530dadb2b8806ed9d14b701ad062e4a">ipfs::UnixFsPathResolver::Step</a></div><div class="ttdeci">void Step(std::shared_ptr&lt; DagListener &gt; dl)</div><div class="ttdoc">Attempt to move closer to resolution.</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

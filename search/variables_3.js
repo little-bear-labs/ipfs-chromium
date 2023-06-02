@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ttl_200',['ttl',['../structipfs_1_1IpnsCborEntry.html#a9ed80270b760af94c80aaff2ed3c7525',1,'ipfs::IpnsCborEntry']]]
+  ['knosuchname_224',['kNoSuchName',['../classipfs_1_1IpnsNames.html#acc72608629b918371d3c8039ae913915',1,'ipfs::IpnsNames']]]
 ];
