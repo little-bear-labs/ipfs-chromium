@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['task_163',['task',['../classipfs_1_1BusyGateway.html#a708a062f0d81df40a71624a02ff769dd',1,'ipfs::BusyGateway::task()'],['../classipfs_1_1GatewayRequest.html#a27d4f4d99ac3d9af1fe14bee32325ae9',1,'ipfs::GatewayRequest::task()']]],
-  ['taskcancelled_164',['TaskCancelled',['../classipfs_1_1Gateway.html#a92f54171a5f8cf667b364ef208d2c792',1,'ipfs::Gateway']]],
-  ['taskfailed_165',['TaskFailed',['../classipfs_1_1Gateway.html#ae38d2b426f0b28cb367fdab7d6d2a2ff',1,'ipfs::Gateway']]],
-  ['tasksuccess_166',['TaskSuccess',['../classipfs_1_1Gateway.html#a6032695f25a42e20d4f84374e963d430',1,'ipfs::Gateway']]],
-  ['type_167',['type',['../classipfs_1_1Block.html#a068a5ff05f02d811d1f7fb76f2e40674',1,'ipfs::Block']]]
+  ['scheduler_181',['Scheduler',['../classipfs_1_1Scheduler.html#a41471b57a96e38d1e022ae5b21694ef5',1,'ipfs::Scheduler']]],
+  ['stoplistening_182',['StopListening',['../classipfs_1_1BlockStorage.html#aedca96e0978a421fc5d117d967eba22a',1,'ipfs::BlockStorage']]],
+  ['store_183',['Store',['../classipfs_1_1BlockStorage.html#a1f0d3168f4f00e72f31492a85b9f3439',1,'ipfs::BlockStorage']]],
+  ['success_184',['Success',['../classipfs_1_1BusyGateway.html#a7174447d442be540ba43e079bcee3c79',1,'ipfs::BusyGateway']]]
 ];

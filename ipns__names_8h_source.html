@@ -78,25 +78,36 @@ $(function() {
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">namespace </span>ipfs {</div>
-<div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="classipfs_1_1IpnsNames.html">   10</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1IpnsNames.html">IpnsNames</a> {</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;  flat_map&lt;std::string, ValidatedIpns&gt; names_;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <a class="code" href="classipfs_1_1IpnsNames.html">IpnsNames</a>();</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  ~<a class="code" href="classipfs_1_1IpnsNames.html">IpnsNames</a>();</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="classipfs_1_1IpnsNames.html">   14</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1IpnsNames.html">IpnsNames</a> {</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  flat_map&lt;std::string, ValidatedIpns&gt; names_;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  std::string_view NameResolvedTo(std::string_view name) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="keywordtype">void</span> AssignName(std::string <span class="keyword">const</span>&amp; name, <a class="code" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a>);</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keywordtype">void</span> AssignDnsLink(std::string <span class="keyword">const</span>&amp;, std::string_view);</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keywordtype">void</span> NoSuchName(std::string <span class="keyword">const</span>&amp;);</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <a class="code" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> <span class="keyword">const</span>* Entry(std::string <span class="keyword">const</span>&amp; name);</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keyword">static</span> constexpr std::string_view kNoSuchName{<span class="stringliteral">&quot;NO_SUCH_NAME&quot;</span>};</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;};</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPNS_NAME_RESOLVER_H_</span></div>
-<div class="ttc" id="aclassipfs_1_1IpnsNames_html"><div class="ttname"><a href="classipfs_1_1IpnsNames.html">ipfs::IpnsNames</a></div><div class="ttdef"><b>Definition:</b> ipns_names.h:10</div></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <a class="code" href="classipfs_1_1IpnsNames.html">IpnsNames</a>();</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  ~<a class="code" href="classipfs_1_1IpnsNames.html">IpnsNames</a>();</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="classipfs_1_1IpnsNames.html#a6a3de6ff356c15d21e8b68a443dcfd4d">   31</a></span>&#160;  std::string_view <a class="code" href="classipfs_1_1IpnsNames.html#a6a3de6ff356c15d21e8b68a443dcfd4d">NameResolvedTo</a>(std::string_view name) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="classipfs_1_1IpnsNames.html#aaaf39692cf8b7413d7c1b56c6c176a18">   38</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1IpnsNames.html#aaaf39692cf8b7413d7c1b56c6c176a18">AssignName</a>(std::string <span class="keyword">const</span>&amp; name, <a class="code" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> rec);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classipfs_1_1IpnsNames.html#a1ccd03ba666ba55c3c2e24c1566b100f">   45</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1IpnsNames.html#a1ccd03ba666ba55c3c2e24c1566b100f">AssignDnsLink</a>(std::string <span class="keyword">const</span>&amp; host, std::string_view target);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
+<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="classipfs_1_1IpnsNames.html#a9f0190dbb39b37c3d994cedfd518bd98">   53</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1IpnsNames.html#a9f0190dbb39b37c3d994cedfd518bd98">NoSuchName</a>(std::string <span class="keyword">const</span>&amp; name);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="classipfs_1_1IpnsNames.html#a201e70563c10eb06441c49ba06231587">   60</a></span>&#160;  <a class="code" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> <span class="keyword">const</span>* <a class="code" href="classipfs_1_1IpnsNames.html#a201e70563c10eb06441c49ba06231587">Entry</a>(std::string <span class="keyword">const</span>&amp; name);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="classipfs_1_1IpnsNames.html#acc72608629b918371d3c8039ae913915">   65</a></span>&#160;  <span class="keyword">static</span> constexpr std::string_view <a class="code" href="classipfs_1_1IpnsNames.html#acc72608629b918371d3c8039ae913915">kNoSuchName</a>{<span class="stringliteral">&quot;NO_SUCH_NAME&quot;</span>};</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;};</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPNS_NAME_RESOLVER_H_</span></div>
+<div class="ttc" id="aclassipfs_1_1IpnsNames_html"><div class="ttname"><a href="classipfs_1_1IpnsNames.html">ipfs::IpnsNames</a></div><div class="ttdoc">Fast synchronous access to IPNS &amp; DNSLink name resolution.</div><div class="ttdef"><b>Definition:</b> ipns_names.h:14</div></div>
+<div class="ttc" id="aclassipfs_1_1IpnsNames_html_a1ccd03ba666ba55c3c2e24c1566b100f"><div class="ttname"><a href="classipfs_1_1IpnsNames.html#a1ccd03ba666ba55c3c2e24c1566b100f">ipfs::IpnsNames::AssignDnsLink</a></div><div class="ttdeci">void AssignDnsLink(std::string const &amp;host, std::string_view target)</div><div class="ttdoc">Assign a target path to a DNSLink host.</div></div>
+<div class="ttc" id="aclassipfs_1_1IpnsNames_html_a201e70563c10eb06441c49ba06231587"><div class="ttname"><a href="classipfs_1_1IpnsNames.html#a201e70563c10eb06441c49ba06231587">ipfs::IpnsNames::Entry</a></div><div class="ttdeci">ValidatedIpns const  * Entry(std::string const &amp;name)</div><div class="ttdoc">Fetch the all the stored IPNS record data.</div></div>
+<div class="ttc" id="aclassipfs_1_1IpnsNames_html_a6a3de6ff356c15d21e8b68a443dcfd4d"><div class="ttname"><a href="classipfs_1_1IpnsNames.html#a6a3de6ff356c15d21e8b68a443dcfd4d">ipfs::IpnsNames::NameResolvedTo</a></div><div class="ttdeci">std::string_view NameResolvedTo(std::string_view name) const</div><div class="ttdoc">Get the already-known &quot;value&quot;/target of a given name.</div></div>
+<div class="ttc" id="aclassipfs_1_1IpnsNames_html_a9f0190dbb39b37c3d994cedfd518bd98"><div class="ttname"><a href="classipfs_1_1IpnsNames.html#a9f0190dbb39b37c3d994cedfd518bd98">ipfs::IpnsNames::NoSuchName</a></div><div class="ttdeci">void NoSuchName(std::string const &amp;name)</div><div class="ttdoc">Store the definitive absence of a resolution.</div></div>
+<div class="ttc" id="aclassipfs_1_1IpnsNames_html_aaaf39692cf8b7413d7c1b56c6c176a18"><div class="ttname"><a href="classipfs_1_1IpnsNames.html#aaaf39692cf8b7413d7c1b56c6c176a18">ipfs::IpnsNames::AssignName</a></div><div class="ttdeci">void AssignName(std::string const &amp;name, ValidatedIpns rec)</div><div class="ttdoc">Store an IPNS record that already validated for this name.</div></div>
+<div class="ttc" id="aclassipfs_1_1IpnsNames_html_acc72608629b918371d3c8039ae913915"><div class="ttname"><a href="classipfs_1_1IpnsNames.html#acc72608629b918371d3c8039ae913915">ipfs::IpnsNames::kNoSuchName</a></div><div class="ttdeci">static constexpr std::string_view kNoSuchName</div><div class="ttdoc">A special value constant.</div><div class="ttdef"><b>Definition:</b> ipns_names.h:65</div></div>
 <div class="ttc" id="astructipfs_1_1ValidatedIpns_html"><div class="ttname"><a href="structipfs_1_1ValidatedIpns.html">ipfs::ValidatedIpns</a></div><div class="ttdef"><b>Definition:</b> ipns_record.h:41</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

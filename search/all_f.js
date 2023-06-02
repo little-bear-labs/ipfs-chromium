@@ -1,8 +1,10 @@
 var searchData=
 [
-  ['unescapeurlcomponent_83',['UnescapeUrlComponent',['../classipfs_1_1ContextApi.html#a5bafd20d2efe1e61dab0bda78ff53988',1,'ipfs::ContextApi']]],
-  ['unixfspathresolver_84',['UnixFsPathResolver',['../classipfs_1_1UnixFsPathResolver.html',1,'ipfs']]],
-  ['unparsed_85',['unparsed',['../classipfs_1_1Block.html#a9fbbfa4679da83ae03aac455a1afd972',1,'ipfs::Block']]],
-  ['url_86',['url',['../classipfs_1_1BusyGateway.html#a26f5bda1c52fbfe68456427342d7ec90',1,'ipfs::BusyGateway::url()'],['../classipfs_1_1GatewayRequest.html#aa6fa4b5ee6897708f80e5c0d729096c2',1,'ipfs::GatewayRequest::url()']]],
-  ['url_5fprefix_87',['url_prefix',['../classipfs_1_1Gateway.html#ab34481e2d6b4af901fa56d9b4e453e4a',1,'ipfs::Gateway']]]
+  ['scheduler_77',['Scheduler',['../classipfs_1_1Scheduler.html',1,'ipfs::Scheduler'],['../classipfs_1_1Scheduler.html#a41471b57a96e38d1e022ae5b21694ef5',1,'ipfs::Scheduler::Scheduler()']]],
+  ['scoring_78',['scoring',['../md_library_src_ipfs_client_scoring.html',1,'']]],
+  ['sequence_79',['sequence',['../structipfs_1_1IpnsCborEntry.html#ad8a4a90517e3370dff6a7193a6c58acd',1,'ipfs::IpnsCborEntry']]],
+  ['serializedstoragehook_80',['SerializedStorageHook',['../classipfs_1_1BlockStorage.html#abfce56beba3484d42067349101bd868a',1,'ipfs::BlockStorage']]],
+  ['stoplistening_81',['StopListening',['../classipfs_1_1BlockStorage.html#aedca96e0978a421fc5d117d967eba22a',1,'ipfs::BlockStorage']]],
+  ['store_82',['Store',['../classipfs_1_1BlockStorage.html#a1f0d3168f4f00e72f31492a85b9f3439',1,'ipfs::BlockStorage']]],
+  ['success_83',['Success',['../classipfs_1_1BusyGateway.html#a7174447d442be540ba43e079bcee3c79',1,'ipfs::BusyGateway']]]
 ];

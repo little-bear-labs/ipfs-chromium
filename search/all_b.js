@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['plaindirectory_54',['PlainDirectory',['../classipfs_1_1unix__fs_1_1PlainDirectory.html',1,'ipfs::unix_fs']]],
-  ['plainfile_55',['PlainFile',['../classipfs_1_1unix__fs_1_1PlainFile.html',1,'ipfs::unix_fs']]],
-  ['previouslyfailed_56',['PreviouslyFailed',['../classipfs_1_1Gateway.html#a3481eceb9f0e89c736ad5d09e5d7cc9e',1,'ipfs::Gateway']]],
-  ['promote_57',['promote',['../classipfs_1_1Gateways.html#adab386521eef3497215c666ad770ce26',1,'ipfs::Gateways']]],
-  ['ptr_58',['Ptr',['../classipfs_1_1ChainedRequestors.html#a137a0cb88d1328d16947b2649862cb36',1,'ipfs::ChainedRequestors']]]
+  ['namelistener_59',['NameListener',['../classipfs_1_1NameListener.html',1,'ipfs']]],
+  ['nameresolvedto_60',['NameResolvedTo',['../classipfs_1_1IpnsNames.html#a6a3de6ff356c15d21e8b68a443dcfd4d',1,'ipfs::IpnsNames']]],
+  ['nodehelper_61',['NodeHelper',['../classipfs_1_1unix__fs_1_1NodeHelper.html',1,'ipfs::unix_fs']]],
+  ['nosuchname_62',['NoSuchName',['../classipfs_1_1IpnsNames.html#a9f0190dbb39b37c3d994cedfd518bd98',1,'ipfs::IpnsNames']]],
+  ['nothere_63',['NotHere',['../classipfs_1_1DagListener.html#af95a83465868e63f166668ae1c97ae33',1,'ipfs::DagListener']]]
 ];

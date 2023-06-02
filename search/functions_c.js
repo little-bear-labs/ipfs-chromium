@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['receiveblockbytes_158',['ReceiveBlockBytes',['../classipfs_1_1DagListener.html#aef396ef3a0ed6fcd6d0dcb862839197f',1,'ipfs::DagListener']]],
-  ['requestbycid_159',['RequestByCid',['../classipfs_1_1BlockRequestor.html#a348ab66a26d84a1ec6c27811f9f80134',1,'ipfs::BlockRequestor']]]
+  ['previouslyfailed_177',['PreviouslyFailed',['../classipfs_1_1Gateway.html#a3481eceb9f0e89c736ad5d09e5d7cc9e',1,'ipfs::Gateway']]],
+  ['promote_178',['promote',['../classipfs_1_1Gateways.html#adab386521eef3497215c666ad770ce26',1,'ipfs::Gateways']]]
 ];

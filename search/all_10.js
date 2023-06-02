@@ -1,9 +1,14 @@
 var searchData=
 [
-  ['valid_88',['Valid',['../classipfs_1_1ChainedRequestors.html#ac29702a11f0d06586d88b038155a43eb',1,'ipfs::ChainedRequestors']]],
-  ['valid_89',['valid',['../classipfs_1_1Block.html#ab8252491c2d9c805fd074267d34891e7',1,'ipfs::Block']]],
-  ['validatedipns_90',['ValidatedIpns',['../structipfs_1_1ValidatedIpns.html',1,'ipfs']]],
-  ['validity_91',['validity',['../structipfs_1_1IpnsCborEntry.html#ad0cbbb2c8235b02d87a60ee3de46caa1',1,'ipfs::IpnsCborEntry']]],
-  ['validitytype_92',['validityType',['../structipfs_1_1IpnsCborEntry.html#a31db7b54ab37f849481861700aa4f62f',1,'ipfs::IpnsCborEntry']]],
-  ['value_93',['value',['../structipfs_1_1IpnsCborEntry.html#af8bc58e9ebc44afd97ed81a353efd588',1,'ipfs::IpnsCborEntry']]]
+  ['task_84',['task',['../classipfs_1_1BusyGateway.html#a708a062f0d81df40a71624a02ff769dd',1,'ipfs::BusyGateway::task()'],['../classipfs_1_1GatewayRequest.html#a27d4f4d99ac3d9af1fe14bee32325ae9',1,'ipfs::GatewayRequest::task()']]],
+  ['taskcancelled_85',['TaskCancelled',['../classipfs_1_1Gateway.html#a92f54171a5f8cf667b364ef208d2c792',1,'ipfs::Gateway']]],
+  ['taskcomplete_86',['TaskComplete',['../classipfs_1_1Scheduler.html#a1c2b6c511636072a4f9ebf0f08f2b33b',1,'ipfs::Scheduler']]],
+  ['taskfailed_87',['TaskFailed',['../classipfs_1_1Gateway.html#ae38d2b426f0b28cb367fdab7d6d2a2ff',1,'ipfs::Gateway']]],
+  ['tasksuccess_88',['TaskSuccess',['../classipfs_1_1Gateway.html#a6032695f25a42e20d4f84374e963d430',1,'ipfs::Gateway']]],
+  ['todo_89',['todo',['../md_doc_todo.html',1,'']]],
+  ['todo_90',['TODO',['../md_library_README.html',1,'']]],
+  ['todo_20list_91',['Todo List',['../todo.html',1,'']]],
+  ['ttl_92',['ttl',['../structipfs_1_1IpnsCborEntry.html#a9ed80270b760af94c80aaff2ed3c7525',1,'ipfs::IpnsCborEntry']]],
+  ['type_93',['Type',['../classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e',1,'ipfs::Block']]],
+  ['type_94',['type',['../classipfs_1_1Block.html#a068a5ff05f02d811d1f7fb76f2e40674',1,'ipfs::Block']]]
 ];

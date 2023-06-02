@@ -1,10 +1,8 @@
 var searchData=
 [
-  ['scheduler_66',['Scheduler',['../classipfs_1_1Scheduler.html',1,'ipfs']]],
-  ['scoring_67',['scoring',['../md_library_src_ipfs_client_scoring.html',1,'']]],
-  ['sequence_68',['sequence',['../structipfs_1_1IpnsCborEntry.html#ad8a4a90517e3370dff6a7193a6c58acd',1,'ipfs::IpnsCborEntry']]],
-  ['serializedstoragehook_69',['SerializedStorageHook',['../classipfs_1_1BlockStorage.html#abfce56beba3484d42067349101bd868a',1,'ipfs::BlockStorage']]],
-  ['stoplistening_70',['StopListening',['../classipfs_1_1BlockStorage.html#aedca96e0978a421fc5d117d967eba22a',1,'ipfs::BlockStorage']]],
-  ['store_71',['Store',['../classipfs_1_1BlockStorage.html#a1f0d3168f4f00e72f31492a85b9f3439',1,'ipfs::BlockStorage']]],
-  ['success_72',['Success',['../classipfs_1_1BusyGateway.html#a7174447d442be540ba43e079bcee3c79',1,'ipfs::BusyGateway']]]
+  ['plaindirectory_65',['PlainDirectory',['../classipfs_1_1unix__fs_1_1PlainDirectory.html',1,'ipfs::unix_fs']]],
+  ['plainfile_66',['PlainFile',['../classipfs_1_1unix__fs_1_1PlainFile.html',1,'ipfs::unix_fs']]],
+  ['previouslyfailed_67',['PreviouslyFailed',['../classipfs_1_1Gateway.html#a3481eceb9f0e89c736ad5d09e5d7cc9e',1,'ipfs::Gateway']]],
+  ['promote_68',['promote',['../classipfs_1_1Gateways.html#adab386521eef3497215c666ad770ce26',1,'ipfs::Gateways']]],
+  ['ptr_69',['Ptr',['../classipfs_1_1ChainedRequestors.html#a137a0cb88d1328d16947b2649862cb36',1,'ipfs::ChainedRequestors']]]
 ];

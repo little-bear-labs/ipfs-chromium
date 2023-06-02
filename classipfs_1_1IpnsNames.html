@@ -73,40 +73,207 @@ $(function() {
 <div class="title">ipfs::IpnsNames Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Fast synchronous access to IPNS &amp; DNSLink name resolution.  
+ <a href="classipfs_1_1IpnsNames.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ipns__names_8h_source.html">library/include/ipfs_client/ipns_names.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for ipfs::IpnsNames:</div>
 <div class="dyncontent">
 <div class="center"><img src="classipfs_1_1IpnsNames__coll__graph.png" border="0" usemap="#aipfs_1_1IpnsNames_coll__map" alt="Collaboration graph"/></div>
 <map name="aipfs_1_1IpnsNames_coll__map" id="aipfs_1_1IpnsNames_coll__map">
-<area shape="rect" title=" " alt="" coords="5,95,132,121"/>
+<area shape="rect" title="Fast synchronous access to IPNS &amp; DNSLink name resolution." alt="" coords="5,95,132,121"/>
 <area shape="rect" title=" " alt="" coords="20,5,117,32"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6a3de6ff356c15d21e8b68a443dcfd4d"><td class="memItemLeft" align="right" valign="top"><a id="a6a3de6ff356c15d21e8b68a443dcfd4d"></a>
-std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>NameResolvedTo</b> (std::string_view name) const</td></tr>
+<tr class="memitem:a6a3de6ff356c15d21e8b68a443dcfd4d"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1IpnsNames.html#a6a3de6ff356c15d21e8b68a443dcfd4d">NameResolvedTo</a> (std::string_view name) const</td></tr>
+<tr class="memdesc:a6a3de6ff356c15d21e8b68a443dcfd4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the already-known "value"/target of a given name.  <a href="classipfs_1_1IpnsNames.html#a6a3de6ff356c15d21e8b68a443dcfd4d">More...</a><br /></td></tr>
 <tr class="separator:a6a3de6ff356c15d21e8b68a443dcfd4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d9bc7c10c8e763aadfca028d421c3ae"><td class="memItemLeft" align="right" valign="top"><a id="a0d9bc7c10c8e763aadfca028d421c3ae"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>AssignName</b> (std::string const &amp;name, <a class="el" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a>)</td></tr>
-<tr class="separator:a0d9bc7c10c8e763aadfca028d421c3ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2a3af513b92c0a5365ceea7d4bcb08af"><td class="memItemLeft" align="right" valign="top"><a id="a2a3af513b92c0a5365ceea7d4bcb08af"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>AssignDnsLink</b> (std::string const &amp;, std::string_view)</td></tr>
-<tr class="separator:a2a3af513b92c0a5365ceea7d4bcb08af"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab7052b90af2a00afedeb47b2765405f3"><td class="memItemLeft" align="right" valign="top"><a id="ab7052b90af2a00afedeb47b2765405f3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>NoSuchName</b> (std::string const &amp;)</td></tr>
-<tr class="separator:ab7052b90af2a00afedeb47b2765405f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a201e70563c10eb06441c49ba06231587"><td class="memItemLeft" align="right" valign="top"><a id="a201e70563c10eb06441c49ba06231587"></a>
-<a class="el" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><b>Entry</b> (std::string const &amp;name)</td></tr>
+<tr class="memitem:aaaf39692cf8b7413d7c1b56c6c176a18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1IpnsNames.html#aaaf39692cf8b7413d7c1b56c6c176a18">AssignName</a> (std::string const &amp;name, <a class="el" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> rec)</td></tr>
+<tr class="memdesc:aaaf39692cf8b7413d7c1b56c6c176a18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store an IPNS record that already validated for this name.  <a href="classipfs_1_1IpnsNames.html#aaaf39692cf8b7413d7c1b56c6c176a18">More...</a><br /></td></tr>
+<tr class="separator:aaaf39692cf8b7413d7c1b56c6c176a18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ccd03ba666ba55c3c2e24c1566b100f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1IpnsNames.html#a1ccd03ba666ba55c3c2e24c1566b100f">AssignDnsLink</a> (std::string const &amp;host, std::string_view target)</td></tr>
+<tr class="memdesc:a1ccd03ba666ba55c3c2e24c1566b100f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign a target path to a DNSLink host.  <a href="classipfs_1_1IpnsNames.html#a1ccd03ba666ba55c3c2e24c1566b100f">More...</a><br /></td></tr>
+<tr class="separator:a1ccd03ba666ba55c3c2e24c1566b100f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f0190dbb39b37c3d994cedfd518bd98"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1IpnsNames.html#a9f0190dbb39b37c3d994cedfd518bd98">NoSuchName</a> (std::string const &amp;name)</td></tr>
+<tr class="memdesc:a9f0190dbb39b37c3d994cedfd518bd98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the definitive absence of a resolution.  <a href="classipfs_1_1IpnsNames.html#a9f0190dbb39b37c3d994cedfd518bd98">More...</a><br /></td></tr>
+<tr class="separator:a9f0190dbb39b37c3d994cedfd518bd98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a201e70563c10eb06441c49ba06231587"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1IpnsNames.html#a201e70563c10eb06441c49ba06231587">Entry</a> (std::string const &amp;name)</td></tr>
+<tr class="memdesc:a201e70563c10eb06441c49ba06231587"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetch the all the stored IPNS record data.  <a href="classipfs_1_1IpnsNames.html#a201e70563c10eb06441c49ba06231587">More...</a><br /></td></tr>
 <tr class="separator:a201e70563c10eb06441c49ba06231587"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:acc72608629b918371d3c8039ae913915"><td class="memItemLeft" align="right" valign="top"><a id="acc72608629b918371d3c8039ae913915"></a>
-static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>kNoSuchName</b> {&quot;NO_SUCH_NAME&quot;}</td></tr>
+static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1IpnsNames.html#acc72608629b918371d3c8039ae913915">kNoSuchName</a> {&quot;NO_SUCH_NAME&quot;}</td></tr>
+<tr class="memdesc:acc72608629b918371d3c8039ae913915"><td class="mdescLeft">&#160;</td><td class="mdescRight">A special value constant. <br /></td></tr>
 <tr class="separator:acc72608629b918371d3c8039ae913915"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Fast synchronous access to IPNS &amp; DNSLink name resolution. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a1ccd03ba666ba55c3c2e24c1566b100f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ccd03ba666ba55c3c2e24c1566b100f">&#9670;&nbsp;</a></span>AssignDnsLink()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ipfs::IpnsNames::AssignDnsLink </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>host</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>target</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Assign a target path to a DNSLink host. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">host</td><td>- The original host NOT including a "_dnslink." prefix </td></tr>
+    <tr><td class="paramname">target</td><td>- an IPFS path witout leading / </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aaaf39692cf8b7413d7c1b56c6c176a18"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaaf39692cf8b7413d7c1b56c6c176a18">&#9670;&nbsp;</a></span>AssignName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ipfs::IpnsNames::AssignName </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a>&#160;</td>
+          <td class="paramname"><em>rec</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Store an IPNS record that already validated for this name. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>- The name that resolves with this </td></tr>
+    <tr><td class="paramname">rec</td><td>- The record modulo validation bits </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a201e70563c10eb06441c49ba06231587"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a201e70563c10eb06441c49ba06231587">&#9670;&nbsp;</a></span>Entry()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> const* ipfs::IpnsNames::Entry </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Fetch the all the stored IPNS record data. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>- the IPNS name it was stored with </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>nullptr if missing, otherwise non-owning pointer to record </dd></dl>
+
+</div>
+</div>
+<a id="a6a3de6ff356c15d21e8b68a443dcfd4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a3de6ff356c15d21e8b68a443dcfd4d">&#9670;&nbsp;</a></span>NameResolvedTo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view ipfs::IpnsNames::NameResolvedTo </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Get the already-known "value"/target of a given name. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">name</td><td>- either a mb-mf IPNS (key) name, or a host with DNSLink </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><ul>
+<li>if resolution is incomplete: ""</li>
+<li>if it is known not to resolve: kNoSuchName</li>
+<li>otherwise an IPFS path witout leading /, e.g.:<ul>
+<li>ipfs/bafybeicfqz46dj67nkhxaylqd5sknnidsr4oaw4hhsjrgdmcwt73sow2d4/</li>
+<li>ipns/k51qzi5uqu5dlvj2baxnqndepeb86cbk3ng7n3i46uzyxzyqj2xjonzllnv0v8 </li>
+</ul>
+</li>
+</ul>
+</dd></dl>
+
+</div>
+</div>
+<a id="a9f0190dbb39b37c3d994cedfd518bd98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f0190dbb39b37c3d994cedfd518bd98">&#9670;&nbsp;</a></span>NoSuchName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ipfs::IpnsNames::NoSuchName </td>
+          <td>(</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramname"><em>name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Store the definitive absence of a resolution. </p>
+<p>This is useful because code will check resolution here before trying to resolve it fresh again, and you can stop that if you know it will never work. </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/<a class="el" href="ipns__names_8h_source.html">ipns_names.h</a></li>
 </ul>

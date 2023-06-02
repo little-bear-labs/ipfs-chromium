@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ttl_176',['ttl',['../structipfs_1_1IpnsCborEntry.html#a9ed80270b760af94c80aaff2ed3c7525',1,'ipfs::IpnsCborEntry']]]
+  ['sequence_199',['sequence',['../structipfs_1_1IpnsCborEntry.html#ad8a4a90517e3370dff6a7193a6c58acd',1,'ipfs::IpnsCborEntry']]]
 ];
