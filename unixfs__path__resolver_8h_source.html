@@ -80,7 +80,7 @@ $(function() {
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>ipfs {</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceipfs.html">ipfs</a> {</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">class </span>BlockRequestor;</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">class </span>BlockStorage;</div>
@@ -108,7 +108,7 @@ $(function() {
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
 <div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="classipfs_1_1UnixFsPathResolver.html#ab90246b3db7a3347da9657dcc998d9d1">   68</a></span>&#160;  std::<span class="keywordtype">string</span> const&amp; <a class="code" href="classipfs_1_1UnixFsPathResolver.html#ab90246b3db7a3347da9657dcc998d9d1">original_path</a>() const;</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="classipfs_1_1UnixFsPathResolver.html#ad0d812d3f5ef7cf4d0968b50d5f686a1">   74</a></span>&#160;  Priority <a class="code" href="classipfs_1_1UnixFsPathResolver.html#ad0d812d3f5ef7cf4d0968b50d5f686a1">priority</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> prio_; }</div>
+<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="classipfs_1_1UnixFsPathResolver.html#ad0d812d3f5ef7cf4d0968b50d5f686a1">   74</a></span>&#160;  <a class="code" href="namespaceipfs.html#a3505c79304d8a6bd65fd432da3ce862b">Priority</a> <a class="code" href="classipfs_1_1UnixFsPathResolver.html#ad0d812d3f5ef7cf4d0968b50d5f686a1">priority</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> prio_; }</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
 <div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="classipfs_1_1UnixFsPathResolver.html#a98895f8cc468b8f827bc145fe7d063e3">   82</a></span>&#160;  std::vector&lt;std::string&gt; <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1UnixFsPathResolver.html#a98895f8cc468b8f827bc145fe7d063e3">involved_cids</a>() { <span class="keywordflow">return</span> involved_cids_; }</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
@@ -121,15 +121,15 @@ $(function() {
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  std::shared_ptr&lt;ContextApi&gt; api_;</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  std::unique_ptr&lt;unix_fs::NodeHelper&gt; helper_;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  std::weak_ptr&lt;DagListener&gt; old_listener_;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  Priority prio_ = 9;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <a class="code" href="namespaceipfs.html#a3505c79304d8a6bd65fd432da3ce862b">Priority</a> prio_ = 9;</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="keyword">struct </span>PriorReq {</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    Priority prio;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <a class="code" href="namespaceipfs.html#a3505c79304d8a6bd65fd432da3ce862b">Priority</a> prio;</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    std::time_t when;</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  };</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  std::unordered_map&lt;std::string, PriorReq&gt; already_requested_;</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  std::vector&lt;std::string&gt; involved_cids_;</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keywordtype">void</span> Request(std::shared_ptr&lt;DagListener&gt;&amp;, std::string <span class="keyword">const</span>&amp; cid, Priority);</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keywordtype">void</span> Request(std::shared_ptr&lt;DagListener&gt;&amp;, std::string <span class="keyword">const</span>&amp; cid, <a class="code" href="namespaceipfs.html#a3505c79304d8a6bd65fd432da3ce862b">Priority</a>);</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="keywordtype">void</span> GetHelper(<a class="code" href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">Block::Type</a>);</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  std::string pop_path();</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;};</div>
@@ -137,7 +137,7 @@ $(function() {
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_UNIXFS_PATH_RESOLVER_H_</span></div>
-<div class="ttc" id="aclassipfs_1_1BlockRequestor_html"><div class="ttname"><a href="classipfs_1_1BlockRequestor.html">ipfs::BlockRequestor</a></div><div class="ttdoc">Interface for classes that can asynchronously fetch a block for a CID.</div><div class="ttdef"><b>Definition:</b> block_requestor.h:22</div></div>
+<div class="ttc" id="aclassipfs_1_1BlockRequestor_html"><div class="ttname"><a href="classipfs_1_1BlockRequestor.html">ipfs::BlockRequestor</a></div><div class="ttdoc">Interface for classes that can asynchronously fetch a block for a CID.</div><div class="ttdef"><b>Definition:</b> block_requestor.h:30</div></div>
 <div class="ttc" id="aclassipfs_1_1BlockStorage_html"><div class="ttname"><a href="classipfs_1_1BlockStorage.html">ipfs::BlockStorage</a></div><div class="ttdoc">Immediate access to recently-accessed blocks.</div><div class="ttdef"><b>Definition:</b> block_storage.h:26</div></div>
 <div class="ttc" id="aclassipfs_1_1Block_html_a046d9b979b4f67ea605b918d0e98b41e"><div class="ttname"><a href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">ipfs::Block::Type</a></div><div class="ttdeci">Type</div><div class="ttdoc">The kinds of things a block may be representing.</div><div class="ttdef"><b>Definition:</b> dag_block.h:59</div></div>
 <div class="ttc" id="aclassipfs_1_1DagListener_html"><div class="ttname"><a href="classipfs_1_1DagListener.html">ipfs::DagListener</a></div><div class="ttdoc">Implemented by things waiting on a particular path through a DAG.</div><div class="ttdef"><b>Definition:</b> dag_listener.h:13</div></div>
@@ -149,6 +149,8 @@ $(function() {
 <div class="ttc" id="aclassipfs_1_1UnixFsPathResolver_html_abcd98f1f53831b2ab37353ee526f8d8c"><div class="ttname"><a href="classipfs_1_1UnixFsPathResolver.html#abcd98f1f53831b2ab37353ee526f8d8c">ipfs::UnixFsPathResolver::UnixFsPathResolver</a></div><div class="ttdeci">UnixFsPathResolver(BlockStorage &amp;stor, BlockRequestor &amp;req, std::string cid, std::string path, std::shared_ptr&lt; ContextApi &gt; api)</div><div class="ttdoc">Create a new UnixFsPathResolver.</div></div>
 <div class="ttc" id="aclassipfs_1_1UnixFsPathResolver_html_ad0d812d3f5ef7cf4d0968b50d5f686a1"><div class="ttname"><a href="classipfs_1_1UnixFsPathResolver.html#ad0d812d3f5ef7cf4d0968b50d5f686a1">ipfs::UnixFsPathResolver::priority</a></div><div class="ttdeci">Priority priority() const</div><div class="ttdoc">Simple getter.</div><div class="ttdef"><b>Definition:</b> unixfs_path_resolver.h:74</div></div>
 <div class="ttc" id="aclassipfs_1_1UnixFsPathResolver_html_ae530dadb2b8806ed9d14b701ad062e4a"><div class="ttname"><a href="classipfs_1_1UnixFsPathResolver.html#ae530dadb2b8806ed9d14b701ad062e4a">ipfs::UnixFsPathResolver::Step</a></div><div class="ttdeci">void Step(std::shared_ptr&lt; DagListener &gt; dl)</div><div class="ttdoc">Attempt to move closer to resolution.</div></div>
+<div class="ttc" id="anamespaceipfs_html"><div class="ttname"><a href="namespaceipfs.html">ipfs</a></div><div class="ttdoc">Helper for a single-block file.</div><div class="ttdef"><b>Definition:</b> block_requestor.h:8</div></div>
+<div class="ttc" id="anamespaceipfs_html_a3505c79304d8a6bd65fd432da3ce862b"><div class="ttname"><a href="namespaceipfs.html#a3505c79304d8a6bd65fd432da3ce862b">ipfs::Priority</a></div><div class="ttdeci">std::uint_least16_t Priority</div><div class="ttdoc">The urgency of a gateway request.</div><div class="ttdef"><b>Definition:</b> block_requestor.h:18</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -61,29 +61,32 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>ipfs</b></li><li class="navelem"><b>unix_fs</b></li><li class="navelem"><a class="el" href="classipfs_1_1unix__fs_1_1NodeHelper.html">NodeHelper</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceipfs.html">ipfs</a></li><li class="navelem"><b>unix_fs</b></li><li class="navelem"><a class="el" href="classipfs_1_1unix__fs_1_1NodeHelper.html">NodeHelper</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
-<a href="#pro-methods">Protected Member Functions</a> &#124;
-<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classipfs_1_1unix__fs_1_1NodeHelper-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">ipfs::unix_fs::NodeHelper Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Deal with a block that is a UnixFS node of some sort.  
+ <a href="classipfs_1_1unix__fs_1_1NodeHelper.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="node__helper_8h_source.html">library/src/ipfs_client/unix_fs/node_helper.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for ipfs::unix_fs::NodeHelper:</div>
 <div class="dyncontent">
 <div class="center"><img src="classipfs_1_1unix__fs_1_1NodeHelper__inherit__graph.png" border="0" usemap="#aipfs_1_1unix__fs_1_1NodeHelper_inherit__map" alt="Inheritance graph"/></div>
 <map name="aipfs_1_1unix__fs_1_1NodeHelper_inherit__map" id="aipfs_1_1unix__fs_1_1NodeHelper_inherit__map">
-<area shape="rect" title=" " alt="" coords="5,81,192,108"/>
-<area shape="rect" href="classipfs_1_1unix__fs_1_1DirShard.html" title=" " alt="" coords="258,5,423,32"/>
-<area shape="rect" href="classipfs_1_1unix__fs_1_1MultiNodeFile.html" title=" " alt="" coords="241,56,440,83"/>
-<area shape="rect" href="classipfs_1_1unix__fs_1_1PlainDirectory.html" title=" " alt="" coords="240,107,441,133"/>
+<area shape="rect" title="Deal with a block that is a UnixFS node of some sort." alt="" coords="5,81,192,108"/>
+<area shape="rect" href="classipfs_1_1unix__fs_1_1DirShard.html" title="Process a sharded directory (likely over multiple blocks)" alt="" coords="258,5,423,32"/>
+<area shape="rect" href="classipfs_1_1unix__fs_1_1MultiNodeFile.html" title="Process a file that&#39;s not a block but an almagation of blocks." alt="" coords="241,56,440,83"/>
+<area shape="rect" href="classipfs_1_1unix__fs_1_1PlainDirectory.html" title="Helper for a normal UnixFS directory." alt="" coords="240,107,441,133"/>
 <area shape="rect" href="classipfs_1_1unix__fs_1_1PlainFile.html" title=" " alt="" coords="259,157,423,184"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
@@ -92,7 +95,7 @@ Collaboration diagram for ipfs::unix_fs::NodeHelper:</div>
 <div class="dyncontent">
 <div class="center"><img src="classipfs_1_1unix__fs_1_1NodeHelper__coll__graph.png" border="0" usemap="#aipfs_1_1unix__fs_1_1NodeHelper_coll__map" alt="Collaboration graph"/></div>
 <map name="aipfs_1_1unix__fs_1_1NodeHelper_coll__map" id="aipfs_1_1unix__fs_1_1NodeHelper_coll__map">
-<area shape="rect" title=" " alt="" coords="293,107,480,134"/>
+<area shape="rect" title="Deal with a block that is a UnixFS node of some sort." alt="" coords="293,107,480,134"/>
 <area shape="rect" href="classipfs_1_1raw__ptr.html" title=" " alt="" coords="21,5,164,47"/>
 <area shape="rect" href="classipfs_1_1raw__ptr.html" title=" " alt="" coords="5,71,180,112"/>
 <area shape="rect" title=" " alt="" coords="63,137,122,163"/>
@@ -102,39 +105,15 @@ Collaboration diagram for ipfs::unix_fs::NodeHelper:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7518721684265b77aab0430f45ca0371"><td class="memItemLeft" align="right" valign="top"><a id="a7518721684265b77aab0430f45ca0371"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>Process</b> (std::unique_ptr&lt; <a class="el" href="classipfs_1_1unix__fs_1_1NodeHelper.html">NodeHelper</a> &gt; &amp;, std::shared_ptr&lt; <a class="el" href="classipfs_1_1DagListener.html">DagListener</a> &gt;, std::function&lt; void(std::string, Priority)&gt; requestor, std::string &amp;target_cid)=0</td></tr>
-<tr class="separator:a7518721684265b77aab0430f45ca0371"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd3dc566b34d05d97671ea3b66797ddf"><td class="memItemLeft" align="right" valign="top"><a id="afd3dc566b34d05d97671ea3b66797ddf"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>cid</b> (std::string const &amp;val)</td></tr>
-<tr class="separator:afd3dc566b34d05d97671ea3b66797ddf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9411b7dc7699aefc97e36a4cef64ca10"><td class="memItemLeft" align="right" valign="top"><a id="a9411b7dc7699aefc97e36a4cef64ca10"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>storage</b> (<a class="el" href="classipfs_1_1BlockStorage.html">BlockStorage</a> &amp;val)</td></tr>
-<tr class="separator:a9411b7dc7699aefc97e36a4cef64ca10"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8e80b0ce6ff888639c58956eb3be0e4"><td class="memItemLeft" align="right" valign="top"><a id="ad8e80b0ce6ff888639c58956eb3be0e4"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>resolver</b> (<a class="el" href="classipfs_1_1UnixFsPathResolver.html">UnixFsPathResolver</a> &amp;val)</td></tr>
-<tr class="separator:ad8e80b0ce6ff888639c58956eb3be0e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf3aeea7e86940f8b88c0b60d4134675"><td class="memItemLeft" align="right" valign="top"><a id="abf3aeea7e86940f8b88c0b60d4134675"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>api</b> (<a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &amp;val)</td></tr>
-<tr class="separator:abf3aeea7e86940f8b88c0b60d4134675"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f5f2d6cfba5ea92e4e0264f63aa0c63"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1unix__fs_1_1NodeHelper.html#a8f5f2d6cfba5ea92e4e0264f63aa0c63">Process</a> (std::unique_ptr&lt; <a class="el" href="classipfs_1_1unix__fs_1_1NodeHelper.html">NodeHelper</a> &gt; &amp;nh, std::shared_ptr&lt; <a class="el" href="classipfs_1_1DagListener.html">DagListener</a> &gt; dl, std::function&lt; void(std::string, <a class="el" href="namespaceipfs.html#a3505c79304d8a6bd65fd432da3ce862b">Priority</a>)&gt; requestor, std::string &amp;target_cid)=0</td></tr>
+<tr class="memdesc:a8f5f2d6cfba5ea92e4e0264f63aa0c63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get as far in the processing of this block that we can right now.  <a href="classipfs_1_1unix__fs_1_1NodeHelper.html#a8f5f2d6cfba5ea92e4e0264f63aa0c63">More...</a><br /></td></tr>
+<tr class="separator:a8f5f2d6cfba5ea92e4e0264f63aa0c63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a70e88eff1e25d8616b2039e5b2f9938f"><td class="memItemLeft" align="right" valign="top"><a id="a70e88eff1e25d8616b2039e5b2f9938f"></a>
-static std::unique_ptr&lt; <a class="el" href="classipfs_1_1unix__fs_1_1NodeHelper.html">NodeHelper</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>FromBlockType</b> (<a class="el" href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">Block::Type</a>, std::string path_element)</td></tr>
-<tr class="separator:a70e88eff1e25d8616b2039e5b2f9938f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
-Protected Member Functions</h2></td></tr>
-<tr class="memitem:a0b5e6ac26382a5a29ab0d68f0f595d8f"><td class="memItemLeft" align="right" valign="top"><a id="a0b5e6ac26382a5a29ab0d68f0f595d8f"></a>
-<a class="el" href="classipfs_1_1Block.html">Block</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><b>block</b> ()</td></tr>
-<tr class="separator:a0b5e6ac26382a5a29ab0d68f0f595d8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0662f5d26bc6f4eb866887d8e6411ab2"><td class="memItemLeft" align="right" valign="top"><a id="a0662f5d26bc6f4eb866887d8e6411ab2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Delegate</b> (<a class="el" href="classipfs_1_1unix__fs_1_1NodeHelper.html">NodeHelper</a> &amp;) const</td></tr>
-<tr class="separator:a0662f5d26bc6f4eb866887d8e6411ab2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
-Protected Attributes</h2></td></tr>
+<tr class="memitem:a0ed002931f2791f3ae44636b9741e2c9"><td class="memItemLeft" align="right" valign="top">static std::unique_ptr&lt; <a class="el" href="classipfs_1_1unix__fs_1_1NodeHelper.html">NodeHelper</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1unix__fs_1_1NodeHelper.html#a0ed002931f2791f3ae44636b9741e2c9">FromBlockType</a> (<a class="el" href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">Block::Type</a> typ, std::string path_element)</td></tr>
+<tr class="memdesc:a0ed002931f2791f3ae44636b9741e2c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create the appropriate subclass.  <a href="classipfs_1_1unix__fs_1_1NodeHelper.html#a0ed002931f2791f3ae44636b9741e2c9">More...</a><br /></td></tr>
+<tr class="separator:a0ed002931f2791f3ae44636b9741e2c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ada65575b51180bf1b8a37ef25f989b5d"><td class="memItemLeft" align="right" valign="top"><a id="ada65575b51180bf1b8a37ef25f989b5d"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>cid_</b></td></tr>
 <tr class="separator:ada65575b51180bf1b8a37ef25f989b5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -147,7 +126,163 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><b>cid_</b></td><
 <tr class="memitem:a2bad4f5f560aea5deebef71d5e3387c4"><td class="memItemLeft" align="right" valign="top"><a id="a2bad4f5f560aea5deebef71d5e3387c4"></a>
 <a class="el" href="classipfs_1_1raw__ptr.html">raw_ptr</a>&lt; <a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>api_</b> = nullptr</td></tr>
 <tr class="separator:a2bad4f5f560aea5deebef71d5e3387c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd3dc566b34d05d97671ea3b66797ddf"><td class="memItemLeft" align="right" valign="top"><a id="afd3dc566b34d05d97671ea3b66797ddf"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1unix__fs_1_1NodeHelper.html#afd3dc566b34d05d97671ea3b66797ddf">cid</a> (std::string const &amp;val)</td></tr>
+<tr class="memdesc:afd3dc566b34d05d97671ea3b66797ddf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Block/node in question. <br /></td></tr>
+<tr class="separator:afd3dc566b34d05d97671ea3b66797ddf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9411b7dc7699aefc97e36a4cef64ca10"><td class="memItemLeft" align="right" valign="top"><a id="a9411b7dc7699aefc97e36a4cef64ca10"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1unix__fs_1_1NodeHelper.html#a9411b7dc7699aefc97e36a4cef64ca10">storage</a> (<a class="el" href="classipfs_1_1BlockStorage.html">BlockStorage</a> &amp;val)</td></tr>
+<tr class="memdesc:a9411b7dc7699aefc97e36a4cef64ca10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Storage to interact with. <br /></td></tr>
+<tr class="separator:a9411b7dc7699aefc97e36a4cef64ca10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8e80b0ce6ff888639c58956eb3be0e4"><td class="memItemLeft" align="right" valign="top"><a id="ad8e80b0ce6ff888639c58956eb3be0e4"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1unix__fs_1_1NodeHelper.html#ad8e80b0ce6ff888639c58956eb3be0e4">resolver</a> (<a class="el" href="classipfs_1_1UnixFsPathResolver.html">UnixFsPathResolver</a> &amp;val)</td></tr>
+<tr class="memdesc:ad8e80b0ce6ff888639c58956eb3be0e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">sad that it needs this <br /></td></tr>
+<tr class="separator:ad8e80b0ce6ff888639c58956eb3be0e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf3aeea7e86940f8b88c0b60d4134675"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1unix__fs_1_1NodeHelper.html#abf3aeea7e86940f8b88c0b60d4134675">api</a> (<a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &amp;val)</td></tr>
+<tr class="separator:abf3aeea7e86940f8b88c0b60d4134675"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b5e6ac26382a5a29ab0d68f0f595d8f"><td class="memItemLeft" align="right" valign="top"><a id="a0b5e6ac26382a5a29ab0d68f0f595d8f"></a>
+<a class="el" href="classipfs_1_1Block.html">Block</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><b>block</b> ()</td></tr>
+<tr class="separator:a0b5e6ac26382a5a29ab0d68f0f595d8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0662f5d26bc6f4eb866887d8e6411ab2"><td class="memItemLeft" align="right" valign="top"><a id="a0662f5d26bc6f4eb866887d8e6411ab2"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Delegate</b> (<a class="el" href="classipfs_1_1unix__fs_1_1NodeHelper.html">NodeHelper</a> &amp;) const</td></tr>
+<tr class="separator:a0662f5d26bc6f4eb866887d8e6411ab2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Deal with a block that is a UnixFS node of some sort. </p>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="abf3aeea7e86940f8b88c0b60d4134675"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf3aeea7e86940f8b88c0b60d4134675">&#9670;&nbsp;</a></span>api()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ipfs::unix_fs::NodeHelper::api </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &amp;&#160;</td>
+          <td class="paramname"><em>val</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>API for the environment </p>
+
+</div>
+</div>
+<a id="a0ed002931f2791f3ae44636b9741e2c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ed002931f2791f3ae44636b9741e2c9">&#9670;&nbsp;</a></span>FromBlockType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static std::unique_ptr&lt;<a class="el" href="classipfs_1_1unix__fs_1_1NodeHelper.html">NodeHelper</a>&gt; ipfs::unix_fs::NodeHelper::FromBlockType </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">Block::Type</a>&#160;</td>
+          <td class="paramname"><em>typ</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>path_element</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create the appropriate subclass. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">typ</td><td>- </td></tr>
+    <tr><td class="paramname">path_element</td><td>- if it's a directory-like, tell it what entry you're trying to resolve </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A subclass instance that might need some more info </dd></dl>
+
+</div>
+</div>
+<a id="a8f5f2d6cfba5ea92e4e0264f63aa0c63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f5f2d6cfba5ea92e4e0264f63aa0c63">&#9670;&nbsp;</a></span>Process()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool ipfs::unix_fs::NodeHelper::Process </td>
+          <td>(</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="classipfs_1_1unix__fs_1_1NodeHelper.html">NodeHelper</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>nh</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classipfs_1_1DagListener.html">DagListener</a> &gt;&#160;</td>
+          <td class="paramname"><em>dl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; void(std::string, <a class="el" href="namespaceipfs.html#a3505c79304d8a6bd65fd432da3ce862b">Priority</a>)&gt;&#160;</td>
+          <td class="paramname"><em>requestor</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string &amp;&#160;</td>
+          <td class="paramname"><em>target_cid</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get as far in the processing of this block that we can right now. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[out]</td><td class="paramname">nh</td><td>- the next helper if it is knowable </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">requestor</td><td>- a way to request missing blocks </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">target_cid[in,out]</td><td>- The CID of the block currently under investigation. If being directed to a different block should change. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Whether target_cid and nh are populated and should be swapped </dd></dl>
+<dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>This interface is just bad </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/src/ipfs_client/unix_fs/<a class="el" href="node__helper_8h_source.html">node_helper.h</a></li>
 </ul>

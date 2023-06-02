@@ -61,7 +61,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>ipfs</b></li><li class="navelem"><a class="el" href="classipfs_1_1BlockRequestor.html">BlockRequestor</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespaceipfs.html">ipfs</a></li><li class="navelem"><a class="el" href="classipfs_1_1BlockRequestor.html">BlockRequestor</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -89,9 +89,9 @@ Inheritance diagram for ipfs::BlockRequestor:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a348ab66a26d84a1ec6c27811f9f80134"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockRequestor.html#a348ab66a26d84a1ec6c27811f9f80134">RequestByCid</a> (std::string cid, std::shared_ptr&lt; <a class="el" href="classipfs_1_1DagListener.html">DagListener</a> &gt;, Priority priority)=0</td></tr>
-<tr class="memdesc:a348ab66a26d84a1ec6c27811f9f80134"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request a single block from gateway(s).  <a href="classipfs_1_1BlockRequestor.html#a348ab66a26d84a1ec6c27811f9f80134">More...</a><br /></td></tr>
-<tr class="separator:a348ab66a26d84a1ec6c27811f9f80134"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a925ee8cd1e6de64de3f40f3f90fe969e"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockRequestor.html#a925ee8cd1e6de64de3f40f3f90fe969e">RequestByCid</a> (std::string cid, std::shared_ptr&lt; <a class="el" href="classipfs_1_1DagListener.html">DagListener</a> &gt; dl, <a class="el" href="namespaceipfs.html#a3505c79304d8a6bd65fd432da3ce862b">Priority</a> priority)=0</td></tr>
+<tr class="memdesc:a925ee8cd1e6de64de3f40f3f90fe969e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request a single block from gateway(s).  <a href="classipfs_1_1BlockRequestor.html#a925ee8cd1e6de64de3f40f3f90fe969e">More...</a><br /></td></tr>
+<tr class="separator:a925ee8cd1e6de64de3f40f3f90fe969e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface for classes that can asynchronously fetch a block for a CID. </p>
@@ -101,8 +101,8 @@ Public Member Functions</h2></td></tr>
 <li><a class="el" href="classipfs_1_1ChainedRequestors.html" title="A BlockRequestor that chains together BlockRequestors.">ChainedRequestors</a> : a chain-of-responsibility combining multiple </li>
 </ul>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a348ab66a26d84a1ec6c27811f9f80134"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a348ab66a26d84a1ec6c27811f9f80134">&#9670;&nbsp;</a></span>RequestByCid()</h2>
+<a id="a925ee8cd1e6de64de3f40f3f90fe969e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a925ee8cd1e6de64de3f40f3f90fe969e">&#9670;&nbsp;</a></span>RequestByCid()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -120,12 +120,12 @@ Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classipfs_1_1DagListener.html">DagListener</a> &gt;&#160;</td>
-          <td class="paramname">, </td>
+          <td class="paramname"><em>dl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Priority&#160;</td>
+          <td class="paramtype"><a class="el" href="namespaceipfs.html#a3505c79304d8a6bd65fd432da3ce862b">Priority</a>&#160;</td>
           <td class="paramname"><em>priority</em>&#160;</td>
         </tr>
         <tr>
@@ -142,6 +142,14 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Request a single block from gateway(s). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cid</td><td>- MB-MH string representation of the Content IDentifier </td></tr>
+    <tr><td class="paramname">dl</td><td>- Someone who may be interested </td></tr>
+    <tr><td class="paramname">priority</td><td>- Urgency of the request </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section note"><dt>Note</dt><dd>The <a class="el" href="classipfs_1_1DagListener.html" title="Implemented by things waiting on a particular path through a DAG.">DagListener</a> is mostly about lifetime extension, since it's waiting on something which is waiting on this </dd></dl>
 
 </div>
