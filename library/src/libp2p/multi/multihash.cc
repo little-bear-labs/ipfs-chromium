@@ -9,8 +9,6 @@
 #include "libp2p/common/hexutil.hpp"
 #include "libp2p/common/types.hpp"
 
-#include <google/protobuf/stubs/logging.h>
-
 using libp2p::common::ByteArray;
 using libp2p::common::hex_upper;
 using libp2p::common::unhex;
@@ -73,7 +71,6 @@ Multihash::Data::Data(HashType t, ipfs::ByteView h) : type(t) {
 Multihash::Data::~Data() noexcept {}
 
 const Multihash::Data& Multihash::data() const {
-  GOOGLE_DCHECK(data_);
   return *data_;
 }
 

@@ -60,7 +60,7 @@ void ipfs::Gateways::AddGateways(std::vector<std::string> v) {
     prefix.append(ip);
     prefix.push_back('/');
     if (known_gateways_.insert({prefix, 99}).second) {
-      LOG(INFO) << "Adding discovered gateway " << prefix;
+      VLOG(1) << "Adding discovered gateway " << prefix;
     }
   }
 }

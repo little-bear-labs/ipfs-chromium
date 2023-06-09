@@ -3,7 +3,7 @@
 
 #include "components/webcrypto/algorithm_implementation.h"
 
-#include "components/ipfs/keys.pb.h"
+#include "third_party/ipfs_client/keys.pb.h"
 
 #include <vocab/byte_view.h>
 

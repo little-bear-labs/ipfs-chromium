@@ -1,8 +1,13 @@
 #ifndef IPFS_DAG_BLOCK_H_
 #define IPFS_DAG_BLOCK_H_
 
-#include "components/ipfs/pb_dag.pb.h"
-#include "components/ipfs/unix_fs.pb.h"
+#if __has_include(<third_party/ipfs_client/pb_dag.pb.h>)
+#include <third_party/ipfs_client/pb_dag.pb.h>
+#include <third_party/ipfs_client/unix_fs.pb.h>
+#else
+#include "ipfs_client/pb_dag.pb.h"
+#include "ipfs_client/unix_fs.pb.h"
+#endif
 
 #include <libp2p/multi/content_identifier.hpp>
 #include <libp2p/multi/hash_type.hpp>
@@ -98,6 +103,8 @@ class Block {
 
   bool cid_matches_data() const;  ///< Basic validation
 
+  std::basic_string<Byte> binary_hash(libp2p::multi::HashType) const;
+
   /*!
    * \brief Iterate through the links of this UnixFS node
    * \param foo - Called for each link with (name, cid)
@@ -130,7 +137,6 @@ class Block {
   std::string LinkCid(ipfs::ByteView) const;
 
   void InitFromRaw(std::string const& content_bytes);
-  std::basic_string<Byte> binary_hash(libp2p::multi::HashType) const;
 };
 
 }  // namespace ipfs

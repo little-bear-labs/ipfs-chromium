@@ -1,8 +1,6 @@
 #ifndef IPFS_OBSERVER_PTR_H_
 #define IPFS_OBSERVER_PTR_H_
 
-#include "log_macros.h"
-
 #if __has_include("base/memory/raw_ptr.h")
 #include "base/memory/raw_ptr.h"
 
@@ -21,6 +19,8 @@ using raw_ptr = std::experimental::observer_ptr<T>;
 }
 
 #else
+
+#include <cassert>
 
 namespace ipfs {
 
@@ -53,7 +53,7 @@ class raw_ptr {
     return *this;
   }
   T& operator*() {
-    DCHECK(ptr_);
+    assert(ptr_);
     return *ptr_;
   }
 };

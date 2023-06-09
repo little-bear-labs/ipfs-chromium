@@ -51,7 +51,7 @@ void parse_discover_response(std::function<void(std::vector<std::string>)> cb,
   }
   std::string_view r{*body};
   while (r.size()) {
-    LOG(INFO) << "Discovered gateways, body remaining to parse: " << r;
+    VLOG(1) << "Discovered gateways, body remaining to parse: " << r;
     auto i = r.find('"');
     if (i == std::string_view::npos) {
       break;

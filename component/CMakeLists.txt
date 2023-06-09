@@ -1,4 +1,7 @@
-#First gather various variables that will be useful in the configure_file...
+
+if(NOT CHROMIUM_PROFILE)
+    message(FATAL_ERROR "Your Chromium profile should name a realistic subdir of chromium/src/out, perhaps Debug, Release, or Default")
+endif()
 file(GLOB
     srcs
     CONFIGURE_DEPENDS
@@ -69,21 +72,26 @@ add_custom_target(patch_file
   COMMENT "Creating patch file (will overwrite if already present)."
   )
 
-add_custom_target(setup_component
+add_custom_target(setup_in_tree
     COMMENT "Preparing the Chromium repository & build directory, but not building any targets."
-    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" 
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" base
   )
 #Chromium ninja.py targets:
 add_custom_target(in_tree_gen
-    COMMENT "Building targets necessary to have generated headers used by //components/ipfs"
-    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" components/ipfs:ipfs_generated_code
-    DEPENDS setup_component
+    COMMENT "Building targets necessary to have generated headers...."
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" third_party/ipfs_client:protos
+    DEPENDS setup_in_tree
+  )
+add_custom_target(in_tree_lib
+    COMMENT "Building ipfs-client in-tree"
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" third_party/ipfs_client:ipfs_client
+    DEPENDS in_tree_gen
   )
 add_custom_target(in_tree_build
     ALL
     COMMENT "Building component in Chromium source tree ${target_dir}, output in out/${CHROMIUM_PROFILE}"
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" components/ipfs:ipfs
-    DEPENDS in_tree_gen
+    DEPENDS in_tree_lib
   )
 add_custom_target(build_browser
     COMMENT "Building 'chrome' in Chromium source tree, output in out/${CHROMIUM_PROFILE}"
