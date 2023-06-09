@@ -129,3 +129,21 @@ auto MultibaseCodecImpl::decode(std::string_view string) const
   }
 }
 }  // namespace libp2p::multi
+
+bool libp2p::multi::case_critical(MultibaseCodec::Encoding e) {
+  using E = MultibaseCodec::Encoding;
+  switch (e) {
+    case E::BASE16_LOWER:
+    case E::BASE16_UPPER:
+    case E::BASE32_LOWER:
+    case E::BASE32_UPPER:
+    case E::BASE36:
+      return false;
+    case E::BASE58:
+    case E::BASE64:
+      return true;
+  }
+  LOG(FATAL) << "TODO implement encode for this multibase encoding "
+             << static_cast<char>(e);
+  return false;
+}

@@ -18,35 +18,42 @@ file(GLOB_RECURSE
     headers
     include/*.h
 )
+
 file(GLOB
     protos
-    components/ipfs/*.proto
+    proto/*/*.proto
 )
+
 find_package(Protobuf REQUIRED)
-protobuf_generate_cpp(
-        pb_src
-        pb_hdr
-        ${protos}
-)
-set_source_files_properties(
-        ${pb_src}
-        ${pb_hdr}
-        PROPERTIES GENERATED ON
-)
+
+foreach(proto ${protos})
+    get_filename_component(base "${proto}" NAME_WE)
+    set(d "${CMAKE_CURRENT_BINARY_DIR}/gen")
+    set(p "${d}/ipfs_client/${base}.pb")
+    add_custom_command(
+        OUTPUT "${p}.h" "${p}.cc"
+        MAIN_DEPENDENCY "${proto}"
+        COMMAND "${CMAKE_COMMAND}" -E make_directory "${d}"
+        COMMAND "${Protobuf_PROTOC_EXECUTABLE}" "--proto_path=${CMAKE_CURRENT_SOURCE_DIR}/proto" "--cpp_out=${d}" "${proto}"
+    )
+    list(APPEND pb_gen "${p}.h" )
+    list(APPEND pb_gen "${p}.cc")
+    set_source_files_properties("${p}.cc" PROPERTIES GENERATED ON)
+endforeach()
+message(WARNING "pb_gen=${pb_gen}")
+set_source_files_properties(${pb_gen} PROPERTIES GENERATED ON)
 
 add_library(ipfs_client
   STATIC
       ${sources}
       ${headers} #Mostly for IDEs' sake - this used to be considered bad practice but... generator expressions and such
-      ${pb_src}
-      ${pb_hdr}
+      ${pb_gen}
   )
 add_library(ipfs_client_covered
   EXCLUDE_FROM_ALL
       ${sources}
       ${headers}
-      ${pb_src}
-      ${pb_hdr}
+      ${pb_gen}
   )
 foreach(libname ipfs_client ipfs_client_covered)
     target_compile_features(${libname}
@@ -61,6 +68,7 @@ foreach(libname ipfs_client ipfs_client_covered)
         BEFORE
         PUBLIC
             include/
+            "${CMAKE_CURRENT_BINARY_DIR}/gen"
     )
     target_include_directories(${libname}
       PRIVATE

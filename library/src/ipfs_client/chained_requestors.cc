@@ -41,7 +41,7 @@ void Self::RequestByCid(std::string cid,
     void NotHere(std::string_view c, std::string_view path) override {
       DCHECK_EQ(c, cid);
       if (++index < chain->chain_.size()) {
-        VLOG(1) << cid << " / " << path << " missed on approach #" << index;
+        VLOG(2) << cid << " / " << path << " missed on approach #" << index;
         auto next = chain->chain_.at(index);
         next->RequestByCid(std::string{cid}, me.lock(), prio);
       } else {

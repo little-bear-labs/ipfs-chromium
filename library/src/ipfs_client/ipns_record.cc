@@ -2,7 +2,11 @@
 
 #include "log_macros.h"
 
-#include "components/ipfs/ipns_record.pb.h"
+#if __has_include(<third_party/ipfs_client/ipns_record.pb.h>)
+#include <third_party/ipfs_client/ipns_record.pb.h>
+#else
+#include "ipfs_client/ipns_record.pb.h"
+#endif
 
 // #include <libp2p/crypto/crypto_provider/crypto_provider_impl.hpp>
 #include <libp2p/crypto/hasher.hpp>

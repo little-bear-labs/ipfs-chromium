@@ -3,13 +3,14 @@
 
 #include "node_helper.h"
 
-/*!
- * \brief Helper for a single-block file
- */
 namespace ipfs {
 class ContextApi;
 class UnixFsPathResolver;
 namespace unix_fs {
+
+/*!
+ * \brief Helper for a single-block file
+ */
 class PlainFile : public NodeHelper {
  public:
   PlainFile();

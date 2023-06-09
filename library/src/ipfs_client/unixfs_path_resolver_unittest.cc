@@ -4,8 +4,8 @@
 #include <ipfs_client/context_api.h>
 #include <libp2p/multi/content_identifier_codec.hpp>
 #include <libp2p/multi/multibase_codec/codecs/base58.hpp>
-#include "components/ipfs/pb_dag.pb.h"
-#include "components/ipfs/unix_fs.pb.h"
+#include "ipfs_client/pb_dag.pb.h"
+#include "ipfs_client/unix_fs.pb.h"
 
 #include <gtest/gtest.h>
 

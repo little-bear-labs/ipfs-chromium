@@ -10,7 +10,6 @@ component("ipfs") {
     "ipfs_client/unix_fs",
   ]
   deps = [
-    "//components/ipfs:ipfs_generated_code",
     "//content",
     "//crypto",
     "//base",
@@ -23,20 +22,7 @@ component("ipfs") {
     "//services/network/public/mojom:url_loader_base",
     "//url",
     "//third_party/blink/public:blink",
-    "//third_party/boringssl",
-    "//third_party/protobuf:protobuf_lite",
+    "//third_party/ipfs_client",
   ]
   defines = [ "IS_IPFS_IMPL" ]
-}
-
-import("//third_party/protobuf/proto_library.gni")
-
-proto_library("ipfs_generated_code") {
-  sources = [
-@gn_protos@
-  ]
-  deps = [
-    "//services/network/public/mojom",
-    "//third_party/blink/public/mojom:mojom_platform"
-  ]
 }

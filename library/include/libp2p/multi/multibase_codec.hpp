@@ -58,6 +58,8 @@ class MultibaseCodec {
   virtual FactoryResult decode(std::string_view string) const = 0;
 };
 
+bool case_critical(MultibaseCodec::Encoding);
+
 }  // namespace libp2p::multi
 
 #endif  // LIBP2P_MULTIBASE_HPP

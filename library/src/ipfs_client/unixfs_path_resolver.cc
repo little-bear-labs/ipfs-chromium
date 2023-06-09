@@ -18,8 +18,8 @@ void Self::Step(std::shared_ptr<DagListener> listener) {
   if (cid_.empty()) {
     return;
   }
-  LOG(INFO) << "Stepping... " << cid_ << " / " << original_path_ << " / "
-            << path_;
+  VLOG(1) << "Stepping... " << cid_ << " / " << original_path_ << " / "
+          << path_;
   if (involved_cids_.end() ==
       std::find(involved_cids_.begin(), involved_cids_.end(), cid_)) {
     involved_cids_.push_back(cid_);
@@ -74,7 +74,6 @@ void Self::GetHelper(Block::Type typ) {
 void Self::Request(std::shared_ptr<DagListener>& listener,
                    std::string const& cid,
                    Priority prio) {
-  VLOG(2) << "Request(" << cid << ',' << prio << ')';
   if (storage_.Get(cid)) {
     return;
   }

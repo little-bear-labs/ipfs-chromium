@@ -149,7 +149,7 @@ void Self::OnBodyRead(Task task, int code) {
 }
 
 void Self::Store(std::string cid, std::string headers, std::string body) {
-  VLOG(1) << "Store(" << name() << ',' << cid << ',' << headers.size() << ','
+  VLOG(2) << "Store(" << name() << ',' << cid << ',' << headers.size() << ','
           << body.size() << ')';
   auto bound = base::BindOnce(&Self::OnEntryCreated, base::Unretained(this),
                               cid, headers, body);
