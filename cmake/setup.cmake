@@ -1,3 +1,4 @@
+set(SETUP_CMAKE_INCLUDED 1)
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR};${CMAKE_CURRENT_BINARY_DIR};${CMAKE_MODULE_PATH})
 list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 include(${CMAKE_CXX_COMPILER_ID})
@@ -8,7 +9,11 @@ if(CLANG_TIDY_EXE)
 #    set(CMAKE_CXX_CLANG_TIDY "${CLANG_TIDY_EXE}" "--config-file=${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy")
 endif()
 include("${CMAKE_CURRENT_LIST_DIR}/python.cmake")
-if(HAVE_PIP)
+if(INSIDE_CONAN)
+    message(STATUS "CMake invoked by Conan - assuming the outer Conan did all the dependency work.")
+elseif(NOT HAVE_PIP)
+    message(WARNING "Could not find python 3. Can't use gn or conan. You're on your own for Chromium & dependencies.")
+else()
     set(CONAN_CMAKE_SILENT_OUTPUT 1)
     execute_process(
         COMMAND conan config home
@@ -35,9 +40,6 @@ if(HAVE_PIP)
         COMMAND_ERROR_IS_FATAL ANY
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
         )
-
-else()
-    message(WARNING "Could not find python 3. Can't use gn or conan. You're on your own for Chromium & dependencies.")
 endif()
 
 function(with_vocab target)

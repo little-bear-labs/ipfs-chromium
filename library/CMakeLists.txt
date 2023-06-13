@@ -4,6 +4,9 @@ project(ipfs_client
     LANGUAGES CXX
 )
 
+if(NOT SETUP_CMAKE_INCLUDED)
+    include(../cmake/setup.cmake)
+endif()
 file(GLOB_RECURSE
     sources
     CONFIGURE_DEPENDS
@@ -25,7 +28,6 @@ file(GLOB
 )
 
 find_package(Protobuf REQUIRED)
-
 foreach(proto ${protos})
     get_filename_component(base "${proto}" NAME_WE)
     set(d "${CMAKE_CURRENT_BINARY_DIR}/gen")
@@ -34,13 +36,14 @@ foreach(proto ${protos})
         OUTPUT "${p}.h" "${p}.cc"
         MAIN_DEPENDENCY "${proto}"
         COMMAND "${CMAKE_COMMAND}" -E make_directory "${d}"
-        COMMAND "${Protobuf_PROTOC_EXECUTABLE}" "--proto_path=${CMAKE_CURRENT_SOURCE_DIR}/proto" "--cpp_out=${d}" "${proto}"
+        COMMAND protobuf::protoc
+        ARGS "--proto_path=${CMAKE_CURRENT_SOURCE_DIR}/proto" "--cpp_out=${d}" "${proto}"
     )
     list(APPEND pb_gen "${p}.h" )
     list(APPEND pb_gen "${p}.cc")
     set_source_files_properties("${p}.cc" PROPERTIES GENERATED ON)
 endforeach()
-message(WARNING "pb_gen=${pb_gen}")
+message(STATUS "pb_gen=${pb_gen}")
 set_source_files_properties(${pb_gen} PROPERTIES GENERATED ON)
 
 add_library(ipfs_client

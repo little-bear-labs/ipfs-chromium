@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <sstream>
 
 using namespace std::string_literals;
 
@@ -66,6 +67,22 @@ void ipfs::Gateways::AddGateways(std::vector<std::string> v) {
 }
 
 std::vector<std::pair<std::string, int>> ipfs::Gateways::DefaultGateways() {
+  auto* ovr = std::getenv("IPFS_GATEWAY");
+  if (ovr && *ovr) {
+    std::istringstream user_override{ovr};
+    std::vector<std::pair<std::string, int>> result;
+    std::string gw;
+    while (user_override >> gw) {
+      result.emplace_back( gw, 0 );
+    }
+    auto N = static_cast<int>(result.size());
+    for (auto i = 0; i < N; ++i) {
+      auto& r = result[i];
+      r.second = N - i;
+      LOG(INFO) << "User-specified gateway: " << r.first << '=' << r.second;
+    }
+    return result;
+  }
   return {{"http://localhost:8080/"s, 906},
           {"https://ipfs.io/"s, 902},
           {"https://gateway.ipfs.io/"s, 901},
