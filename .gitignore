@@ -1,4 +1,5 @@
 .goutputstream-*
 __pycache__
 CMakeLists.txt.user
+CMakeUserPresets.json
 
