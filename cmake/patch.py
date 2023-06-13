@@ -30,6 +30,7 @@ class Patcher:
 
     def create_patch_file(self):
         tag = self.tag_name()
+        self.git(['add', 'url/url_canon_ipfs.cc'])
         diff = self.git(['diff', '--patch', tag])
         name = tag
         if self.curr_hash() != self.hash_of(tag):
