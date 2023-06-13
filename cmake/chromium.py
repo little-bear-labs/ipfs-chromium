@@ -89,9 +89,10 @@ else:
     environ['PATH'] = depot_tools_dir
 
 runpy(['-m', 'pip', 'install', 'httplib2'], True)
-if not isdir(src):
-    verbose(src, 'is not a directory. First create', chromium_dir)
+if not isdir(chromium_dir):
     makedirs(chromium_dir)
+if not isdir(src):
+    makedirs(src)
     open(join(build_dir, 'fresh'), 'a').close()
 
 if isfile(join(build_dir, 'fresh')):
