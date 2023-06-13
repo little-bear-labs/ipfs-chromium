@@ -15,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --yes cmake ninja-build lcov binutils doxygen graphviz
+          sudo apt-get install --yes cmake ninja-build lcov binutils doxygen graphviz libc6{,-dev}
       - name: Configure
         shell: bash
         run: |
@@ -95,7 +95,7 @@ jobs:
         if: startsWith(matrix.config.os, 'ubuntu')
         run: |
           sudo apt-get update
-          sudo apt-get install --yes cmake ninja-build
+          sudo apt-get install --yes cmake ninja-build doxygen
           ninja --version
           cmake --version
           g++ --version
