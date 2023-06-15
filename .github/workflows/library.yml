@@ -145,7 +145,8 @@ jobs:
             -S . \
             -B build \
             -D CMAKE_INSTALL_PREFIX=`pwd`/ipfs-client-dev \
-            -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }}
+            -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
+            -D USE_DOXYGEN=OFF
       - name: Build
         shell: bash
         run: cmake --build build --config ${{ matrix.config.build_type }} --target package

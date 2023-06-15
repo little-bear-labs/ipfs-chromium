@@ -25,6 +25,7 @@ set(DEPOT_TOOLS_DIRECTORY "${default_dt}" CACHE PATH
     "Where to find depot_tools, e.g. DEPOT_TOOLS_DIRECTORY/gn.py should exist. Setting this to DETECT_FROM_PATH implies the directory is in your PATH and always will be."
 )
 set(TEST_BY_DEFAULT FALSE CACHE BOOL "Update unit tests as part of the 'all' default target.")
+set(USE_DOXYGEN TRUE CACHE BOOL "If we should attempt to use Doxygen to generate documentation.")
 #End of user-configuration cache variables.
 
 if(CXX_VERSION GREATER_EQUAL 17)
@@ -32,6 +33,7 @@ if(CXX_VERSION GREATER_EQUAL 17)
 else()
     message(FATAL_ERROR "Unsupported CXX_VERSION: ${CXX_VERSION}")
 endif()
+
 include(cmake/chrome.cmake)
 include(cmake/setup.cmake)
 
