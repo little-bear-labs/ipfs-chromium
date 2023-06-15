@@ -13,7 +13,8 @@ std::string ipfs::unix_fs::GuessContentType(ContextApi& api,
   if (dot < path.size() && (slash < dot || slash == std::string::npos)) {
     ext = path.substr(dot + 1);
   }
-  std::string url{"ipfs://"};
+  std::string url{
+      "ipfs://bafybeiczsscdsbs7ffqz55asqdf3smv6klcw3gofszvwlyarci47bgf354/"};
   url.append(path);
   auto mime = api.MimeType(ext, content, url);
   if (mime.size()) {
