@@ -15,3 +15,14 @@ TEST(GatewaysTest, DefaultListMeetsBasicGuidelines) {
     EXPECT_LE(dg.at(i).second, dg.at(i - 1).second);
   }
 }
+
+TEST(GatewaysTest, OverriddenListEndsEntriesInSlash) {
+  ::putenv("IPFS_GATEWAY= a b c d 1 : http://chomp:8080");
+  auto dg = ipfs::Gateways::DefaultGateways();
+  EXPECT_EQ(dg.size(), 7U);
+  EXPECT_EQ(dg.at(0).first, "a/");
+  for (auto i = 1U; i < dg.size(); ++i) {
+    EXPECT_EQ(dg.at(i).first.back(), '/');
+    EXPECT_LE(dg.at(i).second, dg.at(i - 1).second);
+  }
+}

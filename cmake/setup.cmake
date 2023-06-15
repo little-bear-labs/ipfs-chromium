@@ -35,8 +35,20 @@ else()
         #How incredibly obnoxious is it that conan 2 dropped support for these envs?
         file(WRITE "${conan_home}/global.conf" core.net.http:timeout=$ENV{CONAN_REQUEST_TIMEOUT})
     endif()
+    file(COPY_FILE
+      "${CMAKE_CURRENT_LIST_DIR}/conanfile.txt"
+      "${CMAKE_CURRENT_BINARY_DIR}/conanfile.txt"
+      )
+    find_package(Doxygen)
+    if (NOT DOXYGEN_FOUND)
+        message(WARNING "Will attempt to get doxygen from Conan, which doesn't work on some systems like Github's ubuntu-latest runner.")
+        file(APPEND
+          "${CMAKE_CURRENT_BINARY_DIR}/conanfile.txt"
+          doxygen/1.9.4
+        )
+    endif()
     execute_process(
-        COMMAND conan install ${CMAKE_CURRENT_LIST_DIR} --output-folder=${CMAKE_CURRENT_BINARY_DIR} --build=missing --settings build_type=${CMAKE_BUILD_TYPE} --generator CMakeDeps
+        COMMAND conan install ${CMAKE_CURRENT_BINARY_DIR} --output-folder=${CMAKE_CURRENT_BINARY_DIR} --build=missing --settings build_type=${CMAKE_BUILD_TYPE} --generator CMakeDeps
         COMMAND_ERROR_IS_FATAL ANY
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
         )

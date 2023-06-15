@@ -73,6 +73,12 @@ std::vector<std::pair<std::string, int>> ipfs::Gateways::DefaultGateways() {
     std::vector<std::pair<std::string, int>> result;
     std::string gw;
     while (user_override >> gw) {
+      if ( gw.empty() ) {
+        continue;
+      }
+      if ( gw.back() != '/' ) {
+        gw.push_back('/');
+      }
       result.emplace_back( gw, 0 );
     }
     auto N = static_cast<int>(result.size());

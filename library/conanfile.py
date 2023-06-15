@@ -1,5 +1,6 @@
 from conan import ConanFile
 from conan.tools.cmake import CMake, CMakeToolchain, CMakeDeps
+from shutil import which
 import sys
 from os.path import dirname, join, realpath
 sys.path.append(realpath(join(dirname(__file__), '..', 'cmake')))
@@ -22,7 +23,6 @@ class IpfsChromium(ConanFile):
     default_options = {"boost/*:header_only": True}
     tool_requires = [
         'cmake/3.22.6',
-        'doxygen/1.9.1',
         'ninja/1.11.1',
         _PB,
     ]
@@ -40,4 +40,9 @@ class IpfsChromium(ConanFile):
             "INSIDE_CONAN": True
         })
         cmake.build()
+
+
+    def build_requirements(self):
+        if not which("doxygen"):
+            self.tool_requires("doxygen/1.9.4")
 # gperf  doxygen ccache lcov

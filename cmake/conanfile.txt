@@ -34,9 +34,9 @@
     boost/*:without_test=True
     boost/*:without_type_erasure=True
 
-[tool_requires]
-cmake/3.26.4
-doxygen/1.9.1
 
 [imports]
 bin, * -> tools
+
+[tool_requires]
+cmake/3.26.4
