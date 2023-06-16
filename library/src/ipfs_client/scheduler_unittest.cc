@@ -20,3 +20,7 @@ TEST_F(SchedulerTest, EmptyNewSchedulerIsNotOverburdened) {
 TEST_F(SchedulerTest, EmptySchedulerIsAlwaysCompleteFailureForAnything) {
   EXPECT_TRUE(under_test_.DetectCompleteFailure("No such task"));
 }
+TEST_F(SchedulerTest, NonExistentTaskCompletingIsHarmless) {
+  //If we wanted to we could assert a log line is written at verbose level
+  EXPECT_NO_THROW(under_test_.TaskComplete("No such task"));
+}

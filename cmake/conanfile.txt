@@ -36,7 +36,7 @@
 
 [tool_requires]
 cmake/3.26.4
-doxygen/1.9.4
+doxygen/1.9.1
 
 [imports]
 bin, * -> tools
