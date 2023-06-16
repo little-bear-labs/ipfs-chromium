@@ -1,4 +1,4 @@
 <map id="ipfs::unix_fs::PlainFile" name="ipfs::unix_fs::PlainFile">
-<area shape="rect" id="node1" title="Helper for a single&#45;block file." alt="" coords="17,80,181,107"/>
+<area shape="rect" id="node1" title=" " alt="" coords="17,80,181,107"/>
 <area shape="rect" id="node2" href="$classipfs_1_1unix__fs_1_1NodeHelper.html" title="Deal with a block that is a UnixFS node of some sort." alt="" coords="5,5,192,32"/>
 </map>
