@@ -76,7 +76,7 @@ $(function() {
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;string_view&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">namespace </span><a class="code" href="namespaceipfs.html">ipfs</a> {</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">namespace </span>ipfs {</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
 <div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="classipfs_1_1DagListener.html">   13</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1DagListener.html">DagListener</a> : <span class="keyword">public</span> std::enable_shared_from_this&lt;DagListener&gt; {</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; <span class="keyword">public</span>:</div>
@@ -96,7 +96,6 @@ $(function() {
 <div class="ttc" id="aclassipfs_1_1DagListener_html_ace24cf8d0ecb96f9e576cff559d53c5a"><div class="ttname"><a href="classipfs_1_1DagListener.html#ace24cf8d0ecb96f9e576cff559d53c5a">ipfs::DagListener::DoesNotExist</a></div><div class="ttdeci">virtual void DoesNotExist(std::string_view cid, std::string_view path)=0</div><div class="ttdoc">The requested path DOES NOT EXIST, conclusively, regardless of gateway.</div></div>
 <div class="ttc" id="aclassipfs_1_1DagListener_html_aef396ef3a0ed6fcd6d0dcb862839197f"><div class="ttname"><a href="classipfs_1_1DagListener.html#aef396ef3a0ed6fcd6d0dcb862839197f">ipfs::DagListener::ReceiveBlockBytes</a></div><div class="ttdeci">virtual void ReceiveBlockBytes(std::string_view bytes)=0</div><div class="ttdoc">You're receiving the next N bytes of a requested file.</div></div>
 <div class="ttc" id="aclassipfs_1_1DagListener_html_af95a83465868e63f166668ae1c97ae33"><div class="ttname"><a href="classipfs_1_1DagListener.html#af95a83465868e63f166668ae1c97ae33">ipfs::DagListener::NotHere</a></div><div class="ttdeci">virtual void NotHere(std::string_view cid, std::string_view path)=0</div><div class="ttdoc">There was a general failure getting the blocks.</div></div>
-<div class="ttc" id="anamespaceipfs_html"><div class="ttname"><a href="namespaceipfs.html">ipfs</a></div><div class="ttdoc">Helper for a single-block file.</div><div class="ttdef"><b>Definition:</b> block_requestor.h:8</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
