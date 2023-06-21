@@ -79,6 +79,7 @@ class IpfsUrlLoader final : public network::mojom::URLLoader,
   std::vector<std::pair<std::string,std::string>> additional_outgoing_headers_;
   std::shared_ptr<network::mojom::URLLoader> extra_;
   std::unique_ptr<base::RepeatingTimer> stepper_;
+  std::string root_;
 
   void CreateBlockRequest(std::string cid);
 
@@ -88,7 +89,7 @@ class IpfsUrlLoader final : public network::mojom::URLLoader,
   void NotHere(std::string_view cid, std::string_view path) override;
 
   void StartUnixFsProc(ptr, std::string_view);
-  void AppendGatewayHeaders(std::string const& cid, net::HttpResponseHeaders&);
+  void AppendGatewayHeaders(std::vector<std::string> const& cids, net::HttpResponseHeaders&);
   void AppendGatewayInfoHeader(std::string const&, net::HttpResponseHeaders&);
   void TakeStep();
 };

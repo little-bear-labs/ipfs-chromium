@@ -72,7 +72,7 @@ bool ipfs::Scheduler::IssueRequests(std::shared_ptr<ContextApi> api) {
     }
   }
   if (unmet) {
-    VLOG(1) << "Saturated.";
+    VLOG(2) << "Saturated.";
   }
   //  UpdateDevPage();
   return !unmet;
@@ -114,7 +114,7 @@ void ipfs::Scheduler::UpdateDevPage() {
 void ipfs::Scheduler::TaskComplete(std::string const& task) {
   auto todo = task2todo_.find(task);
   if (task2todo_.end() == todo) {
-    VLOG(1) << "An unknown TODO " << task << " finished.";
+    VLOG(2) << "An unknown TODO " << task << " finished.";
     return;
   }
   VLOG(1) << "Task " << task << " completed with "

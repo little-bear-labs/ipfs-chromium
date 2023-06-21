@@ -61,7 +61,6 @@ void Self::FetchEntry(
 void Self::RequestByCid(std::string cid,
                         std::shared_ptr<DagListener> listen,
                         Priority prio) {
-  VLOG(2) << "RequestByCid(" << name() << ',' << cid << ',' << prio << ')';
   DCHECK(listen);
   Task task;
   task.key = cid;
@@ -97,7 +96,7 @@ std::shared_ptr<dc::Entry> GetEntry(dc::EntryResult& result) {
 void Self::OnOpen(Task task, dc::EntryResult res) {
   VLOG(2) << "OnOpen(" << res.net_error() << ")";
   if (res.net_error() != net::OK) {
-    VLOG(1) << "Failed to find " << task.key << " in " << name();
+    VLOG(2) << "Failed to find " << task.key << " in " << name();
     task.Fail();
     return;
   }
@@ -210,7 +209,7 @@ std::string_view Self::name() const {
 }
 
 void Self::Task::Fail() {
-  VLOG(1) << "TaskFail for key: " << key;
+  VLOG(2) << "TaskFail for key: " << key;
   if (listener) {
     listener->NotHere(key, "<any/all>");
   }

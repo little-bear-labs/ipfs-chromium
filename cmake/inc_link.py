@@ -3,7 +3,8 @@
 from cache_vars import build_dir, vars, verbose
 
 from glob import glob
-from os import environ, listdir, makedirs, readlink, set_blocking, symlink
+import os
+from os import listdir, readlink, set_blocking, symlink
 from os.path import basename, dirname, exists, getmtime, isdir, isfile, islink, join, pathsep, relpath, splitext
 from subprocess import DEVNULL, Popen, PIPE, run, TimeoutExpired
 from sys import executable, stderr
@@ -23,9 +24,13 @@ for inc_dir in glob(f'{chromium_src}/third_party/**/include', recursive=True):
     if isdir(inc_dir):
         source_bases.append(inc_dir)
 
-if not exists(join(inc_link,'google','protobuf')):
-    makedirs(join(inc_link,'google'))
-    symlink(join(chromium_src,'third_party','protobuf','src','google','protobuf'), join(inc_link,'google','protobuf'))
+def makedirs(p):
+    if not isdir(p):
+        os.makedirs(p)
+
+# if not exists(join(inc_link,'google','protobuf')):
+#     makedirs(join(inc_link,'google'))
+#     symlink(join(chromium_src,'third_party','protobuf','src','google','protobuf'), join(inc_link,'google','protobuf'))
 if not exists(join(inc_link,'absl')):
     symlink(join(chromium_src,'third_party','abseil-cpp','absl'),join(inc_link,'absl'))
 
@@ -183,6 +188,7 @@ def flesh_out() -> bool:
                 print("Premptively symlink",entry,source,'=>',target)
                 return True
     return False
+
 
 if search():
     search()

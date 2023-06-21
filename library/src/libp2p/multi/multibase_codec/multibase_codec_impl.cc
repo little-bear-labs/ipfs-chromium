@@ -120,7 +120,7 @@ auto MultibaseCodecImpl::decode(std::string_view string) const
   if (!encoding_base) {
     return ipfs::unexpected<Error>{Error::UNSUPPORTED_BASE};
   }
-  LOG(INFO) << "Decoding multibase string '" << string << "'.";
+  VLOG(1) << "Decoding multibase string '" << string << "'.";
   auto result = codecs.at(*encoding_base).decode(string.substr(1));
   if (result.has_value()) {
     return result.value();

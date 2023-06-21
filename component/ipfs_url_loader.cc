@@ -2,6 +2,7 @@
 
 #include "gateway_requests.h"
 #include "inter_request_state.h"
+#include "summarize_headers.h"
 
 #include "ipfs_client/gateways.h"
 #include "ipfs_client/unixfs_path_resolver.h"
@@ -99,6 +100,7 @@ void ipfs::IpfsUrlLoader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
     remainder.append(ipfs_ref.substr(qmark));
   }
   VLOG(1) << "cid=" << cid << " remainder=" << remainder;
+  me->root_ = cid;
   me->resolver_ = std::make_shared<UnixFsPathResolver>(
       me->state_.storage(), me->state_.requestor(), std::string{cid}, remainder,
       me->api_);
@@ -144,30 +146,26 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   auto head = network::mojom::URLResponseHead::New();
   head->mime_type = mime_type;
   std::uint32_t byte_count = partial_block_.size();
+  LOG(INFO) << "Calling WriteData(" << byte_count << ")";
   pipe_prod_->WriteData(partial_block_.data(), &byte_count,
                         MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE);
+  LOG(INFO) << "Called WriteData(" << byte_count << ")";
   head->content_length = byte_count;
   head->headers =
       net::HttpResponseHeaders::TryToCreate("access-control-allow-origin: *");
   if (!head->headers) {
     LOG(ERROR) << "\n\tFailed to create headers!\n";
+    return;
   }
   head->headers->SetHeader("Content-Type", mime_type);
   head->headers->SetHeader("Access-Control-Allow-Origin", "*");
-  // TODO:
-  //   If we're ipns://, ipns_url_loader should have sent us an expiration date
-  //   If we're ipfs://, cache eternally?
-  //  head->headers->SetHeader("Cache-Control",
-  //                           "public, max-age=31449600, immutable");
   head->was_fetched_via_spdy = false;
-  for (auto& part_cid : resolver_->involved_cids()) {
-    // L_VAR(part_cid);
-    AppendGatewayHeaders(part_cid, *head->headers);
-  }
+  AppendGatewayHeaders(resolver_->involved_cids(), *head->headers);
   for (auto& [n, v] : additional_outgoing_headers_) {
-    // L_VAR(n);
+    LOG(INFO) << "Appending 'additional' header:" << n << '=' << v << '.';
     head->headers->AddHeader(n, v);
   }
+  LOG(INFO) << "Calling PopulateParsedHeaders";
   head->parsed_headers =
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});
   LOG(INFO) << "Sending response for " << original_url_ << " with mime type "
@@ -194,40 +192,12 @@ void ipfs::IpfsUrlLoader::NotHere(std::string_view cid, std::string_view path) {
 
 void ipfs::IpfsUrlLoader::ReceiveBlockBytes(std::string_view content) {
   partial_block_.append(content);
+  VLOG(1) << "Recived a block of size " << content.size() << " now have "
+          << partial_block_.size() << " bytes.";
 }
 
-void ipfs::IpfsUrlLoader::AppendGatewayHeaders(std::string const& cid,
-                                               net::HttpResponseHeaders& out) {
-  VLOG(1) << cid << " was involved in resolving " << original_url_;
-  auto* raw = state_.storage().GetHeaders(cid);
-  if (!raw || raw->empty()) {
-    LOG(ERROR) << "Trouble fetching headers from gateway response " << cid;
-    return;
-  }
-  //  auto gw_heads = net::HttpResponseHeaders::TryToCreate(*raw);
-  auto gw_heads = base::MakeRefCounted<net::HttpResponseHeaders>(*raw);
-  if (!gw_heads) {
-    std::ostringstream escaped;
-    for (auto c : *raw) {
-      if (std::isgraph(c)) {
-        escaped << c;
-      } else {
-        escaped << '<' << std::hex << std::setw(2) << std::setfill('0')
-                << static_cast<unsigned>(c) << '>';
-      }
-    }
-    LOG(ERROR) << "Failed to parse raw string as headers for " << cid << " : "
-               << escaped.str();
-    return;
-  }
-  std::size_t i = 0UL;
-  std::string name, value;
-  while (gw_heads->EnumerateHeaderLines(&i, &name, &value)) {
-    VLOG(2) << cid << ' ' << name << ' ' << value;
-    if (name == "Server-Timing" || name == "Block-Source") {
-      out.AddHeader(name, value);
-    } else {
-      out.SetHeader("ZZZ-" + cid + "-" + name, value);
-    }
-  }
+void ipfs::IpfsUrlLoader::AppendGatewayHeaders(
+    std::vector<std::string> const& cids,
+    net::HttpResponseHeaders& out) {
+  summarize_headers(cids, root_, out, state_.storage());
 }
