@@ -101,6 +101,7 @@ class UnixFsPathResolver {
   void Request(std::shared_ptr<DagListener>&, std::string const& cid, Priority);
   void GetHelper(Block::Type);
   std::string pop_path();
+  void AddInvolvedCid(std::string const&);
 };
 
 }  // namespace ipfs

@@ -3,6 +3,7 @@
 
 #include "vocab/flat_mapset.h"
 
+#include <ctime>
 #include <string>
 
 namespace ipfs {
@@ -12,7 +13,7 @@ namespace ipfs {
  */
 class Gateway {
   std::string prefix_;
-  flat_set<std::string> failed_requests_;
+  flat_map<std::string, std::time_t> failed_requests_;
   unsigned priority_;  /// This is not request priority. This is how eager we
                        /// are to use this particular gateway.
   flat_set<std::string> tasks_;

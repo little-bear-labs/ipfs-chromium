@@ -71,10 +71,10 @@ void Self::Fetch(std::function<void(std::string, Priority)> requestor,
   });
 }
 bool Self::Write(std::shared_ptr<DagListener> listener) {
-  LOG(INFO) << "Write:" << cid_ << " have children: " << children_.size();
+  VLOG(1) << "Write:" << cid_ << " have children: " << children_.size();
   for (; written_until_ < children_.size(); ++written_until_) {
     auto& child = children_[written_until_];
-    LOG(INFO) << "child[" << written_until_ << "]:" << child.first;
+    VLOG(1) << "child[" << written_until_ << "]:" << child.first;
     if (child.second.has_value()) {
       if (child.second->Write(listener)) {
         LOG(INFO) << "Successfully recursed.";

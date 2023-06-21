@@ -1,15 +1,3 @@
-diff --git a/base/memory/ref_counted.h b/base/memory/ref_counted.h
-index 9ef94d84769df..f70e30748a389 100644
---- a/base/memory/ref_counted.h
-+++ b/base/memory/ref_counted.h
-@@ -7,6 +7,7 @@
- 
- #include <stddef.h>
- 
-+#include <limits>
- #include <utility>
- 
- #include "base/atomic_ref_count.h"
 diff --git a/base/threading/thread_local_internal.h b/base/threading/thread_local_internal.h
 index ed99410ea8a31..d89d48ba981ab 100644
 --- a/base/threading/thread_local_internal.h
@@ -25,10 +13,10 @@ index ed99410ea8a31..d89d48ba981ab 100644
        const CheckedThreadLocalOwnedPointer<T>&) = delete;
  
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index 93d76a4dcead4..80ff58fa54e08 100644
+index 77d5dfbe1d547..46b7f9b0bb8d9 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -2115,6 +2115,7 @@ static_library("browser") {
+@@ -2135,6 +2135,7 @@ static_library("browser") {
      "//components/infobars/content",
      "//components/infobars/core",
      "//components/invalidation/impl",
@@ -50,10 +38,10 @@ index 4c88614c68c25..269b0440ed571 100644
      return metrics::OmniboxInputType::URL;
    }
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
-index cfbed0fd8183a..d436f8f3c313b 100644
+index fbe839fd4259d..802b19bc1ee32 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -213,6 +213,8 @@
+@@ -218,6 +218,8 @@
  #include "components/error_page/common/localized_error.h"
  #include "components/error_page/content/browser/net_error_auto_reloader.h"
  #include "components/google/core/common/google_switches.h"
@@ -62,7 +50,7 @@ index cfbed0fd8183a..d436f8f3c313b 100644
  #include "components/keep_alive_registry/keep_alive_types.h"
  #include "components/keep_alive_registry/scoped_keep_alive.h"
  #include "components/language/core/browser/pref_names.h"
-@@ -5851,13 +5853,17 @@ void ChromeContentBrowserClient::
+@@ -5840,13 +5842,17 @@ void ChromeContentBrowserClient::
          int render_frame_id,
          const absl::optional<url::Origin>& request_initiator_origin,
          NonNetworkURLLoaderFactoryMap* factories) {
@@ -84,7 +72,7 @@ index cfbed0fd8183a..d436f8f3c313b 100644
  
  #if BUILDFLAG(IS_CHROMEOS_ASH)
    if (web_contents) {
-@@ -5994,8 +6000,8 @@ std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+@@ -5983,8 +5989,8 @@ std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
  ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
      content::NavigationUIData* navigation_ui_data,
      int frame_tree_node_id) {
@@ -143,3 +131,143 @@ index 5273da5190277..12b28b86a4c00 100644
        case NsswitchReader::Service::kNis:
          RecordIncompatibleNsswitchReason(
              IncompatibleNsswitchReason::kIncompatibleService,
+diff --git a/url/BUILD.gn b/url/BUILD.gn
+index 8751cf33f5903..b84b6dc8ccef7 100644
+--- a/url/BUILD.gn
++++ b/url/BUILD.gn
+@@ -39,6 +39,7 @@ component("url") {
+     "url_canon_internal_file.h",
+     "url_canon_ip.cc",
+     "url_canon_ip.h",
++    "url_canon_ipfs.cc",
+     "url_canon_mailtourl.cc",
+     "url_canon_path.cc",
+     "url_canon_pathurl.cc",
+@@ -63,7 +64,10 @@ component("url") {
+ 
+   public_deps = [ "//base" ]
+ 
+-  deps = [ "//base/third_party/dynamic_annotations" ]
++  deps = [
++    "//base/third_party/dynamic_annotations",
++    "//third_party/ipfs_client",
++  ]
+ 
+   if (is_win) {
+     # Don't conflict with Windows' "url.dll".
+diff --git a/url/url_canon.h b/url/url_canon.h
+index 94b44426fa33a..19f1f0789164d 100644
+--- a/url/url_canon.h
++++ b/url/url_canon.h
+@@ -688,6 +688,23 @@ bool CanonicalizeMailtoURL(const char16_t* spec,
+                            CanonOutput* output,
+                            Parsed* new_parsed);
+ 
++COMPONENT_EXPORT(URL)
++bool CanonicalizeIpfsURL(const char* spec,
++                             int spec_len,
++                             const Parsed& parsed,
++                             SchemeType scheme_type,
++                             CharsetConverter* query_converter,
++                             CanonOutput* output,
++                             Parsed* new_parsed);
++COMPONENT_EXPORT(URL)
++bool CanonicalizeIpfsURL(const char16_t* spec,
++                             int spec_len,
++                             const Parsed& parsed,
++                             SchemeType scheme_type,
++                             CharsetConverter* query_converter,
++                             CanonOutput* output,
++                             Parsed* new_parsed);
++
+ // Part replacer --------------------------------------------------------------
+ 
+ // Internal structure used for storing separate strings for each component.
+diff --git a/url/url_canon_ipfs.cc b/url/url_canon_ipfs.cc
+new file mode 100644
+index 0000000000000..9c9ee853f5739
+--- /dev/null
++++ b/url/url_canon_ipfs.cc
+@@ -0,0 +1,65 @@
++#include "url_canon_internal.h"
++
++#include <libp2p/multi/content_identifier_codec.hpp>
++
++namespace m = libp2p::multi;
++using Cid      = m::ContentIdentifier;
++using CidCodec = m::ContentIdentifierCodec;
++
++bool url::CanonicalizeIpfsURL(const char* spec,
++                             int spec_len,
++                             const Parsed& parsed,
++                             SchemeType scheme_type,
++                             CharsetConverter* charset_converter,
++                             CanonOutput* output,
++                             Parsed* output_parsed) {
++  if ( spec_len < 1 ) {
++    return false;
++  }
++  if ( parsed.host.len < 1 ) {
++    return false;
++  }
++  std::string cid_str{ spec + parsed.host.begin, static_cast<std::size_t>(parsed.host.len) };
++  auto maybe_cid = CidCodec::fromString(cid_str);
++  if ( !maybe_cid.has_value() ) {
++    return false;
++  }
++  auto cid = maybe_cid.value();
++  if ( cid.version == Cid::Version::V0 ) {
++    //TODO dcheck content_type == DAG_PB && content_address.getType() == sha256
++    cid = Cid{
++        Cid::Version::V1,
++        cid.content_type,
++        cid.content_address
++      };
++  }
++  auto as_str = CidCodec::toString(cid);
++  if ( !as_str.has_value() ) {
++    return false;
++  }
++  std::string stdurl{ spec, static_cast<std::size_t>(parsed.host.begin) };
++  stdurl.append( as_str.value() );
++  stdurl.append( spec + parsed.host.end(), spec_len - parsed.host.end() );
++  spec = stdurl.data();
++  spec_len = static_cast<int>(stdurl.size());
++  Parsed parsed_input;
++  ParseStandardURL(spec, spec_len, &parsed_input);
++  return CanonicalizeStandardURL(
++      spec, spec_len,
++      parsed_input,
++      scheme_type,
++      charset_converter,
++      output, output_parsed
++    );
++}
++bool url::CanonicalizeIpfsURL(const char16_t* spec,
++                             int spec_len,
++                             const Parsed& parsed,
++                             SchemeType scheme_type,
++                             CharsetConverter* query_converter,
++                             CanonOutput* output,
++                              Parsed* new_parsed) {
++  RawCanonOutput<2048> as8;
++  ConvertUTF16ToUTF8(spec, spec_len, &as8);
++  return CanonicalizeIpfsURL(as8.data(), as8.length(), parsed, scheme_type, query_converter, output, new_parsed);
++}
+diff --git a/url/url_util.cc b/url/url_util.cc
+index 67913eb72f785..6b638acd8edc1 100644
+--- a/url/url_util.cc
++++ b/url/url_util.cc
+@@ -291,6 +291,12 @@ bool DoCanonicalize(const CHAR* spec,
+                                         charset_converter, output,
+                                         output_parsed);
+ 
++  } else if (DoCompareSchemeComponent(spec, scheme, "ipfs")) {
++    // Switch multibase away from case-sensitive ones before continuing canonicalization.
++    ParseStandardURL(spec, spec_len, &parsed_input);
++    success = CanonicalizeIpfsURL(spec, spec_len, parsed_input, scheme_type,
++                                      charset_converter, output, output_parsed);
++
+   } else if (DoIsStandard(spec, scheme, &scheme_type)) {
+     // All "normal" URLs.
+     ParseStandardURL(spec, spec_len, &parsed_input);

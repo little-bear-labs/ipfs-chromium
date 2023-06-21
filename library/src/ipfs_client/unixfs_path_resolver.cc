@@ -20,10 +20,7 @@ void Self::Step(std::shared_ptr<DagListener> listener) {
   }
   VLOG(1) << "Stepping... " << cid_ << " / " << original_path_ << " / "
           << path_;
-  if (involved_cids_.end() ==
-      std::find(involved_cids_.begin(), involved_cids_.end(), cid_)) {
-    involved_cids_.push_back(cid_);
-  }
+  AddInvolvedCid(cid_);
   Block const* block = storage_.Get(cid_);
   if (!block) {
     auto it = already_requested_.find(cid_);
@@ -85,7 +82,7 @@ void Self::Request(std::shared_ptr<DagListener>& listener,
     requestor_.RequestByCid(cid, listener, prio);
     if (prio) {
       storage_.AddListening(this);
-      involved_cids_.push_back(cid);
+      AddInvolvedCid(cid);
     }
   } else if (prio > it->second.prio) {
     LOG(INFO) << "Increase Request priority(" << cid << ','
@@ -93,6 +90,13 @@ void Self::Request(std::shared_ptr<DagListener>& listener,
     it->second.prio = prio;
     it->second.when = t;
     requestor_.RequestByCid(cid, listener, prio);
+  }
+}
+
+void Self::AddInvolvedCid(std::string const& cid) {
+  if (involved_cids_.end() ==
+      std::find(involved_cids_.begin(), involved_cids_.end(), cid)) {
+    involved_cids_.push_back(cid);
   }
 }
 
@@ -119,8 +123,8 @@ Self::UnixFsPathResolver(BlockStorage& store,
   }
 }
 Self::~UnixFsPathResolver() noexcept {
-  LOG(INFO) << "~UnixFsPathResolver: " << involved_cids_.size() << ' ' << cid_
-            << '/' << original_path();
+  VLOG(1) << "~UnixFsPathResolver: " << involved_cids_.size() << ' ' << cid_
+          << '/' << original_path();
   storage_.StopListening(this);
 }
 std::shared_ptr<ipfs::DagListener> Self::MaybeGetPreviousListener() {

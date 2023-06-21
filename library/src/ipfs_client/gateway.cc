@@ -47,7 +47,7 @@ void ipfs::Gateway::TaskSuccess(std::string const& task) {
 }
 void ipfs::Gateway::TaskFailed(std::string const& task) {
   // LOG(INFO) << prefix_ << task << " TaskFailed";
-  failed_requests_.insert(task);
+  failed_requests_[task] = std::time(nullptr);
   priority_ /= 2;
   tasks_.erase(task);
 }
@@ -55,8 +55,9 @@ void ipfs::Gateway::TaskCancelled(std::string const& task) {
   tasks_.erase(task);
 }
 bool ipfs::Gateway::PreviouslyFailed(std::string const& suffix) const {
-  if (failed_requests_.find(suffix) != failed_requests_.end()) {
-    return true;
+  auto it = failed_requests_.find(suffix);
+  if (it == failed_requests_.end()) {
+    return false;
   }
-  return false;
+  return std::time(nullptr) - it->second < 3;
 }
