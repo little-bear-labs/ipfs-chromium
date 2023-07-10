@@ -145,9 +145,7 @@ def touch_update(s):
         f.write(s)
 
 
-def sync_dir(source_relative, target_relative):
-    source = join(ipfs_chromium_source_dir, source_relative)
-    target = join(src, target_relative)
+def copy_missing_and_changed_files(source, target):
     sources = []
     protos = []
     for s in glob(f'{source}/**/*', recursive=True):
@@ -175,6 +173,10 @@ def sync_dir(source_relative, target_relative):
                 makedirs(dirname(t))
             touch_update(s+t)
             copyfile(s, t)
+    return (sources, protos)
+
+
+def remove_danglers(source, target, sources, protos):
     for t in glob(f'{target}/**/*', recursive=True):
         if isdir(t):
             continue
@@ -186,6 +188,14 @@ def sync_dir(source_relative, target_relative):
             print('Removing dangling file', rel, 'while synchronizing', source, 'into', target)
             touch_update('rm '+t)
             remove(t)
+
+
+def sync_dir(source_relative, target_relative, complete=True):
+    source = join(ipfs_chromium_source_dir, source_relative)
+    target = join(src, target_relative)
+    (sources, protos) = copy_missing_and_changed_files(source, target)
+    if complete:
+        remove_danglers(source, target, sources, protos)
     sources.sort()
     protos.sort()
     formatted_sources = '\n'.join(map(lambda s: f'    "{s}",', sources))
@@ -211,6 +221,9 @@ def sync_dir(source_relative, target_relative):
 
 sync_dir('component', 'components/ipfs')
 sync_dir('library', 'third_party/ipfs_client')
+if 'branding' in argv:
+    argv.remove('branding')
+    sync_dir('component/branding', 'chrome', False)
 if 'PYTHONPATH' in environ:
     environ['PYTHONPATH'] = src + '/third_party/protobuf/python' + pathsep + environ['PYTHONPATH']
 else:
