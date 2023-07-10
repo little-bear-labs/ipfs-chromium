@@ -18,7 +18,7 @@ void Self::Step(std::shared_ptr<DagListener> listener) {
   if (cid_.empty()) {
     return;
   }
-  VLOG(1) << "Stepping... " << cid_ << " / " << original_path_ << " / "
+  VLOG(2) << "Stepping... " << cid_ << " / " << original_path_ << " / "
           << path_;
   AddInvolvedCid(cid_);
   Block const* block = storage_.Get(cid_);

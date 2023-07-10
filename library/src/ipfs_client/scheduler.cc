@@ -71,9 +71,6 @@ bool ipfs::Scheduler::IssueRequests(std::shared_ptr<ContextApi> api) {
       }
     }
   }
-  if (unmet) {
-    VLOG(2) << "Saturated.";
-  }
   //  UpdateDevPage();
   return !unmet;
 }

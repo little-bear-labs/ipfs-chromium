@@ -18,11 +18,8 @@ auto Self::block() -> Block const* {
 }
 
 void Self::Delegate(ipfs::unix_fs::NodeHelper& other) const {
-  L_VAR((void*)this);
-  L_VAR((void*)&other);
   other.cid_ = cid_;
-  LOG(INFO) << "NodeHelper::Delegate(storage @" << (void*)(storage_.get())
-            << ')';
+  VLOG(1) << "NodeHelper::Delegate(storage @" << (void*)(storage_.get()) << ')';
   other.storage_ = storage_;
   other.resolver_ = resolver_;
   other.api_ = api_;

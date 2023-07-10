@@ -40,43 +40,31 @@ void ipfs::summarize_headers(std::vector<std::string> const& cids,
       if (name == "Server-Timing" && cid == root) {
         auto dur = value.find("dur=");
         if (dur < value.size()) {
-          out.AddHeader(
-              name, "ipfs-ttfb;desc=\"time til the first block was fetched\";" +
-                        value.substr(dur));
+          out.AddHeader(name, "ipfs-ttfb;desc=\"til first block(root)\";" +
+                                  value.substr(dur));
         } else {
           LOG(ERROR) << "Server-Timing with no 'dur=': '" << value << "'.";
         }
-      } else if (name == "Server-Timing" && !value.find("blockcache-")) {
-        auto dur = value.find(";dur=");
-        if (dur >= value.size()) {
-          LOG(WARNING) << "Server-Timing header with no dur on CID " << cid
-                       << " : " << value;
-          continue;
-        }
-        auto ms = std::atol(value.c_str() + dur + 5);
-        millis_per["cache"] += ms;
-        VLOG(1) << "cache MS " << ms << " from " << value << " += -> "
-                << millis_per["cache"];
       } else if (name == "Server-Timing") {
         auto desc = value.find(";desc=\"");
         if (desc >= value.size()) {
+          LOG(WARNING) << "Server-Timing with no desc";
           continue;
         }
-        auto load = value.find(" : load over http(s)", desc);
-        if (load >= value.size()) {
-          continue;
-        }
-        auto dur = value.find(";dur=", load);
+        auto dur = value.find(";dur=");
         if (dur >= value.size()) {
           LOG(WARNING) << "Server-Timing header with no dur on CID " << cid
                        << " (from HTTP) : " << value;
           continue;
         }
-        auto start = desc + 7;
-        auto len = load - start;
-        auto gw = value.substr(start, len);
+        std::string gw = "cache";
+        auto load = value.find(" : load over http(s)", desc);
+        if (load < value.size()) {
+          auto start = desc + 7;
+          auto len = load - start;
+          gw = value.substr(start, len);
+        }
         auto ms = std::atol(value.c_str() + dur + 5);
-        LOG(INFO) << "MS " << ms << " from " << value;
         millis_per[gw] += ms;
       } else if (name == "Block-Source") {
         auto comma = value.find(", ");
@@ -100,23 +88,18 @@ void ipfs::summarize_headers(std::vector<std::string> const& cids,
       }
     }
   }
-  LOG(INFO) << std::time(nullptr);
-  for (auto [gw, ms] : millis_per) {
-    LOG(INFO) << "millis_per " << gw << ' ' << ms << "ms.";
-    auto nm = gw;
-    auto slashes = nm.find("//");
-    if (slashes < nm.size()) {
-      nm.erase(0UL, slashes + 2);
+  for (auto [gateway, block_count] : blocks_per) {
+    std::ostringstream val;
+    val << gateway << ";blocks=" << block_count;
+    auto it = bytes_per.find(gateway);
+    if (it != bytes_per.end()) {
+      val << ";bytes=" << it->second;
     }
-    nm.erase(std::remove_if(nm.begin(), nm.end(),
-                            [](auto c) { return !std::isalnum(c); }),
-             nm.end());
-    std::ostringstream server_timing_summary;
-    server_timing_summary << nm << ";desc=\"fetching " << blocks_per[gw]
-                          << " blocks (" << bytes_per[gw]
-                          << " bytes in size) from " << gw << "\";dur=" << ms;
-    LOG(INFO) << server_timing_summary.str();
-    out.AddHeader("Server-Timing", server_timing_summary.str());
+    it = millis_per.find(gateway);
+    if (it != millis_per.end()) {
+      val << ";cdur=" << it->second;
+    }
+    VLOG(1) << "Add header Ipfs-Block-Source: " << val.str();
+    out.AddHeader("Ipfs-Block-Source", val.str());
   }
-  LOG(INFO) << std::time(nullptr);
 }

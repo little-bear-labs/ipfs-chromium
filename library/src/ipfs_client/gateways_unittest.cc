@@ -17,7 +17,8 @@ TEST(GatewaysTest, DefaultListMeetsBasicGuidelines) {
 }
 
 TEST(GatewaysTest, OverriddenListEndsEntriesInSlash) {
-  ::putenv("IPFS_GATEWAY= a b c d 1 : http://chomp:8080");
+  char env[45] = "IPFS_GATEWAY= a b c d 1 : http://chomp:8080";
+  ::putenv(env);
   auto dg = ipfs::Gateways::DefaultGateways();
   EXPECT_EQ(dg.size(), 7U);
   EXPECT_EQ(dg.at(0).first, "a/");
