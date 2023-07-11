@@ -99,10 +99,15 @@ add_custom_target(build_browser
     DEPENDS in_tree_build
   )
 
+if(CHROMIUM_PROFILE STREQUAL win)
+    set(CHROMIUM_PACKAGE_TARGET mini_installer)
+else()
+    set(CHROMIUM_PACKAGE_TARGET chrome/installer)
+endif()
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
     add_custom_target(package_browser
         COMMENT "Packaging"
-        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" "chrome/installer"
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" ${CHROMIUM_PACKAGE_TARGET}
         DEPENDS build_browser
       )
     add_custom_target(upload_browser

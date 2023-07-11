@@ -34,7 +34,7 @@ if len(argv) > 1:
 
 
 def build_target(target):
-    argvs = ['cmake', '--build', build_dir, '--target', target]
+    argvs = ['cmake', '--build', build_dir, '--config', 'Release', '--target', target]
     check_call(args=argvs)
 
 
