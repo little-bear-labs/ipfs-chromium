@@ -9,7 +9,7 @@ void ipfs::summarize_headers(std::vector<std::string> const& cids,
                              std::string const& root,
                              net::HttpResponseHeaders& out,
                              BlockStorage& storage) {
-  LOG(INFO) << std::time(nullptr);
+  VLOG(1) << std::time(nullptr);
   std::map<std::string, std::size_t> bytes_per;
   std::map<std::string, std::size_t> blocks_per;
   std::map<std::string, std::size_t> millis_per;

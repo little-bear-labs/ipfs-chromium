@@ -33,7 +33,8 @@ class ContentIdentifierCodec {
     RESERVED_VERSION,
     CID_TOO_SHORT,
     BAD_MULTIHASH,
-    BAD_MULTIBASE
+    BAD_MULTIBASE,
+    UNSUPPORTED_MULTIBASE
   };
 
   static ipfs::expected<std::vector<ipfs::Byte>, EncodeError> encode(
@@ -79,6 +80,8 @@ class ContentIdentifierCodec {
   static ipfs::expected<ContentIdentifier, DecodeError> fromString(
       const std::string& str);
 };
+
+std::string_view Stringify(libp2p::multi::ContentIdentifierCodec::DecodeError);
 
 }  // namespace libp2p::multi
 

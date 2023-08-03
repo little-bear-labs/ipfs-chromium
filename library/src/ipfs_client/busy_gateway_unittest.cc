@@ -19,6 +19,7 @@ struct TestParams {
   std::string tsk_suf = "tsk_suf";
   Scheduler* sched = nullptr;
   std::unique_ptr<BusyGateway> under_test;
+  std::unique_ptr<BusyGateway> orphan;
 };
 
 struct BusyGatewayTest : public testing::Test {
@@ -43,7 +44,12 @@ TEST_F(BusyGatewayTest, get_Successful) {
   ASSERT_TRUE(actual);
   EXPECT_EQ(actual->url_prefix(), "gw_pre");
 }
+TEST_F(BusyGatewayTest, get_WithoutScheduler) {
+  auto* actual = params.orphan->get();
+  EXPECT_FALSE(actual);
+}
 
 void BusyGateway::TestAccess(TestParams* p) {
   p->under_test.reset(new BusyGateway(p->gw_pre, p->tsk_suf, p->sched));
+  p->orphan.reset(new BusyGateway(p->gw_pre, p->tsk_suf, {}));
 }

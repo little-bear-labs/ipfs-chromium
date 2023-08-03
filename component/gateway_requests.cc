@@ -109,7 +109,7 @@ auto Self::InitiateGatewayRequest(BusyGateway assigned)
   //  out->listener = listener;
   auto cb = base::BindOnce(&Self::OnResponse, base::Unretained(this),
                            shared_from_this(), out, start_time);
-  //  LOG(INFO) << "InitiateGatewayRequest(" << url << ")";
+  VLOG(2) << "InitiateGatewayRequest(" << url << ")";
   DCHECK(loader_factory_);
   // TODO - proper requesting with full features (SetPriority, etc.).
   out->loader->DownloadToString(loader_factory_, std::move(cb), 2UL * MB);
@@ -131,12 +131,12 @@ void Self::OnResponse(std::shared_ptr<ContextApi> api,
   auto& ldr = req->loader;
   //  auto listener = req->listener;
   if (ProcessResponse(bg, ldr.get(), body.get(), start_time)) {
-    bg.Success(state_.gateways(), shared_from_this());
+    bg.Success(state_->gateways(), shared_from_this());
   } else {
-    bg.Failure(state_.gateways(), shared_from_this());
+    bg.Failure(state_->gateways(), shared_from_this());
   }
-  state_.storage().CheckListening();
-  state_.scheduler().IssueRequests(api);
+  state_->storage().CheckListening();
+  state_->scheduler().IssueRequests(api);
 }
 
 bool Self::ProcessResponse(BusyGateway& gw,
@@ -180,13 +180,13 @@ bool Self::ProcessResponse(BusyGateway& gw,
                << " strongly implying that it's a full request, not a single "
                   "block. TODO: Remove "
                << gw->url_prefix() << " from list of gateways?\n";
-    state_.gateways().demote(gw->url_prefix());
+    state_->gateways().demote(gw->url_prefix());
     return false;
   }
   auto cid_str = gw.task();
   cid_str.erase(0, 5);  // ipfs/
   cid_str.erase(cid_str.find('?'));
-  if (state_.storage().Get(cid_str)) {
+  if (state_->storage().Get(cid_str)) {
     // LOG(INFO) << "Got multiple successful responses for " << cid_str;
     return true;
   }
@@ -218,7 +218,7 @@ bool Self::ProcessResponse(BusyGateway& gw,
     ValidatedIpns entry{record.value()};
     entry.resolution_ms = duration;
     entry.gateway_source = gw->url_prefix();
-    state_.names().AssignName(cid_str, std::move(entry));
+    state_->names().AssignName(cid_str, std::move(entry));
     scheduler().IssueRequests(shared_from_this());
     return true;
   } else {
@@ -233,8 +233,8 @@ bool Self::ProcessResponse(BusyGateway& gw,
           "Server-Timing",
           "gateway-fetch-" + cid_str + ";desc=\"" + gw->url_prefix() +
               " : load over http(s)\";dur=" + std::to_string(duration));
-      state_.storage().Store(cid_str, cid.value(), head->headers->raw_headers(),
-                             *body);
+      state_->storage().Store(cid_str, cid.value(),
+                              head->headers->raw_headers(), *body);
       scheduler().IssueRequests(shared_from_this());
       return true;
     } else {
@@ -303,7 +303,7 @@ void Self::RequestByCid(std::string cid,
 
 Self::GatewayRequests(InterRequestState& state)
     : state_{state},
-      sched_([this]() { return state_.gateways().GenerateList(); }) {}
+      sched_([this]() { return state_->gateways().GenerateList(); }) {}
 Self::~GatewayRequests() {
   LOG(WARNING) << "API dtor - are all URIs loaded?";
 }

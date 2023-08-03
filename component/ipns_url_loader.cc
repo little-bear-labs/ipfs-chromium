@@ -65,11 +65,11 @@ void ipfs::IpnsUrlLoader::OnTextResults(
     }
   }
   if (result.empty()) {
-    state_.names().NoSuchName(host_);
+    state_->names().NoSuchName(host_);
     LOG(ERROR)
         << "_dnslink. domain exists, but contains no /ipfs or /ipns entry";
   } else {
-    state_.names().AssignDnsLink(host_, result);
+    state_->names().AssignDnsLink(host_, result);
   }
 }
 void ipfs::IpnsUrlLoader::OnComplete(
@@ -83,12 +83,12 @@ void ipfs::IpnsUrlLoader::OnComplete(
     Next();
   } else {
     LOG(ERROR) << "Error resolving _dnslink." << host_ << " : " << result;
-    state_.names().NoSuchName(host_);
+    state_->names().NoSuchName(host_);
     FailNameResolution();
   }
 }
 void ipfs::IpnsUrlLoader::Next() {
-  auto resolved = state_.names().NameResolvedTo(host_);
+  auto resolved = state_->names().NameResolvedTo(host_);
   if (resolved.empty()) {
     if (!RequestIpnsRecord()) {
       LOG(INFO) << "Treating '" << host_ << "' as a DNSLink host.";
@@ -107,7 +107,7 @@ void ipfs::IpnsUrlLoader::Next() {
   }
 }
 void ipfs::IpnsUrlLoader::DoIpfs() {
-  auto resolved = state_.names().NameResolvedTo(host_);
+  auto resolved = state_->names().NameResolvedTo(host_);
   auto from_url = request_.value().url;
   std::string to{resolved};
   DCHECK_GT(to.size(), 5U);
@@ -134,7 +134,7 @@ void ipfs::IpnsUrlLoader::DoIpfs() {
   GURL to_url{to};
   VLOG(1) << "Treating " << from_url << " as " << to_url;
   ipfs_loader_->OverrideUrl(from_url);
-  auto* entry = state_.names().Entry(host_);
+  auto* entry = state_->names().Entry(host_);
   if (entry) {
     auto duration = entry->resolution_ms;
     ipfs_loader_->AddHeader(
@@ -215,11 +215,11 @@ bool ipfs::IpnsUrlLoader::RequestIpnsRecord() {
   if (api_) {
     // true because this is true IPNS
     //  ... but return early because we have already requested it
-    state_.scheduler().IssueRequests(api_);
+    state_->scheduler().IssueRequests(api_);
     return true;
   }
   auto key = "ipns/" + host_;
-  auto caches = state_.serialized_caches();
+  auto caches = state_->serialized_caches();
   auto check =
       [this, key](
           std::function<void()> fail,
@@ -249,22 +249,22 @@ void ipfs::IpnsUrlLoader::CacheHit(std::shared_ptr<CacheRequestor> cache,
     cache->Expire("ipns/" + host_);
     RequestFromGateway();
   } else {
-    state_.names().AssignName(host_, result);
+    state_->names().AssignName(host_, result);
     Complete();
   }
 }
 void ipfs::IpnsUrlLoader::RequestFromGateway() {
-  api_ = state_.api();
-  api_->SetLoaderFactory(http_loader_);
-  state_.scheduler().Enqueue(api_, {}, shared_from_this(),
-                             "ipns/" + host_ + "?format=ipns-record", 3);
-  state_.scheduler().IssueRequests(api_);
+  api_ = state_->api();
+  api_->SetLoaderFactory(*http_loader_);
+  state_->scheduler().Enqueue(api_, {}, shared_from_this(),
+                              "ipns/" + host_ + "?format=ipns-record", 3);
+  state_->scheduler().IssueRequests(api_);
 }
 void ipfs::IpnsUrlLoader::Complete() {
   LOG(INFO) << "NameListener's Complete called for an IpnsLoader!";
-  auto* entry = state_.names().Entry(host_);
+  auto* entry = state_->names().Entry(host_);
   DCHECK(entry);
-  auto caches = state_.serialized_caches();
+  auto caches = state_->serialized_caches();
   LOG(INFO) << "Storing the resolution of ipns://" << host_ << " in "
             << caches.size() << " cache backends.";
   for (auto cache : caches) {

@@ -65,10 +65,10 @@ class IpfsUrlLoader final : public network::mojom::URLLoader,
  private:
   using RequestHandle = std::unique_ptr<network::SimpleURLLoader>;
 
-  InterRequestState& state_;
+  raw_ref<InterRequestState> state_;
   mojo::Receiver<network::mojom::URLLoader> receiver_{this};
   mojo::Remote<network::mojom::URLLoaderClient> client_;
-  network::mojom::URLLoaderFactory& lower_loader_factory_;
+  raw_ref<network::mojom::URLLoaderFactory> lower_loader_factory_;
   mojo::ScopedDataPipeProducerHandle pipe_prod_ = {};
   mojo::ScopedDataPipeConsumerHandle pipe_cons_ = {};
   bool complete_ = false;

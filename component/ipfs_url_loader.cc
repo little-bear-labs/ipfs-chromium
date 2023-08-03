@@ -23,7 +23,7 @@
 ipfs::IpfsUrlLoader::IpfsUrlLoader(
     network::mojom::URLLoaderFactory& handles_http,
     InterRequestState& state)
-    : state_{state}, lower_loader_factory_{handles_http}, api_{state_.api()} {}
+    : state_{state}, lower_loader_factory_{handles_http}, api_{state_->api()} {}
 ipfs::IpfsUrlLoader::~IpfsUrlLoader() noexcept {
   if (!complete_) {
     LOG(ERROR) << "Premature IPFS URLLoader dtor, uri was '" << original_url_
@@ -87,7 +87,7 @@ void ipfs::IpfsUrlLoader::StartRequest(
 }
 
 void ipfs::IpfsUrlLoader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
-  LOG(INFO) << "Requesting " << ipfs_ref << " by blocks.";
+  VLOG(1) << "Requesting " << ipfs_ref << " by blocks.";
   DCHECK_EQ(ipfs_ref.substr(0, 5), "ipfs/");
   auto second_slash = ipfs_ref.find_first_of("/?", 5);
   auto cid = ipfs_ref.substr(5, second_slash - 5);
@@ -102,9 +102,9 @@ void ipfs::IpfsUrlLoader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
   VLOG(1) << "cid=" << cid << " remainder=" << remainder;
   me->root_ = cid;
   me->resolver_ = std::make_shared<UnixFsPathResolver>(
-      me->state_.storage(), me->state_.requestor(), std::string{cid}, remainder,
-      me->api_);
-  me->api_->SetLoaderFactory(lower_loader_factory_);
+      me->state_->storage(), me->state_->requestor(), std::string{cid},
+      remainder, me->api_);
+  me->api_->SetLoaderFactory(*lower_loader_factory_);
   me->stepper_ = std::make_unique<base::RepeatingTimer>();
   me->stepper_->Start(FROM_HERE, base::Milliseconds(500),
                       base::BindRepeating(&IpfsUrlLoader::TakeStep, me));
@@ -165,7 +165,7 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
     LOG(INFO) << "Appending 'additional' header:" << n << '=' << v << '.';
     head->headers->AddHeader(n, v);
   }
-  LOG(INFO) << "Calling PopulateParsedHeaders";
+  VLOG(1) << "Calling PopulateParsedHeaders";
   head->parsed_headers =
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});
   LOG(INFO) << "Sending response for " << original_url_ << " with mime type "
@@ -199,5 +199,5 @@ void ipfs::IpfsUrlLoader::ReceiveBlockBytes(std::string_view content) {
 void ipfs::IpfsUrlLoader::AppendGatewayHeaders(
     std::vector<std::string> const& cids,
     net::HttpResponseHeaders& out) {
-  summarize_headers(cids, root_, out, state_.storage());
+  summarize_headers(cids, root_, out, state_->storage());
 }

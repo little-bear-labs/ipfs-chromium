@@ -21,12 +21,22 @@ def osname():
     return 'Windows'
 
 
+def as_int(v):
+    result = 0
+    for c in v.split('.'):
+        result *= 10000
+        result += int(c)
+    return result
+
+
+
 class Patcher:
     def __init__(self, chromium_source_dir, git_bin, build_type):
         self.csrc = chromium_source_dir
         self.pdir = realpath(join(dirname(__file__), '..', 'component', 'patches'))
         self.gbin = git_bin
         self.btyp = build_type
+        self.up_rels = {}
 
     def create_patch_file(self):
         tag = self.tag_name()
@@ -112,6 +122,9 @@ class Patcher:
     def release_versions(self, channel, pfrm=None):
         if pfrm is None:
             pfrm = osname()
+        key = pfrm + channel
+        if key in self.up_rels:
+            return self.up_rels[key]
         parms = {'platform': pfrm, 'channel': channel}
         chrom_url = 'https://chromiumdash.appspot.com/fetch_releases'
         resp = requests.get(url=chrom_url, params=parms)
@@ -119,35 +132,47 @@ class Patcher:
         elec_url = 'https://raw.githubusercontent.com/electron/electron/main/DEPS'
         resp = requests.get(url=elec_url)
         result.sort(reverse=True)
+        self.up_rels[key] = result
         return result
 
     def electron_version(self, branch='main'):
+        if 'electron-main' in self.up_rels:
+            return self.up_rels['electron-main']
         resp = requests.get(f'https://raw.githubusercontent.com/electron/electron/{branch}/DEPS')
         toks = resp.text.split("'")
         i = toks.index('chromium_version') + 2
+        self.up_rels['electron-main'] = toks[i]
         return toks[i]
 
+
     def unavailable(self):
-        avail = list(self.available())
+        avail = list(map(as_int, self.available()))
         version_set = {}
-        for channel in ['Dev', 'Beta', 'Stable', 'Extended']:
-            for pfrm in ['Linux', 'Mac', 'Windows']:
-                try:
-                    when, version = self.release_versions(channel, pfrm)[0]
-                    if version in avail:
-                        continue
-                    # print(version,'has been the current',platform,channel,'release since',ctime(when),' and we have no patch file for it.')
-                    if version not in version_set:
-                        sortable = [int(c) for c in version.split('.')]
-                        version_set[version] = [sortable, version]
-                    version_set[version].append(f"{channel}-{pfrm}-{when}")
-                except IndexError:
-                    pass  # One may assume this is Linux Extended
-        e = self.electron_version()
-        if e not in version_set:
-            sortable = [int(c) for c in e.split('.')]
-            version_set[e] = [sortable, e]
-        version_set[e].append("electron-main")
+        fuzz = 99999
+        def check(version, version_set, s):
+            i = as_int(version)
+            if any(abs(a-i)<fuzz for a in avail):
+                return True
+            if version not in version_set:
+                sortable = [int(c) for c in version.split('.')]
+                print('Adding',version,s)
+                version_set[version] = [sortable, version, s]
+            elif s not in version_set[version]:
+                print('2 Adding',version,s)
+                version_set[version].append(s)
+            return False
+        while fuzz >= 0 and len(version_set) < 2:
+            fuzz -= 1
+            for channel in ['Dev', 'Beta', 'Stable', 'Extended']:
+                for pfrm in ['Linux', 'Mac', 'Windows']:
+                    try:
+                        when, version = self.release_versions(channel, pfrm)[0]
+                        s = f"{channel}-{pfrm}-{when}"
+                        check(version, version_set, s)
+                    except IndexError:
+                        pass  # One may assume this is Linux Extended
+            e = self.electron_version()
+            check(e, version_set, 'electron-main')
         result = list(version_set.values())
         result.sort(reverse=True)
         return map(lambda x: x[1:], result)

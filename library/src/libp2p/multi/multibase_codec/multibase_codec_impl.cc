@@ -9,12 +9,10 @@
 
 #include <unordered_map>
 
-// TODO bring over these other bases
-//  #include <libp2p/multi/multibase_codec/codecs/base16.hpp>
+#include <libp2p/multi/multibase_codec/codecs/base16.h>
 #include <libp2p/multi/multibase_codec/codecs/base32.hpp>
-#include <libp2p/multi/multibase_codec/codecs/base58.hpp>
-// #include <libp2p/multi/multibase_codec/codecs/base64.hpp>
 #include <libp2p/multi/multibase_codec/codecs/base36.hpp>
+#include <libp2p/multi/multibase_codec/codecs/base58.hpp>
 
 namespace {
 using namespace libp2p::multi;          // NOLINT
@@ -55,25 +53,13 @@ struct CodecFunctions {
   DecodeFuncType* decode;
 };
 
-namespace {
-std::string todo_encode(ipfs::ByteView) {
-  LOG(FATAL) << "TODO implement encode for this multibase encoding";
-  return "TODO";
-}
-ipfs::expected<libp2p::common::ByteArray, BaseError> todo_decode(
-    std::string_view string) {
-  LOG(FATAL) << "TODO implement encode for this multibase encoding '"
-             << std::string{string} << "'";
-  return ipfs::unexpected<BaseError>{BaseError::INVALID_BASE32_INPUT};
-}
-}  // namespace
 
 /// all available codec functions
 const std::unordered_map<MultibaseCodec::Encoding, CodecFunctions> codecs{
     {MultibaseCodec::Encoding::BASE16_UPPER,
-     CodecFunctions{&todo_encode, &todo_decode}},
+     CodecFunctions{&ipfs::base16::encodeUpper, &ipfs::base16::decode}},
     {MultibaseCodec::Encoding::BASE16_LOWER,
-     CodecFunctions{&todo_encode, &todo_decode}},
+     CodecFunctions{&ipfs::base16::encodeLower, &ipfs::base16::decode}},
     {MultibaseCodec::Encoding::BASE32_UPPER,
      CodecFunctions{&encodeBase32Upper, &decodeBase32Upper}},
     {MultibaseCodec::Encoding::BASE32_LOWER,
@@ -81,23 +67,12 @@ const std::unordered_map<MultibaseCodec::Encoding, CodecFunctions> codecs{
     {MultibaseCodec::Encoding::BASE36,
      CodecFunctions{&encodeBase36Lower, &decodeBase36}},
     {MultibaseCodec::Encoding::BASE58,
-     CodecFunctions{&encodeBase58, &decodeBase58}},
-    {MultibaseCodec::Encoding::BASE64,
-     CodecFunctions{&todo_encode, &todo_decode}}};
+     CodecFunctions{&encodeBase58, &decodeBase58}}
+    //,    {MultibaseCodec::Encoding::BASE64,CodecFunctions{&todo_encode,
+    //    &todo_decode}}
+};
 }  // namespace
-/*
-OUTCOME_CPP_DEFINE_CATEGORY(libp2p::multi, MultibaseCodecImpl::Error, e) {
-  using E = libp2p::multi::MultibaseCodecImpl::Error;
-  switch (e) {
-    case E::INPUT_TOO_SHORT:
-      return "Input must be at least two bytes long";
-    case E::UNSUPPORTED_BASE:
-      return "The base is either not supported or does not exist";
-    default:
-      return "Unknown error";
-  }
-}
-*/
+
 namespace libp2p::multi {
 using common::ByteArray;
 
@@ -120,8 +95,11 @@ auto MultibaseCodecImpl::decode(std::string_view string) const
   if (!encoding_base) {
     return ipfs::unexpected<Error>{Error::UNSUPPORTED_BASE};
   }
-  VLOG(2) << "Decoding multibase string '" << string << "'.";
-  auto result = codecs.at(*encoding_base).decode(string.substr(1));
+  auto codec = codecs.find(*encoding_base);
+  if (codecs.end() == codec) {
+    return ipfs::unexpected<Error>{Error::UNSUPPORTED_BASE};
+  }
+  auto result = codec->second.decode(string.substr(1));
   if (result.has_value()) {
     return result.value();
   } else {

@@ -172,7 +172,11 @@ bool ipfs::Block::cid_matches_data() const {
     return true;
   }
   auto cid_hash = cid_->content_address.getHash();
-  auto hashed = this->binary_hash(cid_->content_address.getType());
+  auto hash_type = cid_->content_address.getType();
+  if (hash_type == libp2p::multi::HashType::identity) {
+    return true;
+  }
+  auto hashed = this->binary_hash(hash_type);
   return std::equal(cid_hash.begin(), cid_hash.end(), hashed.begin(),
                     hashed.end());
 }

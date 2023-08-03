@@ -29,6 +29,22 @@ TEST(BlockTest, RealBlockValidates) {
   EXPECT_TRUE(block.is_file());
   EXPECT_TRUE(block.cid_matches_data());
 }
+TEST(BlockTest, IdentityBlockValidates) {
+  std::string block_bytes(
+      "\x0a\x08\x08\x02\x12\x02"
+      "a\n"
+      "\x18\x02",
+      10UL);
+  EXPECT_EQ(block_bytes.size(), 10UL);
+  EXPECT_EQ(block_bytes.at(6), 'a');
+  auto cid = Codec::fromString("bafkqac2jobzxk3janrxxezln").value();
+  ipfs::Block block{cid, block_bytes};
+  EXPECT_TRUE(block.valid());
+  EXPECT_TRUE(block.is_file());
+
+  // TODO: if this fails, awesome. Change the block_bytes to "Ipsum lorem"
+  EXPECT_TRUE(block.cid_matches_data());
+}
 
 TEST(BlockTest, AdHoc) {
   using namespace std::filesystem;

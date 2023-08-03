@@ -3,12 +3,15 @@
 
 #include <ipfs_client/block_requestor.h>
 
+#include <base/memory/raw_ref.h>
+
 namespace ipfs {
 
 class InterRequestState;
 
 class NetworkRequestor : public BlockRequestor {
-  InterRequestState& state_;
+  raw_ref<InterRequestState> state_;
+
  public:
   NetworkRequestor(InterRequestState& state);
   virtual ~NetworkRequestor() noexcept;

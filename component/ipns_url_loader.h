@@ -31,7 +31,7 @@ class InterRequestState;
 class IpnsUrlLoader : public network::ResolveHostClientBase,
                       public network::mojom::URLLoader,
                       public NameListener {
-  InterRequestState& state_;
+  raw_ref<InterRequestState> state_;
   std::string host_;
   std::optional<network::ResourceRequest> request_;
   mojo::Receiver<network::mojom::ResolveHostClient> recv_{this};
@@ -40,7 +40,7 @@ class IpnsUrlLoader : public network::ResolveHostClientBase,
   std::shared_ptr<IpfsUrlLoader> ipfs_loader_;
   raw_ptr<network::mojom::NetworkContext> network_context_;
   std::shared_ptr<GatewayRequests> api_;
-  network::mojom::URLLoaderFactory& http_loader_;
+  raw_ref<network::mojom::URLLoaderFactory> http_loader_;
 
  public:
   explicit IpnsUrlLoader(InterRequestState& state,
