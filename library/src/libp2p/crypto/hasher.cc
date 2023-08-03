@@ -10,7 +10,7 @@ std::unique_ptr<libp2p::crypto::Hasher> libp2p::crypto::CreateHasher(
       return std::make_unique<Sha256>();
     default:
       LOG(FATAL) << "Unimplemented hash type: "
-                 << static_cast<std::uint8_t>(algo);
+                 << static_cast<std::uint16_t>(algo);
   }
   return {};
 }

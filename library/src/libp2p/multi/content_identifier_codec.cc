@@ -35,28 +35,35 @@ std::ostream& operator<<(std::ostream& str,
 }
 std::ostream& operator<<(std::ostream& str,
                          libp2p::multi::ContentIdentifierCodec::DecodeError e) {
-  using E = libp2p::multi::ContentIdentifierCodec::DecodeError;
-  switch (e) {
-    case E::EMPTY_MULTICODEC:
-      return str << "Multicodec prefix is absent";
-    case E::EMPTY_VERSION:
-      return str << "Version is absent";
-    case E::MALFORMED_VERSION:
-      return str << "Version is malformed; Must be a non-negative integer";
-    case E::RESERVED_VERSION:
-      return str << "Version is greater than the latest version";
-    case E::CID_TOO_SHORT:
-      return str << "CID too short";
-    case E::BAD_MULTIHASH:
-      return str << "Bad multihash input";
-    case E::BAD_MULTIBASE:
-      return str << "Bad multibase input";
-    default:
-      LOG(FATAL) << "Invalid decode error " << static_cast<unsigned>(e);
-      return str << "invalid error";
-  }
+  return str << libp2p::multi::Stringify(e);
 }
 namespace libp2p::multi {
+std::string_view Stringify(ContentIdentifierCodec::DecodeError e) {
+  LOG(INFO) << "Inside custom Stringify(DecodeError=" << static_cast<int>(e)
+            << ")";
+  using E = ContentIdentifierCodec::DecodeError;
+  switch (e) {
+    case E::EMPTY_MULTICODEC:
+      return "Multicodec prefix is absent";
+    case E::EMPTY_VERSION:
+      return "Version is absent";
+    case E::MALFORMED_VERSION:
+      return "Version is malformed; Must be a non-negative integer";
+    case E::RESERVED_VERSION:
+      return "Version is greater than the latest version";
+    case E::CID_TOO_SHORT:
+      return "CID too short";
+    case E::BAD_MULTIHASH:
+      return "Bad multihash input";
+    case E::BAD_MULTIBASE:
+      return "Bad multibase input";
+    case E::UNSUPPORTED_MULTIBASE:
+      return "Unsupported multibase";
+    default:
+      LOG(FATAL) << "Invalid decode error " << static_cast<unsigned>(e);
+      return "invalid error";
+  }
+}
 
 ipfs::expected<std::vector<ipfs::Byte>, ContentIdentifierCodec::EncodeError>
 ContentIdentifierCodec::encode(const ContentIdentifier& cid) {
@@ -225,6 +232,8 @@ auto ContentIdentifierCodec::fromString(const std::string& str)
   auto bytes = MultibaseCodecImpl().decode(str);
   if (bytes.has_value()) {
     return decode(bytes.value());
+  } else if (bytes.error() == MultibaseCodec::Error::UNSUPPORTED_BASE) {
+    return ipfs::unexpected<DecodeError>{DecodeError::UNSUPPORTED_MULTIBASE};
   } else {
     return ipfs::unexpected<DecodeError>{DecodeError::BAD_MULTIBASE};
   }

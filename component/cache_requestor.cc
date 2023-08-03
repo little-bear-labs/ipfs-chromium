@@ -139,9 +139,9 @@ void Self::OnBodyRead(Task task, int code) {
   if (task.listener) {
     VLOG(1) << "Cache hit on " << task.key;
     task.SetHeaders(name());
-    auto& stor = state_.storage();
+    auto& stor = state_->storage();
     stor.Store(task.key, std::move(task.header), std::move(task.body));
-    state_.scheduler().IssueRequests(state_.api());
+    state_->scheduler().IssueRequests(state_->api());
   } else {
     task.hit(task.body, task.header);
   }

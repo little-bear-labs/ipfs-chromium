@@ -5,6 +5,7 @@
 #include <ipfs_client/context_api.h>
 #include <ipfs_client/scheduler.h>
 
+#include <base/memory/raw_ref.h>
 #include <base/time/time.h>
 
 #include <vocab/raw_ptr.h>
@@ -31,7 +32,7 @@ class GatewayRequests final : public ContextApi {
   };
 
   raw_ptr<network::mojom::URLLoaderFactory> loader_factory_ = nullptr;
-  InterRequestState& state_;
+  raw_ref<InterRequestState> state_;
   Scheduler sched_;
   std::function<void(std::vector<std::string>)> disc_cb_;
 

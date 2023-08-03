@@ -1,6 +1,8 @@
 #ifndef BLOCK_REQUESTOR_H_
 #define BLOCK_REQUESTOR_H_
 
+#include <cstdint>
+
 #include <functional>
 #include <memory>
 #include <string>

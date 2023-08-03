@@ -88,8 +88,13 @@ auto ipfs::BlockStorage::GetInternal(std::string const& cid) -> Record const* {
   if (it == cid2record_.end()) {
     auto parsed = Codec::fromString(cid);
     if (parsed.has_value()) {
-      if (parsed.value().content_type == MultiCodec::IDENTITY) {
+      auto hash_type = parsed.value().content_address.getType();
+      if (hash_type == libp2p::multi::HashType::identity) {
+        LOG(INFO) << "Handling identity CID: " << cid;
         return StoreIdentity(cid, parsed.value());
+      } else {
+        VLOG(2) << "Looking for CID " << cid << " of hashed with algo "
+                << static_cast<std::uint64_t>(hash_type);
       }
     } else {
       LOG(ERROR) << " '" << cid << "' is not even a valid CID";

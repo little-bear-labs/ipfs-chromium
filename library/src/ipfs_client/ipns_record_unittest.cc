@@ -44,9 +44,6 @@ TEST(IpnsRecordTest, AKnownKuboRecord) {
       0x79, 0x70, 0x65, 0x00};
   ipfs::ByteView known_record{reinterpret_cast<ipfs::Byte const*>(xxd.data()),
                               xxd.size()};
-  //  auto my_name_res = libp2p::peer::PeerId::FromMultibase(
-  //      "bafzaajaiaejcaxykhmgsz2mhscluhm6bkliibattya2l2lld7scqr64c4ine2u7c");
-  //    libp2p::peer::PeerId::FromMultibase("k51qzi5uqu5dijv526o4z2z10ejylnel0bfvrtw53itcmsecffo8yf0zb4g9gi");
   auto c = libp2p::multi::ContentIdentifierCodec::fromString(
       "bafzaajaiaejcaxykhmgsz2mhscluhm6bkliibattya2l2lld7scqr64c4ine2u7c");
   EXPECT_TRUE(c.has_value());
@@ -87,4 +84,11 @@ TEST(IpnsRecordTest, SerializeValidatedIpns) {
   auto actual = v.Serialize();
   auto expected = "1 2 3 4 5 value gateway_source";
   EXPECT_EQ(actual, expected);
+}
+TEST(IpnsRecordTest, TooBig) {
+  ipfs::Byte* p;
+  auto peer = libp2p::peer::PeerId::fromBase58(
+      "12D3KooWGDMwwqrpcYKpKCgxuKT2NfqPqa94QnkoBBpqvCaiCzWd");
+  auto actual = ipfs::ValidateIpnsRecord({p, 12345}, peer.value(), {}, {});
+  EXPECT_FALSE(actual.has_value());
 }

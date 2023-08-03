@@ -5,6 +5,7 @@
 #include <net/base/io_buffer.h>
 #include <net/disk_cache/disk_cache.h>
 
+#include <base/memory/raw_ref.h>
 #include <base/memory/scoped_refptr.h>
 #include <base/time/time.h>
 
@@ -49,7 +50,7 @@ class CacheRequestor : public BlockRequestor {
     void Fail();
   };
   net::CacheType const type_;
-  InterRequestState& state_;
+  raw_ref<InterRequestState> state_;
   std::unique_ptr<disk_cache::Backend> cache_;
   bool pending_ = false;
   base::FilePath path_;

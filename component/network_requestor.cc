@@ -11,6 +11,6 @@ Self::~NetworkRequestor() noexcept = default;
 void Self::RequestByCid(std::string cid,
                         std::shared_ptr<DagListener> listen,
                         Priority prio) {
-  auto api = state_.api();
+  auto api = state_->api();
   api->RequestByCid(cid, listen, prio);
 }
