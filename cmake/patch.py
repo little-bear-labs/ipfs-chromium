@@ -23,9 +23,12 @@ def osname():
 
 def as_int(v):
     result = 0
-    for c in v.split('.'):
-        result *= 10000
-        result += int(c)
+    try:
+        for c in v.split('.'):
+            result *= 10000
+            result += int(c)
+    except ValueError:
+        return 0
     return result
 
 

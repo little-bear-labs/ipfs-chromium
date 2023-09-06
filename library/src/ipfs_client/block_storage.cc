@@ -14,7 +14,7 @@ bool ipfs::BlockStorage::Store(std::string cid_str,
                                std::string headers,
                                std::string const& body,
                                Block&& block) {
-  VLOG(1) << "Store(" << cid_str << ')';
+  VLOG(2) << "Store(" << cid_str << ')';
   auto t = std::time(nullptr);
   auto it = cid2record_.find(cid_str);
   if (it != cid2record_.end()) {
@@ -78,7 +78,7 @@ bool ipfs::BlockStorage::Store(std::string cid_str,
                                const ipfs::Cid& cid,
                                std::string headers,
                                std::string body) {
-  VLOG(1) << "Store(cid=" << cid_str
+  VLOG(2) << "Store(cid=" << cid_str
           << ", <cid obj>, headers.size()=" << headers.size()
           << " body.size()=" << body.size() << ')';
   return Store(cid_str, cid, headers, body, {cid, body});
@@ -92,15 +92,11 @@ auto ipfs::BlockStorage::GetInternal(std::string const& cid) -> Record const* {
       if (hash_type == libp2p::multi::HashType::identity) {
         LOG(INFO) << "Handling identity CID: " << cid;
         return StoreIdentity(cid, parsed.value());
-      } else {
-        VLOG(2) << "Looking for CID " << cid << " of hashed with algo "
-                << static_cast<std::uint64_t>(hash_type);
       }
     } else {
       LOG(ERROR) << " '" << cid << "' is not even a valid CID";
       return nullptr;
     }
-    VLOG(2) << "Data not found in immediate object storage for " << cid;
     return nullptr;
   }
   auto* rec = it->second;
@@ -124,7 +120,7 @@ ipfs::Block const* ipfs::BlockStorage::Get(std::string const& cid) {
 std::string const* ipfs::BlockStorage::GetHeaders(const std::string& cid) {
   auto* result = GetInternal(cid);
   if (result) {
-    VLOG(1) << "GetHeaders(" << cid << ")->size()=" << result->headers.size();
+    VLOG(2) << "GetHeaders(" << cid << ")->size()=" << result->headers.size();
     return &(result->headers);
   }
   LOG(ERROR) << "Found no headers for " << cid << "!";
@@ -136,8 +132,8 @@ void ipfs::BlockStorage::AddListening(UnixFsPathResolver* p) {
 }
 
 void ipfs::BlockStorage::StopListening(UnixFsPathResolver* p) {
-  LOG(INFO) << "StopListening(" << p->current_cid() << ',' << p->original_path()
-            << ')';
+  VLOG(1) << "StopListening(" << p->current_cid() << ',' << p->original_path()
+          << ')';
   auto e = std::remove(listening_.begin(), listening_.end(), p);
   listening_.erase(e, listening_.end());
 }

@@ -2,7 +2,7 @@
 
 ## Overview
 
-See a [blog post](http://chomp:8080/ipfs/bafybeifphqlt7tzpvdo7yzw5sdujfkbiujyzhjbhum7yuximk45oab3yum/2023-05-multigateway-chromium-client/) about it.
+See a [blog post](https://blog.ipfs.tech/2023-05-multigateway-chromium-client/) about it.
 
 ### Basic demo
 [demo.webm](https://github.com/little-bear-labs/ipfs-chromium/assets/97759690/ae072a58-f5de-4270-8d48-2c858d9b17b1)

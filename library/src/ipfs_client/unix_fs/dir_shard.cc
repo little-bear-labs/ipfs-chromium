@@ -52,7 +52,7 @@ bool Self::Process(std::unique_ptr<NodeHelper>& next_helper,
   }
   auto fanout = block.fsdata().has_fanout() ? block.fsdata().fanout() : 256;
   if (hamt_hexs_.empty()) {
-    LOG(INFO) << "Had no hexes, hash path element: " << next_path_element_;
+    VLOG(1) << "Had no hexes, hash path element: " << next_path_element_;
     HashPathElement(fanout);
   }
   if (hamt_hexs_.empty()) {
@@ -73,10 +73,10 @@ bool Self::Process(std::unique_ptr<NodeHelper>& next_helper,
             << cid << " fanout=" << block.fsdata().fanout();
     target_cid = cid;
     if (absl::EndsWith(name, next_path_element_)) {
-      LOG(INFO) << "Found our calling! Leaving the Hamt in favor of " << name;
+      VLOG(1) << "Found our calling! Leaving the Hamt in favor of " << name;
       next_helper.reset();  // Let higher detect what the next level down is
     } else if (hamt_hexs_.front() == name) {
-      LOG(INFO) << "One more level down the Hamt, following " << name;
+      VLOG(1) << "One more level down the Hamt, following " << name;
       auto help = std::make_unique<DirShard>(next_path_element_);
       Delegate(*help);
       help->cid(cid);
@@ -105,7 +105,6 @@ void Self::HashPathElement(std::uint64_t fanout) {
   auto hex_width = 0U;
   for (auto x = fanout; (x >>= 4); ++hex_width)
     ;
-  L_VAR(hex_width);
   // ...  then hash it using the multihash id provided in Data.hashType.
   //  absl::uint128 digest{};
   std::array<std::uint64_t, 2> digest = {0U, 0U};
@@ -113,8 +112,8 @@ void Self::HashPathElement(std::uint64_t fanout) {
   MurmurHash3_x64_128(next_path_element_.data(), next_path_element_.size(), 0,
                       digest.data());
   auto bug_compatible_digest = htobe64(digest[0]);
-  LOG(INFO) << "Hash: " << digest[0] << ' ' << digest[1] << " -> "
-            << bug_compatible_digest;
+  VLOG(1) << "Hash: " << digest[0] << ' ' << digest[1] << " -> "
+          << bug_compatible_digest;
   for (auto d : digest) {
     auto hash_bits = htobe64(d);
     while (hash_bits) {

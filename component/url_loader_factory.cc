@@ -39,8 +39,8 @@ void ipfs::IpfsURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     net::MutableNetworkTrafficAnnotationTag const&  // traffic_annotation
 ) {
-  LOG(INFO) << "IPFS subresource: case=" << scheme_
-            << " url=" << request.url.spec();
+  VLOG(1) << "IPFS subresource: case=" << scheme_
+          << " url=" << request.url.spec();
   DCHECK(default_factory_);
   if (scheme_ == "ipfs") {
     auto ptr = std::make_shared<IpfsUrlLoader>(
