@@ -77,7 +77,7 @@ void Self::Request(std::shared_ptr<DagListener>& listener,
   auto it = already_requested_.find(cid);
   auto t = std::time(nullptr);
   if (it == already_requested_.end()) {
-    VLOG(1) << "Request(" << cid << ',' << static_cast<long>(prio) << ')';
+    VLOG(2) << "Request(" << cid << ',' << static_cast<long>(prio) << ')';
     already_requested_[cid] = {prio, t};
     requestor_.RequestByCid(cid, listener, prio);
     if (prio) {

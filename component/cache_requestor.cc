@@ -137,7 +137,7 @@ void Self::OnBodyRead(Task task, int code) {
   }
   task.body.assign(task.buf->data(), static_cast<std::size_t>(code));
   if (task.listener) {
-    VLOG(1) << "Cache hit on " << task.key;
+    VLOG(2) << "Cache hit on " << task.key;
     task.SetHeaders(name());
     auto& stor = state_->storage();
     stor.Store(task.key, std::move(task.header), std::move(task.body));
@@ -226,7 +226,7 @@ void Self::Task::SetHeaders(std::string_view source) {
   auto dur = base::TimeTicks::Now() - start;
   value.append(std::to_string(dur.InMillisecondsRoundedUp()));
   heads->SetHeader("Server-Timing", value);
-  VLOG(1) << "From cache: Server-Timing: " << value << "; Block-Cache-" << key
+  VLOG(2) << "From cache: Server-Timing: " << value << "; Block-Cache-" << key
           << ": " << source;
   heads->SetHeader("Block-Cache-" + key, {source.data(), source.size()});
   header = heads->raw_headers();
