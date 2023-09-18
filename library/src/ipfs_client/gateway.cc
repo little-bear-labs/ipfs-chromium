@@ -27,7 +27,7 @@ bool ipfs::Gateway::accept(std::string const& suffix, long need) {
   if (static_cast<std::size_t>(need) < tasks_.size() / 2) {
     return false;
   }
-  if (priority_ < tasks_.size()) {
+  if (priority_ < tasks_.size() * tasks_.size()) {
     return false;
   }
   if (PreviouslyFailed(suffix)) {

@@ -52,7 +52,7 @@ void Self::Step(std::shared_ptr<DagListener> listener) {
   std::unique_ptr<unix_fs::NodeHelper> helper;
   if (helper_->Process(helper, listener, requestor, cid_)) {
     helper_.swap(helper);
-    VLOG(1) << "Taking another step for " << cid_;
+    VLOG(2) << "Taking another step for " << cid_;
     Step(listener);
   }
 }

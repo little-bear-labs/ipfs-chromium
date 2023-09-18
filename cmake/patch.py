@@ -158,7 +158,7 @@ class Patcher:
                 return True
             if version not in version_set:
                 sortable = [int(c) for c in version.split('.')]
-                print('Adding',version,s)
+                # print('Adding',version,s)
                 version_set[version] = [sortable, version, s]
             elif s not in version_set[version]:
                 print('2 Adding',version,s)

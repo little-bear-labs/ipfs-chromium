@@ -4,6 +4,8 @@
 
 See a [blog post](https://blog.ipfs.tech/2023-05-multigateway-chromium-client/) about it.
 
+Also, slides for a BlinkOn [lightning talk](doc/slides/blinkon23.md).
+
 ### Basic demo
 [demo.webm](https://github.com/little-bear-labs/ipfs-chromium/assets/97759690/ae072a58-f5de-4270-8d48-2c858d9b17b1)
 
