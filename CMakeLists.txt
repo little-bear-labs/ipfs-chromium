@@ -49,3 +49,12 @@ elseif(CHROMIUM_SOURCE_TREE AND DOWNLOAD_CHROMIUM)
 else()
     message(WARNING "CHROMIUM_SOURCE_TREE (${CHROMIUM_SOURCE_TREE}) not pointing to source tree.")
 endif()
+
+include(cmake/doxy.cmake)
+include(cmake/marp.cmake)
+if(doc_targets)
+    add_custom_target(doc
+      DEPENDS ${doc_targets}
+      COMMENT "Generated documentation: ${doc_targets}"
+    )
+endif()

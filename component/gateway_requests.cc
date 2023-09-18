@@ -109,7 +109,6 @@ auto Self::InitiateGatewayRequest(BusyGateway assigned)
   //  out->listener = listener;
   auto cb = base::BindOnce(&Self::OnResponse, base::Unretained(this),
                            shared_from_this(), out, start_time);
-  VLOG(2) << "InitiateGatewayRequest(" << url << ")";
   DCHECK(loader_factory_);
   // TODO - proper requesting with full features (SetPriority, etc.).
   out->loader->DownloadToString(loader_factory_, std::move(cb), 2UL * MB);
@@ -148,7 +147,7 @@ bool Self::ProcessResponse(BusyGateway& gw,
     LOG(ERROR) << "No gateway.";
     return false;
   }
-  //  LOG(INFO) << "ProcessResponse(" << gw.url() << ')';
+  LOG(INFO) << "ProcessResponse(" << gw.url() << ')';
   if (!ldr) {
     LOG(ERROR) << "No loader for processing " << gw.url();
     return false;
@@ -174,11 +173,11 @@ bool Self::ProcessResponse(BusyGateway& gw,
   constexpr std::string_view content_type_prefix{"application/vnd.ip"};
   if (reported_content_type.compare(0, content_type_prefix.size(),
                                     content_type_prefix)) {
-    LOG(ERROR) << '\n'
-               << gw.url() << " reported a content type of "
-               << reported_content_type
-               << " strongly implying that it's a full request, not a single "
-                  "block. TODO: Remove "
+    LOG(WARNING) << '\n'
+                 << gw.url() << " reported a content type of "
+                 << reported_content_type
+                 << " strongly implying that it's a full request, not a single "
+                    "block. TODO: Remove "
                << gw->url_prefix() << " from list of gateways?\n";
     state_->gateways().demote(gw->url_prefix());
     return false;
@@ -263,9 +262,8 @@ std::string Self::MimeType(std::string extension,
                            std::string const& url) const {
   std::string result;
   auto fp_ext = base::FilePath::FromUTF8Unsafe(extension).value();
-  LOG(INFO) << "extension=" << extension;
-  LOG(INFO) << "content.size()=" << content.size();
-  LOG(INFO) << "(as-if) url for mime type:" << url;
+  VLOG(1) << "extension=" << extension << "content.size()=" << content.size()
+          << "(as-if) url for mime type:" << url;
   if (extension.empty()) {
     result.clear();
   } else if (net::GetWellKnownMimeTypeFromExtension(fp_ext, &result)) {
