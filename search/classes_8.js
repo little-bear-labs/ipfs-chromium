@@ -1,8 +1,13 @@
 var searchData=
 [
-  ['raw_5fptr_145',['raw_ptr',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
-  ['raw_5fptr_3c_20ipfs_3a_3ablockstorage_20_3e_146',['raw_ptr&lt; ipfs::BlockStorage &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
-  ['raw_5fptr_3c_20ipfs_3a_3acontextapi_20_3e_147',['raw_ptr&lt; ipfs::ContextApi &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
-  ['raw_5fptr_3c_20ipfs_3a_3ascheduler_20_3e_148',['raw_ptr&lt; ipfs::Scheduler &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
-  ['raw_5fptr_3c_20ipfs_3a_3aunixfspathresolver_20_3e_149',['raw_ptr&lt; ipfs::UnixFsPathResolver &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]]
+  ['pblink_192',['PBLink',['../classipfs_1_1pb__dag_1_1PBLink.html',1,'ipfs::pb_dag']]],
+  ['pblinkdefaulttypeinternal_193',['PBLinkDefaultTypeInternal',['../structipfs_1_1pb__dag_1_1PBLinkDefaultTypeInternal.html',1,'ipfs::pb_dag']]],
+  ['pbnode_194',['PBNode',['../classipfs_1_1pb__dag_1_1PBNode.html',1,'ipfs::pb_dag']]],
+  ['pbnodedefaulttypeinternal_195',['PBNodeDefaultTypeInternal',['../structipfs_1_1pb__dag_1_1PBNodeDefaultTypeInternal.html',1,'ipfs::pb_dag']]],
+  ['plaindirectory_196',['PlainDirectory',['../classipfs_1_1unix__fs_1_1PlainDirectory.html',1,'ipfs::unix_fs']]],
+  ['plainfile_197',['PlainFile',['../classipfs_1_1unix__fs_1_1PlainFile.html',1,'ipfs::unix_fs']]],
+  ['privatekey_198',['PrivateKey',['../classipfs_1_1ipns_1_1PrivateKey.html',1,'ipfs::ipns']]],
+  ['privatekeydefaulttypeinternal_199',['PrivateKeyDefaultTypeInternal',['../structipfs_1_1ipns_1_1PrivateKeyDefaultTypeInternal.html',1,'ipfs::ipns']]],
+  ['publickey_200',['PublicKey',['../classipfs_1_1ipns_1_1PublicKey.html',1,'ipfs::ipns']]],
+  ['publickeydefaulttypeinternal_201',['PublicKeyDefaultTypeInternal',['../structipfs_1_1ipns_1_1PublicKeyDefaultTypeInternal.html',1,'ipfs::ipns']]]
 ];

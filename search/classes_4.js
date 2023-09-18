@@ -1,5 +1,8 @@
 var searchData=
 [
-  ['ipnscborentry_138',['IpnsCborEntry',['../structipfs_1_1IpnsCborEntry.html',1,'ipfs']]],
-  ['ipnsnames_139',['IpnsNames',['../classipfs_1_1IpnsNames.html',1,'ipfs']]]
+  ['gateway_171',['Gateway',['../classipfs_1_1Gateway.html',1,'ipfs']]],
+  ['gatewayrequest_172',['GatewayRequest',['../classipfs_1_1GatewayRequest.html',1,'ipfs']]],
+  ['gatewayrequests_173',['GatewayRequests',['../classipfs_1_1GatewayRequests.html',1,'ipfs']]],
+  ['gateways_174',['Gateways',['../classipfs_1_1Gateways.html',1,'ipfs']]],
+  ['generateddirectorylisting_175',['GeneratedDirectoryListing',['../classipfs_1_1GeneratedDirectoryListing.html',1,'ipfs']]]
 ];
