@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['serializedstoragehook_246',['SerializedStorageHook',['../classipfs_1_1BlockStorage.html#abfce56beba3484d42067349101bd868a',1,'ipfs::BlockStorage']]]
+  ['serializedstoragehook_247',['SerializedStorageHook',['../classipfs_1_1BlockStorage.html#abfce56beba3484d42067349101bd868a',1,'ipfs::BlockStorage']]]
 ];
