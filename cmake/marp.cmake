@@ -11,18 +11,25 @@ if(MARP_EXE)
     CONFIGURE_DEPENDS
       doc/slides/*.md
   )
+  file(GLOB
+      slide_png
+    CONFIGURE_DEPENDS
+      doc/slides/*.png
+  )
   foreach(slide_md ${slide_mds})
     get_filename_component(slide "${slide_md}" NAME_WE)
     add_custom_target(${slide}
       SOURCES "${slide_md}"
       COMMAND "${MARP_EXE}" --pptx --allow-local-files --html=true "${slide_md}" --output "${out}/${slide}.pptx"
       COMMAND "${MARP_EXE}"        --allow-local-files --html=true "${slide_md}" --output "${out}/${slide}.html"
+      COMMAND "${CMAKE_COMMAND}" -E copy ${slide_png} "${out}"
     )
     if(DOXYGEN_FOUND AND USE_DOXYGEN)
       add_custom_command(
         TARGET "${slide}"
         POST_BUILD
         COMMAND cmake -E copy "${out}/${slide}.html" "${CMAKE_BINARY_DIR}/doc/html/md_doc_slides_${slide}.html"
+        COMMAND cmake -E copy ${out}/* "${CMAKE_BINARY_DIR}/doc/html/"
       )
     endif()
     add_dependencies(gen_slides "${slide}")
