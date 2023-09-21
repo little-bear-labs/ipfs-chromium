@@ -161,7 +161,7 @@ class Patcher:
                 # print('Adding',version,s)
                 version_set[version] = [sortable, version, s]
             elif s not in version_set[version]:
-                print('2 Adding',version,s)
+                #print('2 Adding',version,s)
                 version_set[version].append(s)
             return False
         while fuzz >= 0 and len(version_set) < 2:

@@ -1,9 +1,16 @@
 <!--
-theme: base-theme
+theme: default
 headingDivider: 3
 style: |
   section {
     background-color: #CDEFFF;
+    --color-canvas-subtle: #a9a9a9;
+  }
+  th {
+    background-color: #CDEFFF;
+  }
+  th:empty {
+    visibility: hidden;
   }
   img {
     display: block;
@@ -23,7 +30,30 @@ style: |
 
 # Verifying IPFS Client in Chromium
 
-![IPFS Logo](https://ipfs.tech/_nuxt/ipfs-logo.a313bcee.svg)
+<table style="margin-left:auto;margin-right:auto;">
+<tr >
+<td colspan="2">
+
+![Chromium](chromium.png)
+</td><td colspan="2">
+
+![IPFS](ipfs.png) 
+</td></tr>
+
+<tr>
+<td>
+
+![LBL](lbl.png)
+</td><td>
+
+![arc](arc.png)
+</td><td>
+
+![FIL](fil.png)
+</td><td>
+
+![PL](pl.png)
+</tr></table>
 
 ## What is IPFS?
 
@@ -91,6 +121,17 @@ Since all the content is verifiable, it can be pieced together from various/any 
   - Origin includes a hostname (Assume DNS TXT is reliable)
   - TXT record lookup reduces to earlier problem
 
+## Prior art
+
+* Manually using a particular gateway
+* IPFS Companion (extension)
+  - Similar to above, but much less manual.
+* Brave
+  - Integrated into UI
+  - User's choice: 
+    - pick 1 gateway to use
+    - have Brave download software & run an IPFS node
+
 ## Let's step through loading a page
 <script type="module">
   import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
@@ -125,7 +166,7 @@ flowchart LR;
 </div>
 
 ### We have our immutable content
-Request root block
+Request root node.
 https://ipfs.io/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy?format=raw
 <div class="mermaid">
 flowchart LR;
@@ -142,6 +183,7 @@ flowchart LR;
 
 ### It's a directory that contains index.html, so request that
 https://gateway.pinata.cloud/ipfs/QmTzVjzGMG4LwBY9ArxcNcokPfbpG2biT8Gy9AiecxKtju?format=raw
+Note the recursive verification.
 <div class="mermaid">
 flowchart LR;
     ipns["/ipns/k51...ett"]-->dnsl["/ipns/ipfs.tech"]-->root["/ipfs/QmR...2SRy"]
@@ -177,7 +219,7 @@ flowchart LR;
     root-->index["index.html = QmT...tju"]
     root-->e5["..."]
     style root fill:#9fb
-    style e4 fill:#9fb
+    style index fill:#9fb
 </div>
 
 ### _nuxt is also a directory, with 164 entries
@@ -228,8 +270,37 @@ flowchart LR;
     img-->c1["Qm...2"]
 </div>
 
-## And re-assemble
-File parts are in a tree in DFS order.
+## Since the HTTP response can come from any source...
 
-![IPFS Logo](https://ipfs.tech/_nuxt/ipfs-logo.a313bcee.svg)
+Make the same request to multiple gateways in parallel. 
+One will return first, others are cancelled. 
+Reduces worst-case times. 
+
+e.g.:
+
+- https://ipfs.io/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy?format=raw
+- https://dweb.link/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy?format=raw
+- https://jorropo.net/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy?format=raw
+
+## Possible future considerations
+
+* Design & implementation changes necessary for upstreaming
+* IPFS V1 HTTP Routing API - Helping with missing data and exhausted known gateways
+* Partial CAR requests - fewer network round-trips
+* IPFS-specific DevTools (e.g.: DAG explorer)
+* Possibly connecting to webtransport IPFS peers
+
+## POC Screenshot
+
+![ScreenShot](icss.png)
+
+## Questions & Contact/Further reading
+
+| what                 | where                                                         |
+|----------------------|---------------------------------------------------------------|
+| ChromeStatus Feature | https://chromestatus.com/feature/5105580464668672             |
+| Tracking Issue       | https://bugs.chromium.org/p/chromium/issues/detail?id=1440503 |
+| POC Repo             | https://github.com/little-bear-labs/ipfs-chromium             |
+| John's Email         | john@littlebearlabs.io                                        |
+| IPFS Specs           | https://specs.ipfs.tech                                       |
 

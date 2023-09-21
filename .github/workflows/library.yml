@@ -36,6 +36,7 @@ jobs:
       - name: Run Doxygen
         run: |
           cmake --build build --config Debug --target doc
+          ls -lrth build/doc/html
       - name: UpDoc
         uses: JamesIves/github-pages-deploy-action@v4
         with:
