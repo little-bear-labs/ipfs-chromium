@@ -19,9 +19,9 @@ std::string ipfs::unix_fs::GuessContentType(ContextApi& api,
   auto mime = api.MimeType(ext, content, url);
   if (mime.size()) {
     // TODO, store mime in block
-    LOG(INFO) << "Detected mime " << mime << " for " << path
+    VLOG(1) << "Detected mime " << mime << " for " << path
 
-              << " from URL " << url;
+            << " from URL " << url;
     return mime;
   }
   // TODO fetch the mime from block if available

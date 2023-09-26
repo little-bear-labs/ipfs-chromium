@@ -151,11 +151,16 @@ class Patcher:
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
-        fuzz = 99999
+        fuzz = 12345
         def check(version, version_set, s):
             i = as_int(version)
-            if any(abs(a-i)<fuzz for a in avail):
-                return True
+            by = (fuzz,0)
+            for a in avail:
+                d = abs(a-i)
+                if d < fuzz:
+                    return True
+                elif d < by[0]:
+                    by = ( d, a )
             if version not in version_set:
                 sortable = [int(c) for c in version.split('.')]
                 # print('Adding',version,s)
@@ -164,18 +169,16 @@ class Patcher:
                 #print('2 Adding',version,s)
                 version_set[version].append(s)
             return False
-        while fuzz >= 0 and len(version_set) < 2:
-            fuzz -= 1
-            for channel in ['Dev', 'Beta', 'Stable', 'Extended']:
-                for pfrm in ['Linux', 'Mac', 'Windows']:
-                    try:
-                        when, version = self.release_versions(channel, pfrm)[0]
-                        s = f"{channel}-{pfrm}-{when}"
-                        check(version, version_set, s)
-                    except IndexError:
-                        pass  # One may assume this is Linux Extended
-            e = self.electron_version()
-            check(e, version_set, 'electron-main')
+        for channel in ['Dev', 'Beta', 'Stable', 'Extended']:
+            for pfrm in ['Linux', 'Mac', 'Windows']:
+                try:
+                    when, version = self.release_versions(channel, pfrm)[0]
+                    s = f"{channel}-{pfrm}-{when}"
+                    check(version, version_set, s)
+                except IndexError:
+                    pass  # One may assume this is Linux Extended
+        e = self.electron_version()
+        check(e, version_set, 'electron-main')
         result = list(version_set.values())
         result.sort(reverse=True)
         return map(lambda x: x[1:], result)

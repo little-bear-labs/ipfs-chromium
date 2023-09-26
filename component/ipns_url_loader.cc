@@ -261,14 +261,18 @@ void ipfs::IpnsUrlLoader::RequestFromGateway() {
   state_->scheduler().IssueRequests(api_);
 }
 void ipfs::IpnsUrlLoader::Complete() {
-  LOG(INFO) << "NameListener's Complete called for an IpnsLoader!";
+  LOG(INFO) << "NameListener's Complete called for an IpnsLoader.";
   auto* entry = state_->names().Entry(host_);
-  DCHECK(entry);
-  auto caches = state_->serialized_caches();
-  LOG(INFO) << "Storing the resolution of ipns://" << host_ << " in "
-            << caches.size() << " cache backends.";
-  for (auto cache : caches) {
-    cache->Store("ipns/" + host_, "IPNS", entry->Serialize());
+  if (entry) {
+    auto caches = state_->serialized_caches();
+    LOG(INFO) << "Storing the resolution of ipns://" << host_ << " in "
+              << caches.size() << " cache backends.";
+    for (auto cache : caches) {
+      cache->Store("ipns/" + host_, "IPNS", entry->Serialize());
+    }
+    Next();
+  } else {
+    LOG(ERROR) << "Failed to resolve IPNS " << host_;
+    FailNameResolution();
   }
-  Next();
 }

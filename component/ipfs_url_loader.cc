@@ -192,7 +192,7 @@ void ipfs::IpfsUrlLoader::NotHere(std::string_view cid, std::string_view path) {
 
 void ipfs::IpfsUrlLoader::ReceiveBlockBytes(std::string_view content) {
   partial_block_.append(content);
-  VLOG(1) << "Recived a block of size " << content.size() << " now have "
+  VLOG(2) << "Recived a block of size " << content.size() << " now have "
           << partial_block_.size() << " bytes.";
 }
 

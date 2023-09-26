@@ -181,12 +181,12 @@ bool ipfs::Block::cid_matches_data() const {
                     hashed.end());
 }
 
-std::basic_string<ipfs::Byte> ipfs::Block::binary_hash(
+std::vector<ipfs::Byte> ipfs::Block::binary_hash(
     libp2p::multi::HashType algo) const {
   ipfs::ByteView bytes{reinterpret_cast<Byte const*>(original_bytes_.data()),
                        original_bytes_.size()};
   auto hasher = libp2p::crypto::CreateHasher(algo);
-  std::basic_string<ipfs::Byte> result(hasher->digestSize(), Byte{});
+  std::vector<ipfs::Byte> result(hasher->digestSize(), Byte{});
   if (hasher->write(bytes).value()) {
     if (!hasher->digestOut({result.data(), result.size()}).has_value()) {
       LOG(ERROR) << "Error getting digest.";

@@ -16,7 +16,7 @@ namespace {
 bool matches(libp2p::multi::Multihash const& hash,
              ipfs::ByteView pubkey_bytes) {
   auto hasher = libp2p::crypto::CreateHasher(hash.getType());
-  std::basic_string<ipfs::Byte> result(hasher->digestSize(), ipfs::Byte{});
+  std::vector<ipfs::Byte> result(hasher->digestSize(), ipfs::Byte{});
   if (hasher->write(pubkey_bytes).value()) {
     if (!hasher->digestOut({result.data(), result.size()}).has_value()) {
       LOG(ERROR) << "Error getting digest.";

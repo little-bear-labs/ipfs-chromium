@@ -1,0 +1,277 @@
+diff --git a/base/threading/thread_local_internal.h b/base/threading/thread_local_internal.h
+index ed99410ea8a31..d89d48ba981ab 100644
+--- a/base/threading/thread_local_internal.h
++++ b/base/threading/thread_local_internal.h
+@@ -30,8 +30,7 @@ class CheckedThreadLocalOwnedPointer {
+  public:
+   CheckedThreadLocalOwnedPointer() = default;
+ 
+-  CheckedThreadLocalOwnedPointer<T>(const CheckedThreadLocalOwnedPointer<T>&) =
+-      delete;
++  CheckedThreadLocalOwnedPointer(const CheckedThreadLocalOwnedPointer&) = delete;
+   CheckedThreadLocalOwnedPointer<T>& operator=(
+       const CheckedThreadLocalOwnedPointer<T>&) = delete;
+ 
+diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
+index ff490f2ffb3f5..a7aa996e45261 100644
+--- a/chrome/browser/BUILD.gn
++++ b/chrome/browser/BUILD.gn
+@@ -2161,6 +2161,7 @@ static_library("browser") {
+     "//components/infobars/content",
+     "//components/infobars/core",
+     "//components/invalidation/impl",
++    "//components/ipfs",
+     "//components/javascript_dialogs",
+     "//components/keyed_service/content",
+     "//components/language/content/browser",
+diff --git a/chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc b/chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc
+index 4c88614c68c25..269b0440ed571 100644
+--- a/chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc
++++ b/chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc
+@@ -59,6 +59,8 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
+       (ProfileIOData::IsHandledProtocol(scheme) ||
+        base::EqualsCaseInsensitiveASCII(scheme, content::kViewSourceScheme) ||
+        base::EqualsCaseInsensitiveASCII(scheme, url::kJavaScriptScheme) ||
++       base::EqualsCaseInsensitiveASCII(scheme, "ipfs") ||
++       base::EqualsCaseInsensitiveASCII(scheme, "ipns") ||
+        base::EqualsCaseInsensitiveASCII(scheme, url::kDataScheme))) {
+     return metrics::OmniboxInputType::URL;
+   }
+diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
+index da2cf79ceae39..884bb7e5088cb 100644
+--- a/chrome/browser/chrome_content_browser_client.cc
++++ b/chrome/browser/chrome_content_browser_client.cc
+@@ -222,6 +222,8 @@
+ #include "components/error_page/common/localized_error.h"
+ #include "components/error_page/content/browser/net_error_auto_reloader.h"
+ #include "components/google/core/common/google_switches.h"
++#include "components/ipfs/interceptor.h"
++#include "components/ipfs/url_loader_factory.h"
+ #include "components/keep_alive_registry/keep_alive_types.h"
+ #include "components/keep_alive_registry/scoped_keep_alive.h"
+ #include "components/language/core/browser/pref_names.h"
+@@ -6063,13 +6065,17 @@ void ChromeContentBrowserClient::
+         int render_frame_id,
+         const absl::optional<url::Origin>& request_initiator_origin,
+         NonNetworkURLLoaderFactoryMap* factories) {
+-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS) || \
+-    !BUILDFLAG(IS_ANDROID)
+   content::RenderFrameHost* frame_host =
+       RenderFrameHost::FromID(render_process_id, render_frame_id);
+   WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
+-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS) || \
+-        // !BUILDFLAG(IS_ANDROID)
++  network::mojom::URLLoaderFactory* default_factory = g_browser_process->system_network_context_manager()->GetURLLoaderFactory();
++  ipfs::IpfsURLLoaderFactory::Create(
++    factories,
++    web_contents->GetBrowserContext(),
++    default_factory,
++    GetSystemNetworkContext()
++  );
++
+ 
+ #if BUILDFLAG(IS_CHROMEOS_ASH)
+   if (web_contents) {
+@@ -6211,6 +6217,7 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
+     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
+   std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+       interceptors;
++  interceptors.push_back(std::make_unique<ipfs::Interceptor>(g_browser_process->system_network_context_manager()->GetURLLoaderFactory(), GetSystemNetworkContext()));
+ #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+   interceptors.push_back(
+       std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(
+diff --git a/chrome/common/chrome_content_client.cc b/chrome/common/chrome_content_client.cc
+index 246ec9c5c911f..5d66d133a7907 100644
+--- a/chrome/common/chrome_content_client.cc
++++ b/chrome/common/chrome_content_client.cc
+@@ -296,6 +296,12 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
+ #if BUILDFLAG(IS_ANDROID)
+   schemes->local_schemes.push_back(url::kContentScheme);
+ #endif
++  for ( const char* ip_s : {"ipfs", "ipns"} ) {
++    schemes->standard_schemes.push_back(ip_s);
++    schemes->cors_enabled_schemes.push_back(ip_s);
++    schemes->secure_schemes.push_back(ip_s);
++    schemes->csp_bypassing_schemes.push_back(ip_s);
++  }
+ }
+ 
+ std::u16string ChromeContentClient::GetLocalizedString(int message_id) {
+diff --git a/components/open_from_clipboard/clipboard_recent_content_generic.cc b/components/open_from_clipboard/clipboard_recent_content_generic.cc
+index 4dcafecbc66c6..d205209c08162 100644
+--- a/components/open_from_clipboard/clipboard_recent_content_generic.cc
++++ b/components/open_from_clipboard/clipboard_recent_content_generic.cc
+@@ -20,7 +20,7 @@
+ namespace {
+ // Schemes appropriate for suggestion by ClipboardRecentContent.
+ const char* kAuthorizedSchemes[] = {
+-    url::kAboutScheme, url::kDataScheme, url::kHttpScheme, url::kHttpsScheme,
++    url::kAboutScheme, url::kDataScheme, url::kHttpScheme, url::kHttpsScheme, "ipfs", "ipns"
+     // TODO(mpearson): add support for chrome:// URLs.  Right now the scheme
+     // for that lives in content and is accessible via
+     // GetEmbedderRepresentationOfAboutScheme() or content::kChromeUIScheme
+diff --git a/net/dns/dns_config_service_linux.cc b/net/dns/dns_config_service_linux.cc
+index 5273da5190277..12b28b86a4c00 100644
+--- a/net/dns/dns_config_service_linux.cc
++++ b/net/dns/dns_config_service_linux.cc
+@@ -272,11 +272,11 @@ bool IsNsswitchConfigCompatible(
+         // Ignore any entries after `kDns` because Chrome will fallback to the
+         // system resolver if a result was not found in DNS.
+         return true;
+-
++      case NsswitchReader::Service::kResolve:
++        break;
+       case NsswitchReader::Service::kMdns:
+       case NsswitchReader::Service::kMdns4:
+       case NsswitchReader::Service::kMdns6:
+-      case NsswitchReader::Service::kResolve:
+       case NsswitchReader::Service::kNis:
+         RecordIncompatibleNsswitchReason(
+             IncompatibleNsswitchReason::kIncompatibleService,
+diff --git a/url/BUILD.gn b/url/BUILD.gn
+index 8f5fea125a299..21cd67a8e4ff5 100644
+--- a/url/BUILD.gn
++++ b/url/BUILD.gn
+@@ -40,6 +40,7 @@ component("url") {
+     "url_canon_internal_file.h",
+     "url_canon_ip.cc",
+     "url_canon_ip.h",
++    "url_canon_ipfs.cc",
+     "url_canon_mailtourl.cc",
+     "url_canon_path.cc",
+     "url_canon_pathurl.cc",
+@@ -64,7 +65,10 @@ component("url") {
+ 
+   public_deps = [ "//base" ]
+ 
+-  deps = [ "//base/third_party/dynamic_annotations" ]
++  deps = [
++    "//base/third_party/dynamic_annotations",
++    "//third_party/ipfs_client",
++  ]
+ 
+   if (is_win) {
+     # Don't conflict with Windows' "url.dll".
+diff --git a/url/url_canon.h b/url/url_canon.h
+index 94b44426fa33a..19f1f0789164d 100644
+--- a/url/url_canon.h
++++ b/url/url_canon.h
+@@ -688,6 +688,23 @@ bool CanonicalizeMailtoURL(const char16_t* spec,
+                            CanonOutput* output,
+                            Parsed* new_parsed);
+ 
++COMPONENT_EXPORT(URL)
++bool CanonicalizeIpfsURL(const char* spec,
++                             int spec_len,
++                             const Parsed& parsed,
++                             SchemeType scheme_type,
++                             CharsetConverter* query_converter,
++                             CanonOutput* output,
++                             Parsed* new_parsed);
++COMPONENT_EXPORT(URL)
++bool CanonicalizeIpfsURL(const char16_t* spec,
++                             int spec_len,
++                             const Parsed& parsed,
++                             SchemeType scheme_type,
++                             CharsetConverter* query_converter,
++                             CanonOutput* output,
++                             Parsed* new_parsed);
++
+ // Part replacer --------------------------------------------------------------
+ 
+ // Internal structure used for storing separate strings for each component.
+diff --git a/url/url_canon_ipfs.cc b/url/url_canon_ipfs.cc
+new file mode 100644
+index 0000000000000..da3a5f032b5e8
+--- /dev/null
++++ b/url/url_canon_ipfs.cc
+@@ -0,0 +1,72 @@
++#include "url_canon_internal.h"
++
++#include <libp2p/multi/content_identifier_codec.hpp>
++#include <ipfs_client/identity_cid.h>
++
++#include <sstream>
++
++namespace m = libp2p::multi;
++using Cid      = m::ContentIdentifier;
++using CidCodec = m::ContentIdentifierCodec;
++
++bool url::CanonicalizeIpfsURL(const char* spec,
++                             int spec_len,
++                             const Parsed& parsed,
++                             SchemeType scheme_type,
++                             CharsetConverter* charset_converter,
++                             CanonOutput* output,
++                             Parsed* output_parsed) {
++  if ( spec_len < 1 || !spec ) {
++    return false;
++  }
++  if ( parsed.host.len < 1 ) {
++    return false;
++  }
++  std::string cid_str{ spec + parsed.host.begin, static_cast<std::size_t>(parsed.host.len) };
++  auto maybe_cid = CidCodec::fromString(cid_str);
++  if ( !maybe_cid.has_value() ) {
++    auto e = libp2p::multi::Stringify(maybe_cid.error());
++    std::ostringstream err;
++    err << e << ' '
++      << std::string_view{spec,static_cast<std::size_t>(spec_len)};
++    maybe_cid = ipfs::id_cid::forText( err.str() );
++  }
++  auto cid = maybe_cid.value();
++  if ( cid.version == Cid::Version::V0 ) {
++    //TODO dcheck content_type == DAG_PB && content_address.getType() == sha256
++    cid = Cid{
++        Cid::Version::V1,
++        cid.content_type,
++        cid.content_address
++      };
++  }
++  auto as_str = CidCodec::toString(cid);
++  if ( !as_str.has_value() ) {
++    return false;
++  }
++  std::string stdurl{ spec, static_cast<std::size_t>(parsed.host.begin) };
++  stdurl.append( as_str.value() );
++  stdurl.append( spec + parsed.host.end(), spec_len - parsed.host.end() );
++  spec = stdurl.data();
++  spec_len = static_cast<int>(stdurl.size());
++  Parsed parsed_input;
++  ParseStandardURL(spec, spec_len, &parsed_input);
++  return CanonicalizeStandardURL(
++      spec, spec_len,
++      parsed_input,
++      scheme_type,
++      charset_converter,
++      output, output_parsed
++    );
++}
++bool url::CanonicalizeIpfsURL(const char16_t* spec,
++                             int spec_len,
++                             const Parsed& parsed,
++                             SchemeType scheme_type,
++                             CharsetConverter* query_converter,
++                             CanonOutput* output,
++                              Parsed* new_parsed) {
++  RawCanonOutput<2048> as8;
++  ConvertUTF16ToUTF8(spec, spec_len, &as8);
++  return CanonicalizeIpfsURL(as8.data(), as8.length(), parsed, scheme_type, query_converter, output, new_parsed);
++}
+diff --git a/url/url_util.cc b/url/url_util.cc
+index 001c50e72fd24..97476afbf56e3 100644
+--- a/url/url_util.cc
++++ b/url/url_util.cc
+@@ -291,6 +291,12 @@ bool DoCanonicalize(const CHAR* spec,
+                                         charset_converter, output,
+                                         output_parsed);
+ 
++  } else if (DoCompareSchemeComponent(spec, scheme, "ipfs")) {
++    // Switch multibase away from case-sensitive ones before continuing canonicalization.
++    ParseStandardURL(spec, spec_len, &parsed_input);
++    success = CanonicalizeIpfsURL(spec, spec_len, parsed_input, scheme_type,
++                                      charset_converter, output, output_parsed);
++
+   } else if (DoIsStandard(spec, scheme, &scheme_type)) {
+     // All "normal" URLs.
+     ParseStandardURL(spec, spec_len, &parsed_input);

@@ -36,8 +36,8 @@ void Interceptor::MaybeCreateLoader(network::ResourceRequest const& req,
     std::move(loader_callback)
         .Run(base::BindOnce(&ipfs::IpfsUrlLoader::StartRequest, loader));
   } else {
-    LOG(INFO) << req.url.spec() << " has host '" << req.url.host()
-              << "' and is not being intercepted.";
+    VLOG(1) << req.url.spec() << " has host '" << req.url.host()
+            << "' and is not being intercepted.";
     std::move(loader_callback).Run({});  // SEP
   }
 }
