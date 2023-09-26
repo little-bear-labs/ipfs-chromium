@@ -32,8 +32,7 @@ bool ipfs::BlockStorage::Store(std::string cid_str,
   if (into->cid_str.empty()) {
     VLOG(1) << "Storing " << cid_str << " in fresh node @" << (void*)into;
   } else {
-    LOG(INFO) << "Evicting " << into->cid_str << " to make room for "
-              << cid_str;
+    VLOG(1) << "Evicting " << into->cid_str << " to make room for " << cid_str;
     cid2record_.erase(into->cid_str);
   }
   into->cid_str = cid_str;
@@ -152,7 +151,7 @@ void ipfs::BlockStorage::CheckListening() {
     for (UnixFsPathResolver* ptr : listening_) {
       auto cid = ptr->current_cid();
       if (cid.empty()) {
-        LOG(INFO) << "Kicking a listener out.";
+        VLOG(1) << "Kicking a listener out.";
         looking = true;
         auto prev = ptr->MaybeGetPreviousListener();
         listening_.erase(ptr);

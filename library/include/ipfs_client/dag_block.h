@@ -103,7 +103,7 @@ class Block {
 
   bool cid_matches_data() const;  ///< Basic validation
 
-  std::basic_string<Byte> binary_hash(libp2p::multi::HashType) const;
+  std::vector<Byte> binary_hash(libp2p::multi::HashType) const;
 
   /*!
    * \brief Iterate through the links of this UnixFS node

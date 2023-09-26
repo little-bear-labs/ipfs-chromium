@@ -102,7 +102,7 @@ auto Self::InitiateGatewayRequest(BusyGateway assigned)
   if (url.find("format=ipns-record") == std::string::npos) {
     out->loader->SetTimeoutDuration(base::Seconds(32));
   } else {
-    LOG(INFO) << "Doing an IPNS record query, so giving it a long timeout.";
+    VLOG(1) << "Doing an IPNS record query, so giving it a long timeout.";
     out->loader->SetTimeoutDuration(base::Seconds(256));
   }
   auto start_time = base::TimeTicks::Now();
@@ -147,7 +147,7 @@ bool Self::ProcessResponse(BusyGateway& gw,
     LOG(ERROR) << "No gateway.";
     return false;
   }
-  LOG(INFO) << "ProcessResponse(" << gw.url() << ')';
+  VLOG(2) << "ProcessResponse(" << gw.url() << ')';
   if (!ldr) {
     LOG(ERROR) << "No loader for processing " << gw.url();
     return false;
@@ -173,11 +173,11 @@ bool Self::ProcessResponse(BusyGateway& gw,
   constexpr std::string_view content_type_prefix{"application/vnd.ip"};
   if (reported_content_type.compare(0, content_type_prefix.size(),
                                     content_type_prefix)) {
-    LOG(WARNING) << '\n'
-                 << gw.url() << " reported a content type of "
-                 << reported_content_type
-                 << " strongly implying that it's a full request, not a single "
-                    "block. TODO: Remove "
+    VLOG(1) << '\n'
+            << gw.url() << " reported a content type of "
+            << reported_content_type
+            << " strongly implying that it's a full request, not a single "
+               "block. TODO: Remove "
                << gw->url_prefix() << " from list of gateways?\n";
     state_->gateways().demote(gw->url_prefix());
     return false;
@@ -267,14 +267,14 @@ std::string Self::MimeType(std::string extension,
   if (extension.empty()) {
     result.clear();
   } else if (net::GetWellKnownMimeTypeFromExtension(fp_ext, &result)) {
-    LOG(INFO) << "Got " << result << " from extension " << extension << " for "
-              << url;
+    VLOG(1) << "Got " << result << " from extension " << extension << " for "
+            << url;
   } else {
     result.clear();
   }
   if (net::SniffMimeType({content.data(), content.size()}, GURL{url}, result,
                          net::ForceSniffFileUrlsForHtml::kDisabled, &result)) {
-    LOG(INFO) << "Got " << result << " from content of " << url;
+    VLOG(1) << "Got " << result << " from content of " << url;
   }
   if (result.empty() || result == "application/octet-stream") {
     // C'mon, man
