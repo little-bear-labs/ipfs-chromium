@@ -133,7 +133,7 @@ h3 {
 <li data-marpit-fragment="1">ipfs://bafybeidjtwun7gvpfjymhquloxzzwhpctgsw3vxampxr46du2we4yhiqje/reference/en/index.html
 <ul>
 <li>Refers to immutable content/site</li>
-<li>Origin contains hash for root of Merkel tree</li>
+<li>Origin contains hash for root of Merkle tree</li>
 </ul>
 </li>
 <li data-marpit-fragment="2">ipns://k51qzi5uqu5dijv526o4z2z10ejylnel0bfvrtw53itcmsecffo8yf0zb4g9gi/links.html
@@ -313,7 +313,14 @@ h3 {
 ;">
 <h3 id="request-ipns-record">Request IPNS Record</h3>
 <p><a href="http://localhost:8080/ipns/k51qzi5uqu5dku8zqce3b7kmpcw6uua9w00b5boyaevowmzls2rpie0itokett?format=ipns-record">http://localhost:8080/ipns/k51qzi5uqu5dku8zqce3b7kmpcw6uua9w00b5boyaevowmzls2rpie0itokett?format=ipns-record</a><br />
-Record points at a DNSLink!</p>
+Returns: <code>Content-Type: application/vnd.ipfs.ipns-record</code><br />
+Body (protobuf) contains:</p>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code>Value:         &quot;/ipns/ipfs.tech&quot;
+... snip ...
+Signature V2:  &quot;mKWg7Jv/T+7hhKE1d/9YY7JHWeAaBJ/yQI3C56xn5v7ld9MZO2InUIGE0vSpW+ZRw3nNMJJT+usye8Tt2GRqpCw&quot;
+Data:          {&quot;Sequence&quot;:0,&quot;TTL&quot;:60000000000,&quot;Validity&quot;:{&quot;/&quot;:{&quot;bytes&quot;:&quot;MjAyMy0wOS0yOFQxMzo0MDoyMS4xMzI1NDQwMDFa&quot;}},&quot;ValidityType&quot;:0,&quot;Value&quot;:{&quot;/&quot;:{&quot;bytes&quot;:&quot;L2lwbnMvaXBmcy50ZWNo&quot;}}}
+</code></pre>
+<p>Verify signature and continue.</p>
 <div class="mermaid">
 flowchart LR;
     ipns["/ipns/k51...ett"]--&gt;dnsl["/ipns/ipfs.tech"]
@@ -429,8 +436,11 @@ h3 {
 }
 ;">
 <h3 id="we-have-our-immutable-content">We have our immutable content</h3>
-<p>Request root node.<br />
-<a href="https://ipfs.io/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy?format=raw">https://ipfs.io/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy?format=raw</a></p>
+<p>Request the root node in a verifiable format<br />
+(see <a href="https://specs.ipfs.tech/http-gateways/trustless-gateway/">https://specs.ipfs.tech/http-gateways/trustless-gateway/</a>)</p>
+<p><a href="https://ipfs.io/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy?format=raw">https://ipfs.io/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy?format=raw</a><br />
+Returns <code>Content-Type: application/vnd.ipld.raw</code> directory with 26 entries.<br />
+Verify the hash matches and continue.</p>
 <div class="mermaid">
 flowchart LR;
     ipns["/ipns/k51...ett"]--&gt;dnsl["/ipns/ipfs.tech"]--&gt;root["/ipfs/QmR...2SRy"]
@@ -493,8 +503,9 @@ h3 {
   text-align: left;
 }
 ;">
-<h3 id="its-a-directory-that-contains-indexhtml-so-request-that">It's a directory that contains index.html, so request that</h3>
+<h3 id="the-directory-that-contains-indexhtml-so-request-that">The directory that contains index.html, so request that</h3>
 <p><a href="https://gateway.pinata.cloud/ipfs/QmTzVjzGMG4LwBY9ArxcNcokPfbpG2biT8Gy9AiecxKtju?format=raw">https://gateway.pinata.cloud/ipfs/QmTzVjzGMG4LwBY9ArxcNcokPfbpG2biT8Gy9AiecxKtju?format=raw</a><br />
+Or set header <code>Accept: application/vnd.ipld.raw</code> instead of format parameter.<br />
 Note the recursive verification.</p>
 <div class="mermaid">
 flowchart LR;
@@ -559,8 +570,8 @@ h3 {
   text-align: left;
 }
 ;">
-<h3 id="indexhtml-fits-into-a-single-node">index.html fits into a single node</h3>
-<p>So just deserialize and return its content!<br />
+<h3 id="indexhtml-fits-into-a-single-block">index.html fits into a single block</h3>
+<p>So just deserialize and return its content.<br />
 The HTML starts rendering, and requests a resource.<br />
 <code>&lt;img style=&quot;&quot; class=&quot;max-w-40 mx-auto&quot; src=&quot;/_nuxt/ipfs-logo.a313bcee.svg&quot; data-v-6d12c5c1&gt;</code><br />
 This is relative to the ipns root, so start over with a request for:<br />
@@ -827,9 +838,9 @@ h3 {
   text-align: left;
 }
 ;">
-<h2 id="since-the-http-response-can-come-from-any-source">Since the HTTP response can come from any source...</h2>
+<h2 id="since-the-http-responses-can-come-from-any-source">Since the HTTP responses can come from any source...</h2>
 <p>Make the same request to multiple gateways in parallel.<br />
-One will return first, others are cancelled.<br />
+One will return first, if it passes verification, others are cancelled.<br />
 Reduces worst-case times.</p>
 <p>e.g.:</p>
 <ul>
@@ -891,8 +902,17 @@ h3 {
 <ul>
 <li data-marpit-fragment="1">Design &amp; implementation changes necessary for upstreaming</li>
 <li data-marpit-fragment="2">User configuration (e.g. gateways to use &amp; discovery enabled)</li>
-<li data-marpit-fragment="3">IPFS V1 HTTP Routing API - Helping with missing data and exhausted known gateways</li>
-<li data-marpit-fragment="4">Partial CAR requests - fewer network round-trips</li>
+<li data-marpit-fragment="3">IPFS HTTP /routing/v1 API
+<ul>
+<li>Helping with missing data and exhausted known gateways</li>
+</ul>
+</li>
+<li data-marpit-fragment="4">Partial CAR (Content-addressed Archives) requests
+<ul>
+<li>fewer network round-trips</li>
+<li>see <a href="https://specs.ipfs.tech/ipips/ipip-0402/">https://specs.ipfs.tech/ipips/ipip-0402/</a></li>
+</ul>
+</li>
 <li data-marpit-fragment="5">IPFS-specific DevTools (e.g.: DAG explorer)</li>
 <li data-marpit-fragment="6">Possibly connecting to webtransport IPFS peers</li>
 </ul>
