@@ -151,7 +151,7 @@ class Patcher:
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
-        fuzz = 12345
+        fuzz = 12340
         def check(version, version_set, s):
             i = as_int(version)
             by = (fuzz,0)

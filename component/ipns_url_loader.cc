@@ -77,7 +77,7 @@ void ipfs::IpnsUrlLoader::OnComplete(
     ::net::ResolveErrorInfo const&,
     absl::optional<::net::AddressList> const&,
     absl::optional<std::vector<::net::HostResolverEndpointResult>> const&) {
-  LOG(INFO) << "Done with a DNS request.";
+  VLOG(1) << "Done with a DNS request.";
   auto _ = recv_.Unbind();
   if (result == net::Error::OK) {
     Next();
@@ -91,11 +91,11 @@ void ipfs::IpnsUrlLoader::Next() {
   auto resolved = state_->names().NameResolvedTo(host_);
   if (resolved.empty()) {
     if (!RequestIpnsRecord()) {
-      LOG(INFO) << "Treating '" << host_ << "' as a DNSLink host.";
+      VLOG(1) << "Treating '" << host_ << "' as a DNSLink host.";
       QueryDns(host_);
     }
   } else if (resolved == IpnsNames::kNoSuchName) {
-    LOG(WARNING) << "We have given up on resolving DNSLink " << host_;
+    LOG(INFO) << "We have given up on resolving DNSLink " << host_;
     FailNameResolution();
   } else if (request_ && resolved.substr(0, 5) == "ipfs/") {
     DoIpfs();

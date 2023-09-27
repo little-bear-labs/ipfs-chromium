@@ -117,7 +117,7 @@ void ipfs::IpfsUrlLoader::TakeStep() {
     stepper_->Stop();
     stepper_.reset();
   } else {
-    VLOG(1) << "Timed step(" << original_url_ << "): still going.";
+    VLOG(2) << "Timed step(" << original_url_ << "): still going.";
     resolver_->Step(shared_from_this());
   }
 }
