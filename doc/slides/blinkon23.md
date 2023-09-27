@@ -28,7 +28,7 @@ style: |
   }
 --> 
 
-# Verifying IPFS Client in Chromium
+# Content-Verifying IPFS Client in Chromium
 
 <table style="margin-left:auto;margin-right:auto;">
 <tr >
@@ -56,14 +56,30 @@ style: |
 </tr></table>
 
 ## What is IPFS?
+* Content-addressed: pulling from a DHT & verifying
+* Distributed: agnostic to which gateway/node provided
 
-Content-addressed distributed storage.
+<table border="0"><tr><td style="background-color: #DFDAFF; font-size: 15px;">
 
-Relevant URL types:
+#### Some of the IPFS Ecosystem
+- Brave 
+- IPFS Companion extension
+- curl 
+- js-ipfs-core
+- kubo
+- lassie
+- bifrost
+</td><td style="background-color: #DFDAFF">
+
+![](back.png)
+
+</td></tr></table>
+
+## URL Schemes
 
 * ipfs://bafybeidjtwun7gvpfjymhquloxzzwhpctgsw3vxampxr46du2we4yhiqje/reference/en/index.html
   - Refers to immutable content/site
-  - Origin contains hash for root of Merkel tree
+  - Origin contains hash for root of Merkle tree
 * ipns://k51qzi5uqu5dijv526o4z2z10ejylnel0bfvrtw53itcmsecffo8yf0zb4g9gi/links.html
   - Mutable pointer to immutable data
   - Origin contains public key to verify the 'pointer' record
@@ -87,7 +103,15 @@ flowchart LR;
 
 ### Request IPNS Record
 http://localhost:8080/ipns/k51qzi5uqu5dku8zqce3b7kmpcw6uua9w00b5boyaevowmzls2rpie0itokett?format=ipns-record
-Record points at a DNSLink!
+Returns: `Content-Type: application/vnd.ipfs.ipns-record`
+Body (protobuf) contains:
+```
+Value:         "/ipns/ipfs.tech"
+... snip ...
+Signature V2:  "mKWg7Jv/T+7hhKE1d/9YY7JHWeAaBJ/yQI3C56xn5v7ld9MZO2InUIGE0vSpW+ZRw3nNMJJT+usye8Tt2GRqpCw"
+Data:          {"Sequence":0,"TTL":60000000000,"Validity":{"/":{"bytes":"MjAyMy0wOS0yOFQxMzo0MDoyMS4xMzI1NDQwMDFa"}},"ValidityType":0,"Value":{"/":{"bytes":"L2lwbnMvaXBmcy50ZWNo"}}}
+```
+Verify signature and continue.
 <div class="mermaid">
 flowchart LR;
     ipns["/ipns/k51...ett"]-->dnsl["/ipns/ipfs.tech"]
@@ -105,8 +129,12 @@ flowchart LR;
 </div>
 
 ### We have our immutable content
-Request root node.
+Request the root node in a verifiable format 
+(see https://specs.ipfs.tech/http-gateways/trustless-gateway/)
+
 https://ipfs.io/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy?format=raw
+Returns `Content-Type: application/vnd.ipld.raw` directory with 26 entries.
+Verify the hash matches and continue.
 <div class="mermaid">
 flowchart LR;
     ipns["/ipns/k51...ett"]-->dnsl["/ipns/ipfs.tech"]-->root["/ipfs/QmR...2SRy"]
@@ -120,8 +148,9 @@ flowchart LR;
     style root fill:#9fb
 </div>
 
-### It's a directory that contains index.html, so request that
+### The directory that contains index.html, so request that
 https://gateway.pinata.cloud/ipfs/QmTzVjzGMG4LwBY9ArxcNcokPfbpG2biT8Gy9AiecxKtju?format=raw
+Or set header `Accept: application/vnd.ipld.raw` instead of format parameter.
 Note the recursive verification.
 <div class="mermaid">
 flowchart LR;
@@ -137,8 +166,8 @@ flowchart LR;
     style index fill:#9fb
 </div>
 
-### index.html fits into a single node
-So just deserialize and return its content! 
+### index.html fits into a single block
+So just deserialize and return its content. 
 The HTML starts rendering, and requests a resource.
 `<img style="" class="max-w-40 mx-auto" src="/_nuxt/ipfs-logo.a313bcee.svg" data-v-6d12c5c1>`
 This is relative to the ipns root, so start over with a request for:
@@ -209,10 +238,10 @@ flowchart LR;
     img-->c1["Qm...2"]
 </div>
 
-## Since the HTTP response can come from any source...
+## Since the HTTP responses can come from any source...
 
 Make the same request to multiple gateways in parallel. 
-One will return first, others are cancelled. 
+One will return first, if it passes verification, others are cancelled. 
 Reduces worst-case times. 
 
 e.g.:
@@ -225,8 +254,11 @@ e.g.:
 
 * Design & implementation changes necessary for upstreaming
 * User configuration (e.g. gateways to use & discovery enabled)
-* IPFS V1 HTTP Routing API - Helping with missing data and exhausted known gateways
-* Partial CAR requests - fewer network round-trips
+* IPFS HTTP /routing/v1 API 
+  - Helping with missing data and exhausted known gateways
+* Partial CAR (Content-addressed Archives) requests 
+  - fewer network round-trips 
+  - see https://specs.ipfs.tech/ipips/ipip-0402/
 * IPFS-specific DevTools (e.g.: DAG explorer)
 * Possibly connecting to webtransport IPFS peers
 

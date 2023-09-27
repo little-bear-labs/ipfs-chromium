@@ -95,6 +95,7 @@ bool Self::Process(std::unique_ptr<NodeHelper>& next_helper,
   if (found) {
     return true;
   }
+  target_cid.clear();
   listener->DoesNotExist(cid_, resolver_->original_path());
   return false;
 }

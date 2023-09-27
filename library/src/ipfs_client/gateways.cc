@@ -43,7 +43,7 @@ void ipfs::Gateways::promote(std::string const& key) {
 void ipfs::Gateways::demote(std::string const& key) {
   auto it = known_gateways_.find(key);
   if (known_gateways_.end() == it) {
-    VLOG(1) << "Can't demote " << key << " as I don't have that gateway.";
+    VLOG(2) << "Can't demote " << key << " as I don't have that gateway.";
   } else if (it->second) {
     if (it->second-- % 3 == 0) {
       LOG(INFO) << "Demote(" << key << ") to " << it->second;
@@ -89,25 +89,25 @@ std::vector<std::pair<std::string, int>> ipfs::Gateways::DefaultGateways() {
     }
     return result;
   }
-  return {{"http://localhost:8080/"s, 919},
-          {"https://ipfs.io/"s, 916},
-          {"https://gateway.ipfs.io/"s, 911},
-          {"https://jcsl.hopto.org/"s, 908},
-          {"https://dweb.link/"s, 905},
-          {"https://ipfs.joaoleitao.org/"s, 897},
-          {"https://gateway.pinata.cloud/"s, 826},
-          {"https://ipfs.runfission.com/"s, 316},
-          {"https://ipfs.jpu.jp/"s, 315},
-          {"https://nftstorage.link/"s, 307},
-          {"https://w3s.link/"s, 298},
-          {"https://jorropo.net/"s, 297},
-          {"https://ipfs.fleek.co/"s, 265},
-          {"https://permaweb.eu.org/"s, 110},
-          {"https://hardbin.com/"s, 82},
-          {"https://ipfs.scalaproject.io/"s, 54},
-          {"https://ipfs.soul-network.com/"s, 52},
-          {"https://storry.tv/"s, 28},
-          {"https://ipfs-gateway.cloud/"s, 3},
+  return {{"http://localhost:8080/"s, 922},
+          {"https://ipfs.io/"s, 918},
+          {"https://gateway.ipfs.io/"s, 914},
+          {"https://jcsl.hopto.org/"s, 912},
+          {"https://dweb.link/"s, 908},
+          {"https://ipfs.joaoleitao.org/"s, 895},
+          {"https://gateway.pinata.cloud/"s, 878},
+          {"https://ipfs.runfission.com/"s, 716},
+          {"https://ipfs.jpu.jp/"s, 313},
+          {"https://nftstorage.link/"s, 312},
+          {"https://w3s.link/"s, 308},
+          {"https://jorropo.net/"s, 295},
+          {"https://ipfs.fleek.co/"s, 266},
+          {"https://permaweb.eu.org/"s, 187},
+          {"https://hardbin.com/"s, 141},
+          {"https://ipfs.scalaproject.io/"s, 52},
+          {"https://ipfs.soul-network.com/"s, 50},
+          {"https://storry.tv/"s, 26},
+          {"https://ipfs-gateway.cloud/"s, 2},
           {"https://ipfs.storry.tv/"s, 1},
           {"https://ipfs.anonymize.com/"s, 0}};
 }

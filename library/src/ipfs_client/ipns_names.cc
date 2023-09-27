@@ -73,8 +73,8 @@ std::string_view Self::NameResolvedTo(std::string_view original_name) const {
   while (true) {
     auto it = names_.find(name);
     if (names_.end() == it) {
-      LOG(WARNING) << "Host not in immediate access map: " << name << " ("
-                   << std::string{original_name} << ')';
+      LOG(INFO) << "Host not in immediate access map: " << name << " ("
+                << std::string{original_name} << ')';
       return prev;
     } else if (it == trailer) {
       LOG(ERROR) << "Host cycle found in IPNS: " << std::string{original_name}
