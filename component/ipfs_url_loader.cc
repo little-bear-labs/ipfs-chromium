@@ -44,9 +44,8 @@ void ipfs::IpfsUrlLoader::FollowRedirect(
 }
 
 void ipfs::IpfsUrlLoader::SetPriority(net::RequestPriority priority,
-                                      int32_t intra_priority_value) {
-  LOG(INFO) << "TODO SetPriority(" << priority << ',' << intra_priority_value
-            << ')';
+                                      int32_t intra_prio_val) {
+  VLOG(1) << "TODO SetPriority(" << priority << ',' << intra_prio_val << ')';
 }
 
 void ipfs::IpfsUrlLoader::PauseReadingBodyFromNet() {

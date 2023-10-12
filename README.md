@@ -2,7 +2,9 @@
 
 ## Overview
 
-See a [blog post](https://blog.ipfs.tech/2023-05-multigateway-chromium-client/) about it.
+See a [blog post](https://blog.ipfs.tech/2023-05-multigateway-chromium-client/) about it. 
+
+The intended audience there was genpop & the IPFS-aware. If, however, you're more of a browser person, the [explainer](doc/explainer.md) might make more sense to you. Maybe.
 
 Also, slides for a BlinkOn [lightning talk](doc/slides/blinkon23.md).
 

@@ -95,7 +95,7 @@ void ipfs::IpnsUrlLoader::Next() {
       QueryDns(host_);
     }
   } else if (resolved == IpnsNames::kNoSuchName) {
-    LOG(INFO) << "We have given up on resolving DNSLink " << host_;
+    VLOG(1) << "We have given up on resolving DNSLink " << host_;
     FailNameResolution();
   } else if (request_ && resolved.substr(0, 5) == "ipfs/") {
     DoIpfs();

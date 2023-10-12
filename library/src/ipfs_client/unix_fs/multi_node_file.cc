@@ -77,7 +77,7 @@ bool Self::Write(std::shared_ptr<DagListener> listener) {
     VLOG(2) << "child[" << written_until_ << "]:" << child.first;
     if (child.second.has_value()) {
       if (child.second->Write(listener)) {
-        LOG(INFO) << "Successfully recursed.";
+        VLOG(1) << "Successfully recursed.";
         continue;
       } else {
         return false;
