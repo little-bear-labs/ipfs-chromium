@@ -1,28 +1,34 @@
 import("//testing/test.gni")
-component("ipfs") {
-  sources = [
-@gn_sources@
-  ]
-  defines = [  ]
-  include_dirs = [
-    ".",
-    "ipfs_client",
-    "ipfs_client/unix_fs",
-  ]
-  deps = [
-    "//content",
-    "//crypto",
-    "//base",
-    "//components/cbor",
-    "//components/prefs",
-    "//components/webcrypto:webcrypto",
-    "//mojo/public/cpp/bindings",
-    "//services/network:network_service",
-    "//services/network/public/cpp:cpp",
-    "//services/network/public/mojom:url_loader_base",
-    "//url",
-    "//third_party/blink/public:blink",
-    "//third_party/ipfs_client",
-  ]
-  defines = [ "IS_IPFS_IMPL" ]
+import("//third_party/ipfs_client/args.gni")
+
+if (enable_ipfs) {
+
+    component("ipfs") {
+      sources = [
+    @gn_sources@
+      ]
+      defines = [  ]
+      include_dirs = [
+        ".",
+        "ipfs_client",
+        "ipfs_client/unix_fs",
+      ]
+      deps = [
+        "//content",
+        "//crypto",
+        "//base",
+        "//components/cbor",
+        "//components/prefs",
+        "//components/webcrypto:webcrypto",
+        "//mojo/public/cpp/bindings",
+        "//services/network:network_service",
+        "//services/network/public/cpp:cpp",
+        "//services/network/public/mojom:url_loader_base",
+        "//url",
+        "//third_party/blink/public:blink",
+        "//third_party/ipfs_client",
+      ]
+      defines = [ "IS_IPFS_IMPL" ]
+    }
+
 }

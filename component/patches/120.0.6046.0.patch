@@ -1,34 +1,8 @@
-diff --git a/base/memory/ref_counted.h b/base/memory/ref_counted.h
-index 9ef94d84769df..f70e30748a389 100644
---- a/base/memory/ref_counted.h
-+++ b/base/memory/ref_counted.h
-@@ -7,6 +7,7 @@
- 
- #include <stddef.h>
- 
-+#include <limits>
- #include <utility>
- 
- #include "base/atomic_ref_count.h"
-diff --git a/base/threading/thread_local_internal.h b/base/threading/thread_local_internal.h
-index ed99410ea8a31..d89d48ba981ab 100644
---- a/base/threading/thread_local_internal.h
-+++ b/base/threading/thread_local_internal.h
-@@ -30,8 +30,7 @@ class CheckedThreadLocalOwnedPointer {
-  public:
-   CheckedThreadLocalOwnedPointer() = default;
- 
--  CheckedThreadLocalOwnedPointer<T>(const CheckedThreadLocalOwnedPointer<T>&) =
--      delete;
-+  CheckedThreadLocalOwnedPointer(const CheckedThreadLocalOwnedPointer&) = delete;
-   CheckedThreadLocalOwnedPointer<T>& operator=(
-       const CheckedThreadLocalOwnedPointer<T>&) = delete;
- 
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index acf48b7ffd061..7c30a85a25f94 100644
+index c7a56f85847e3..61441ec2187d3 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -2112,6 +2112,7 @@ static_library("browser") {
+@@ -2226,6 +2226,7 @@ static_library("browser") {
      "//components/infobars/content",
      "//components/infobars/core",
      "//components/invalidation/impl",
@@ -50,10 +24,10 @@ index 4c88614c68c25..269b0440ed571 100644
      return metrics::OmniboxInputType::URL;
    }
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
-index bb3d32d4f4909..3d5de6780b03e 100644
+index d730d3e2bceb1..dc22291a7dd89 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -215,6 +215,8 @@
+@@ -227,6 +227,8 @@
  #include "components/error_page/common/localized_error.h"
  #include "components/error_page/content/browser/net_error_auto_reloader.h"
  #include "components/google/core/common/google_switches.h"
@@ -62,7 +36,7 @@ index bb3d32d4f4909..3d5de6780b03e 100644
  #include "components/keep_alive_registry/keep_alive_types.h"
  #include "components/keep_alive_registry/scoped_keep_alive.h"
  #include "components/language/core/browser/pref_names.h"
-@@ -5944,13 +5946,17 @@ void ChromeContentBrowserClient::
+@@ -6125,13 +6127,17 @@ void ChromeContentBrowserClient::
          int render_frame_id,
          const absl::optional<url::Origin>& request_initiator_origin,
          NonNetworkURLLoaderFactoryMap* factories) {
@@ -84,22 +58,19 @@ index bb3d32d4f4909..3d5de6780b03e 100644
  
  #if BUILDFLAG(IS_CHROMEOS_ASH)
    if (web_contents) {
-@@ -6087,8 +6093,8 @@ std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
- ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
-     content::NavigationUIData* navigation_ui_data,
-     int frame_tree_node_id) {
--  std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
--      interceptors;
-+  std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>> interceptors;
+@@ -6273,6 +6279,7 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
+     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
+   std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+       interceptors;
 +  interceptors.push_back(std::make_unique<ipfs::Interceptor>(g_browser_process->system_network_context_manager()->GetURLLoaderFactory(), GetSystemNetworkContext()));
  #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
    interceptors.push_back(
        std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(
 diff --git a/chrome/common/chrome_content_client.cc b/chrome/common/chrome_content_client.cc
-index db08f6151229e..e63c004ec6398 100644
+index 246ec9c5c911f..5d66d133a7907 100644
 --- a/chrome/common/chrome_content_client.cc
 +++ b/chrome/common/chrome_content_client.cc
-@@ -292,6 +292,12 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
+@@ -296,6 +296,12 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
  #if BUILDFLAG(IS_ANDROID)
    schemes->local_schemes.push_back(url::kContentScheme);
  #endif
@@ -112,18 +83,6 @@ index db08f6151229e..e63c004ec6398 100644
  }
  
  std::u16string ChromeContentClient::GetLocalizedString(int message_id) {
-diff --git a/chrome/elevation_service/elevation_service.rc b/chrome/elevation_service/elevation_service.rc
-index cea2b3dd0ae4d..eaf6bd1d5ee68 100644
---- a/chrome/elevation_service/elevation_service.rc
-+++ b/chrome/elevation_service/elevation_service.rc
-@@ -35,6 +35,6 @@ END
- 
- #endif    // English (United States) resources
- 
--1 TYPELIB "chrome/elevation_service/elevation_service_idl.tlb"
-+1 TYPELIB "gen/chrome/elevation_service/elevation_service_idl.tlb"
- 
- /////////////////////////////////////////////////////////////////////////////
 diff --git a/components/open_from_clipboard/clipboard_recent_content_generic.cc b/components/open_from_clipboard/clipboard_recent_content_generic.cc
 index 4dcafecbc66c6..d205209c08162 100644
 --- a/components/open_from_clipboard/clipboard_recent_content_generic.cc
@@ -155,30 +114,6 @@ index 5273da5190277..12b28b86a4c00 100644
        case NsswitchReader::Service::kNis:
          RecordIncompatibleNsswitchReason(
              IncompatibleNsswitchReason::kIncompatibleService,
-diff --git a/url/BUILD.gn b/url/BUILD.gn
-index b5d6f60638252..3c67ab180d70a 100644
---- a/url/BUILD.gn
-+++ b/url/BUILD.gn
-@@ -39,6 +39,7 @@ component("url") {
-     "url_canon_internal_file.h",
-     "url_canon_ip.cc",
-     "url_canon_ip.h",
-+    "url_canon_ipfs.cc",
-     "url_canon_mailtourl.cc",
-     "url_canon_path.cc",
-     "url_canon_pathurl.cc",
-@@ -63,7 +64,10 @@ component("url") {
- 
-   public_deps = [ "//base" ]
- 
--  deps = [ "//base/third_party/dynamic_annotations" ]
-+  deps = [
-+    "//base/third_party/dynamic_annotations",
-+    "//third_party/ipfs_client",
-+  ]
- 
-   if (is_win) {
-     # Don't conflict with Windows' "url.dll".
 diff --git a/url/url_canon.h b/url/url_canon.h
 index 94b44426fa33a..19f1f0789164d 100644
 --- a/url/url_canon.h
@@ -209,13 +144,16 @@ index 94b44426fa33a..19f1f0789164d 100644
  // Internal structure used for storing separate strings for each component.
 diff --git a/url/url_canon_ipfs.cc b/url/url_canon_ipfs.cc
 new file mode 100644
-index 0000000000000..9c9ee853f5739
+index 0000000000000..da3a5f032b5e8
 --- /dev/null
 +++ b/url/url_canon_ipfs.cc
-@@ -0,0 +1,65 @@
+@@ -0,0 +1,72 @@
 +#include "url_canon_internal.h"
 +
 +#include <libp2p/multi/content_identifier_codec.hpp>
++#include <ipfs_client/identity_cid.h>
++
++#include <sstream>
 +
 +namespace m = libp2p::multi;
 +using Cid      = m::ContentIdentifier;
@@ -228,7 +166,7 @@ index 0000000000000..9c9ee853f5739
 +                             CharsetConverter* charset_converter,
 +                             CanonOutput* output,
 +                             Parsed* output_parsed) {
-+  if ( spec_len < 1 ) {
++  if ( spec_len < 1 || !spec ) {
 +    return false;
 +  }
 +  if ( parsed.host.len < 1 ) {
@@ -237,7 +175,11 @@ index 0000000000000..9c9ee853f5739
 +  std::string cid_str{ spec + parsed.host.begin, static_cast<std::size_t>(parsed.host.len) };
 +  auto maybe_cid = CidCodec::fromString(cid_str);
 +  if ( !maybe_cid.has_value() ) {
-+    return false;
++    auto e = libp2p::multi::Stringify(maybe_cid.error());
++    std::ostringstream err;
++    err << e << ' '
++      << std::string_view{spec,static_cast<std::size_t>(spec_len)};
++    maybe_cid = ipfs::id_cid::forText( err.str() );
 +  }
 +  auto cid = maybe_cid.value();
 +  if ( cid.version == Cid::Version::V0 ) {
@@ -279,7 +221,7 @@ index 0000000000000..9c9ee853f5739
 +  return CanonicalizeIpfsURL(as8.data(), as8.length(), parsed, scheme_type, query_converter, output, new_parsed);
 +}
 diff --git a/url/url_util.cc b/url/url_util.cc
-index 67913eb72f785..6b638acd8edc1 100644
+index 3cadd6e726cc2..28bb9e2ff953f 100644
 --- a/url/url_util.cc
 +++ b/url/url_util.cc
 @@ -291,6 +291,12 @@ bool DoCanonicalize(const CHAR* spec,
