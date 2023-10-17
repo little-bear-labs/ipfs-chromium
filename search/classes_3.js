@@ -1,7 +1,7 @@
 var searchData=
 [
-  ['daglistener_167',['DagListener',['../classipfs_1_1DagListener.html',1,'ipfs']]],
-  ['data_168',['Data',['../classipfs_1_1unix__fs_1_1Data.html',1,'ipfs::unix_fs']]],
-  ['datadefaulttypeinternal_169',['DataDefaultTypeInternal',['../structipfs_1_1unix__fs_1_1DataDefaultTypeInternal.html',1,'ipfs::unix_fs']]],
-  ['dirshard_170',['DirShard',['../classipfs_1_1unix__fs_1_1DirShard.html',1,'ipfs::unix_fs']]]
+  ['gateway_134',['Gateway',['../classipfs_1_1Gateway.html',1,'ipfs']]],
+  ['gatewayrequest_135',['GatewayRequest',['../classipfs_1_1GatewayRequest.html',1,'ipfs']]],
+  ['gateways_136',['Gateways',['../classipfs_1_1Gateways.html',1,'ipfs']]],
+  ['generateddirectorylisting_137',['GeneratedDirectoryListing',['../classipfs_1_1GeneratedDirectoryListing.html',1,'ipfs']]]
 ];

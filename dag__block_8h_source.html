@@ -134,7 +134,7 @@ $(function() {
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  std::string <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1Block.html#a9fbbfa4679da83ae03aac455a1afd972">unparsed</a>() <span class="keyword">const</span>;  </div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
-<div class="line"><a name="l00096"></a><span class="lineno"><a class="line" href="classipfs_1_1Block.html#ac17705547b9ba01e1b24ff4a2e8c6ac3">   96</a></span>&#160;  <a class="code" href="classipfs_1_1unix__fs_1_1Data.html">unix_fs::Data</a> <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1Block.html#ac17705547b9ba01e1b24ff4a2e8c6ac3">fsdata</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> fsdata_; }</div>
+<div class="line"><a name="l00096"></a><span class="lineno"><a class="line" href="classipfs_1_1Block.html#ac17705547b9ba01e1b24ff4a2e8c6ac3">   96</a></span>&#160;  unix_fs::Data <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1Block.html#ac17705547b9ba01e1b24ff4a2e8c6ac3">fsdata</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> fsdata_; }</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; </div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  Cid <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">cid</a>() <span class="keyword">const</span>;  </div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; </div>
@@ -144,7 +144,7 @@ $(function() {
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1Block.html#abf18bac471e5245dd782ad9388c9c0a2">cid_matches_data</a>() <span class="keyword">const</span>;  </div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; </div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  std::vector&lt;Byte&gt; binary_hash(libp2p::multi::HashType) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  std::basic_string&lt;Byte&gt; binary_hash(libp2p::multi::HashType) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">class</span> Functor&gt;</div>
 <div class="line"><a name="l00116"></a><span class="lineno"><a class="line" href="classipfs_1_1Block.html#a8344f0e15846950ccb8804086c7fd4db">  116</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1Block.html#a8344f0e15846950ccb8804086c7fd4db">List</a>(Functor foo)<span class="keyword"> const </span>{</div>
@@ -160,8 +160,8 @@ $(function() {
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  }</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160; </div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <a class="code" href="classipfs_1_1pb__dag_1_1PBNode.html">pb_dag::PBNode</a> node_;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <a class="code" href="classipfs_1_1unix__fs_1_1Data.html">unix_fs::Data</a> fsdata_;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  pb_dag::PBNode node_;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  unix_fs::Data fsdata_;</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keywordtype">bool</span> valid_ = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <span class="keywordtype">bool</span> fs_node_ = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  std::string mime_ = {};</div>
@@ -193,8 +193,6 @@ $(function() {
 <div class="ttc" id="aclassipfs_1_1Block_html_ac17705547b9ba01e1b24ff4a2e8c6ac3"><div class="ttname"><a href="classipfs_1_1Block.html#ac17705547b9ba01e1b24ff4a2e8c6ac3">ipfs::Block::fsdata</a></div><div class="ttdeci">unix_fs::Data const  &amp; fsdata() const</div><div class="ttdoc">Accessor for all UnixFS data as a protobuf object.</div><div class="ttdef"><b>Definition:</b> dag_block.h:96</div></div>
 <div class="ttc" id="aclassipfs_1_1Block_html_ac3320a4781777b6bd96f4bf34fc6923b"><div class="ttname"><a href="classipfs_1_1Block.html#ac3320a4781777b6bd96f4bf34fc6923b">ipfs::Block::is_directory</a></div><div class="ttdeci">bool is_directory() const</div><div class="ttdoc">type() == Directory</div><div class="ttdef"><b>Definition:</b> dag_block.cc:120</div></div>
 <div class="ttc" id="aclassipfs_1_1Block_html_ad822fbd69b65bd3e958c8f33ad346599"><div class="ttname"><a href="classipfs_1_1Block.html#ad822fbd69b65bd3e958c8f33ad346599">ipfs::Block::file_size</a></div><div class="ttdeci">std::uint64_t file_size() const</div><div class="ttdoc">Get file size from the UnixFS node data.</div><div class="ttdef"><b>Definition:</b> dag_block.cc:125</div></div>
-<div class="ttc" id="aclassipfs_1_1pb__dag_1_1PBNode_html"><div class="ttname"><a href="classipfs_1_1pb__dag_1_1PBNode.html">ipfs::pb_dag::PBNode</a></div><div class="ttdef"><b>Definition:</b> pb_dag.pb.h:246</div></div>
-<div class="ttc" id="aclassipfs_1_1unix__fs_1_1Data_html"><div class="ttname"><a href="classipfs_1_1unix__fs_1_1Data.html">ipfs::unix_fs::Data</a></div><div class="ttdef"><b>Definition:</b> unix_fs.pb.h:92</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

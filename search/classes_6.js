@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['metadata_186',['Metadata',['../classipfs_1_1unix__fs_1_1Metadata.html',1,'ipfs::unix_fs']]],
-  ['metadatadefaulttypeinternal_187',['MetadataDefaultTypeInternal',['../structipfs_1_1unix__fs_1_1MetadataDefaultTypeInternal.html',1,'ipfs::unix_fs']]],
-  ['multinodefile_188',['MultiNodeFile',['../classipfs_1_1unix__fs_1_1MultiNodeFile.html',1,'ipfs::unix_fs']]]
+  ['namelistener_141',['NameListener',['../classipfs_1_1NameListener.html',1,'ipfs']]],
+  ['nodehelper_142',['NodeHelper',['../classipfs_1_1unix__fs_1_1NodeHelper.html',1,'ipfs::unix_fs']]]
 ];

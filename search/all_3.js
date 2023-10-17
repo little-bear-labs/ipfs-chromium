@@ -1,14 +1,12 @@
 var searchData=
 [
-  ['cache_5funtil_17',['cache_until',['../structipfs_1_1ValidatedIpns.html#a41a4f4c7cf8f347cf2cd160227e07f98',1,'ipfs::ValidatedIpns']]],
-  ['cacherequestor_18',['CacheRequestor',['../classipfs_1_1CacheRequestor.html',1,'ipfs']]],
-  ['chainedrequestors_19',['ChainedRequestors',['../classipfs_1_1ChainedRequestors.html',1,'ipfs']]],
-  ['changes_2fadditions_20',['Changes/Additions',['../md_doc_original_design.html',1,'']]],
-  ['checklistening_21',['CheckListening',['../classipfs_1_1BlockStorage.html#a62c0428161a796bc977d5b42d0bd2c73',1,'ipfs::BlockStorage']]],
-  ['chunk_5fdata_22',['chunk_data',['../classipfs_1_1Block.html#a3b5a934d1925ad98228650fc4fb3e6f6',1,'ipfs::Block']]],
-  ['cid_23',['cid',['../classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba',1,'ipfs::Block::cid()'],['../classipfs_1_1unix__fs_1_1NodeHelper.html#afd3dc566b34d05d97671ea3b66797ddf',1,'ipfs::unix_fs::NodeHelper::cid()']]],
-  ['cid_5fmatches_5fdata_24',['cid_matches_data',['../classipfs_1_1Block.html#abf18bac471e5245dd782ad9388c9c0a2',1,'ipfs::Block']]],
-  ['complete_25',['Complete',['../classipfs_1_1NameListener.html#a2c2f435d899d0f589a397cfee49be0fc',1,'ipfs::NameListener']]],
-  ['contextapi_26',['ContextApi',['../classipfs_1_1ContextApi.html',1,'ipfs']]],
-  ['current_5fcid_27',['current_cid',['../classipfs_1_1UnixFsPathResolver.html#a4f480d5f0ead5f737102a01aa1496e78',1,'ipfs::UnixFsPathResolver']]]
+  ['daglistener_26',['DagListener',['../classipfs_1_1DagListener.html',1,'ipfs']]],
+  ['defaultgateways_27',['DefaultGateways',['../classipfs_1_1Gateways.html#a76b0fd7d947788f7983574552b5a8e75',1,'ipfs::Gateways']]],
+  ['demote_28',['demote',['../classipfs_1_1Gateways.html#a936c7d1639a33de2623e18ccf85210b9',1,'ipfs::Gateways']]],
+  ['deprecated_20list_29',['Deprecated List',['../deprecated.html',1,'']]],
+  ['deserialize_30',['Deserialize',['../structipfs_1_1ValidatedIpns.html#aabdd2defa62bbc9d1463fd4bef53ec23',1,'ipfs::ValidatedIpns']]],
+  ['detectcompletefailure_31',['DetectCompleteFailure',['../classipfs_1_1Scheduler.html#a93ed9fb2feff9cf723b27a0d4dd75aed',1,'ipfs::Scheduler']]],
+  ['dirshard_32',['DirShard',['../classipfs_1_1unix__fs_1_1DirShard.html#aabba19f6dfa1ff0f43930b79aea6fa45',1,'ipfs::unix_fs::DirShard::DirShard()'],['../classipfs_1_1unix__fs_1_1DirShard.html',1,'ipfs::unix_fs::DirShard']]],
+  ['discover_33',['Discover',['../classipfs_1_1ContextApi.html#a1c7cb1d1a94d2ebf7dc67b82d9b7f419',1,'ipfs::ContextApi']]],
+  ['doesnotexist_34',['DoesNotExist',['../classipfs_1_1DagListener.html#ace24cf8d0ecb96f9e576cff559d53c5a',1,'ipfs::DagListener']]]
 ];

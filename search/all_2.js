@@ -1,9 +1,13 @@
 var searchData=
 [
-  ['blinkon23_11',['blinkon23',['../md_doc_slides_blinkon23.html',1,'']]],
-  ['block_12',['Block',['../classipfs_1_1Block.html#aaae97cdd642eea9386b680e9442f25ca',1,'ipfs::Block::Block(Cid const &amp;cid, std::istream &amp;stream)'],['../classipfs_1_1Block.html#adb3d4047f8a38e9b64b58dd17eb492f1',1,'ipfs::Block::Block(Cid const &amp;cid, std::string const &amp;bytes)'],['../classipfs_1_1Block.html#aa6f73edb4a3d9583f30ad74486b27278',1,'ipfs::Block::Block()'],['../classipfs_1_1Block.html',1,'ipfs::Block']]],
-  ['blockrequestor_13',['BlockRequestor',['../classipfs_1_1BlockRequestor.html',1,'ipfs']]],
-  ['blockscomplete_14',['BlocksComplete',['../classipfs_1_1DagListener.html#a4828dd07c64933f4052e5a8dc2bfa107',1,'ipfs::DagListener']]],
-  ['blockstorage_15',['BlockStorage',['../classipfs_1_1BlockStorage.html',1,'ipfs']]],
-  ['busygateway_16',['BusyGateway',['../classipfs_1_1BusyGateway.html',1,'ipfs']]]
+  ['cache_5funtil_16',['cache_until',['../structipfs_1_1ValidatedIpns.html#a41a4f4c7cf8f347cf2cd160227e07f98',1,'ipfs::ValidatedIpns']]],
+  ['chainedrequestors_17',['ChainedRequestors',['../classipfs_1_1ChainedRequestors.html',1,'ipfs']]],
+  ['changes_2fadditions_18',['Changes/Additions',['../md_doc_original_design.html',1,'']]],
+  ['checklistening_19',['CheckListening',['../classipfs_1_1BlockStorage.html#a62c0428161a796bc977d5b42d0bd2c73',1,'ipfs::BlockStorage']]],
+  ['chunk_5fdata_20',['chunk_data',['../classipfs_1_1Block.html#a3b5a934d1925ad98228650fc4fb3e6f6',1,'ipfs::Block']]],
+  ['cid_21',['cid',['../classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba',1,'ipfs::Block::cid()'],['../classipfs_1_1unix__fs_1_1NodeHelper.html#afd3dc566b34d05d97671ea3b66797ddf',1,'ipfs::unix_fs::NodeHelper::cid()']]],
+  ['cid_5fmatches_5fdata_22',['cid_matches_data',['../classipfs_1_1Block.html#abf18bac471e5245dd782ad9388c9c0a2',1,'ipfs::Block']]],
+  ['complete_23',['Complete',['../classipfs_1_1NameListener.html#a2c2f435d899d0f589a397cfee49be0fc',1,'ipfs::NameListener']]],
+  ['contextapi_24',['ContextApi',['../classipfs_1_1ContextApi.html',1,'ipfs']]],
+  ['current_5fcid_25',['current_cid',['../classipfs_1_1UnixFsPathResolver.html#a4f480d5f0ead5f737102a01aa1496e78',1,'ipfs::UnixFsPathResolver']]]
 ];

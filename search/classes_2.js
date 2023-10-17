@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['cacherequestor_164',['CacheRequestor',['../classipfs_1_1CacheRequestor.html',1,'ipfs']]],
-  ['chainedrequestors_165',['ChainedRequestors',['../classipfs_1_1ChainedRequestors.html',1,'ipfs']]],
-  ['contextapi_166',['ContextApi',['../classipfs_1_1ContextApi.html',1,'ipfs']]]
+  ['daglistener_132',['DagListener',['../classipfs_1_1DagListener.html',1,'ipfs']]],
+  ['dirshard_133',['DirShard',['../classipfs_1_1unix__fs_1_1DirShard.html',1,'ipfs::unix_fs']]]
 ];

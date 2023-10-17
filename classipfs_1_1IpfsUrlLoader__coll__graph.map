@@ -1,6 +1,0 @@
-<map id="ipfs::IpfsUrlLoader" name="ipfs::IpfsUrlLoader">
-<area shape="rect" id="node1" title=" " alt="" coords="134,169,275,196"/>
-<area shape="rect" id="node2" href="$classnetwork_1_1mojom_1_1URLLoader.html" title=" " alt="" coords="5,95,212,121"/>
-<area shape="rect" id="node3" href="$classipfs_1_1DagListener.html" title="Implemented by things waiting on a particular path through a DAG." alt="" coords="236,95,368,121"/>
-<area shape="rect" id="node4" title=" " alt="" coords="203,5,401,47"/>
-</map>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['scheduler_209',['Scheduler',['../classipfs_1_1Scheduler.html',1,'ipfs']]]
+  ['unixfspathresolver_151',['UnixFsPathResolver',['../classipfs_1_1UnixFsPathResolver.html',1,'ipfs']]]
 ];
