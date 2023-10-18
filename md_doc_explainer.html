@@ -74,8 +74,8 @@ What is IPFS?</h1>
 What is an IPFS client?</h1>
 <p>The term 'client' is being used here for any software that requests IPFS resources without participating in other aspects of the ecosystem, for example file sharing. We're describing an asymmetric relationship, unlike most of the IPFS ecosystem.</p>
 <h1><a class="anchor" id="autotoc_md30"></a>
-Why HTTP(s)?</h1>
-<p>Although the peer-to-peer communication between nodes happens over a number of transports (often quic), it is a custom protocol designed for synchronizing a <a href="https://en.wikipedia.org/wiki/Distributed_hash_table">DHT</a> and isn't the most appropriate for a strict client. Existing "gateways" - that is software intended to support clients - are HTTP servers.</p>
+Making use of HTTP(s) gateways</h1>
+<p>Although the peer-to-peer communication between nodes happens over a number of transports (often quic), it is a set of custom protocol designed for synchronizing a <a href="https://en.wikipedia.org/wiki/Distributed_hash_table">DHT</a> and isn't the most appropriate for a strict client. Existing "gateways" - that is software intended to support clients - are HTTP servers.</p>
 <p>In addition, it is perceived that HTTP requests may be more at home in a browser based around HTTP requests than a custom protocol.</p>
 <h1><a class="anchor" id="autotoc_md31"></a>
 How do Chrome users interact with IPFS today?</h1>
@@ -121,6 +121,16 @@ Features</h2>
 <li>Additional features as recommended by either Chromium devs and/or feature sponsor(s).</li>
 </ul>
 <h1><a class="anchor" id="autotoc_md36"></a>
+Considerations</h1>
+<h2><a class="anchor" id="autotoc_md37"></a>
+Origin</h2>
+<p>The concept of an origin is a bit different here. In many schemes, including HTTP, an origin is essentially a network endpoint, possibly with user credentials. In a native IPFS URL, the origin contains the CID and so specifies a hash to verify the content. It does not specify a network source, but rather it is locked in place when the content was created, and stays constant regardless of where it is hosted. Similarly for an IPNS URL, the origin contains a public key (or a hash thereof). It's specifying the author &amp; owner of the key pair, not where the record is hosted.</p>
+<h2><a class="anchor" id="autotoc_md38"></a>
+Privacy</h2>
+<p>IPFS has different privacy characteristics. If content is being delivered over HTTP, that server can log any/all requests to it.</p>
+<p>Since an IPFS gateway is an HTTP server, it can do this too. However, instead of one entity having knowledge of all requests for all URLs of a given origin, it has knowledge of all requests made from users who chose to use that particular gateway, regardless of which origin it is.</p>
+<p>In some situations this is preferable, but if many users chose the same gateway as their only gateway, the result may be worse than where we are now. And so it will be important to include clear and concise messaging in the end-user interface where one selects their gateways and gateway discovery mechanisms.</p>
+<h1><a class="anchor" id="autotoc_md39"></a>
 Further reading</h1>
 <ul>
 <li>A short <a href="https://www.youtube.com/watch?v=9XJOktFizlo">demo video</a>.</li>
