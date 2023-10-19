@@ -1,0 +1,3 @@
+declare_args() {
+    enable_ipfs = false
+}
