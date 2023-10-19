@@ -1,9 +1,13 @@
 var searchData=
 [
-  ['blinkon23_10',['blinkon23',['../md_doc_slides_blinkon23.html',1,'']]],
-  ['block_11',['Block',['../classipfs_1_1Block.html#aaae97cdd642eea9386b680e9442f25ca',1,'ipfs::Block::Block(Cid const &amp;cid, std::istream &amp;stream)'],['../classipfs_1_1Block.html#adb3d4047f8a38e9b64b58dd17eb492f1',1,'ipfs::Block::Block(Cid const &amp;cid, std::string const &amp;bytes)'],['../classipfs_1_1Block.html#aa6f73edb4a3d9583f30ad74486b27278',1,'ipfs::Block::Block()'],['../classipfs_1_1Block.html',1,'ipfs::Block']]],
-  ['blockrequestor_12',['BlockRequestor',['../classipfs_1_1BlockRequestor.html',1,'ipfs']]],
-  ['blockscomplete_13',['BlocksComplete',['../classipfs_1_1DagListener.html#a4828dd07c64933f4052e5a8dc2bfa107',1,'ipfs::DagListener']]],
-  ['blockstorage_14',['BlockStorage',['../classipfs_1_1BlockStorage.html',1,'ipfs']]],
-  ['busygateway_15',['BusyGateway',['../classipfs_1_1BusyGateway.html',1,'ipfs']]]
+  ['accept_1',['accept',['../classipfs_1_1Gateway.html#a91dda866833c7d9010236bf8d4f63fce',1,'ipfs::Gateway']]],
+  ['add_2',['Add',['../classipfs_1_1ChainedRequestors.html#af9f6b17f0f1fdc40408421aab63c67ca',1,'ipfs::ChainedRequestors']]],
+  ['addentry_3',['AddEntry',['../classipfs_1_1GeneratedDirectoryListing.html#ae7256c8d7bd7d24b97590cbeef73edda',1,'ipfs::GeneratedDirectoryListing']]],
+  ['addgateways_4',['AddGateways',['../classipfs_1_1Gateways.html#ad5cf5869f8cadbb64fd9f011964091ad',1,'ipfs::Gateways']]],
+  ['addlistening_5',['AddListening',['../classipfs_1_1BlockStorage.html#a0071537003f3fc45bc09da2372bac766',1,'ipfs::BlockStorage']]],
+  ['addstoragehook_6',['AddStorageHook',['../classipfs_1_1BlockStorage.html#a35f051a01eb18bf489bd6e6f12b5d480',1,'ipfs::BlockStorage']]],
+  ['api_7',['api',['../classipfs_1_1unix__fs_1_1NodeHelper.html#abf3aeea7e86940f8b88c0b60d4134675',1,'ipfs::unix_fs::NodeHelper']]],
+  ['as_2dimplemented_20design_20notes_8',['As-Implemented Design Notes',['../md_doc_design_notes.html',1,'']]],
+  ['assigndnslink_9',['AssignDnsLink',['../classipfs_1_1IpnsNames.html#a1ccd03ba666ba55c3c2e24c1566b100f',1,'ipfs::IpnsNames']]],
+  ['assignname_10',['AssignName',['../classipfs_1_1IpnsNames.html#aaaf39692cf8b7413d7c1b56c6c176a18',1,'ipfs::IpnsNames']]]
 ];

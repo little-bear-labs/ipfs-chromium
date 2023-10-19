@@ -1,0 +1,7 @@
+<map id="ipfs::IpnsUrlLoader" name="ipfs::IpnsUrlLoader">
+<area shape="rect" id="node1" title=" " alt="" coords="296,169,440,196"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,95,240,121"/>
+<area shape="rect" id="node3" href="$classnetwork_1_1mojom_1_1URLLoader.html" title=" " alt="" coords="265,95,471,121"/>
+<area shape="rect" id="node4" href="$classipfs_1_1NameListener.html" title="Implemented by classes that await IPNS and/or DNSLink resolution." alt="" coords="495,95,641,121"/>
+<area shape="rect" id="node5" title=" " alt="" coords="462,5,674,47"/>
+</map>

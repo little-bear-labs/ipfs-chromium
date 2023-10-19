@@ -1,13 +1,9 @@
 var searchData=
 [
-  ['gateway_43',['Gateway',['../classipfs_1_1Gateway.html#a595eb85e5eeff700dd639f3b5a206237',1,'ipfs::Gateway']]],
-  ['gateway_44',['gateway',['../classipfs_1_1GatewayRequest.html#aeef061b6aa94a18011340e404af461f8',1,'ipfs::GatewayRequest']]],
-  ['gateway_45',['Gateway',['../classipfs_1_1Gateway.html',1,'ipfs']]],
-  ['gateway_5fsource_46',['gateway_source',['../structipfs_1_1ValidatedIpns.html#a5a8535dd643df208082b78751a529f15',1,'ipfs::ValidatedIpns']]],
-  ['gatewayrequest_47',['GatewayRequest',['../classipfs_1_1GatewayRequest.html#a3717a586bca3240f710010964b317b85',1,'ipfs::GatewayRequest::GatewayRequest()'],['../classipfs_1_1GatewayRequest.html',1,'ipfs::GatewayRequest']]],
-  ['gateways_48',['Gateways',['../classipfs_1_1Gateways.html',1,'ipfs']]],
-  ['generateddirectorylisting_49',['GeneratedDirectoryListing',['../classipfs_1_1GeneratedDirectoryListing.html#a066d982e3a8d0eb3c50cbf9cd431141f',1,'ipfs::GeneratedDirectoryListing::GeneratedDirectoryListing()'],['../classipfs_1_1GeneratedDirectoryListing.html',1,'ipfs::GeneratedDirectoryListing']]],
-  ['generatelist_50',['GenerateList',['../classipfs_1_1Gateways.html#a384c3975f70e2db7baefcb04efb2bbd4',1,'ipfs::Gateways']]],
-  ['get_51',['Get',['../classipfs_1_1BlockStorage.html#a86b5317273b0d593121067e96ab9a238',1,'ipfs::BlockStorage']]],
-  ['getheaders_52',['GetHeaders',['../classipfs_1_1BlockStorage.html#a73f9d3ad3c9dead6ae9709e1289e1e6a',1,'ipfs::BlockStorage']]]
+  ['failure_41',['Failure',['../classipfs_1_1BusyGateway.html#a1aa850cb2e39c9b234c05d4d88e09e08',1,'ipfs::BusyGateway']]],
+  ['fetch_5ftime_42',['fetch_time',['../structipfs_1_1ValidatedIpns.html#a2848fb8db773402c46dfe9d53303d845',1,'ipfs::ValidatedIpns']]],
+  ['file_5fsize_43',['file_size',['../classipfs_1_1Block.html#ad822fbd69b65bd3e958c8f33ad346599',1,'ipfs::Block']]],
+  ['finish_44',['Finish',['../classipfs_1_1GeneratedDirectoryListing.html#aea8410db96a18911bd0288eb0fcf02a3',1,'ipfs::GeneratedDirectoryListing']]],
+  ['fromblocktype_45',['FromBlockType',['../classipfs_1_1unix__fs_1_1NodeHelper.html#a0ed002931f2791f3ae44636b9741e2c9',1,'ipfs::unix_fs::NodeHelper']]],
+  ['fsdata_46',['fsdata',['../classipfs_1_1Block.html#ac17705547b9ba01e1b24ff4a2e8c6ac3',1,'ipfs::Block']]]
 ];

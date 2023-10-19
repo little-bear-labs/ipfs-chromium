@@ -1,0 +1,4 @@
+<map id="ipfs::CacheRequestor" name="ipfs::CacheRequestor">
+<area shape="rect" id="node1" title=" " alt="" coords="5,80,165,107"/>
+<area shape="rect" id="node2" href="$classipfs_1_1BlockRequestor.html" title="Interface for classes that can asynchronously fetch a block for a CID." alt="" coords="7,5,163,32"/>
+</map>
