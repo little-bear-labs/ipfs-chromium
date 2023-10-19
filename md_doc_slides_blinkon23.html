@@ -65,7 +65,7 @@ $(function() {
 <div class="title">blinkon23 </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h1><a class="anchor" id="autotoc_md45"></a>
+<div class="textblock"><h1><a class="anchor" id="autotoc_md49"></a>
 Content-Verifying IPFS Client in Chromium</h1>
 <table style="margin-left:auto;margin-right:auto;">
 <tr>
@@ -86,7 +86,7 @@ Content-Verifying IPFS Client in Chromium</h1>
 <p class="endtd"><img src="pl.png" alt="PL" class="inline"/> </p>
 </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md46"></a>
+<h2><a class="anchor" id="autotoc_md50"></a>
 What is IPFS?</h2>
 <ul>
 <li>Content-addressed: pulling from a DHT &amp; verifying</li>
@@ -98,7 +98,7 @@ What is IPFS?</h2>
 <p class="endtd"></p>
 </td></tr>
 </table>
-<h4><a class="anchor" id="autotoc_md47"></a>
+<h4><a class="anchor" id="autotoc_md51"></a>
 Some of the IPFS Ecosystem</h4>
 <ul>
 <li>Brave</li>
@@ -110,7 +110,7 @@ Some of the IPFS Ecosystem</h4>
 <li>bifrost </li>
 </ul>
 <p><img src="back.png" alt="" class="inline"/></p>
-<h2><a class="anchor" id="autotoc_md48"></a>
+<h2><a class="anchor" id="autotoc_md52"></a>
 URL Schemes</h2>
 <ul>
 <li>ipfs://bafybeidjtwun7gvpfjymhquloxzzwhpctgsw3vxampxr46du2we4yhiqje/reference/en/index.html<ul>
@@ -129,34 +129,34 @@ URL Schemes</h2>
 </ul>
 </li>
 </ul>
-<h2><a class="anchor" id="autotoc_md49"></a>
+<h2><a class="anchor" id="autotoc_md53"></a>
 Let's step through loading a page</h2>
 <p>&lt;script type="module"&gt; import mermaid from '<a href="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';">https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';</a> mermaid.initialize({ startOnLoad: true }); &lt;/script&gt;</p>
-<h3><a class="anchor" id="autotoc_md50"></a>
+<h3><a class="anchor" id="autotoc_md54"></a>
 User enters URL</h3>
-<p>ipns://k51qzi5uqu5dku8zqce3b7kmpcw6uua9w00b5boyaevowmzls2rpie0itokett/ </p><div class="mermaid"> flowchart LR; ipns["/ipns/k51qzi5uqu5dku8zqce3b7kmpcw6uua9w00b5boyaevowmzls2rpie0itokett"] style ipns fill:#f9f </div><h3><a class="anchor" id="autotoc_md51"></a>
+<p>ipns://k51qzi5uqu5dku8zqce3b7kmpcw6uua9w00b5boyaevowmzls2rpie0itokett/ </p><div class="mermaid"> flowchart LR; ipns["/ipns/k51qzi5uqu5dku8zqce3b7kmpcw6uua9w00b5boyaevowmzls2rpie0itokett"] style ipns fill:#f9f </div><h3><a class="anchor" id="autotoc_md55"></a>
 Request IPNS Record</h3>
 <p><a href="http://localhost:8080/ipns/k51qzi5uqu5dku8zqce3b7kmpcw6uua9w00b5boyaevowmzls2rpie0itokett?format=ipns-record">http://localhost:8080/ipns/k51qzi5uqu5dku8zqce3b7kmpcw6uua9w00b5boyaevowmzls2rpie0itokett?format=ipns-record</a> Returns: <code>Content-Type: application/vnd.ipfs.ipns-record</code> Body (protobuf) contains: </p><div class="fragment"><div class="line">Value:         &quot;/ipns/ipfs.tech&quot;</div>
 <div class="line">... snip ...</div>
 <div class="line">Signature V2:  &quot;mKWg7Jv/T+7hhKE1d/9YY7JHWeAaBJ/yQI3C56xn5v7ld9MZO2InUIGE0vSpW+ZRw3nNMJJT+usye8Tt2GRqpCw&quot;</div>
 <div class="line">Data:          {&quot;Sequence&quot;:0,&quot;TTL&quot;:60000000000,&quot;Validity&quot;:{&quot;/&quot;:{&quot;bytes&quot;:&quot;MjAyMy0wOS0yOFQxMzo0MDoyMS4xMzI1NDQwMDFa&quot;}},&quot;ValidityType&quot;:0,&quot;Value&quot;:{&quot;/&quot;:{&quot;bytes&quot;:&quot;L2lwbnMvaXBmcy50ZWNo&quot;}}}</div>
-</div><!-- fragment --><p> Verify signature and continue. </p><div class="mermaid"> flowchart LR; ipns["/ipns/k51...ett"]--&gt;dnsl["/ipns/ipfs.tech"] style ipns fill:#f9f style dnsl fill:#fa9 </div><h3><a class="anchor" id="autotoc_md52"></a>
+</div><!-- fragment --><p> Verify signature and continue. </p><div class="mermaid"> flowchart LR; ipns["/ipns/k51...ett"]--&gt;dnsl["/ipns/ipfs.tech"] style ipns fill:#f9f style dnsl fill:#fa9 </div><h3><a class="anchor" id="autotoc_md56"></a>
 DNS TXT Record Lookup</h3>
-<p>_dnslink.ipfs.tech has TXT "dnslink=/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy" </p><div class="mermaid"> flowchart LR; ipns["/ipns/k51...ett"]--&gt;dnsl["/ipns/ipfs.tech"]--&gt;root["/ipfs/QmR...2SRy"] style ipns fill:#f9f style dnsl fill:#fa9 </div><h3><a class="anchor" id="autotoc_md53"></a>
+<p>_dnslink.ipfs.tech has TXT "dnslink=/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy" </p><div class="mermaid"> flowchart LR; ipns["/ipns/k51...ett"]--&gt;dnsl["/ipns/ipfs.tech"]--&gt;root["/ipfs/QmR...2SRy"] style ipns fill:#f9f style dnsl fill:#fa9 </div><h3><a class="anchor" id="autotoc_md57"></a>
 We have our immutable content</h3>
 <p>Request the root node in a verifiable format (see <a href="https://specs.ipfs.tech/http-gateways/trustless-gateway/">https://specs.ipfs.tech/http-gateways/trustless-gateway/</a>)</p>
-<p><a href="https://ipfs.io/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy?format=raw">https://ipfs.io/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy?format=raw</a> Returns <code>Content-Type: application/vnd.ipld.raw</code> directory with 26 entries. Verify the hash matches and continue. </p><div class="mermaid"> flowchart LR; ipns["/ipns/k51...ett"]--&gt;dnsl["/ipns/ipfs.tech"]--&gt;root["/ipfs/QmR...2SRy"] style ipns fill:#f9f style dnsl fill:#fa9 root--&gt;e1["..."] root--&gt;nuxt["_nuxt = QmYpxEzdbNbohung4gQoZFoQEzLNeBT8oGCQGPtKgjDbnT"] root--&gt;e3["..."] root--&gt;index["index.html = QmTzVjzGMG4LwBY9ArxcNcokPfbpG2biT8Gy9AiecxKtju"] root--&gt;e5["..."] style root fill:#9fb </div><h3><a class="anchor" id="autotoc_md54"></a>
+<p><a href="https://ipfs.io/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy?format=raw">https://ipfs.io/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy?format=raw</a> Returns <code>Content-Type: application/vnd.ipld.raw</code> directory with 26 entries. Verify the hash matches and continue. </p><div class="mermaid"> flowchart LR; ipns["/ipns/k51...ett"]--&gt;dnsl["/ipns/ipfs.tech"]--&gt;root["/ipfs/QmR...2SRy"] style ipns fill:#f9f style dnsl fill:#fa9 root--&gt;e1["..."] root--&gt;nuxt["_nuxt = QmYpxEzdbNbohung4gQoZFoQEzLNeBT8oGCQGPtKgjDbnT"] root--&gt;e3["..."] root--&gt;index["index.html = QmTzVjzGMG4LwBY9ArxcNcokPfbpG2biT8Gy9AiecxKtju"] root--&gt;e5["..."] style root fill:#9fb </div><h3><a class="anchor" id="autotoc_md58"></a>
 The directory that contains index.html, so request that</h3>
-<p><a href="https://gateway.pinata.cloud/ipfs/QmTzVjzGMG4LwBY9ArxcNcokPfbpG2biT8Gy9AiecxKtju?format=raw">https://gateway.pinata.cloud/ipfs/QmTzVjzGMG4LwBY9ArxcNcokPfbpG2biT8Gy9AiecxKtju?format=raw</a> Or set header <code>Accept: application/vnd.ipld.raw</code> instead of format parameter. Note the recursive verification. </p><div class="mermaid"> flowchart LR; ipns["/ipns/k51...ett"]--&gt;dnsl["/ipns/ipfs.tech"]--&gt;root["/ipfs/QmR...2SRy"] style ipns fill:#f9f style dnsl fill:#fa9 root--&gt;e1["..."] root--&gt;nuxt["_nuxt = QmYpxEzdbNbohung4gQoZFoQEzLNeBT8oGCQGPtKgjDbnT"] root--&gt;e3["..."] root--&gt;index["index.html = QmTzVjzGMG4LwBY9ArxcNcokPfbpG2biT8Gy9AiecxKtju"] root--&gt;e5["..."] style root fill:#9fb style index fill:#9fb </div><h3><a class="anchor" id="autotoc_md55"></a>
+<p><a href="https://gateway.pinata.cloud/ipfs/QmTzVjzGMG4LwBY9ArxcNcokPfbpG2biT8Gy9AiecxKtju?format=raw">https://gateway.pinata.cloud/ipfs/QmTzVjzGMG4LwBY9ArxcNcokPfbpG2biT8Gy9AiecxKtju?format=raw</a> Or set header <code>Accept: application/vnd.ipld.raw</code> instead of format parameter. Note the recursive verification. </p><div class="mermaid"> flowchart LR; ipns["/ipns/k51...ett"]--&gt;dnsl["/ipns/ipfs.tech"]--&gt;root["/ipfs/QmR...2SRy"] style ipns fill:#f9f style dnsl fill:#fa9 root--&gt;e1["..."] root--&gt;nuxt["_nuxt = QmYpxEzdbNbohung4gQoZFoQEzLNeBT8oGCQGPtKgjDbnT"] root--&gt;e3["..."] root--&gt;index["index.html = QmTzVjzGMG4LwBY9ArxcNcokPfbpG2biT8Gy9AiecxKtju"] root--&gt;e5["..."] style root fill:#9fb style index fill:#9fb </div><h3><a class="anchor" id="autotoc_md59"></a>
 index.html fits into a single block</h3>
 <p>So just deserialize and return its content. The HTML starts rendering, and requests a resource. <code>&lt;img style="" class="max-w-40 mx-auto" src="/_nuxt/ipfs-logo.a313bcee.svg" data-v-6d12c5c1&gt;</code> This is relative to the ipns root, so start over with a request for: <code>ipns://k51qzi5uqu5dku8zqce3b7kmpcw6uua9w00b5boyaevowmzls2rpie0itokett/_nuxt/ipfs-logo.a313bcee.svg</code></p>
-<h3><a class="anchor" id="autotoc_md56"></a>
+<h3><a class="anchor" id="autotoc_md60"></a>
 Lots of stuff is in hot in cache. Requesting the entry _nuxt:</h3>
-<p><a href="https://ipfs.joaoleitao.org/QmYpxEzdbNbohung4gQoZFoQEzLNeBT8oGCQGPtKgjDbnT?format=raw">https://ipfs.joaoleitao.org/QmYpxEzdbNbohung4gQoZFoQEzLNeBT8oGCQGPtKgjDbnT?format=raw</a> </p><div class="mermaid"> flowchart LR; ipns["/ipns/k51...ett"]--&gt;dnsl["/ipns/ipfs.tech"]--&gt;root["/ipfs/QmR...2SRy"] style ipns fill:#f9f style dnsl fill:#fa9 root["/ipfs/QmR...SRy"] root--&gt;e1["..."] root--&gt;nuxt["_nuxt = QmY...bnT"] root--&gt;e3["..."] root--&gt;index["index.html = QmT...tju"] root--&gt;e5["..."] style root fill:#9fb style index fill:#9fb </div><h3><a class="anchor" id="autotoc_md57"></a>
+<p><a href="https://ipfs.joaoleitao.org/QmYpxEzdbNbohung4gQoZFoQEzLNeBT8oGCQGPtKgjDbnT?format=raw">https://ipfs.joaoleitao.org/QmYpxEzdbNbohung4gQoZFoQEzLNeBT8oGCQGPtKgjDbnT?format=raw</a> </p><div class="mermaid"> flowchart LR; ipns["/ipns/k51...ett"]--&gt;dnsl["/ipns/ipfs.tech"]--&gt;root["/ipfs/QmR...2SRy"] style ipns fill:#f9f style dnsl fill:#fa9 root["/ipfs/QmR...SRy"] root--&gt;e1["..."] root--&gt;nuxt["_nuxt = QmY...bnT"] root--&gt;e3["..."] root--&gt;index["index.html = QmT...tju"] root--&gt;e5["..."] style root fill:#9fb style index fill:#9fb </div><h3><a class="anchor" id="autotoc_md61"></a>
 _nuxt is also a directory, with 164 entries</h3>
-<p>Request the file we're after. <a href="https://ipfs.fleek.co/ipfs/QmWTW21hadJGoAcmGZC18mCFq71UUVGPtJSX5PeBubnQCQ?format=raw">https://ipfs.fleek.co/ipfs/QmWTW21hadJGoAcmGZC18mCFq71UUVGPtJSX5PeBubnQCQ?format=raw</a> </p><div class="mermaid"> flowchart LR; ipns["/ipns/k51...ett"]--&gt;dnsl["/ipns/ipfs.tech"]--&gt;root["/ipfs/QmR...2SRy"] style ipns fill:#f9f style dnsl fill:#fa9 root["/ipfs/QmR...SRy"] root--&gt;e1["..."] root--&gt;nuxt["_nuxt = QmY...bnT"] root--&gt;e3["..."] root--&gt;index["index.html = QmT...tju"] root--&gt;e5["..."] nuxt--&gt;f0["..."] nuxt--&gt;img["ipfs-logo.a313bcee.svg = QmWTW21hadJGoAcmGZC18mCFq71UUVGPtJSX5PeBubnQCQ"] nuxt--&gt;f1["..."] style root fill:#9fb style index fill:#9fb style nuxt fill:#9fb </div><h3><a class="anchor" id="autotoc_md58"></a>
+<p>Request the file we're after. <a href="https://ipfs.fleek.co/ipfs/QmWTW21hadJGoAcmGZC18mCFq71UUVGPtJSX5PeBubnQCQ?format=raw">https://ipfs.fleek.co/ipfs/QmWTW21hadJGoAcmGZC18mCFq71UUVGPtJSX5PeBubnQCQ?format=raw</a> </p><div class="mermaid"> flowchart LR; ipns["/ipns/k51...ett"]--&gt;dnsl["/ipns/ipfs.tech"]--&gt;root["/ipfs/QmR...2SRy"] style ipns fill:#f9f style dnsl fill:#fa9 root["/ipfs/QmR...SRy"] root--&gt;e1["..."] root--&gt;nuxt["_nuxt = QmY...bnT"] root--&gt;e3["..."] root--&gt;index["index.html = QmT...tju"] root--&gt;e5["..."] nuxt--&gt;f0["..."] nuxt--&gt;img["ipfs-logo.a313bcee.svg = QmWTW21hadJGoAcmGZC18mCFq71UUVGPtJSX5PeBubnQCQ"] nuxt--&gt;f1["..."] style root fill:#9fb style index fill:#9fb style nuxt fill:#9fb </div><h3><a class="anchor" id="autotoc_md62"></a>
 If this file were big</h3>
-<p>Request the file parts in parallel <a href="https://gateway.ipfs.io/ipfs/Qm...1">https://gateway.ipfs.io/ipfs/Qm...1</a> <a href="https://jcsl.hopto.org/ipfs/Qm...2">https://jcsl.hopto.org/ipfs/Qm...2</a> </p><div class="mermaid"> flowchart LR; ipns["/ipns/k51...ett"]--&gt;dnsl["/ipns/ipfs.tech"]--&gt;root["/ipfs/QmR...2SRy"] style ipns fill:#f9f style dnsl fill:#fa9 root["/ipfs/QmR...SRy"] root--&gt;e1["..."] root--&gt;nuxt["_nuxt = QmY...bnT"] root--&gt;e3["..."] root--&gt;index["index.html = QmT...tju"] root--&gt;e5["..."] nuxt--&gt;f1["..."] nuxt--&gt;img["ipfs-logo.a313bcee.svg = QmWTW21hadJGoAcmGZC18mCFq71UUVGPtJSX5PeBubnQCQ"] nuxt--&gt;f2["..."] style root fill:#9fb style index fill:#9fb style nuxt fill:#9fb style img fill:#9fb img--&gt;c0["Qm...1"] img--&gt;c1["Qm...2"] </div><h2><a class="anchor" id="autotoc_md59"></a>
+<p>Request the file parts in parallel <a href="https://gateway.ipfs.io/ipfs/Qm...1">https://gateway.ipfs.io/ipfs/Qm...1</a> <a href="https://jcsl.hopto.org/ipfs/Qm...2">https://jcsl.hopto.org/ipfs/Qm...2</a> </p><div class="mermaid"> flowchart LR; ipns["/ipns/k51...ett"]--&gt;dnsl["/ipns/ipfs.tech"]--&gt;root["/ipfs/QmR...2SRy"] style ipns fill:#f9f style dnsl fill:#fa9 root["/ipfs/QmR...SRy"] root--&gt;e1["..."] root--&gt;nuxt["_nuxt = QmY...bnT"] root--&gt;e3["..."] root--&gt;index["index.html = QmT...tju"] root--&gt;e5["..."] nuxt--&gt;f1["..."] nuxt--&gt;img["ipfs-logo.a313bcee.svg = QmWTW21hadJGoAcmGZC18mCFq71UUVGPtJSX5PeBubnQCQ"] nuxt--&gt;f2["..."] style root fill:#9fb style index fill:#9fb style nuxt fill:#9fb style img fill:#9fb img--&gt;c0["Qm...1"] img--&gt;c1["Qm...2"] </div><h2><a class="anchor" id="autotoc_md63"></a>
 Since the HTTP responses can come from any source...</h2>
 <p>Make the same request to multiple gateways in parallel. One will return first, if it passes verification, others are cancelled. Reduces worst-case times.</p>
 <p>e.g.:</p>
@@ -165,7 +165,7 @@ Since the HTTP responses can come from any source...</h2>
 <li><a href="https://dweb.link/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy?format=raw">https://dweb.link/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy?format=raw</a></li>
 <li><a href="https://jorropo.net/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy?format=raw">https://jorropo.net/ipfs/QmRE3dyFsbhC1dAthPBvgo4w15dGwppCAybgmJDB5m2SRy?format=raw</a></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md60"></a>
+<h2><a class="anchor" id="autotoc_md64"></a>
 Possible future considerations</h2>
 <ul>
 <li>Design &amp; implementation changes necessary for upstreaming</li>
@@ -182,10 +182,10 @@ Possible future considerations</h2>
 <li>IPFS-specific DevTools (e.g.: DAG explorer)</li>
 <li>Possibly connecting to webtransport IPFS peers</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md61"></a>
+<h2><a class="anchor" id="autotoc_md65"></a>
 POC Screenshot</h2>
 <p><img src="icss.png" alt="ScreenShot" class="inline"/></p>
-<h2><a class="anchor" id="autotoc_md62"></a>
+<h2><a class="anchor" id="autotoc_md66"></a>
 Questions &amp; Contact/Further reading</h2>
 <table class="markdownTable">
 <tr class="markdownTableHead">
