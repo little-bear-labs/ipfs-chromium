@@ -57,9 +57,20 @@ void ipfs::Gateways::demote(std::string const& key) {
 void ipfs::Gateways::AddGateways(std::vector<std::string> v) {
   LOG(INFO) << "AddGateways(" << v.size() << ')';
   for (auto& ip : v) {
-    std::string prefix{"http://"};
-    prefix.append(ip);
-    prefix.push_back('/');
+    if (ip.empty()) {
+      LOG(ERROR) << "ERROR: Attempted to add empty string as gateway!";
+      continue;
+    }
+    std::string prefix;
+    if (ip.find("://") == std::string::npos) {
+      prefix = "http://";
+      prefix.append(ip);
+    } else {
+      prefix = ip;
+    }
+    if (prefix.back() != '/') {
+      prefix.push_back('/');
+    }
     if (known_gateways_.insert({prefix, 99}).second) {
       VLOG(1) << "Adding discovered gateway " << prefix;
     }

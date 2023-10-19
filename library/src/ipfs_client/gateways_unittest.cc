@@ -27,3 +27,12 @@ TEST(GatewaysTest, OverriddenListEndsEntriesInSlash) {
     EXPECT_LE(dg.at(i).second, dg.at(i - 1).second);
   }
 }
+
+TEST(GatewaysTest, AddingNewGatewayShowsUpInList) {
+  auto tested = ipfs::Gateways{};
+  tested.AddGateways({"newly_added"});
+  auto list = tested.GenerateList();
+  EXPECT_TRUE(std::any_of(list.begin(), list.end(), [](auto& g) {
+    return g.url_prefix() == "http://newly_added/";
+  }));
+}
