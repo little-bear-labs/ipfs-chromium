@@ -71,13 +71,32 @@ What is IPFS?</h1>
 <p>IPFS involves distributed storage. Content-addressed resources mean that <code>ipfs://</code> URLs indicate <em>what</em> is being requested, rather than from where.</p>
 <p>The ecosystem, and this proposal, also includes <a href="https://docs.ipfs.tech/concepts/ipns/">IPNS</a>, whose URLs are based on a public key, effectively a mutable pointer to immutable data.</p>
 <h1><a class="anchor" id="autotoc_md20"></a>
+Uses</h1>
+<h2><a class="anchor" id="autotoc_md21"></a>
+ipfs URL scheme</h2>
+<p>Refers to immutable data. A few example uses:</p>
+<ul>
+<li>Static websites</li>
+<li>Data archival</li>
+<li>Data transfer</li>
+<li>Decentralized <a href="https://github.com/ipfs/awesome-ipfs#apps">applications</a></li>
+</ul>
+<h2><a class="anchor" id="autotoc_md22"></a>
+ipns URL scheme</h2>
+<p>Mutable pointer to an ipfs:// URL (or another ipns:// URL).</p>
+<p>Uses: updatable versions of the above</p>
+<p>2 variants:</p><ul>
+<li>(true) IPNS - Uses key signing to avoid need for centralized authority.</li>
+<li>DNSLink - uses DNS TXT records for a more readable origin (it's a hostname)</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md23"></a>
 What is an IPFS client?</h1>
 <p>The term 'client' is being used here for any software that requests IPFS resources without participating in other aspects of the ecosystem, for example file sharing. We're describing an asymmetric relationship, unlike most of the IPFS ecosystem.</p>
-<h1><a class="anchor" id="autotoc_md21"></a>
-Why HTTP(s)?</h1>
-<p>Although the peer-to-peer communication between nodes happens over a number of transports (often quic), it is a custom protocol designed for synchronizing a <a href="https://en.wikipedia.org/wiki/Distributed_hash_table">DHT</a> and isn't the most appropriate for a strict client. Existing "gateways" - that is software intended to support clients - are HTTP servers.</p>
+<h1><a class="anchor" id="autotoc_md24"></a>
+Making use of HTTP(s) gateways</h1>
+<p>Although the peer-to-peer communication between nodes happens over a number of transports (often quic), it is a set of custom protocol designed for synchronizing a <a href="https://en.wikipedia.org/wiki/Distributed_hash_table">DHT</a> and isn't the most appropriate for a strict client. Existing "gateways" - that is software intended to support clients - are HTTP servers.</p>
 <p>In addition, it is perceived that HTTP requests may be more at home in a browser based around HTTP requests than a custom protocol.</p>
-<h1><a class="anchor" id="autotoc_md22"></a>
+<h1><a class="anchor" id="autotoc_md25"></a>
 How do Chrome users interact with IPFS today?</h1>
 <p>One can talk directly to a single IPFS gateway. This would allow you to access a URL like <code>ipfs://bafybeidcw4v62rt3c5474dn5teesjlk6oa22ntcysa77ncx7vp22mxz7tu/</code> if you rewrite it to something like <code><a href="http://bafybeidcw4v62rt3c5474dn5teesjlk6oa22ntcysa77ncx7vp22mxz7tu.ipfs.localhost:8080/">http://bafybeidcw4v62rt3c5474dn5teesjlk6oa22ntcysa77ncx7vp22mxz7tu.ipfs.localhost:8080/</a></code> If you happen to have your node &amp; gateway running locally, this can have good technical characteristics. There are some usability concerns, in particular the need to re-write URLs and issues around sharing URLs. There is also the concern of headaches around needing to install a separate program and remembering to start it.</p>
 <p>If you're redirecting to a single public instance for all requests, this could raise concerns availability, privacy, and differences in filter lists. <br  />
@@ -86,7 +105,14 @@ How do Chrome users interact with IPFS today?</h1>
 <p>Brave, a Chromium derivative, has built-in code to redirect ipfs and ipns schemes to your choice of a public gateway or, if you prefer, it will install a node locally and redirect to that. Since its omnibar understands the schemes, this has a reasonable user interface - no need to rewrite URLs and URLs copy-paste easily when sharing with other Brave users. Redirecting to a single public node has privacy and trust concerns. There's also a content availability concern. Having the browser install and manage a node locally has a maintainability concern, initial cost on the user, possible conflict with other nodes, and also provides full peer-to-peer functionality which a user might not want.</p>
 <p>All of these approaches ultimately do a 1:1 translation to a single HTTP URL, similar to a custom handler. This could make sense if there is a reliable and trusted gateway readily available, whose server logs are not a privacy concern. And maintaining a local node has the aforementioned concerns with maintainability and users who do not want to fully participate in the peer-to-peer network. However, this also leaves value on the table.</p>
 <p>Our approach raise the browser to a first-class citizen of the IPFS ecosystem (doing its own content verification). It enables taking advantage of characteristics built into the protocol, for example caching (in the case of an IPFS block, indefinitely; in the case of an IPNS record, until the specified expiration) by binary CID rather than gateway- and multibase-specific URLs. It also provides for opportunities down the road for natural synergies, for example using Chromium's mDNS abilities to discover <a href="https://github.com/ipfs/kubo/blob/master/docs/config.md#discoverymdnsenabled">nearby Kubo</a> gateways.</p>
-<h1><a class="anchor" id="autotoc_md23"></a>
+<h1><a class="anchor" id="autotoc_md26"></a>
+Key differences with this approach</h1>
+<ul>
+<li>Verifying - the most common IPFS clients use a subdomain gateway, but not trustless gateway. If your gateway is not under your control, this raises security concerns.</li>
+<li>Multi-gateway - parallelism primarily for performance reasons.</li>
+<li>Native URLs - the url does not contain information about the gateways you're using, for less friction around caching, sharing of URLs, and flexible intra-website requests.</li>
+</ul>
+<h1><a class="anchor" id="autotoc_md27"></a>
 This repository</h1>
 <p>This <a href="https://github.com/little-bear-labs/ipfs-chromium">git repository</a> contains an early experiment into implementing an integrated HTTP-based IPFS client. As implemented, this is a purely racing gateway, that uses a separate request for each node of each DAG. That same request is typically sent to multiple gateways, with the first verified response causing all others to be cancelled.</p>
 <p>The directory <a href="https://github.com/little-bear-labs/ipfs-chromium/tree/main/library">library</a> contains libipfs_client, which implements some of the features needed by such a client in a Chromium-agnostic way, with the intention of being reusable. When building a Chromium variant, its code gets copied into <code>//third_party/ipfs_client</code>.</p>
@@ -96,9 +122,9 @@ This repository</h1>
 </ul>
 <p>The perhaps-misnamed directory <a href="https://github.com/little-bear-labs/ipfs-chromium/tree/main/cmake">cmake</a> contains build-time scripting for building ipfs_client as a standalone library, build the Chromium variant with IPFS support enabled, and integration for CMake, conan, gclient, lcov, etc..</p>
 <p>Info on building this code can be found in <a class="el" href="md_doc_building.html">building.md</a>. If you'd rather use pre-built binaries, both the library and the browser can be found in <a href="https://github.com/little-bear-labs/ipfs-chromium/releases/tag/0.0.0.3">Github releases</a>.</p>
-<h1><a class="anchor" id="autotoc_md24"></a>
+<h1><a class="anchor" id="autotoc_md28"></a>
 Future plans</h1>
-<h2><a class="anchor" id="autotoc_md25"></a>
+<h2><a class="anchor" id="autotoc_md29"></a>
 Chromium integration</h2>
 <p>Landing code in Chromium upstream remains a primary goal. Some things kept in mind:</p><ul>
 <li>Remain open at all times to feedback from Chromium developers, integrating suggested changes</li>
@@ -107,7 +133,7 @@ Chromium integration</h2>
 <li>Code should be adapted to fit any feasible guidelines.</li>
 <li>In-Chromium-tree testing should be added.</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md26"></a>
+<h2><a class="anchor" id="autotoc_md30"></a>
 Features</h2>
 <p>This initial pass was at best a proof-of-work. Some of the additional desired to be implemented include:</p><ul>
 <li>IPFS-specific devtools</li>
@@ -120,7 +146,17 @@ Features</h2>
 <li>Improved HTML preview of UnixFS directories</li>
 <li>Additional features as recommended by either Chromium devs and/or feature sponsor(s).</li>
 </ul>
-<h1><a class="anchor" id="autotoc_md27"></a>
+<h1><a class="anchor" id="autotoc_md31"></a>
+Considerations</h1>
+<h2><a class="anchor" id="autotoc_md32"></a>
+Origin</h2>
+<p>The concept of an origin is a bit different here. In many schemes, including HTTP, an origin is essentially a network endpoint, possibly with user credentials. In a native IPFS URL, the origin contains the CID and so specifies a hash to verify the content. It does not specify a network source, but rather it is locked in place when the content was created, and stays constant regardless of where it is hosted. Similarly for an IPNS URL, the origin contains a public key (or a hash thereof). It's specifying the author &amp; owner of the key pair, not where the record is hosted.</p>
+<h2><a class="anchor" id="autotoc_md33"></a>
+Privacy</h2>
+<p>IPFS has different privacy characteristics. If content is being delivered over HTTP, that server can log any/all requests to it.</p>
+<p>Since an IPFS gateway is an HTTP server, it can do this too. However, instead of one entity having knowledge of all requests for all URLs of a given origin, it has knowledge of all requests made from users who chose to use that particular gateway, regardless of which origin it is.</p>
+<p>In some situations this is preferable, but if many users chose the same gateway as their only gateway, the result may be worse than where we are now. And so it will be important to include clear and concise messaging in the end-user interface where one selects their gateways and gateway discovery mechanisms.</p>
+<h1><a class="anchor" id="autotoc_md34"></a>
 Further reading</h1>
 <ul>
 <li>A short <a href="https://www.youtube.com/watch?v=9XJOktFizlo">demo video</a>.</li>
