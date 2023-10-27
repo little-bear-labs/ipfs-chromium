@@ -34,5 +34,5 @@ TEST_F(ContextApiTest,task_is_passthrough) {
 }
 
 void ipfs::BusyGateway::TestAccess(TestParams* p) {
-  p->under_test.reset(new BusyGateway(p->gw_pre, p->tsk_suf, p->sched));
+  p->under_test.reset(new BusyGateway(p->gw_pre, {p->tsk_suf, ""}, p->sched));
 }

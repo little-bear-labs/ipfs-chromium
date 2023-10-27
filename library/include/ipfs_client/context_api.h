@@ -7,6 +7,7 @@
 #include <memory>
 
 namespace ipfs {
+class IpfsRequest;
 
 /*!
  * \brief Represents an issued request

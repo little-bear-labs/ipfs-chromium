@@ -1,6 +1,8 @@
 #ifndef CHROMIUM_IPFS_GATEWAY_H_
 #define CHROMIUM_IPFS_GATEWAY_H_
 
+#include "url_spec.h"
+
 #include "vocab/flat_mapset.h"
 
 #include <ctime>
@@ -13,10 +15,10 @@ namespace ipfs {
  */
 class Gateway {
   std::string prefix_;
-  flat_map<std::string, std::time_t> failed_requests_;
+  flat_map<UrlSpec, std::time_t> failed_requests_;
   unsigned priority_;  /// This is not request priority. This is how eager we
                        /// are to use this particular gateway.
-  flat_set<std::string> tasks_;
+  flat_set<UrlSpec> tasks_;
 
  public:
   /*!
@@ -43,31 +45,31 @@ class Gateway {
    * \param need   - How important is this task
    * \return whether the task was accepted
    */
-  bool accept(std::string const& suffix, long need);
+  bool accept(UrlSpec const& req, long need);
 
   /*!
    * \brief Indicate a task completed successfully
    * \param ts - The suffix of the task
    */
-  void TaskSuccess(std::string const& ts);
+  void TaskSuccess(UrlSpec const& ts);
 
   /*!
    * \brief Indicate a task completed unsuccessfully
    * \param ts - The suffix of the task
    */
-  void TaskFailed(std::string const&);
+  void TaskFailed(UrlSpec const&);
 
   /*!
    * \brief Indicate a task was cancelled
    * \param ts - The suffix of the task
    */
-  void TaskCancelled(std::string const&);
+  void TaskCancelled(UrlSpec const&);
 
   /*!
    * \brief Whether this gateway has previously failed to serve that task
    * \param suffix - The suffix of the task
    */
-  bool PreviouslyFailed(std::string const& suffix) const;
+  bool PreviouslyFailed(UrlSpec const&) const;
 
   /*!
    * \return Whether this gateway should be generally preferred over another

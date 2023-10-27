@@ -80,6 +80,7 @@ class IpfsUrlLoader final : public network::mojom::URLLoader,
   std::shared_ptr<network::mojom::URLLoader> extra_;
   std::unique_ptr<base::RepeatingTimer> stepper_;
   std::string root_;
+  int status_ = 200;
 
   void CreateBlockRequest(std::string cid);
 

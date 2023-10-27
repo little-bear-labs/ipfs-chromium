@@ -14,9 +14,10 @@ import json
 inc_link = join(build_dir,'component','inc_link')
 chromium_src = vars['CHROMIUM_SOURCE_TREE'].rstrip('/')
 profile = vars['CHROMIUM_PROFILE']
+gen_dir = join(chromium_src,'out',profile,'gen')
 source_bases = [
     chromium_src,
-    join(chromium_src,'out',profile,'gen'),
+    gen_dir,
     join(chromium_src,'v8','include'),
     join(chromium_src,'third_party', 'abseil-cpp')
     ]
@@ -119,6 +120,15 @@ def search() -> bool:
     global preempt
     link_count = 0
     unfound_count = 0
+    # ipfs_client_gen = join(gen_dir,'third_party','ipfs_client')
+    # for h in listdir(ipfs_client_gen):
+    #     if h.endswith('.h'):
+    #         source = join(ipfs_client_gen, h)
+    #         target = join(inc_link, 'third_party', 'ipfs_client', h)
+    #         if isfile(source) and not exists(target):
+    #             print("linked our gen file ",source,target)
+    #             symlink(source, target)
+    #             link_count += 1
     compile_commands = json.load(open(join(build_dir,'compile_commands.json')))
     commands = []
     for command_obj in compile_commands:

@@ -1,15 +1,26 @@
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index 466789a1b089c..fc62feaaef2c5 100644
+index 466789a1b089c..2996aea6842cb 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -2248,6 +2248,7 @@ static_library("browser") {
-     "//components/infobars/content",
-     "//components/infobars/core",
-     "//components/invalidation/impl",
-+    "//components/ipfs",
-     "//components/javascript_dialogs",
-     "//components/keyed_service/content",
-     "//components/language/content/browser",
+@@ -40,6 +40,7 @@ import("//rlz/buildflags/buildflags.gni")
+ import("//sandbox/features.gni")
+ import("//testing/libfuzzer/fuzzer_test.gni")
+ import("//third_party/blink/public/public_features.gni")
++import("//third_party/ipfs_client/args.gni")
+ import("//third_party/protobuf/proto_library.gni")
+ import("//third_party/webrtc/webrtc.gni")
+ import("//third_party/widevine/cdm/widevine.gni")
+@@ -2643,6 +2644,10 @@ static_library("browser") {
+       ]
+     }
+ 
++    if (enable_ipfs) {
++      deps += [ "//components/ipfs" ]
++    }
++
+     if (is_chromeos_ash) {
+       deps += [ "//chrome/browser/screen_ai:screen_ai_dlc_installer" ]
+     }
 diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
 index 3de290ccddb18..454c00da6fb6c 100644
 --- a/chrome/browser/about_flags.cc

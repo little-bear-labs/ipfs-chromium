@@ -4,6 +4,7 @@
 #include "block_requestor.h"
 #include "busy_gateway.h"
 #include "gateways.h"
+#include "url_spec.h"
 
 #include <ctime>
 #include <functional>
@@ -43,7 +44,9 @@ class Scheduler {
                std::shared_ptr<DagListener> dl,
                std::shared_ptr<NameListener> nl,
                std::string const& sfx,
-               Priority pio);
+               std::string_view accept,
+               Priority pio,
+               std::shared_ptr<gw::GatewayRequest> top);
 
   /*!
    * \brief Check enqueued requests to see if a gateway request should be made
@@ -57,13 +60,13 @@ class Scheduler {
    * \param task - The task one might consider not enqueuing again.
    * \return Whether the candidate gateway list is exhausted
    */
-  bool DetectCompleteFailure(std::string task) const;
+  bool DetectCompleteFailure(UrlSpec const& task) const;
 
   /*!
    * \brief Indicate this task has completed
    * \param task - URL suffix of the task in question
    */
-  void TaskComplete(std::string const& task);
+  void TaskComplete(UrlSpec const& task);
 
  private:
   std::function<GatewayList()> list_gen_;
@@ -75,17 +78,17 @@ class Scheduler {
     std::set<std::shared_ptr<GatewayRequest>> requests;
     std::set<std::shared_ptr<DagListener>> dag_listeners;
     std::set<std::shared_ptr<NameListener>> name_listeners;
+    std::set<std::shared_ptr<gw::GatewayRequest>> source_reqs;
     Priority priority;
     long under_target() const;
   };
-  std::map<std::string, Todo> task2todo_;
+  std::map<UrlSpec, Todo> task2todo_;
 
   void Issue(std::shared_ptr<ContextApi>,
              std::shared_ptr<DagListener>&,
              std::vector<Todo> todos,
              unsigned up_to);
   void CheckSwap(std::size_t);
-  void UpdateDevPage();
 };
 
 }  // namespace ipfs

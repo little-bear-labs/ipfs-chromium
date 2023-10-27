@@ -39,8 +39,6 @@ std::ostream& operator<<(std::ostream& str,
 }
 namespace libp2p::multi {
 std::string_view Stringify(ContentIdentifierCodec::DecodeError e) {
-  LOG(INFO) << "Inside custom Stringify(DecodeError=" << static_cast<int>(e)
-            << ")";
   using E = ContentIdentifierCodec::DecodeError;
   switch (e) {
     case E::EMPTY_MULTICODEC:

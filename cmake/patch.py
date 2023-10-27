@@ -151,7 +151,7 @@ class Patcher:
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
-        fuzz = 121
+        fuzz = 114
         def check(version, version_set, s):
             i = as_int(version)
             by = (fuzz,0)
@@ -163,7 +163,6 @@ class Patcher:
                     by = ( d, a )
             if version not in version_set:
                 sortable = [int(c) for c in version.split('.')]
-                # print('Adding',version,s)
                 version_set[version] = [sortable, version, s]
             elif s not in version_set[version]:
                 #print('2 Adding',version,s)

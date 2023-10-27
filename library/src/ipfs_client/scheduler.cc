@@ -1,7 +1,11 @@
 #include <ipfs_client/scheduler.h>
 
 #include <ipfs_client/context_api.h>
+#include <ipfs_client/gw/gateway_request.h>
+#include <ipfs_client/ipfs_request.h>
 #include <ipfs_client/name_listener.h>
+#include <ipfs_client/orchestrator.h>
+#include <ipfs_client/response.h>
 
 #include "log_macros.h"
 
@@ -11,7 +15,7 @@
 
 ipfs::Scheduler::Scheduler(std::function<GatewayList()> list_gen)
     : list_gen_(list_gen), gateways_{list_gen()} {
-  LOG(INFO) << "Scheduler ctor";
+  VLOG(1) << "Scheduler ctor";
 }
 
 ipfs::Scheduler::~Scheduler() {
@@ -22,17 +26,30 @@ void ipfs::Scheduler::Enqueue(std::shared_ptr<ContextApi> api,
                               std::shared_ptr<DagListener> dag_listener,
                               std::shared_ptr<NameListener> name_listener,
                               std::string const& suffix,
-                              Priority p) {
+                              std::string_view accept,
+                              Priority p,
+                              std::shared_ptr<gw::GatewayRequest> top) {
+  LOG(INFO) << "Scheduler::Enqueue(...," << suffix << ',' << accept << ',' << p
+            << ')';
+  if (!top) {
+    LOG(ERROR) << "No IpfsRequest?";
+  }
   if (suffix.empty()) {
     LOG(ERROR) << "Do not issue a request with no task!";
   } else {
-    auto& todo = task2todo_[suffix];
+    auto key = UrlSpec{suffix, accept};
+    auto& todo = task2todo_[key];
     todo.priority = std::max(todo.priority, p);
     if (dag_listener) {
       todo.dag_listeners.insert(dag_listener);
     }
     if (name_listener) {
       todo.name_listeners.insert(name_listener);
+    }
+    if (top) {
+      todo.source_reqs.insert(top);
+    } else {
+      LOG(WARNING) << "Enqueue with no top: " << suffix;
     }
   }
   IssueRequests(api);
@@ -42,11 +59,19 @@ bool ipfs::Scheduler::IssueRequests(std::shared_ptr<ContextApi> api) {
   decltype(task2todo_)::value_type* unmet = nullptr;
   auto assign = [this, api](auto& gw, auto& task, auto& todo, auto need) {
     if (gw.accept(task, need)) {
-      auto req =
-          api->InitiateGatewayRequest(BusyGateway{gw.url_prefix(), task, this});
+      BusyGateway bgw{gw.url_prefix(), task, this};
+      std::shared_ptr<gw::GatewayRequest> top;
+      if (todo.source_reqs.empty()) {
+        LOG(ERROR) << "IssueRequests with no top-level requests awaiting!";
+      } else {
+        top = *todo.source_reqs.begin();  // This is wrong, but so is
+                                          // everything about this
+      }
+      bgw.srcreq = top;
+      auto req = api->InitiateGatewayRequest(std::move(bgw));
       todo.requests.insert(req);
-      //      LOG(INFO) << "Initiated request " << req->url() << " (" << need <<
-      //      ')';
+      VLOG(2) << "Initiated request " << req->url() << " (" << need << ')'
+              << todo.source_reqs.size() << " await.";
       return true;
     }
     return false;
@@ -71,11 +96,10 @@ bool ipfs::Scheduler::IssueRequests(std::shared_ptr<ContextApi> api) {
       }
     }
   }
-  //  UpdateDevPage();
   return !unmet;
 }
 
-bool ipfs::Scheduler::DetectCompleteFailure(std::string task) const {
+bool ipfs::Scheduler::DetectCompleteFailure(UrlSpec const& task) const {
   auto fail_count =
       std::count_if(gateways_.begin(), gateways_.end(),
                     [&task](auto& g) { return g.PreviouslyFailed(task); });
@@ -89,37 +113,22 @@ void ipfs::Scheduler::CheckSwap(std::size_t index) {
     std::swap(gateways_[index], gateways_[index + 1UL]);
   }
 }
-void ipfs::Scheduler::UpdateDevPage() {
-  {
-    std::ofstream f{"temp.devpage.html"};
-    f << "<html><title>IPFS Gateway Requests</title>"
-      << "<body><p>TODOs: " << task2todo_.size() << "</p><table border=1>\n";
-    using namespace std::literals;
-    for (auto& e : task2todo_) {
-      auto& task = e.first;
-      auto& todo = e.second;
-      f << "  <tr><td>" << task << "</td><td>\n";
-      for (auto& req : todo.requests) {
-        f << "   <p>" << req->gateway->url_prefix() << "</p>\n";
-      }
-      f << "  </td></tr>\n";
-    }
-    f << "</table></body></html>";
-  }
-  std::rename("temp.devpage.html", "devpage.html");
-}
-void ipfs::Scheduler::TaskComplete(std::string const& task) {
+void ipfs::Scheduler::TaskComplete(UrlSpec const& task) {
   auto todo = task2todo_.find(task);
   if (task2todo_.end() == todo) {
-    VLOG(2) << "An unknown TODO " << task << " finished.";
+    VLOG(2) << "An unknown TODO " << task.suffix << " finished.";
     return;
   }
-  VLOG(1) << "Task " << task << " completed with "
-          << todo->second.name_listeners.size() << " name listeners.";
+  LOG(INFO) << "Task " << task.suffix << " completed with "
+            << todo->second.name_listeners.size() << " name listeners and "
+            << todo->second.source_reqs.size() << " IpfsRequest s";
   // Don't need to call back on dag listeners because storage covered that
   for (auto& nl : todo->second.name_listeners) {
     LOG(INFO) << "Notifying a name listener that its listener is ready.";
     nl->Complete();
+  }
+  for (auto& r : todo->second.source_reqs) {
+    r->orchestrator->build_response(r->dependent);
   }
   task2todo_.erase(todo);
 }

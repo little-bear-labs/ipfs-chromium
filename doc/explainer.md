@@ -23,19 +23,18 @@ See [Addressing IPFS on the web](https://docs.ipfs.tech/how-to/address-ipfs-on-w
 This has a number of problems, from privacy to performance to availability.
 And of course it's largely subverted many of the reasons one may have chosen IPFS in the first place.
 
-The biggest problem with using [Native URLs](https://docs.ipfs.tech/how-to/address-ipfs-on-web/#native-urls) is sharing them.
+The biggest problem with using [IPFS-schemed URLs](https://docs.ipfs.tech/how-to/address-ipfs-on-web/#native-urls) (sometimes referred to as "Native URLs") is sharing them.
 Typically one cannot assume your audience has a native client available.
 For example, one will note that this document _*about* IPFS URLs_ has not yet linked to a document using such a URL.
 To see why, click [this static version of the previous link](ipfs://QmbKWyoaCK9nKDfSsNAkJQrbxMDLriyyqkXsTSSwt9B227/how-to/address-ipfs-on-web/#native-urls)
 
 A lesser problem with all existing addressing attempts: 
-even if you're using native URLs, it's generally easier to get away with doing 1:1 rewriting of IPFS URLs to HTTP URLs.
+even if you're using an IPFS scheme, it's generally easier to get away with doing 1:1 rewriting of IPFS URLs to HTTP URLs.
 So [many projects](https://ecosystem.ipfs.tech/?filters=enabled&tags=ipfs-http-client,py-ipfs-http-client,js-ipfs-https-client,http-gateway)
-do just that. 
-This is extra, especially true if those projects want to interact with a Web browser.
+do just that, especially if those projects want to interact with a Web browser.
 This isn't as bad if the user can make their own choice of gateway 
 and has access to information needed to make that decision wisely.
-But it's still leaving quite a lot on the table.
+But it's still leaving quite a lot of value on the table.
 
 ## Some Sample Uses
 
@@ -107,7 +106,18 @@ It also provides for opportunities down the road for natural synergies, for exam
 
 ## Compatibility
 
-[//]: # (TODO)
+At a high level, the most important features for compatibility are those analagous to [subdomain gateway](https://specs.ipfs.tech/http-gateways/subdomain-gateway/) 
+features, but implemented in the client obviating the need for a separate HTTP server,
+using data from [trustless gateways](https://specs.ipfs.tech/http-gateways/trustless-gateway/).
+
+As discussed in the proposal, for the purposes of cross-implementation compatibility, we'll seek a common subset of URLs that all implementations support. 
+This implies a common universally-supported-as-input subset of:
+* Codec (in the CID field sense)
+* Hash algo
+* Multibase
+
+Implementations should also canonicalize URLs to a given case-insensitive multibase. 
+To avoid user confusion, it would be wise if we all chose the same one.
 
 ## This repository
 

@@ -235,7 +235,7 @@ if not isdir(out):
 n = join(out, 'obj', 'components', 'ipfs', 'ipfs.ninja')
 if not isfile(n) or (isfile(UPDATED) and getmtime(UPDATED) > getmtime(n)):
     a = [python, join(depot_tools_dir, 'gn.py'), 'gen', '--args='+gnargs.replace("'", ""), out]
-    print('Running gn gen', a)
+    verbose('Running gn gen', a)
     run(a)
 
 for target in argv[2:]:

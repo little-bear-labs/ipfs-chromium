@@ -15,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install --yes cmake ninja-build lcov binutils doxygen graphviz libc6{,-dev}
+          sudo apt-get install --yes cmake ninja-build lcov binutils doxygen graphviz libc6{,-dev} valgrind
           npm install -g @marp-team/marp-cli
       - name: Configure
         shell: bash
@@ -27,6 +27,9 @@ jobs:
             -B build \
             -D CMAKE_BUILD_TYPE=Debug
       - name: Run Tests
+        shell: bash
+        run: cmake --build build --config Debug --target run_tests
+      - name: Generate Coverage Report
         shell: bash
         run: cmake --build build --config Debug --target cov
       - name: Upload coverage reports to Codecov.com

@@ -256,8 +256,8 @@ void ipfs::IpnsUrlLoader::CacheHit(std::shared_ptr<CacheRequestor> cache,
 void ipfs::IpnsUrlLoader::RequestFromGateway() {
   api_ = state_->api();
   api_->SetLoaderFactory(*http_loader_);
-  state_->scheduler().Enqueue(api_, {}, shared_from_this(),
-                              "ipns/" + host_ + "?format=ipns-record", 3);
+  state_->scheduler().Enqueue(api_, {}, shared_from_this(), "ipns/" + host_,
+                              "application/vnd.ipfs.ipns-record", 3, {});
   state_->scheduler().IssueRequests(api_);
 }
 void ipfs::IpnsUrlLoader::Complete() {

@@ -68,7 +68,6 @@ foreach(libname ipfs_client ipfs_client_covered)
             ${WARNING_FLAGS}
     )
     target_include_directories(${libname}
-        BEFORE
         PUBLIC
             include/
             "${CMAKE_CURRENT_BINARY_DIR}/gen"
@@ -155,11 +154,19 @@ if(GTest_FOUND)
       GTest::gtest_main
       )
     with_vocab(unit_test_runner)
-    add_custom_target(run_tests
-      DEPENDS unit_test_runner
-      COMMAND $<TARGET_FILE:unit_test_runner>
-      WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
-    )
+    find_program(VALGRIND "valgrind")
+    if(VALGRIND)
+        add_custom_target(run_tests
+          DEPENDS unit_test_runner
+          COMMAND "${VALGRIND}" --tool=memcheck --leak-check=yes --exit-on-first-error=yes --error-exitcode=99 "--suppressions=${CMAKE_SOURCE_DIR}/cmake/valgrind.suppressions.txt" $<TARGET_FILE:unit_test_runner>
+        )
+    else()
+        add_custom_target(run_tests
+          DEPENDS unit_test_runner
+          COMMAND $<TARGET_FILE:unit_test_runner>
+          WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
+        )
+    endif()
     add_custom_command(
       OUTPUT ut.cert
       DEPENDS unit_test_runner

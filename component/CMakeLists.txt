@@ -1,3 +1,4 @@
+include(setup)
 
 if(NOT CHROMIUM_PROFILE)
     message(FATAL_ERROR "Your Chromium profile should name a realistic subdir of chromium/src/out, perhaps Debug, Release, or Default")
@@ -150,16 +151,20 @@ target_compile_options(out_of_tree
   PUBLIC
     ${WARNING_FLAGS}
   )
+find_package(Protobuf)
 target_link_libraries(out_of_tree
   PUBLIC
+    protobuf::libprotobuf
     ipfs_client
   )
 target_include_directories(out_of_tree
   SYSTEM
   BEFORE
-  PUBLIC
+  PRIVATE
+    "${protobuf_INCLUDE_DIR}"
     "${CMAKE_CURRENT_BINARY_DIR}/inc_link"
   )
+
 target_include_directories(out_of_tree
   PUBLIC
   ../library/src
