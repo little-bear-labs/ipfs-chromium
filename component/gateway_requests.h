@@ -21,6 +21,7 @@ class URLLoaderFactory;
 
 namespace ipfs {
 class InterRequestState;
+class IpfsRequest;
 class NetworkRequestor;
 
 class GatewayRequests final : public ContextApi {

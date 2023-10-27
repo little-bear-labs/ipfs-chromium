@@ -50,6 +50,6 @@ TEST_F(BusyGatewayTest, get_WithoutScheduler) {
 }
 
 void BusyGateway::TestAccess(TestParams* p) {
-  p->under_test.reset(new BusyGateway(p->gw_pre, p->tsk_suf, p->sched));
-  p->orphan.reset(new BusyGateway(p->gw_pre, p->tsk_suf, {}));
+  p->under_test.reset(new BusyGateway(p->gw_pre, {p->tsk_suf, ""}, p->sched));
+  p->orphan.reset(new BusyGateway(p->gw_pre, {p->tsk_suf, ""}, {}));
 }

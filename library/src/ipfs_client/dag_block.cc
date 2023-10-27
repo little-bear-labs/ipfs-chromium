@@ -138,16 +138,16 @@ std::string const& ipfs::Block::unparsed() const {
   return node_.data();
 }
 
-std::string const& ipfs::Block::mime_type() const {
-  return mime_;
-}
+// std::string const& ipfs::Block::mime_type() const {
+//   return mime_;
+// }
 auto ipfs::Block::cid() const -> Cid const& {
   DCHECK(cid_.has_value());
   return cid_.value();
 }
-void ipfs::Block::mime_type(std::string_view val) {
-  mime_.assign(val);
-}
+// void ipfs::Block::mime_type(std::string_view val) {
+//   mime_.assign(val);
+// }
 
 std::string ipfs::Block::LinkCid(ipfs::ByteView binary_link_hash) const {
   using Codec = libp2p::multi::ContentIdentifierCodec;

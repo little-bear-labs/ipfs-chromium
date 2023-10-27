@@ -124,7 +124,7 @@ void Self::HashPathElement(std::uint64_t fanout) {
       hash_bits /= fanout;
       // L_VAR(hash_bits);
       std::ostringstream oss;
-      // ... then hex encode (using 0-F) using little endian thoses bits ...
+      // ... then hex encode (using 0-F) using little endian those bits ...
       oss << std::setfill('0') << std::setw(hex_width) << std::uppercase
           << std::hex << popped;
       hamt_hexs_.push_back(oss.str());

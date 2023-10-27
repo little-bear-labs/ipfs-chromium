@@ -95,6 +95,9 @@ auto Self::InitiateGatewayRequest(BusyGateway assigned)
   auto req = std::make_unique<network::ResourceRequest>();
   req->url = GURL{url};
   req->priority = net::HIGHEST;  // TODO
+  if (!assigned.accept().empty()) {
+    req->headers.SetHeader("Accept", assigned.accept());
+  }
   auto out = std::make_shared<GatewayUrlLoader>(std::move(assigned));
   GOOGLE_DCHECK_GT(out->gateway->url_prefix().size(), 0U);
   out->loader = network::SimpleURLLoader::Create(std::move(req),
@@ -118,6 +121,8 @@ void Self::OnResponse(std::shared_ptr<ContextApi> api,
                       std::shared_ptr<GatewayUrlLoader> req,
                       base::TimeTicks start_time,
                       std::unique_ptr<std::string> body) {
+  auto sz = body ? body->size() : 0UL;
+  LOG(INFO) << "OnResponse(...," << start_time << ", " << sz << "B )";
   DCHECK(req);
   auto task = req->task();
   if (task.empty()) {
@@ -130,10 +135,13 @@ void Self::OnResponse(std::shared_ptr<ContextApi> api,
   auto& ldr = req->loader;
   //  auto listener = req->listener;
   if (ProcessResponse(bg, ldr.get(), body.get(), start_time)) {
+    LOG(INFO) << url << " success.";
     bg.Success(state_->gateways(), shared_from_this());
   } else {
+    LOG(INFO) << url << " failure.";
     bg.Failure(state_->gateways(), shared_from_this());
   }
+  VLOG(1) << "Recheck for more activity.";
   state_->storage().CheckListening();
   state_->scheduler().IssueRequests(api);
 }
@@ -152,10 +160,9 @@ bool Self::ProcessResponse(BusyGateway& gw,
     LOG(ERROR) << "No loader for processing " << gw.url();
     return false;
   }
-  // LOG(INFO) << "Neterror(" << ldr->NetError() << ')';
   if (!body) {
-    //    LOG(INFO) << "ProcessResponse(" << gw.url()
-    //              << ") Null body - presumably http error.\n";
+    LOG(INFO) << "ProcessResponse(" << gw.url()
+              << ") Null body - presumably http error.\n";
     return false;
   }
   network::mojom::URLResponseHead const* head = ldr->ResponseInfo();
@@ -163,7 +170,7 @@ bool Self::ProcessResponse(BusyGateway& gw,
     LOG(INFO) << "ProcessResponse(" << gw.url() << ") Null head.\n";
     return false;
   }
-  GOOGLE_DCHECK_LT(gw.url().find("?format="), gw.url().size());
+  DCHECK(gw.url().find("?format=") < gw.url().size() || gw.accept().size() > 0);
   std::string reported_content_type;
   head->headers->EnumerateHeader(nullptr, "Content-Type",
                                  &reported_content_type);
@@ -184,7 +191,10 @@ bool Self::ProcessResponse(BusyGateway& gw,
   }
   auto cid_str = gw.task();
   cid_str.erase(0, 5);  // ipfs/
-  cid_str.erase(cid_str.find('?'));
+  auto qmark = cid_str.find('?');
+  if (qmark < cid_str.size()) {
+    cid_str.erase(qmark);
+  }
   if (state_->storage().Get(cid_str)) {
     // LOG(INFO) << "Got multiple successful responses for " << cid_str;
     return true;
@@ -234,6 +244,15 @@ bool Self::ProcessResponse(BusyGateway& gw,
               " : load over http(s)\";dur=" + std::to_string(duration));
       state_->storage().Store(cid_str, cid.value(),
                               head->headers->raw_headers(), *body);
+      auto& orc = state_->orchestrator();
+      orc.add_node(cid_str, ipld::DagNode::fromBlock(block));
+      if (gw.srcreq) {
+        orc.build_response(gw.srcreq->dependent);
+      } else {
+        LOG(ERROR) << "This BusyGateway with response has no top-level "
+                      "IpfsRequest associated with it "
+                   << gw.url() << " " << gw.accept();
+      }
       scheduler().IssueRequests(shared_from_this());
       return true;
     } else {
@@ -295,7 +314,9 @@ void Self::RequestByCid(std::string cid,
                         std::shared_ptr<DagListener> listener,
                         Priority prio) {
   auto me = shared_from_this();
-  sched_.Enqueue(me, listener, {}, "ipfs/" + cid + "?format=raw", prio);
+  LOG(ERROR) << "Look out! RequestByCid(" << cid << ",...," << prio << ')';
+  sched_.Enqueue(me, listener, {}, "ipfs/" + cid, "application/vnd.ipld.raw",
+                 prio, {});
   sched_.IssueRequests(me);
 }
 

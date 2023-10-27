@@ -1,0 +1,14 @@
+{
+   IgnoreGcovProblems
+   Memcheck:Addr2
+   ...
+   fun:__gcov_exit
+   ...
+}
+{
+   DontAskMeWhyGetEnvDoesThis
+   Memcheck:Cond
+   ...
+   fun:getenv
+   ...
+}

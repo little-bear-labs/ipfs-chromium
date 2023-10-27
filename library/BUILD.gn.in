@@ -21,6 +21,7 @@ if (enable_ipfs) {
         sources = cxx_sources - [
             "src/ipfs_client/block_storage.cc",
             "src/ipfs_client/dag_block.cc",
+            "src/ipfs_client/ipld/dag_node.cc",
             "src/ipfs_client/ipns_names.cc",
             "src/ipfs_client/ipns_record.cc",
             "src/ipfs_client/logger.cc",
@@ -37,12 +38,17 @@ if (enable_ipfs) {
       include_dirs = [
         "include",
         "src",
+        "..",
         "../boringssl/src/include"
       ]
       public_configs = [
         ":external_config"
       ]
       public_deps = [
+        "//third_party/abseil-cpp:absl",
+        "//base",
+      ]
+      deps = [
         "//third_party/abseil-cpp:absl",
         "//base",
       ]

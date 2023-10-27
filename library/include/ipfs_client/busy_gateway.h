@@ -1,6 +1,8 @@
 #ifndef IPFS_BUSY_GATEWAY_H_
 #define IPFS_BUSY_GATEWAY_H_
 
+#include <ipfs_client/url_spec.h>
+
 #include <vocab/raw_ptr.h>
 
 #include <memory>
@@ -11,11 +13,16 @@ struct TestParams;
 }
 
 namespace ipfs {
+class ContextApi;
 class DagListener;
 class Gateway;
 class Gateways;
-class ContextApi;
+class IpfsRequest;
 class Scheduler;
+
+namespace gw {
+struct GatewayRequest;
+}
 
 /*!
  * \brief RAII class embodying the assignment of a given task to a given gateway
@@ -59,22 +66,25 @@ class BusyGateway {
    * \brief What task does this refer to?
    * \return Suffix to the URL being fetched
    */
-  std::string const& task() const { return suffix_; }
+  std::string const& task() const { return spec_.suffix; }
 
   /*!
    * \brief The full url intended to be fetched here
    * \return get()->url_prefix() + task()
    */
-  std::string url() const { return prefix_ + suffix_; }
+  std::string url() const { return prefix_ + task(); }
+
+  std::string_view accept() const { return spec_.accept; }
 
   static void TestAccess(TestParams*);
+  std::shared_ptr<gw::GatewayRequest> srcreq;  // TODO no
 
  private:
   friend class Scheduler;
-  BusyGateway(std::string, std::string, Scheduler*);
+  BusyGateway(std::string, UrlSpec, Scheduler*);
 
   std::string prefix_;
-  std::string suffix_;
+  UrlSpec spec_;
   raw_ptr<Scheduler> scheduler_;
   std::size_t maybe_offset_;
 };

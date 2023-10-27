@@ -5,11 +5,14 @@
 #include "summarize_headers.h"
 
 #include "ipfs_client/gateways.h"
+#include "ipfs_client/ipfs_request.h"
 #include "ipfs_client/unixfs_path_resolver.h"
 
 #include "base/debug/stack_trace.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -100,14 +103,42 @@ void ipfs::IpfsUrlLoader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
   }
   VLOG(1) << "cid=" << cid << " remainder=" << remainder;
   me->root_ = cid;
+  me->api_->SetLoaderFactory(*lower_loader_factory_);
+  /*
   me->resolver_ = std::make_shared<UnixFsPathResolver>(
       me->state_->storage(), me->state_->requestor(), std::string{cid},
       remainder, me->api_);
-  me->api_->SetLoaderFactory(*lower_loader_factory_);
   me->stepper_ = std::make_unique<base::RepeatingTimer>();
   me->stepper_->Start(FROM_HERE, base::Milliseconds(500),
                       base::BindRepeating(&IpfsUrlLoader::TakeStep, me));
   me->TakeStep();
+   */
+  auto whendone = [me](IpfsRequest const& req, ipfs::Response const& res) {
+    LOG(INFO) << "whendone(" << req.path().to_string() << ',' << res.status_
+              << ',' << res.body_.size() << "B)";
+    if (!res.body_.empty()) {
+      me->ReceiveBlockBytes(res.body_);
+    }
+    me->status_ = res.status_;
+    if (res.status_ / 100 == 4) {
+      auto p = req.path();
+      p.pop();
+      std::string cid{p.pop()};
+      me->DoesNotExist(cid, p.to_string());
+    } else {
+      me->BlocksComplete(res.mime_);
+    }
+  };
+  auto abs_path = std::string{"/ipfs/"};
+  abs_path.append(cid);
+  if (!remainder.empty()) {
+    if (abs_path.back() != '/' && remainder[0] != '/') {
+      abs_path.push_back('/');
+    }
+    abs_path.append(remainder);
+  }
+  auto req = std::make_shared<IpfsRequest>(abs_path, whendone);
+  me->state_->orchestrator().build_response(req);
 }
 
 void ipfs::IpfsUrlLoader::TakeStep() {
@@ -156,10 +187,19 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
     LOG(ERROR) << "\n\tFailed to create headers!\n";
     return;
   }
+  auto* reason =
+      net::GetHttpReasonPhrase(static_cast<net::HttpStatusCode>(status_));
+  auto status_line = base::StringPrintf("HTTP/1.1 %d %s", status_, reason);
+  LOG(INFO) << "Returning with status line '" << status_line << "'.\n";
+  head->headers->ReplaceStatusLine(status_line);
   head->headers->SetHeader("Content-Type", mime_type);
   head->headers->SetHeader("Access-Control-Allow-Origin", "*");
   head->was_fetched_via_spdy = false;
-  AppendGatewayHeaders(resolver_->involved_cids(), *head->headers);
+  if (resolver_) {
+    AppendGatewayHeaders(resolver_->involved_cids(), *head->headers);
+  } else {
+    LOG(INFO) << "TODO";
+  }
   for (auto& [n, v] : additional_outgoing_headers_) {
     VLOG(1) << "Appending 'additional' header:" << n << '=' << v << '.';
     head->headers->AddHeader(n, v);
@@ -169,7 +209,6 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});
   VLOG(1) << "Sending response for " << original_url_ << " with mime type "
           << head->mime_type << " @" << (void*)(this)
-      //<< " stack: " << base::debug::StackTrace()
       ;
   client_->OnReceiveResponse(std::move(head), std::move(pipe_cons_),
                              absl::nullopt);

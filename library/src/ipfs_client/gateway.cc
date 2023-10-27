@@ -20,7 +20,7 @@ bool ipfs::Gateway::operator<(Gateway const& rhs) const {
   }
   return prefix_ < rhs.prefix_;
 }
-bool ipfs::Gateway::accept(std::string const& suffix, long need) {
+bool ipfs::Gateway::accept(UrlSpec const& spec, long need) {
   if (need < 0) {
     return false;
   }
@@ -30,10 +30,10 @@ bool ipfs::Gateway::accept(std::string const& suffix, long need) {
   if (priority_ < tasks_.size() * tasks_.size()) {
     return false;
   }
-  if (PreviouslyFailed(suffix)) {
+  if (PreviouslyFailed(spec)) {
     return false;
   }
-  return tasks_.insert(suffix).second;
+  return tasks_.insert(spec).second;
 }
 std::string const& ipfs::Gateway::url_prefix() const {
   return prefix_;
@@ -41,21 +41,21 @@ std::string const& ipfs::Gateway::url_prefix() const {
 long ipfs::Gateway::load() const {
   return static_cast<long>(tasks_.size());
 }
-void ipfs::Gateway::TaskSuccess(std::string const& task) {
+void ipfs::Gateway::TaskSuccess(UrlSpec const& task) {
   tasks_.erase(task);
   ++priority_;
 }
-void ipfs::Gateway::TaskFailed(std::string const& task) {
+void ipfs::Gateway::TaskFailed(UrlSpec const& task) {
   // LOG(INFO) << prefix_ << task << " TaskFailed";
   failed_requests_[task] = std::time(nullptr);
   priority_ /= 2;
   tasks_.erase(task);
 }
-void ipfs::Gateway::TaskCancelled(std::string const& task) {
+void ipfs::Gateway::TaskCancelled(UrlSpec const& task) {
   tasks_.erase(task);
 }
-bool ipfs::Gateway::PreviouslyFailed(std::string const& suffix) const {
-  auto it = failed_requests_.find(suffix);
+bool ipfs::Gateway::PreviouslyFailed(UrlSpec const& spec) const {
+  auto it = failed_requests_.find(spec);
   if (it == failed_requests_.end()) {
     return false;
   }

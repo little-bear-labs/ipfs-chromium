@@ -14,6 +14,7 @@
 #include <google/protobuf/stubs/logging.h>
 
 #define DCHECK_EQ GOOGLE_DCHECK_EQ
+#define DCHECK_GT GOOGLE_DCHECK_GT
 #define DCHECK GOOGLE_DCHECK
 #define LOG GOOGLE_LOG
 // TODO
