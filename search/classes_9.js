@@ -1,10 +1,13 @@
 var searchData=
 [
-  ['raw_5fptr_202',['raw_ptr',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
-  ['raw_5fptr_3c_20ipfs_3a_3ablockstorage_20_3e_203',['raw_ptr&lt; ipfs::BlockStorage &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
-  ['raw_5fptr_3c_20ipfs_3a_3acontextapi_20_3e_204',['raw_ptr&lt; ipfs::ContextApi &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
-  ['raw_5fptr_3c_20ipfs_3a_3ascheduler_20_3e_205',['raw_ptr&lt; ipfs::Scheduler &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
-  ['raw_5fptr_3c_20ipfs_3a_3aunixfspathresolver_20_3e_206',['raw_ptr&lt; ipfs::UnixFsPathResolver &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
-  ['raw_5fptr_3c_20network_3a_3amojom_3a_3anetworkcontext_20_3e_207',['raw_ptr&lt; network::mojom::NetworkContext &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
-  ['raw_5fptr_3c_20network_3a_3amojom_3a_3aurlloaderfactory_20_3e_208',['raw_ptr&lt; network::mojom::URLLoaderFactory &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]]
+  ['pblink_197',['PBLink',['../classipfs_1_1pb__dag_1_1PBLink.html',1,'ipfs::pb_dag']]],
+  ['pblinkdefaulttypeinternal_198',['PBLinkDefaultTypeInternal',['../structipfs_1_1pb__dag_1_1PBLinkDefaultTypeInternal.html',1,'ipfs::pb_dag']]],
+  ['pbnode_199',['PBNode',['../classipfs_1_1pb__dag_1_1PBNode.html',1,'ipfs::pb_dag']]],
+  ['pbnodedefaulttypeinternal_200',['PBNodeDefaultTypeInternal',['../structipfs_1_1pb__dag_1_1PBNodeDefaultTypeInternal.html',1,'ipfs::pb_dag']]],
+  ['plaindirectory_201',['PlainDirectory',['../classipfs_1_1unix__fs_1_1PlainDirectory.html',1,'ipfs::unix_fs']]],
+  ['plainfile_202',['PlainFile',['../classipfs_1_1unix__fs_1_1PlainFile.html',1,'ipfs::unix_fs']]],
+  ['privatekey_203',['PrivateKey',['../classipfs_1_1ipns_1_1PrivateKey.html',1,'ipfs::ipns']]],
+  ['privatekeydefaulttypeinternal_204',['PrivateKeyDefaultTypeInternal',['../structipfs_1_1ipns_1_1PrivateKeyDefaultTypeInternal.html',1,'ipfs::ipns']]],
+  ['publickey_205',['PublicKey',['../classipfs_1_1ipns_1_1PublicKey.html',1,'ipfs::ipns']]],
+  ['publickeydefaulttypeinternal_206',['PublicKeyDefaultTypeInternal',['../structipfs_1_1ipns_1_1PublicKeyDefaultTypeInternal.html',1,'ipfs::ipns']]]
 ];
