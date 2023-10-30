@@ -81,17 +81,16 @@ $(function() {
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>ipfs::ipld {</div>
 <div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="classipfs_1_1ipld_1_1Orchestrator.html">   12</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1ipld_1_1Orchestrator.html">Orchestrator</a> {</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  flat_map&lt;std::string, NodePtr&gt; nodes_;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  flat_map&lt;std::string, NodePtr&gt; dags_;</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  ResolveResult build_response(<a class="code" href="structipfs_1_1gw_1_1Request.html">gw::Request</a>);</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  ResolveResult build_response(std::shared_ptr&lt;gw::Request&gt;);</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keywordtype">void</span> add_node(std::string key, NodePtr);</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;};</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;}  <span class="comment">// namespace ipfs::ipld</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_ORCHESTRATOR_H_</span></div>
 <div class="ttc" id="aclassipfs_1_1ipld_1_1Orchestrator_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1Orchestrator.html">ipfs::ipld::Orchestrator</a></div><div class="ttdef"><b>Definition:</b> orchestrator.h:12</div></div>
-<div class="ttc" id="astructipfs_1_1gw_1_1Request_html"><div class="ttname"><a href="structipfs_1_1gw_1_1Request.html">ipfs::gw::Request</a></div><div class="ttdef"><b>Definition:</b> gateway_request.h:13</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

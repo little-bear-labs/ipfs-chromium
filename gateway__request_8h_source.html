@@ -82,12 +82,12 @@ $(function() {
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">enum class</span> Type { Block, Car, Ipns, DnsLink, Providers };</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
 <div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="structipfs_1_1gw_1_1Request.html">   13</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structipfs_1_1gw_1_1Request.html">Request</a> {</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  Type type_;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  Type type;</div>
 <div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="structipfs_1_1gw_1_1Request.html#adbc28e690c00886425407697548e3304">   15</a></span>&#160;  std::string <a class="code" href="structipfs_1_1gw_1_1Request.html#adbc28e690c00886425407697548e3304">main_param</a>;  </div>
 <div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="structipfs_1_1gw_1_1Request.html#ab47ea48543c15a16a7834a60522f0747">   16</a></span>&#160;  std::string <a class="code" href="structipfs_1_1gw_1_1Request.html#ab47ea48543c15a16a7834a60522f0747">path</a>;        </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  std::shared_ptr&lt;Request&gt; dependent_;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  std::shared_ptr&lt;Request&gt; dependent;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keyword">static</span> <a class="code" href="structipfs_1_1gw_1_1Request.html">Request</a> fromIpfsPath(<a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a>);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keyword">static</span> std::shared_ptr&lt;Request&gt; fromIpfsPath(<a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a>);</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;};</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;}  <span class="comment">// namespace ipfs::gw</span></div>
