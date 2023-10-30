@@ -1,13 +1,7 @@
 var searchData=
 [
-  ['pblink_214',['PBLink',['../classipfs_1_1pb__dag_1_1PBLink.html',1,'ipfs::pb_dag']]],
-  ['pblinkdefaulttypeinternal_215',['PBLinkDefaultTypeInternal',['../structipfs_1_1pb__dag_1_1PBLinkDefaultTypeInternal.html',1,'ipfs::pb_dag']]],
-  ['pbnode_216',['PBNode',['../classipfs_1_1pb__dag_1_1PBNode.html',1,'ipfs::pb_dag']]],
-  ['pbnodedefaulttypeinternal_217',['PBNodeDefaultTypeInternal',['../structipfs_1_1pb__dag_1_1PBNodeDefaultTypeInternal.html',1,'ipfs::pb_dag']]],
-  ['plaindirectory_218',['PlainDirectory',['../classipfs_1_1unix__fs_1_1PlainDirectory.html',1,'ipfs::unix_fs']]],
-  ['plainfile_219',['PlainFile',['../classipfs_1_1unix__fs_1_1PlainFile.html',1,'ipfs::unix_fs']]],
-  ['privatekey_220',['PrivateKey',['../classipfs_1_1ipns_1_1PrivateKey.html',1,'ipfs::ipns']]],
-  ['privatekeydefaulttypeinternal_221',['PrivateKeyDefaultTypeInternal',['../structipfs_1_1ipns_1_1PrivateKeyDefaultTypeInternal.html',1,'ipfs::ipns']]],
-  ['publickey_222',['PublicKey',['../classipfs_1_1ipns_1_1PublicKey.html',1,'ipfs::ipns']]],
-  ['publickeydefaulttypeinternal_223',['PublicKeyDefaultTypeInternal',['../structipfs_1_1ipns_1_1PublicKeyDefaultTypeInternal.html',1,'ipfs::ipns']]]
+  ['tablestruct_5fipfs_5f5fclient_5f2fipns_5f5frecord_5f2eproto_210',['TableStruct_ipfs_5fclient_2fipns_5frecord_2eproto',['../structTableStruct__ipfs__5fclient__2fipns__5frecord__2eproto.html',1,'']]],
+  ['tablestruct_5fipfs_5f5fclient_5f2fkeys_5f2eproto_211',['TableStruct_ipfs_5fclient_2fkeys_2eproto',['../structTableStruct__ipfs__5fclient__2fkeys__2eproto.html',1,'']]],
+  ['tablestruct_5fipfs_5f5fclient_5f2fpb_5f5fdag_5f2eproto_212',['TableStruct_ipfs_5fclient_2fpb_5fdag_2eproto',['../structTableStruct__ipfs__5fclient__2fpb__5fdag__2eproto.html',1,'']]],
+  ['tablestruct_5fipfs_5f5fclient_5f2funix_5f5ffs_5f2eproto_213',['TableStruct_ipfs_5fclient_2funix_5ffs_2eproto',['../structTableStruct__ipfs__5fclient__2funix__5ffs__2eproto.html',1,'']]]
 ];

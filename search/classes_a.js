@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['orchestrator_213',['Orchestrator',['../classipfs_1_1ipld_1_1Orchestrator.html',1,'ipfs::ipld']]]
+  ['scheduler_209',['Scheduler',['../classipfs_1_1Scheduler.html',1,'ipfs']]]
 ];
