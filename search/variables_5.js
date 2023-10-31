@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['sequence_306',['sequence',['../structipfs_1_1IpnsCborEntry.html#ad8a4a90517e3370dff6a7193a6c58acd',1,'ipfs::IpnsCborEntry::sequence()'],['../structipfs_1_1ValidatedIpns.html#a2011a9f44bb95f9d130c72ba6644b4ba',1,'ipfs::ValidatedIpns::sequence()']]]
+  ['path_336',['path',['../structipfs_1_1gw_1_1GatewayRequest.html#a3ed4328a2d69a9f977a2dc5f54902c05',1,'ipfs::gw::GatewayRequest']]]
 ];
