@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['validatedipns_248',['ValidatedIpns',['../structipfs_1_1ValidatedIpns.html',1,'ipfs']]]
+  ['validatedipns_249',['ValidatedIpns',['../structipfs_1_1ValidatedIpns.html',1,'ipfs']]]
 ];
