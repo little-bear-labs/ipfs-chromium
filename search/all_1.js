@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['accept_1',['accept',['../classipfs_1_1Gateway.html#a91dda866833c7d9010236bf8d4f63fce',1,'ipfs::Gateway']]],
+  ['accept_1',['accept',['../classipfs_1_1Gateway.html#a30f0419a57a2e08ba6441a77fa5b7412',1,'ipfs::Gateway']]],
   ['add_2',['Add',['../classipfs_1_1ChainedRequestors.html#af9f6b17f0f1fdc40408421aab63c67ca',1,'ipfs::ChainedRequestors']]],
   ['addentry_3',['AddEntry',['../classipfs_1_1GeneratedDirectoryListing.html#ae7256c8d7bd7d24b97590cbeef73edda',1,'ipfs::GeneratedDirectoryListing']]],
   ['addgateways_4',['AddGateways',['../classipfs_1_1Gateways.html#ad5cf5869f8cadbb64fd9f011964091ad',1,'ipfs::Gateways']]],

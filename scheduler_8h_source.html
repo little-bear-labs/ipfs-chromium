@@ -75,72 +75,77 @@ $(function() {
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;block_requestor.h&quot;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;busy_gateway.h&quot;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;gateways.h&quot;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;ctime&gt;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;iosfwd&gt;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;set&gt;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>ipfs {</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">class </span>DagListener;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">class </span>NameListener;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">class </span>ContextApi;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">class </span>Gateway;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">class </span>GatewayRequest;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">class </span>Scheduler;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="classipfs_1_1Scheduler.html">   26</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1Scheduler.html">Scheduler</a> {</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classipfs_1_1Scheduler.html#a41471b57a96e38d1e022ae5b21694ef5">Scheduler</a>(std::function&lt;GatewayList()&gt; list_gen);</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  ~<a class="code" href="classipfs_1_1Scheduler.html">Scheduler</a>();</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1Scheduler.html#a8c88aea9ffe91b0e2032014bf2d81c48">Enqueue</a>(std::shared_ptr&lt;ContextApi&gt; api,</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;               std::shared_ptr&lt;DagListener&gt; dl,</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;               std::shared_ptr&lt;NameListener&gt; nl,</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;               std::string <span class="keyword">const</span>&amp; sfx,</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;               Priority pio);</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1Scheduler.html#a7e46353f39fdece46b0e94b483fab315">IssueRequests</a>(std::shared_ptr&lt;ContextApi&gt; api);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1Scheduler.html#a93ed9fb2feff9cf723b27a0d4dd75aed">DetectCompleteFailure</a>(std::string task) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1Scheduler.html#a1c2b6c511636072a4f9ebf0f08f2b33b">TaskComplete</a>(std::string <span class="keyword">const</span>&amp; task);</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  std::function&lt;GatewayList()&gt; list_gen_;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classipfs_1_1BusyGateway.html">BusyGateway</a>;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  GatewayList gateways_;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keyword">struct </span>Todo {</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    Todo();</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    ~Todo();</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    std::set&lt;std::shared_ptr&lt;GatewayRequest&gt;&gt; requests;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    std::set&lt;std::shared_ptr&lt;DagListener&gt;&gt; dag_listeners;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    std::set&lt;std::shared_ptr&lt;NameListener&gt;&gt; name_listeners;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    Priority priority;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keywordtype">long</span> under_target() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  };</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  std::map&lt;std::string, Todo&gt; task2todo_;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordtype">void</span> Issue(std::shared_ptr&lt;ContextApi&gt;,</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;             std::shared_ptr&lt;DagListener&gt;&amp;,</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;             std::vector&lt;Todo&gt; todos,</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;             <span class="keywordtype">unsigned</span> up_to);</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordtype">void</span> CheckSwap(std::size_t);</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keywordtype">void</span> UpdateDevPage();</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;};</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160; </div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_SCHEDULER_H_</span></div>
-<div class="ttc" id="aclassipfs_1_1BusyGateway_html"><div class="ttname"><a href="classipfs_1_1BusyGateway.html">ipfs::BusyGateway</a></div><div class="ttdoc">RAII class embodying the assignment of a given task to a given gateway.</div><div class="ttdef"><b>Definition:</b> busy_gateway.h:23</div></div>
-<div class="ttc" id="aclassipfs_1_1Scheduler_html"><div class="ttname"><a href="classipfs_1_1Scheduler.html">ipfs::Scheduler</a></div><div class="ttdoc">Matchmaker for Gateway &amp; Task.</div><div class="ttdef"><b>Definition:</b> scheduler.h:26</div></div>
-<div class="ttc" id="aclassipfs_1_1Scheduler_html_a1c2b6c511636072a4f9ebf0f08f2b33b"><div class="ttname"><a href="classipfs_1_1Scheduler.html#a1c2b6c511636072a4f9ebf0f08f2b33b">ipfs::Scheduler::TaskComplete</a></div><div class="ttdeci">void TaskComplete(std::string const &amp;task)</div><div class="ttdoc">Indicate this task has completed.</div><div class="ttdef"><b>Definition:</b> scheduler.cc:111</div></div>
-<div class="ttc" id="aclassipfs_1_1Scheduler_html_a41471b57a96e38d1e022ae5b21694ef5"><div class="ttname"><a href="classipfs_1_1Scheduler.html#a41471b57a96e38d1e022ae5b21694ef5">ipfs::Scheduler::Scheduler</a></div><div class="ttdeci">Scheduler(std::function&lt; GatewayList()&gt; list_gen)</div><div class="ttdoc">Gateways to use. Sort order relevant.</div><div class="ttdef"><b>Definition:</b> scheduler.cc:12</div></div>
-<div class="ttc" id="aclassipfs_1_1Scheduler_html_a7e46353f39fdece46b0e94b483fab315"><div class="ttname"><a href="classipfs_1_1Scheduler.html#a7e46353f39fdece46b0e94b483fab315">ipfs::Scheduler::IssueRequests</a></div><div class="ttdeci">bool IssueRequests(std::shared_ptr&lt; ContextApi &gt; api)</div><div class="ttdoc">Check enqueued requests to see if a gateway request should be made.</div><div class="ttdef"><b>Definition:</b> scheduler.cc:40</div></div>
-<div class="ttc" id="aclassipfs_1_1Scheduler_html_a8c88aea9ffe91b0e2032014bf2d81c48"><div class="ttname"><a href="classipfs_1_1Scheduler.html#a8c88aea9ffe91b0e2032014bf2d81c48">ipfs::Scheduler::Enqueue</a></div><div class="ttdeci">void Enqueue(std::shared_ptr&lt; ContextApi &gt; api, std::shared_ptr&lt; DagListener &gt; dl, std::shared_ptr&lt; NameListener &gt; nl, std::string const &amp;sfx, Priority pio)</div><div class="ttdoc">Request a task be eventually handled.</div><div class="ttdef"><b>Definition:</b> scheduler.cc:21</div></div>
-<div class="ttc" id="aclassipfs_1_1Scheduler_html_a93ed9fb2feff9cf723b27a0d4dd75aed"><div class="ttname"><a href="classipfs_1_1Scheduler.html#a93ed9fb2feff9cf723b27a0d4dd75aed">ipfs::Scheduler::DetectCompleteFailure</a></div><div class="ttdeci">bool DetectCompleteFailure(std::string task) const</div><div class="ttdoc">Check whether the set of gateways have ALL failed this task.</div><div class="ttdef"><b>Definition:</b> scheduler.cc:78</div></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;url_spec.h&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;ctime&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;iosfwd&gt;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;set&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>ipfs {</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">class </span>DagListener;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">class </span>NameListener;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">class </span>ContextApi;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">class </span>Gateway;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">class </span>GatewayRequest;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">class </span>Scheduler;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="classipfs_1_1Scheduler.html">   27</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1Scheduler.html">Scheduler</a> {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classipfs_1_1Scheduler.html#a41471b57a96e38d1e022ae5b21694ef5">Scheduler</a>(std::function&lt;GatewayList()&gt; list_gen);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  ~<a class="code" href="classipfs_1_1Scheduler.html">Scheduler</a>();</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1Scheduler.html#aa9bd4e65b497bd2093993e9a2c609f68">Enqueue</a>(std::shared_ptr&lt;ContextApi&gt; api,</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;               std::shared_ptr&lt;DagListener&gt; dl,</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;               std::shared_ptr&lt;NameListener&gt; nl,</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;               std::string <span class="keyword">const</span>&amp; sfx,</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;               std::string_view accept,</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;               Priority pio,</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;               std::shared_ptr&lt;IpfsRequest&gt; top);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1Scheduler.html#a7e46353f39fdece46b0e94b483fab315">IssueRequests</a>(std::shared_ptr&lt;ContextApi&gt; api);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1Scheduler.html#ae1d6eafe14d035f0726209113285ec3f">DetectCompleteFailure</a>(<a class="code" href="structipfs_1_1UrlSpec.html">UrlSpec</a> <span class="keyword">const</span>&amp; task) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1Scheduler.html#a86da3f2d1d2fade7c2179ae60d53077b">TaskComplete</a>(<a class="code" href="structipfs_1_1UrlSpec.html">UrlSpec</a> <span class="keyword">const</span>&amp; task);</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  std::function&lt;GatewayList()&gt; list_gen_;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classipfs_1_1BusyGateway.html">BusyGateway</a>;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  GatewayList gateways_;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keyword">struct </span>Todo {</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    Todo();</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    ~Todo();</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    std::set&lt;std::shared_ptr&lt;GatewayRequest&gt;&gt; requests;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    std::set&lt;std::shared_ptr&lt;DagListener&gt;&gt; dag_listeners;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    std::set&lt;std::shared_ptr&lt;NameListener&gt;&gt; name_listeners;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    std::set&lt;std::shared_ptr&lt;IpfsRequest&gt;&gt; top_requests;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    Priority priority;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordtype">long</span> under_target() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  };</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  std::map&lt;UrlSpec, Todo&gt; task2todo_;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordtype">void</span> Issue(std::shared_ptr&lt;ContextApi&gt;,</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;             std::shared_ptr&lt;DagListener&gt;&amp;,</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;             std::vector&lt;Todo&gt; todos,</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;             <span class="keywordtype">unsigned</span> up_to);</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keywordtype">void</span> CheckSwap(std::size_t);</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordtype">void</span> UpdateDevPage();</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;};</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_SCHEDULER_H_</span></div>
+<div class="ttc" id="aclassipfs_1_1BusyGateway_html"><div class="ttname"><a href="classipfs_1_1BusyGateway.html">ipfs::BusyGateway</a></div><div class="ttdoc">RAII class embodying the assignment of a given task to a given gateway.</div><div class="ttdef"><b>Definition:</b> busy_gateway.h:30</div></div>
+<div class="ttc" id="aclassipfs_1_1Scheduler_html"><div class="ttname"><a href="classipfs_1_1Scheduler.html">ipfs::Scheduler</a></div><div class="ttdoc">Matchmaker for Gateway &amp; Task.</div><div class="ttdef"><b>Definition:</b> scheduler.h:27</div></div>
+<div class="ttc" id="aclassipfs_1_1Scheduler_html_a41471b57a96e38d1e022ae5b21694ef5"><div class="ttname"><a href="classipfs_1_1Scheduler.html#a41471b57a96e38d1e022ae5b21694ef5">ipfs::Scheduler::Scheduler</a></div><div class="ttdeci">Scheduler(std::function&lt; GatewayList()&gt; list_gen)</div><div class="ttdoc">Gateways to use. Sort order relevant.</div><div class="ttdef"><b>Definition:</b> scheduler.cc:13</div></div>
+<div class="ttc" id="aclassipfs_1_1Scheduler_html_a7e46353f39fdece46b0e94b483fab315"><div class="ttname"><a href="classipfs_1_1Scheduler.html#a7e46353f39fdece46b0e94b483fab315">ipfs::Scheduler::IssueRequests</a></div><div class="ttdeci">bool IssueRequests(std::shared_ptr&lt; ContextApi &gt; api)</div><div class="ttdoc">Check enqueued requests to see if a gateway request should be made.</div><div class="ttdef"><b>Definition:</b> scheduler.cc:52</div></div>
+<div class="ttc" id="aclassipfs_1_1Scheduler_html_a86da3f2d1d2fade7c2179ae60d53077b"><div class="ttname"><a href="classipfs_1_1Scheduler.html#a86da3f2d1d2fade7c2179ae60d53077b">ipfs::Scheduler::TaskComplete</a></div><div class="ttdeci">void TaskComplete(UrlSpec const &amp;task)</div><div class="ttdoc">Indicate this task has completed.</div><div class="ttdef"><b>Definition:</b> scheduler.cc:131</div></div>
+<div class="ttc" id="aclassipfs_1_1Scheduler_html_aa9bd4e65b497bd2093993e9a2c609f68"><div class="ttname"><a href="classipfs_1_1Scheduler.html#aa9bd4e65b497bd2093993e9a2c609f68">ipfs::Scheduler::Enqueue</a></div><div class="ttdeci">void Enqueue(std::shared_ptr&lt; ContextApi &gt; api, std::shared_ptr&lt; DagListener &gt; dl, std::shared_ptr&lt; NameListener &gt; nl, std::string const &amp;sfx, std::string_view accept, Priority pio, std::shared_ptr&lt; IpfsRequest &gt; top)</div><div class="ttdoc">Request a task be eventually handled.</div><div class="ttdef"><b>Definition:</b> scheduler.cc:22</div></div>
+<div class="ttc" id="aclassipfs_1_1Scheduler_html_ae1d6eafe14d035f0726209113285ec3f"><div class="ttname"><a href="classipfs_1_1Scheduler.html#ae1d6eafe14d035f0726209113285ec3f">ipfs::Scheduler::DetectCompleteFailure</a></div><div class="ttdeci">bool DetectCompleteFailure(UrlSpec const &amp;task) const</div><div class="ttdoc">Check whether the set of gateways have ALL failed this task.</div><div class="ttdef"><b>Definition:</b> scheduler.cc:98</div></div>
+<div class="ttc" id="astructipfs_1_1UrlSpec_html"><div class="ttname"><a href="structipfs_1_1UrlSpec.html">ipfs::UrlSpec</a></div><div class="ttdef"><b>Definition:</b> url_spec.h:10</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

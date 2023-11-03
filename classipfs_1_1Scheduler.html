@@ -86,18 +86,18 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Scheduler.html#a41471b57a96e38d1e022ae5b21694ef5">Scheduler</a> (std::function&lt; GatewayList()&gt; list_gen)</td></tr>
 <tr class="memdesc:a41471b57a96e38d1e022ae5b21694ef5"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classipfs_1_1Gateways.html" title="All known IPFS gateways.">Gateways</a> to use. Sort order relevant. <br /></td></tr>
 <tr class="separator:a41471b57a96e38d1e022ae5b21694ef5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c88aea9ffe91b0e2032014bf2d81c48"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Scheduler.html#a8c88aea9ffe91b0e2032014bf2d81c48">Enqueue</a> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &gt; api, std::shared_ptr&lt; <a class="el" href="classipfs_1_1DagListener.html">DagListener</a> &gt; dl, std::shared_ptr&lt; <a class="el" href="classipfs_1_1NameListener.html">NameListener</a> &gt; nl, std::string const &amp;sfx, Priority pio)</td></tr>
-<tr class="memdesc:a8c88aea9ffe91b0e2032014bf2d81c48"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request a task be eventually handled.  <a href="classipfs_1_1Scheduler.html#a8c88aea9ffe91b0e2032014bf2d81c48">More...</a><br /></td></tr>
-<tr class="separator:a8c88aea9ffe91b0e2032014bf2d81c48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9bd4e65b497bd2093993e9a2c609f68"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Scheduler.html#aa9bd4e65b497bd2093993e9a2c609f68">Enqueue</a> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &gt; api, std::shared_ptr&lt; <a class="el" href="classipfs_1_1DagListener.html">DagListener</a> &gt; dl, std::shared_ptr&lt; <a class="el" href="classipfs_1_1NameListener.html">NameListener</a> &gt; nl, std::string const &amp;sfx, std::string_view accept, Priority pio, std::shared_ptr&lt; <a class="el" href="classipfs_1_1IpfsRequest.html">IpfsRequest</a> &gt; top)</td></tr>
+<tr class="memdesc:aa9bd4e65b497bd2093993e9a2c609f68"><td class="mdescLeft">&#160;</td><td class="mdescRight">Request a task be eventually handled.  <a href="classipfs_1_1Scheduler.html#aa9bd4e65b497bd2093993e9a2c609f68">More...</a><br /></td></tr>
+<tr class="separator:aa9bd4e65b497bd2093993e9a2c609f68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e46353f39fdece46b0e94b483fab315"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Scheduler.html#a7e46353f39fdece46b0e94b483fab315">IssueRequests</a> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &gt; api)</td></tr>
 <tr class="memdesc:a7e46353f39fdece46b0e94b483fab315"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check enqueued requests to see if a gateway request should be made.  <a href="classipfs_1_1Scheduler.html#a7e46353f39fdece46b0e94b483fab315">More...</a><br /></td></tr>
 <tr class="separator:a7e46353f39fdece46b0e94b483fab315"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a93ed9fb2feff9cf723b27a0d4dd75aed"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Scheduler.html#a93ed9fb2feff9cf723b27a0d4dd75aed">DetectCompleteFailure</a> (std::string task) const</td></tr>
-<tr class="memdesc:a93ed9fb2feff9cf723b27a0d4dd75aed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether the set of gateways have ALL failed this task.  <a href="classipfs_1_1Scheduler.html#a93ed9fb2feff9cf723b27a0d4dd75aed">More...</a><br /></td></tr>
-<tr class="separator:a93ed9fb2feff9cf723b27a0d4dd75aed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c2b6c511636072a4f9ebf0f08f2b33b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Scheduler.html#a1c2b6c511636072a4f9ebf0f08f2b33b">TaskComplete</a> (std::string const &amp;task)</td></tr>
-<tr class="memdesc:a1c2b6c511636072a4f9ebf0f08f2b33b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicate this task has completed.  <a href="classipfs_1_1Scheduler.html#a1c2b6c511636072a4f9ebf0f08f2b33b">More...</a><br /></td></tr>
-<tr class="separator:a1c2b6c511636072a4f9ebf0f08f2b33b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1d6eafe14d035f0726209113285ec3f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Scheduler.html#ae1d6eafe14d035f0726209113285ec3f">DetectCompleteFailure</a> (<a class="el" href="structipfs_1_1UrlSpec.html">UrlSpec</a> const &amp;task) const</td></tr>
+<tr class="memdesc:ae1d6eafe14d035f0726209113285ec3f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check whether the set of gateways have ALL failed this task.  <a href="classipfs_1_1Scheduler.html#ae1d6eafe14d035f0726209113285ec3f">More...</a><br /></td></tr>
+<tr class="separator:ae1d6eafe14d035f0726209113285ec3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a86da3f2d1d2fade7c2179ae60d53077b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Scheduler.html#a86da3f2d1d2fade7c2179ae60d53077b">TaskComplete</a> (<a class="el" href="structipfs_1_1UrlSpec.html">UrlSpec</a> const &amp;task)</td></tr>
+<tr class="memdesc:a86da3f2d1d2fade7c2179ae60d53077b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicate this task has completed.  <a href="classipfs_1_1Scheduler.html#a86da3f2d1d2fade7c2179ae60d53077b">More...</a><br /></td></tr>
+<tr class="separator:a86da3f2d1d2fade7c2179ae60d53077b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
@@ -108,8 +108,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>BusyGateway</b></td>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Matchmaker for <a class="el" href="classipfs_1_1Gateway.html" title="A known http gateway serving up blocks &amp; IPNS records.">Gateway</a> &amp; Task. </p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a93ed9fb2feff9cf723b27a0d4dd75aed"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a93ed9fb2feff9cf723b27a0d4dd75aed">&#9670;&nbsp;</a></span>DetectCompleteFailure()</h2>
+<a id="ae1d6eafe14d035f0726209113285ec3f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1d6eafe14d035f0726209113285ec3f">&#9670;&nbsp;</a></span>DetectCompleteFailure()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -117,7 +117,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>BusyGateway</b></td>
         <tr>
           <td class="memname">bool ipfs::Scheduler::DetectCompleteFailure </td>
           <td>(</td>
-          <td class="paramtype">std::string&#160;</td>
+          <td class="paramtype"><a class="el" href="structipfs_1_1UrlSpec.html">UrlSpec</a> const &amp;&#160;</td>
           <td class="paramname"><em>task</em></td><td>)</td>
           <td> const</td>
         </tr>
@@ -135,8 +135,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>BusyGateway</b></td>
 
 </div>
 </div>
-<a id="a8c88aea9ffe91b0e2032014bf2d81c48"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8c88aea9ffe91b0e2032014bf2d81c48">&#9670;&nbsp;</a></span>Enqueue()</h2>
+<a id="aa9bd4e65b497bd2093993e9a2c609f68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9bd4e65b497bd2093993e9a2c609f68">&#9670;&nbsp;</a></span>Enqueue()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -168,8 +168,20 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>BusyGateway</b></td>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>accept</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">Priority&#160;</td>
-          <td class="paramname"><em>pio</em>&#160;</td>
+          <td class="paramname"><em>pio</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classipfs_1_1IpfsRequest.html">IpfsRequest</a> &gt;&#160;</td>
+          <td class="paramname"><em>top</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -220,8 +232,8 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>BusyGateway</b></td>
 
 </div>
 </div>
-<a id="a1c2b6c511636072a4f9ebf0f08f2b33b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1c2b6c511636072a4f9ebf0f08f2b33b">&#9670;&nbsp;</a></span>TaskComplete()</h2>
+<a id="a86da3f2d1d2fade7c2179ae60d53077b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a86da3f2d1d2fade7c2179ae60d53077b">&#9670;&nbsp;</a></span>TaskComplete()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -229,7 +241,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>BusyGateway</b></td>
         <tr>
           <td class="memname">void ipfs::Scheduler::TaskComplete </td>
           <td>(</td>
-          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="structipfs_1_1UrlSpec.html">UrlSpec</a> const &amp;&#160;</td>
           <td class="paramname"><em>task</em></td><td>)</td>
           <td></td>
         </tr>

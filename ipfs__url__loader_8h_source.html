@@ -151,25 +151,26 @@ $(function() {
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  std::shared_ptr&lt;network::mojom::URLLoader&gt; extra_;</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  std::unique_ptr&lt;base::RepeatingTimer&gt; stepper_;</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  std::string root_;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordtype">void</span> CreateBlockRequest(std::string cid);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="keywordtype">void</span> ReceiveBlockBytes(std::string_view) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordtype">void</span> BlocksComplete(std::string mime_type) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keywordtype">void</span> DoesNotExist(std::string_view cid, std::string_view path) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordtype">void</span> NotHere(std::string_view cid, std::string_view path) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keywordtype">void</span> StartUnixFsProc(ptr, std::string_view);</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordtype">void</span> AppendGatewayHeaders(std::vector&lt;std::string&gt; <span class="keyword">const</span>&amp; cids, net::HttpResponseHeaders&amp;);</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keywordtype">void</span> AppendGatewayInfoHeader(std::string <span class="keyword">const</span>&amp;, net::HttpResponseHeaders&amp;);</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="keywordtype">void</span> TakeStep();</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;};</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160; </div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordtype">int</span> status_ = 200;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordtype">void</span> CreateBlockRequest(std::string cid);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordtype">void</span> ReceiveBlockBytes(std::string_view) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keywordtype">void</span> BlocksComplete(std::string mime_type) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordtype">void</span> DoesNotExist(std::string_view cid, std::string_view path) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keywordtype">void</span> NotHere(std::string_view cid, std::string_view path) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordtype">void</span> StartUnixFsProc(ptr, std::string_view);</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keywordtype">void</span> AppendGatewayHeaders(std::vector&lt;std::string&gt; <span class="keyword">const</span>&amp; cids, net::HttpResponseHeaders&amp;);</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="keywordtype">void</span> AppendGatewayInfoHeader(std::string <span class="keyword">const</span>&amp;, net::HttpResponseHeaders&amp;);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keywordtype">void</span> TakeStep();</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;};</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; </div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; </div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassipfs_1_1DagListener_html"><div class="ttname"><a href="classipfs_1_1DagListener.html">ipfs::DagListener</a></div><div class="ttdoc">Implemented by things waiting on a particular path through a DAG.</div><div class="ttdef"><b>Definition:</b> dag_listener.h:13</div></div>
-<div class="ttc" id="aclassipfs_1_1InterRequestState_html"><div class="ttname"><a href="classipfs_1_1InterRequestState.html">ipfs::InterRequestState</a></div><div class="ttdef"><b>Definition:</b> inter_request_state.h:20</div></div>
+<div class="ttc" id="aclassipfs_1_1InterRequestState_html"><div class="ttname"><a href="classipfs_1_1InterRequestState.html">ipfs::InterRequestState</a></div><div class="ttdef"><b>Definition:</b> inter_request_state.h:21</div></div>
 <div class="ttc" id="aclassipfs_1_1IpfsUrlLoader_html"><div class="ttname"><a href="classipfs_1_1IpfsUrlLoader.html">ipfs::IpfsUrlLoader</a></div><div class="ttdef"><b>Definition:</b> ipfs_url_loader.h:35</div></div>
 <div class="ttc" id="aclassnetwork_1_1mojom_1_1URLLoader_html"><div class="ttname"><a href="classnetwork_1_1mojom_1_1URLLoader.html">network::mojom::URLLoader</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
