@@ -15,11 +15,14 @@ class IpfsRequest {
  private:
   std::string path_;
   Finisher callback_;
+  std::size_t waiting_ = 0UL;
 
  public:
   IpfsRequest(std::string path, Finisher);
   SlashDelimited path() const { return std::string_view{path_}; }
   void finish(Response& r);
+  void till_next(std::size_t);
+  bool ready_after();
 };
 }  // namespace ipfs
 

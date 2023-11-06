@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 
+#include <ipfs_client/context_api.h>
 #include <ipfs_client/dag_block.h>
 #include <ipfs_client/ipfs_request.h>
 #include <ipfs_client/ipns_record.h>
@@ -15,47 +16,59 @@
 
 namespace i = ipfs;
 namespace ii = i::ipld;
+namespace ig = i::gw;
 using namespace std::literals;
 using Success = i::Response;
 using Codec = libp2p::multi::ContentIdentifierCodec;
 
 namespace {
-struct OrchestratingRealData : public ::testing::Test {
-  //  std::shared_ptr<i::Orchestrator> orc_ = std::make_shared<i::Orchestrator>(
-  //  [this](auto r) { load_test_data(r->main_param); });
-  std::shared_ptr<i::Orchestrator> orc_;
-  OrchestratingRealData() {
-    auto f = [this](auto r) { load_test_data(r->main_param, *r); };
-    auto m = [](auto e, auto c, auto& u) {
-      auto result = "Mime from extension=" + e + " 'url'=" + u + " content='";
-      if (c.size() < 9) {
-        result.append(c);
-      } else {
-        result.append(c.substr(0, 8)).append("...");
-      }
-      return result + "'";
-    };
-    resp_.body_ = "No response received.";
-    resp_.status_ = 0;
-    resp_.mime_ = "uninit - no mime provided";
-    resp_.location_ = "uninit";
-    orc_ = std::make_shared<i::Orchestrator>(f, m);
+struct FakeApi final : public ipfs::ContextApi {
+  bool verify_key_signature(ipfs::SigningKeyType,
+                            ipfs::ByteView signature,
+                            ipfs::ByteView data,
+                            ipfs::ByteView key_bytes) const {
+    return false;
   }
-  i::Response resp_;
-  void dorequest(std::string_view ipfs_path) {
-    std::cout << "dorequest(" << ipfs_path << ")\n";
-    auto f = [this](auto&, auto& r) { resp_ = r; };
-    auto top_req = std::make_shared<i::IpfsRequest>(std::string{ipfs_path}, f);
-    orc_->build_response(top_req);
+  std::string MimeType(std::string e,
+                       std::string_view c,
+                       std::string const& u) const {
+    auto result = "Mime from extension=" + e + " 'url'=" + u + " content='";
+    if (c.size() < 9) {
+      result.append(c);
+    } else {
+      result.append(c.substr(0, 8)).append("...");
+    }
+    return result + "'";
   }
-
-  void load_test_data(std::string cid, i::gw::GatewayRequest r) {
+  std::string UnescapeUrlComponent(std::string_view url_comp) {
+    return std::string{url_comp};
+  }
+  std::string UnescapeUrlComponent(std::string_view u) const {
+    return std::string{u};
+  }
+  ipfs::IpnsCborEntry deserialize_cbor(ipfs::ByteView) const { return {}; }
+  std::shared_ptr<ipfs::GatewayRequest> InitiateGatewayRequest(
+      ipfs::BusyGateway) {
+    return nullptr;
+  }
+  void Discover(std::function<void(std::vector<std::string>)> cb) {}
+  void SendDnsTextRequest(std::string,
+                          DnsTextResultsCallback,
+                          DnsTextCompleteCallback) {}
+  void SendHttpRequest(ipfs::HttpRequestDescription,
+                       HttpCompleteCallback) const {}
+};
+struct TestRequestor final : public ig::Requestor {
+  std::string_view name() const { return "return test requestor"; }
+  HandleOutcome handle(ig::RequestPtr r) {
+    auto cid = r->main_param;
+    auto orc_ = r->orchestrator;
     auto base_dir = std::filesystem::path{__FILE__};
     while (!is_directory(base_dir / "test_data" / "blocks") &&
            base_dir.generic_string().size() > 2) {
       base_dir = base_dir.parent_path();
     }
-    switch (r.type) {
+    switch (r->type) {
       case i::gw::Type::Ipns: {
         auto dir = base_dir / "test_data" / "names";
         auto f = dir / cid;
@@ -75,6 +88,7 @@ struct OrchestratingRealData : public ::testing::Test {
         auto node = ii::DagNode::fromIpnsRecord(testingnoneed2validate);
         orc_->add_node(cid, node);
       } break;
+      case i::gw::Type::Car:
       case i::gw::Type::Block: {
         auto blocs_dir = base_dir / "test_data" / "blocks";
         EXPECT_TRUE(is_directory(blocs_dir));
@@ -92,9 +106,7 @@ struct OrchestratingRealData : public ::testing::Test {
           std::cout << cmd << '\n';
           auto ec = std::system(cmd.c_str());
           EXPECT_EQ(ec, 0);
-          resp_.status_ = static_cast<std::uint16_t>(987);
-          resp_.body_ = cid + " fetched";
-          return;
+          return HandleOutcome::DONE;
         }
       } break;
       case i::gw::Type::DnsLink: {
@@ -113,13 +125,31 @@ struct OrchestratingRealData : public ::testing::Test {
         std::getline(fs, target);
         orc_->add_node(cid, std::make_shared<ipfs::ipld::IpnsName>(target));
       } break;
-      case i::gw::Type::Car:
-        return;
       default:
-        return;
+        return HandleOutcome::DONE;
     }
-    // retry
-    r.orchestrator->build_response(r.dependent);
+    orc_->build_response(r->dependent);
+    return HandleOutcome::DONE;
+  }
+};
+struct OrchestratingRealData : public ::testing::Test {
+  std::shared_ptr<FakeApi> api_ = std::make_shared<FakeApi>();
+  std::shared_ptr<i::Orchestrator> orc_;
+  OrchestratingRealData() {
+    auto f = [](auto) {};
+    resp_.body_ = "No response received.";
+    resp_.status_ = 0;
+    resp_.mime_ = "uninit - no mime provided";
+    resp_.location_ = "uninit";
+    orc_ = std::make_shared<i::Orchestrator>(
+        f, std::make_shared<TestRequestor>(), api_);
+  }
+  i::Response resp_;
+  void dorequest(std::string_view ipfs_path) {
+    std::cout << "dorequest(" << ipfs_path << ")\n";
+    auto f = [this](auto&, auto& r) { resp_ = r; };
+    auto top_req = std::make_shared<i::IpfsRequest>(std::string{ipfs_path}, f);
+    orc_->build_response(top_req);
   }
   std::string abs_path(std::string rest) {
     return "/ipfs/QmYBhLYDwVFvxos9h8CGU2ibaY66QNgv8hpfewxaQrPiZj" + rest;

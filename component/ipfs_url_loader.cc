@@ -1,6 +1,6 @@
 #include "ipfs_url_loader.h"
 
-#include "gateway_requests.h"
+#include "chromium_ipfs_context.h"
 #include "inter_request_state.h"
 #include "summarize_headers.h"
 
@@ -71,74 +71,37 @@ void ipfs::IpfsUrlLoader::StartRequest(
   if (me->original_url_.empty()) {
     me->original_url_ = resource_request.url.spec();
   }
-  if (resource_request.url.SchemeIs("ipfs")) {
-    auto ref = resource_request.url.spec();
-    DCHECK_EQ(ref.substr(0, 7), "ipfs://");
-    // TODO these kinds of shenanigans should have their own special utils file
-    ref.erase(4, 2);
-    auto e = ref.find_first_of("#?");
-    if (e < ref.size()) {
-      LOG(INFO) << "Dropping params/frags from '" << ref << "'";
-      ref.resize(e);
-      LOG(INFO) << "Now have '" << ref << "'";
-    }
-    me->StartUnixFsProc(me, ref);
+  if (resource_request.url.SchemeIs("ipfs") ||
+      resource_request.url.SchemeIs("ipns")) {
+    auto ns = resource_request.url.scheme();
+    auto cid_str = resource_request.url.host();
+    auto path = resource_request.url.path();
+    auto abs_path = "/" + ns + "/" + cid_str + path;
+    LOG(INFO) << resource_request.url.spec() << " -> " << abs_path;
+    me->root_ = cid_str;
+    me->api_->SetLoaderFactory(*(me->lower_loader_factory_));
+    auto whendone = [me](IpfsRequest const& req, ipfs::Response const& res) {
+      LOG(INFO) << "whendone(" << req.path().to_string() << ',' << res.status_
+                << ',' << res.body_.size() << "B mime=" << res.mime_ << ')';
+      if (!res.body_.empty()) {
+        me->ReceiveBlockBytes(res.body_);
+      }
+      me->status_ = res.status_;
+      if (res.status_ / 100 == 4) {
+        auto p = req.path();
+        p.pop();
+        std::string cid{p.pop()};
+        me->DoesNotExist(cid, p.to_string());
+      } else {
+        me->BlocksComplete(res.mime_);
+      }
+      DCHECK(me->complete_);
+    };
+    auto req = std::make_shared<IpfsRequest>(abs_path, whendone);
+    me->state_->orchestrator().build_response(req);
   } else {
     LOG(ERROR) << "Wrong scheme: " << resource_request.url.scheme();
   }
-}
-
-void ipfs::IpfsUrlLoader::StartUnixFsProc(ptr me, std::string_view ipfs_ref) {
-  VLOG(1) << "Requesting " << ipfs_ref << " by blocks.";
-  DCHECK_EQ(ipfs_ref.substr(0, 5), "ipfs/");
-  auto second_slash = ipfs_ref.find_first_of("/?", 5);
-  auto cid = ipfs_ref.substr(5, second_slash - 5);
-  second_slash = ipfs_ref.find('/', 5);
-  auto qmark = ipfs_ref.find_first_of("?#");
-  std::string remainder{"/"};
-  if (second_slash < ipfs_ref.size()) {
-    remainder.assign(ipfs_ref.substr(second_slash + 1));
-  } else if (qmark && qmark < ipfs_ref.size()) {
-    remainder.append(ipfs_ref.substr(qmark));
-  }
-  VLOG(1) << "cid=" << cid << " remainder=" << remainder;
-  me->root_ = cid;
-  me->api_->SetLoaderFactory(*lower_loader_factory_);
-  /*
-  me->resolver_ = std::make_shared<UnixFsPathResolver>(
-      me->state_->storage(), me->state_->requestor(), std::string{cid},
-      remainder, me->api_);
-  me->stepper_ = std::make_unique<base::RepeatingTimer>();
-  me->stepper_->Start(FROM_HERE, base::Milliseconds(500),
-                      base::BindRepeating(&IpfsUrlLoader::TakeStep, me));
-  me->TakeStep();
-   */
-  auto whendone = [me](IpfsRequest const& req, ipfs::Response const& res) {
-    LOG(INFO) << "whendone(" << req.path().to_string() << ',' << res.status_
-              << ',' << res.body_.size() << "B)";
-    if (!res.body_.empty()) {
-      me->ReceiveBlockBytes(res.body_);
-    }
-    me->status_ = res.status_;
-    if (res.status_ / 100 == 4) {
-      auto p = req.path();
-      p.pop();
-      std::string cid{p.pop()};
-      me->DoesNotExist(cid, p.to_string());
-    } else {
-      me->BlocksComplete(res.mime_);
-    }
-  };
-  auto abs_path = std::string{"/ipfs/"};
-  abs_path.append(cid);
-  if (!remainder.empty()) {
-    if (abs_path.back() != '/' && remainder[0] != '/') {
-      abs_path.push_back('/');
-    }
-    abs_path.append(remainder);
-  }
-  auto req = std::make_shared<IpfsRequest>(abs_path, whendone);
-  me->state_->orchestrator().build_response(req);
 }
 
 void ipfs::IpfsUrlLoader::TakeStep() {
@@ -197,8 +160,6 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   head->was_fetched_via_spdy = false;
   if (resolver_) {
     AppendGatewayHeaders(resolver_->involved_cids(), *head->headers);
-  } else {
-    LOG(INFO) << "TODO";
   }
   for (auto& [n, v] : additional_outgoing_headers_) {
     VLOG(1) << "Appending 'additional' header:" << n << '=' << v << '.';

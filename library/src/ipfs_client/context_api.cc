@@ -13,3 +13,7 @@ std::string ipfs::GatewayRequest::url() const {
 std::string ipfs::GatewayRequest::task() const {
   return gateway.task();
 }
+bool ipfs::HttpRequestDescription::operator==(
+    HttpRequestDescription const& r) const {
+  return url == r.url && accept == r.accept;
+}

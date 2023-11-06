@@ -1,22 +1,8 @@
-diff --git a/base/threading/thread_local_internal.h b/base/threading/thread_local_internal.h
-index ed99410ea8a31..d89d48ba981ab 100644
---- a/base/threading/thread_local_internal.h
-+++ b/base/threading/thread_local_internal.h
-@@ -30,8 +30,7 @@ class CheckedThreadLocalOwnedPointer {
-  public:
-   CheckedThreadLocalOwnedPointer() = default;
- 
--  CheckedThreadLocalOwnedPointer<T>(const CheckedThreadLocalOwnedPointer<T>&) =
--      delete;
-+  CheckedThreadLocalOwnedPointer(const CheckedThreadLocalOwnedPointer&) = delete;
-   CheckedThreadLocalOwnedPointer<T>& operator=(
-       const CheckedThreadLocalOwnedPointer<T>&) = delete;
- 
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index 31bf3d854d9a6..4dd2760b90ae1 100644
+index bce36d7ffb408..6899bd840ebbf 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
-@@ -39,6 +39,7 @@ import("//rlz/buildflags/buildflags.gni")
+@@ -40,6 +40,7 @@ import("//rlz/buildflags/buildflags.gni")
  import("//sandbox/features.gni")
  import("//testing/libfuzzer/fuzzer_test.gni")
  import("//third_party/blink/public/public_features.gni")
@@ -24,7 +10,7 @@ index 31bf3d854d9a6..4dd2760b90ae1 100644
  import("//third_party/protobuf/proto_library.gni")
  import("//third_party/webrtc/webrtc.gni")
  import("//third_party/widevine/cdm/widevine.gni")
-@@ -2568,6 +2569,10 @@ static_library("browser") {
+@@ -2658,6 +2659,10 @@ static_library("browser") {
        ]
      }
  
@@ -36,10 +22,10 @@ index 31bf3d854d9a6..4dd2760b90ae1 100644
        deps += [ "//chrome/browser/screen_ai:screen_ai_dlc_installer" ]
      }
 diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
-index 859416382602f..e82d2468dca8f 100644
+index 9ab4bb62b9f7e..fdbe2476803a5 100644
 --- a/chrome/browser/about_flags.cc
 +++ b/chrome/browser/about_flags.cc
-@@ -208,6 +208,7 @@
+@@ -213,6 +213,7 @@
  #include "third_party/blink/public/common/features_generated.h"
  #include "third_party/blink/public/common/forcedark/forcedark_switches.h"
  #include "third_party/blink/public/common/switches.h"
@@ -47,7 +33,7 @@ index 859416382602f..e82d2468dca8f 100644
  #include "ui/accessibility/accessibility_features.h"
  #include "ui/accessibility/accessibility_switches.h"
  #include "ui/base/ui_base_features.h"
-@@ -308,6 +309,10 @@
+@@ -314,6 +315,10 @@
  #include "extensions/common/switches.h"
  #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
  
@@ -58,7 +44,7 @@ index 859416382602f..e82d2468dca8f 100644
  #if BUILDFLAG(ENABLE_PDF)
  #include "pdf/pdf_features.h"
  #endif
-@@ -9688,6 +9693,14 @@ const FeatureEntry kFeatureEntries[] = {
+@@ -9914,6 +9919,14 @@ const FeatureEntry kFeatureEntries[] = {
       flag_descriptions::kOmitCorsClientCertDescription, kOsAll,
       FEATURE_VALUE_TYPE(network::features::kOmitCorsClientCert)},
  
@@ -124,10 +110,19 @@ index 4c88614c68c25..f8bb12a3b0c2e 100644
  
    // Also check for schemes registered via registerProtocolHandler(), which
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
-index 6f989cff781d7..e5e0dd4c59d61 100644
+index eb7b5332f5e4c..3e232b3af9357 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -359,6 +359,7 @@
+@@ -228,6 +228,8 @@
+ #include "components/error_page/common/localized_error.h"
+ #include "components/error_page/content/browser/net_error_auto_reloader.h"
+ #include "components/google/core/common/google_switches.h"
++#include "components/ipfs/interceptor.h"
++#include "components/ipfs/url_loader_factory.h"
+ #include "components/keep_alive_registry/keep_alive_types.h"
+ #include "components/keep_alive_registry/scoped_keep_alive.h"
+ #include "components/language/core/browser/pref_names.h"
+@@ -364,6 +366,7 @@
  #include "third_party/blink/public/common/switches.h"
  #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
  #include "third_party/blink/public/public_buildflags.h"
@@ -135,7 +130,7 @@ index 6f989cff781d7..e5e0dd4c59d61 100644
  #include "third_party/widevine/cdm/buildflags.h"
  #include "ui/base/clipboard/clipboard_format_type.h"
  #include "ui/base/l10n/l10n_util.h"
-@@ -476,6 +477,12 @@
+@@ -487,6 +490,12 @@
  #include "chrome/browser/fuchsia/chrome_browser_main_parts_fuchsia.h"
  #endif
  
@@ -147,8 +142,8 @@ index 6f989cff781d7..e5e0dd4c59d61 100644
 +
  #if BUILDFLAG(IS_CHROMEOS)
  #include "base/debug/leak_annotations.h"
- #include "chrome/browser/chromeos/enterprise/incognito_navigation_throttle.h"
-@@ -6112,12 +6119,23 @@ void ChromeContentBrowserClient::
+ #include "chrome/browser/apps/intent_helper/chromeos_disabled_apps_throttle.h"
+@@ -6177,12 +6186,23 @@ void ChromeContentBrowserClient::
          const absl::optional<url::Origin>& request_initiator_origin,
          NonNetworkURLLoaderFactoryMap* factories) {
  #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS) || \
@@ -174,7 +169,7 @@ index 6f989cff781d7..e5e0dd4c59d61 100644
  
  #if BUILDFLAG(IS_CHROMEOS_ASH)
    if (web_contents) {
-@@ -6259,6 +6277,11 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
+@@ -6324,6 +6344,11 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
    std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
        interceptors;
@@ -186,11 +181,27 @@ index 6f989cff781d7..e5e0dd4c59d61 100644
  #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
    interceptors.push_back(
        std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(
+diff --git a/chrome/browser/flag-metadata.json b/chrome/browser/flag-metadata.json
+index 895098c0bd462..b9bcd90fd481c 100644
+--- a/chrome/browser/flag-metadata.json
++++ b/chrome/browser/flag-metadata.json
+@@ -2863,6 +2863,11 @@
+     "owners": [ "hanxi@chromium.org", "wychen@chromium.org" ],
+     "expiry_milestone": 130
+   },
++  {
++    "name": "enable-ipfs",
++    "owners": [ "//components/ipfs/OWNERS" ],
++    "expiry_milestone": 150
++  },
+   {
+     "name": "enable-isolated-sandboxed-iframes",
+     "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
 diff --git a/chrome/browser/flag_descriptions.cc b/chrome/browser/flag_descriptions.cc
-index 5829b6a0b3401..cb19beb1603bb 100644
+index 0d17970001d18..e4141fc8aa12b 100644
 --- a/chrome/browser/flag_descriptions.cc
 +++ b/chrome/browser/flag_descriptions.cc
-@@ -256,6 +256,11 @@ const char kEnableBenchmarkingDescription[] =
+@@ -248,6 +248,11 @@ const char kEnableBenchmarkingDescription[] =
      "after 3 restarts. On the third restart, the flag will appear to be off "
      "but the effect is still active.";
  
@@ -203,10 +214,10 @@ index 5829b6a0b3401..cb19beb1603bb 100644
      "Preloading Settings on Performance Page";
  const char kPreloadingOnPerformancePageDescription[] =
 diff --git a/chrome/browser/flag_descriptions.h b/chrome/browser/flag_descriptions.h
-index ff72a308d37e7..4422b2b41ca54 100644
+index 64e4e09d02a1d..8718b40facba9 100644
 --- a/chrome/browser/flag_descriptions.h
 +++ b/chrome/browser/flag_descriptions.h
-@@ -21,6 +21,7 @@
+@@ -22,6 +22,7 @@
  #include "pdf/buildflags.h"
  #include "printing/buildflags/buildflags.h"
  #include "third_party/blink/public/common/buildflags.h"
@@ -214,7 +225,7 @@ index ff72a308d37e7..4422b2b41ca54 100644
  
  // This file declares strings used in chrome://flags. These messages are not
  // translated, because instead of end-users they target Chromium developers and
-@@ -157,6 +158,11 @@ extern const char kDownloadWarningImprovementsDescription[];
+@@ -165,6 +166,11 @@ extern const char kDownloadWarningImprovementsDescription[];
  extern const char kEnableBenchmarkingName[];
  extern const char kEnableBenchmarkingDescription[];
  
@@ -274,8 +285,21 @@ index 5273da5190277..12b28b86a4c00 100644
        case NsswitchReader::Service::kNis:
          RecordIncompatibleNsswitchReason(
              IncompatibleNsswitchReason::kIncompatibleService,
+diff --git a/third_party/blink/renderer/platform/weborigin/scheme_registry.cc b/third_party/blink/renderer/platform/weborigin/scheme_registry.cc
+index 4eadf46ea0c24..d62fc7fb14e01 100644
+--- a/third_party/blink/renderer/platform/weborigin/scheme_registry.cc
++++ b/third_party/blink/renderer/platform/weborigin/scheme_registry.cc
+@@ -67,7 +67,7 @@ class URLSchemesRegistry final {
+          // is considered secure. Additional checks are performed to ensure that
+          // other http pages are filtered out.
+         service_worker_schemes({"http", "https"}),
+-        fetch_api_schemes({"http", "https"}),
++        fetch_api_schemes({"http", "https", "ipfs", "ipns"}),
+         allowed_in_referrer_schemes({"http", "https"}) {
+     for (auto& scheme : url::GetCorsEnabledSchemes())
+       cors_enabled_schemes.insert(scheme.c_str());
 diff --git a/url/BUILD.gn b/url/BUILD.gn
-index 7a10d5d28206f..6a700e3e4a690 100644
+index c525c166979d6..ce2b1ae43c0a7 100644
 --- a/url/BUILD.gn
 +++ b/url/BUILD.gn
 @@ -5,6 +5,7 @@
@@ -285,25 +309,17 @@ index 7a10d5d28206f..6a700e3e4a690 100644
 +import("//third_party/ipfs_client/args.gni")
  import("features.gni")
  
- import("//build/config/android/jni.gni")
-@@ -62,15 +63,25 @@ component("url") {
+ import("//build/config/cronet/config.gni")
+@@ -67,6 +68,7 @@ component("url") {
+   public_deps = [
+     "//base",
+     "//build:robolectric_buildflags",
++    "//third_party/ipfs_client:ipfs_buildflags",
+   ]
  
-   defines = [ "IS_URL_IMPL" ]
- 
--  public_deps = [ "//base" ]
-+  public_deps = [ 
-+    "//base",
-+    "//third_party/ipfs_client",
-+  ]
- 
--  deps = [ "//base/third_party/dynamic_annotations" ]
-+  deps = [
-+    "//base/third_party/dynamic_annotations",
-+  ]
- 
-   if (is_win) {
-     # Don't conflict with Windows' "url.dll".
-     output_name = "url_lib"
+   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+@@ -89,6 +91,11 @@ component("url") {
+     public_configs = [ "//third_party/jdk" ]
    }
  
 +  if (enable_ipfs) {
@@ -311,14 +327,14 @@ index 7a10d5d28206f..6a700e3e4a690 100644
 +    deps += [ "//third_party/ipfs_client:ipfs_client" ]
 +  }
 +
-   # ICU support.
-   if (use_platform_icu_alternatives) {
-     if (is_android) {
+   if (is_win) {
+     # Don't conflict with Windows' "url.dll".
+     output_name = "url_lib"
 diff --git a/url/url_canon.h b/url/url_canon.h
-index 94b44426fa33a..19f1f0789164d 100644
+index d3a7fabf09fa8..06db17242248f 100644
 --- a/url/url_canon.h
 +++ b/url/url_canon.h
-@@ -688,6 +688,23 @@ bool CanonicalizeMailtoURL(const char16_t* spec,
+@@ -697,6 +697,23 @@ bool CanonicalizeMailtoURL(const char16_t* spec,
                             CanonOutput* output,
                             Parsed* new_parsed);
  
@@ -421,10 +437,10 @@ index 0000000000000..da3a5f032b5e8
 +  return CanonicalizeIpfsURL(as8.data(), as8.length(), parsed, scheme_type, query_converter, output, new_parsed);
 +}
 diff --git a/url/url_util.cc b/url/url_util.cc
-index 001c50e72fd24..97476afbf56e3 100644
+index 9258cfcfada47..daf10e4c3b741 100644
 --- a/url/url_util.cc
 +++ b/url/url_util.cc
-@@ -291,6 +291,12 @@ bool DoCanonicalize(const CHAR* spec,
+@@ -277,6 +277,12 @@ bool DoCanonicalize(const CHAR* spec,
                                          charset_converter, output,
                                          output_parsed);
  

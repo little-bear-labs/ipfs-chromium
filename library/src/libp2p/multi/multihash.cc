@@ -88,16 +88,6 @@ Result Multihash::create(HashType type, ipfs::ByteView hash) {
   return Multihash{type, hash};
 }
 
-Result Multihash::createFromHex(std::string_view hex) {
-  auto result = unhex(hex);
-  if (result.has_value()) {
-    auto view = ipfs::ByteView{result.value().data(), result.value().size()};
-    return Multihash::createFromBytes(view);
-  } else {
-    return ipfs::unexpected<Error>(Error::INVALID_HEXADECIMAL_INPUT);
-  }
-}
-
 Result Multihash::createFromBytes(ipfs::ByteView b) {
   if (b.size() < kHeaderSize) {
     return ipfs::unexpected<Error>(Error::INPUT_TOO_SHORT);
@@ -134,10 +124,6 @@ const HashType& Multihash::getType() const {
 ipfs::ByteView Multihash::getHash() const {
   const auto& d = data();
   return ipfs::ByteView(d.bytes.data(), d.bytes.size()).subspan(d.hash_offset);
-}
-
-std::string Multihash::toHex() const {
-  return hex_upper(data().bytes);
 }
 
 std::vector<ipfs::Byte> const& Multihash::toBuffer() const {

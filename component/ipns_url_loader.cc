@@ -1,6 +1,6 @@
 #include "ipns_url_loader.h"
 
-#include "gateway_requests.h"
+#include "chromium_ipfs_context.h"
 #include "inter_request_state.h"
 
 #include "net/base/net_errors.h"

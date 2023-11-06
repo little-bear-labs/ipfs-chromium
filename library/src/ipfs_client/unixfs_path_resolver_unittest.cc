@@ -37,6 +37,18 @@ struct Api final : public ipfs::ContextApi {
                                   std::string const& url) const {
     throw 8;
   }
+  ipfs::IpnsCborEntry deserialize_cbor(ipfs::ByteView) const { return {}; }
+  bool verify_key_signature(ipfs::SigningKeyType,
+                            ipfs::ByteView signature,
+                            ipfs::ByteView data,
+                            ipfs::ByteView key_bytes) const {
+    return false;
+  }
+  void SendDnsTextRequest(std::string,
+                          DnsTextResultsCallback,
+                          DnsTextCompleteCallback) {}
+  void SendHttpRequest(ipfs::HttpRequestDescription,
+                       HttpCompleteCallback cb) const {}
   std::size_t head_size = 0UL;
   std::string MimeType(std::string ext,
                        std::string_view cont,

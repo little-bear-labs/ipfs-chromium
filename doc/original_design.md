@@ -90,7 +90,7 @@ graph TD;
     goodfree --NO--> badfree{"Are there any FREE that have not already TaskFailed this request?"} 
     badfree --NO--> anybusy{"Are there any BUSY gateways?"} 
     anybusy --YES--> wait(("Wait for pending requests to finish (return flow control)"))
-    badfree --YES--> selbf["Select the one with the fewest TaskFailed requests, initial priority tiebreaks"] 
+    badfree --YES--> selbf["Select the one with the fewest TaskFailed requests, initial parallel tiebreaks"] 
     selbf --> mark_busy["Mark the gateway as BUSY"]
     goodfree --YES--> selbf
     mark_busy --> send["Create and send an HTTP URLRequest"]
@@ -100,11 +100,11 @@ graph TD;
     resp[/"URL response"/] --> markfree["Mark the gateway as FREE"] --> success{"status=200 + body?"} 
     style resp fill:#FFE,color:black
     success --YES--> cancel["Cancel identical requests"] --> markgood["Mark the gateway as GOOD"] 
-    markgood --> incprio["Indicate to Gateways that this gateway's score/priority should be a bit higher"] 
+    markgood --> incprio["Indicate to Gateways that this gateway's score/parallel should be a bit higher"] 
     incprio ----> successed(["Return response (see previous diagram)"])
     style successed fill:#9CF,color:black
     success --NO--> addbad["Add the URL suffix to this gateway's set of failures."] 
-    addbad --> decprio[Indicate to Gateways that this gateway's score/priority should be a bit lower] --> selreq
+    addbad --> decprio[Indicate to Gateways that this gateway's score/parallel should be a bit lower] --> selreq
     anybusy --NO---> all_failed(["As all gateways have TaskFailed on a given request, report that failure"])
     style all_failed fill:#9CF,color:black
  ```

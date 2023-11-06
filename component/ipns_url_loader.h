@@ -39,7 +39,7 @@ class IpnsUrlLoader : public network::ResolveHostClientBase,
   mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote_;
   std::shared_ptr<IpfsUrlLoader> ipfs_loader_;
   raw_ptr<network::mojom::NetworkContext> network_context_;
-  std::shared_ptr<GatewayRequests> api_;
+  std::shared_ptr<ChromiumIpfsContext> api_;
   raw_ref<network::mojom::URLLoaderFactory> http_loader_;
 
  public:

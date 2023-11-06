@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index bdf2ec39d2c7d..63967792609cb 100644
+index 9feb694b4e410..fe16faf7a9fa3 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
 @@ -40,6 +40,7 @@ import("//rlz/buildflags/buildflags.gni")
@@ -10,7 +10,7 @@ index bdf2ec39d2c7d..63967792609cb 100644
  import("//third_party/protobuf/proto_library.gni")
  import("//third_party/webrtc/webrtc.gni")
  import("//third_party/widevine/cdm/widevine.gni")
-@@ -2645,6 +2646,10 @@ static_library("browser") {
+@@ -2657,6 +2658,10 @@ static_library("browser") {
        ]
      }
  
@@ -22,10 +22,10 @@ index bdf2ec39d2c7d..63967792609cb 100644
        deps += [ "//chrome/browser/screen_ai:screen_ai_dlc_installer" ]
      }
 diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
-index d8fd6c19e69c8..99d94dbfd214d 100644
+index aba92a8ce8422..e5b409742ae49 100644
 --- a/chrome/browser/about_flags.cc
 +++ b/chrome/browser/about_flags.cc
-@@ -211,6 +211,7 @@
+@@ -213,6 +213,7 @@
  #include "third_party/blink/public/common/features_generated.h"
  #include "third_party/blink/public/common/forcedark/forcedark_switches.h"
  #include "third_party/blink/public/common/switches.h"
@@ -33,7 +33,7 @@ index d8fd6c19e69c8..99d94dbfd214d 100644
  #include "ui/accessibility/accessibility_features.h"
  #include "ui/accessibility/accessibility_switches.h"
  #include "ui/base/ui_base_features.h"
-@@ -311,6 +312,10 @@
+@@ -314,6 +315,10 @@
  #include "extensions/common/switches.h"
  #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
  
@@ -44,7 +44,7 @@ index d8fd6c19e69c8..99d94dbfd214d 100644
  #if BUILDFLAG(ENABLE_PDF)
  #include "pdf/pdf_features.h"
  #endif
-@@ -9752,6 +9757,14 @@ const FeatureEntry kFeatureEntries[] = {
+@@ -9787,6 +9792,14 @@ const FeatureEntry kFeatureEntries[] = {
       flag_descriptions::kOmitCorsClientCertDescription, kOsAll,
       FEATURE_VALUE_TYPE(network::features::kOmitCorsClientCert)},
  
@@ -110,10 +110,10 @@ index 4c88614c68c25..f8bb12a3b0c2e 100644
  
    // Also check for schemes registered via registerProtocolHandler(), which
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
-index c1ba6f648e9be..2b613a5a62e5b 100644
+index cac5aa93883dc..c8beecf246eb2 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -228,6 +228,8 @@
+@@ -229,6 +229,8 @@
  #include "components/error_page/common/localized_error.h"
  #include "components/error_page/content/browser/net_error_auto_reloader.h"
  #include "components/google/core/common/google_switches.h"
@@ -122,7 +122,7 @@ index c1ba6f648e9be..2b613a5a62e5b 100644
  #include "components/keep_alive_registry/keep_alive_types.h"
  #include "components/keep_alive_registry/scoped_keep_alive.h"
  #include "components/language/core/browser/pref_names.h"
-@@ -363,6 +365,7 @@
+@@ -366,6 +368,7 @@
  #include "third_party/blink/public/common/switches.h"
  #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
  #include "third_party/blink/public/public_buildflags.h"
@@ -130,7 +130,7 @@ index c1ba6f648e9be..2b613a5a62e5b 100644
  #include "third_party/widevine/cdm/buildflags.h"
  #include "ui/base/clipboard/clipboard_format_type.h"
  #include "ui/base/l10n/l10n_util.h"
-@@ -486,6 +489,12 @@
+@@ -489,6 +492,12 @@
  #include "chrome/browser/fuchsia/chrome_browser_main_parts_fuchsia.h"
  #endif
  
@@ -143,7 +143,7 @@ index c1ba6f648e9be..2b613a5a62e5b 100644
  #if BUILDFLAG(IS_CHROMEOS)
  #include "base/debug/leak_annotations.h"
  #include "chrome/browser/apps/intent_helper/chromeos_disabled_apps_throttle.h"
-@@ -6150,12 +6159,23 @@ void ChromeContentBrowserClient::
+@@ -6170,12 +6179,23 @@ void ChromeContentBrowserClient::
          const absl::optional<url::Origin>& request_initiator_origin,
          NonNetworkURLLoaderFactoryMap* factories) {
  #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS) || \
@@ -169,7 +169,7 @@ index c1ba6f648e9be..2b613a5a62e5b 100644
  
  #if BUILDFLAG(IS_CHROMEOS_ASH)
    if (web_contents) {
-@@ -6297,6 +6317,11 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
+@@ -6317,6 +6337,11 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
    std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
        interceptors;
@@ -182,10 +182,10 @@ index c1ba6f648e9be..2b613a5a62e5b 100644
    interceptors.push_back(
        std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(
 diff --git a/chrome/browser/flag_descriptions.cc b/chrome/browser/flag_descriptions.cc
-index 0f9b20a5d4612..6aa0b7f62c9e2 100644
+index cc1f3549227e9..a4ab4f1e09ea2 100644
 --- a/chrome/browser/flag_descriptions.cc
 +++ b/chrome/browser/flag_descriptions.cc
-@@ -242,6 +242,11 @@ const char kEnableBenchmarkingDescription[] =
+@@ -248,6 +248,11 @@ const char kEnableBenchmarkingDescription[] =
      "after 3 restarts. On the third restart, the flag will appear to be off "
      "but the effect is still active.";
  
@@ -198,7 +198,7 @@ index 0f9b20a5d4612..6aa0b7f62c9e2 100644
      "Preloading Settings on Performance Page";
  const char kPreloadingOnPerformancePageDescription[] =
 diff --git a/chrome/browser/flag_descriptions.h b/chrome/browser/flag_descriptions.h
-index 2b88b03775c39..2899d99a1a60c 100644
+index 5dd5c631c33e2..e8b0deb43e13f 100644
 --- a/chrome/browser/flag_descriptions.h
 +++ b/chrome/browser/flag_descriptions.h
 @@ -22,6 +22,7 @@
@@ -209,7 +209,7 @@ index 2b88b03775c39..2899d99a1a60c 100644
  
  // This file declares strings used in chrome://flags. These messages are not
  // translated, because instead of end-users they target Chromium developers and
-@@ -160,6 +161,11 @@ extern const char kDownloadWarningImprovementsDescription[];
+@@ -165,6 +166,11 @@ extern const char kDownloadWarningImprovementsDescription[];
  extern const char kEnableBenchmarkingName[];
  extern const char kEnableBenchmarkingDescription[];
  
@@ -269,6 +269,19 @@ index 5273da5190277..12b28b86a4c00 100644
        case NsswitchReader::Service::kNis:
          RecordIncompatibleNsswitchReason(
              IncompatibleNsswitchReason::kIncompatibleService,
+diff --git a/third_party/blink/renderer/platform/weborigin/scheme_registry.cc b/third_party/blink/renderer/platform/weborigin/scheme_registry.cc
+index 4eadf46ea0c24..d62fc7fb14e01 100644
+--- a/third_party/blink/renderer/platform/weborigin/scheme_registry.cc
++++ b/third_party/blink/renderer/platform/weborigin/scheme_registry.cc
+@@ -67,7 +67,7 @@ class URLSchemesRegistry final {
+          // is considered secure. Additional checks are performed to ensure that
+          // other http pages are filtered out.
+         service_worker_schemes({"http", "https"}),
+-        fetch_api_schemes({"http", "https"}),
++        fetch_api_schemes({"http", "https", "ipfs", "ipns"}),
+         allowed_in_referrer_schemes({"http", "https"}) {
+     for (auto& scheme : url::GetCorsEnabledSchemes())
+       cors_enabled_schemes.insert(scheme.c_str());
 diff --git a/url/BUILD.gn b/url/BUILD.gn
 index c525c166979d6..ce2b1ae43c0a7 100644
 --- a/url/BUILD.gn

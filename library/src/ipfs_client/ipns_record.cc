@@ -1,5 +1,7 @@
 #include <ipfs_client/ipns_record.h>
 
+#include <ipfs_client/context_api.h>
+
 #include "log_macros.h"
 
 #if __has_include(<third_party/ipfs_client/ipns_record.pb.h>)
@@ -8,8 +10,8 @@
 #include "ipfs_client/ipns_record.pb.h"
 #endif
 
-// #include <libp2p/crypto/crypto_provider/crypto_provider_impl.hpp>
 #include <libp2p/crypto/hasher.hpp>
+#include <libp2p/multi/content_identifier.hpp>
 #include <libp2p/peer/peer_id.hpp>
 
 namespace {
@@ -28,16 +30,29 @@ bool matches(libp2p::multi::Multihash const& hash,
                     hash.getHash().end());
 }
 }  // namespace
+
+auto ipfs::ValidateIpnsRecord(ipfs::ByteView top_level_bytes,
+                              libp2p::multi::ContentIdentifier const& name,
+                              ContextApi& api) -> std::optional<IpnsCborEntry> {
+  DCHECK_EQ(name.content_type, libp2p::multi::MulticodecType::Code::LIBP2P_KEY);
+  if (name.content_type != libp2p::multi::MulticodecType::Code::LIBP2P_KEY) {
+    return {};
+  }
+  auto as_peer = libp2p::peer::PeerId::fromHash(name.content_address);
+  if (as_peer.has_value()) {
+    return ValidateIpnsRecord(top_level_bytes, as_peer.value(), api);
+  } else {
+    return {};
+  }
+}
 auto ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
                               libp2p::peer::PeerId const& name,
-                              CryptoSignatureVerifier verify,
-                              CborDeserializer dser)
-    -> std::optional<IpnsCborEntry> {
+                              ContextApi& api) -> std::optional<IpnsCborEntry> {
   // https://github.com/ipfs/specs/blob/main/ipns/IPNS.md#record-verification
 
   // Before parsing the protobuf, confirm that the serialized IpnsEntry bytes
   // sum to less than or equal to the size limit.
-  if (top_level_bytes.size() > 10240UL) {
+  if (top_level_bytes.size() > MAX_IPNS_PB_SERIALIZED_SIZE) {
     LOG(ERROR) << "IPNS record too large: " << top_level_bytes.size();
     return {};
   }
@@ -63,9 +78,10 @@ auto ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
   // the expiration date after which the IPNS record becomes invalid.
   DCHECK_EQ(entry.validitytype(), 0);
 
-  auto parsed = dser({reinterpret_cast<Byte const*>(entry.data().data()),
-                      entry.data().size()});
-  if (parsed.value != entry.value()) {
+  auto parsed =
+      api.deserialize_cbor({reinterpret_cast<Byte const*>(entry.data().data()),
+                            entry.data().size()});
+  if (entry.has_value() && parsed.value != entry.value()) {
     LOG(ERROR) << "CBOR contains value '" << parsed.value
                << "' but PB contains value '" << entry.value() << "'!";
     return {};
@@ -85,7 +101,7 @@ auto ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
     public_key = name.toMultihash().getHash();
   } else {
     LOG(ERROR) << "IPNS record contains no public key, and the IPNS name "
-               << name.toMultihash().toHex()
+               << name.toBase58()
                << " is a true hash, not identity. Validation impossible.";
     return {};
   }
@@ -101,8 +117,8 @@ auto ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
   ByteView signature{reinterpret_cast<ipfs::Byte const*>(signature_str.data()),
                      signature_str.size()};
   // https://specs.ipfs.tech/ipns/ipns-record/#record-verification
-  //  Create bytes for signature verification by concatenating ipns-signature:
-  //  prefix (bytes in hex: 69706e732d7369676e61747572653a) with raw CBOR bytes
+  //  Create bytes for signature verification by concatenating
+  //  ipto_hex(ns-signature://  prefix (bytes in hex: 69706e732d7369676e61747572653a) with raw CBOR bytes
   //  from IpnsEntry.data
   auto bytes_str = entry.data();
   bytes_str.insert(
@@ -111,13 +127,47 @@ auto ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
                  bytes_str.size()};
   ByteView key_bytes{reinterpret_cast<ipfs::Byte const*>(pk.data().data()),
                      pk.data().size()};
-  if (verify(pk.type(), signature, bytes, key_bytes)) {
-    LOG(INFO) << "Verification passed.";
-    return parsed;
-  } else {
+  if (!api.verify_key_signature(static_cast<SigningKeyType>(pk.type()),
+                                signature, bytes, key_bytes)) {
     LOG(ERROR) << "Verification failed!!";
     return {};
   }
+  // TODO check expiration date
+  LOG(INFO) << "V2 verification passed.";
+  // IpnsEntry.value must match IpnsEntry.data[Value]
+  if (entry.has_value() && entry.value() != parsed.value) {
+    LOG(ERROR) << "IPNS " << name.toBase58() << " has different values for V1("
+               << entry.value() << ") and V2(" << parsed.value << ')';
+    return {};
+  }
+  if (entry.has_validity() && entry.validity() != parsed.validity) {
+    LOG(ERROR) << "IPNS " << name.toBase58()
+               << " has different validity for V1(" << entry.validity()
+               << ") and V2(" << parsed.validity << ')';
+    return {};
+  }
+  if (entry.has_validitytype() &&
+      entry.validitytype() != static_cast<int>(parsed.validityType)) {
+    LOG(ERROR) << "IPNS " << name.toBase58()
+               << " has different validity types for V1("
+               << entry.validitytype() << ") and V2(" << parsed.validityType
+               << ')';
+    return {};
+  }
+  if (entry.has_sequence() && entry.sequence() != parsed.sequence) {
+    LOG(ERROR) << "IPNS " << name.toBase58()
+               << " has different validity types for V1(" << entry.sequence()
+               << ") and V2(" << parsed.sequence << ')';
+    return {};
+  }
+  if (entry.has_ttl() && entry.ttl() != parsed.ttl) {
+    LOG(ERROR) << "IPNS " << name.toBase58()
+               << " has different validity types for V1(" << entry.ttl()
+               << ") and V2(" << parsed.ttl << ')';
+    return {};
+  }
+  LOG(INFO) << "V1 verification also passes for " << name.toBase58();
+  return parsed;
 }
 
 ipfs::ValidatedIpns::ValidatedIpns() = default;
@@ -128,7 +178,7 @@ auto ipfs::ValidatedIpns::operator=(ValidatedIpns const&)
 ipfs::ValidatedIpns::ValidatedIpns(IpnsCborEntry const& e)
     : value{e.value}, sequence{e.sequence} {
   std::istringstream ss{e.validity};
-  std::tm t;
+  std::tm t = {};
   ss >> std::get_time(&t, "%Y-%m-%dT%H:%M:%S");
   long ttl = (e.ttl / 1'000'000'000UL) + 1;
   use_until = std::mktime(&t);

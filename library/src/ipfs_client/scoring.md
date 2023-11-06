@@ -25,7 +25,7 @@ It's an unsigned integer in two forms:
 When issuing a request to another gateway, it checks the gateways in descending-score order:
 * If the gateway already has a request for that data pending, or has already failed to return successfully, it's skipped.
 * If the gateways score is less than the number of pending requests currently sent to that gateway, it's skipped as it's considered already-too-busy
-* The "need" is generally calculated as the target number of gateways desired to be involved (based on request priority), subtracting the number of gateways currently processing a request for this data.
+* The "need" is generally calculated as the target number of gateways desired to be involved (based on request parallel), subtracting the number of gateways currently processing a request for this data.
 * If the "need" is less than half the count of pending requests on this gateway, it's skipped as it's simply not urgent enough to justify further overloading this gateway.
 
 

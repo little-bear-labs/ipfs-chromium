@@ -147,11 +147,10 @@ class Patcher:
         self.up_rels['electron-main'] = toks[i]
         return toks[i]
 
-
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
-        fuzz = 114
+        fuzz = 59877
         def check(version, version_set, s):
             i = as_int(version)
             by = (fuzz,0)
@@ -182,6 +181,25 @@ class Patcher:
         result.sort(reverse=True)
         return map(lambda x: x[1:], result)
 
+    def out_of_date(self, p):
+        with open(f'{self.pdir}/{p}.patch') as f:
+            lines = f.readlines()
+            fl = Patcher.file_lines(lines, 'chrome/browser/flag-metadata.json')
+            return '+    "name": "enable-ipfs",\n' in fl
+
+    @staticmethod
+    def file_lines(lines: list[str], path):
+        start = f'diff --git a/{path} b/{path}\n'
+        if not start in lines:
+            # print('Did not find',start,'in',lines)
+            return []
+        i = lines.index(start) + 1
+        #print(start,'found at',i)
+        for j in range(i, i + 9999):
+            if len(lines) == j or lines[j].startswith('diff --git'):
+                return lines[i:j]
+        return []
+
 
 if __name__ == '__main__':
     if argv[1] == 'apply':
@@ -200,5 +218,13 @@ if __name__ == '__main__':
                 rels = p.release_versions(chan, os)
                 for rel in rels:
                     print(chan, os, rel)
+    elif argv[1] == 'old':
+        pr = Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug')
+        if len(argv) > 2:
+            for p in argv[2:]:
+                print(p, pr.out_of_date(p))
+        else:
+            for p in pr.available():
+                print(p, pr.out_of_date(p))
     else:
         Patcher(*argv[1:]).create_patch_file()

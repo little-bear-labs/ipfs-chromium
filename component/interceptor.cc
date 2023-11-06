@@ -20,12 +20,15 @@ void Interceptor::MaybeCreateLoader(network::ResourceRequest const& req,
                                     content::BrowserContext* context,
                                     LoaderCallback loader_callback) {
   auto& state = InterRequestState::FromBrowserContext(context);
+  state.set_network_context(network_context_);
+  /*
   if (req.url.SchemeIs("ipns")) {
     auto ipns_loader = std::make_shared<IpnsUrlLoader>(
         state, req.url.host(), network_context_, *loader_factory_);
     std::move(loader_callback)
         .Run(base::BindOnce(&ipfs::IpnsUrlLoader::StartHandling, ipns_loader));
-  } else if (req.url.SchemeIs("ipfs")) {
+  } else */
+  if (req.url.SchemeIs("ipfs") || req.url.SchemeIs("ipns")) {
     auto hdr_str = req.headers.ToString();
     std::replace(hdr_str.begin(), hdr_str.end(), '\r', ' ');
     LOG(INFO) << req.url.spec() << " getting intercepted! Headers: \n"
@@ -35,8 +38,9 @@ void Interceptor::MaybeCreateLoader(network::ResourceRequest const& req,
         std::make_shared<ipfs::IpfsUrlLoader>(*loader_factory_, state);
     std::move(loader_callback)
         .Run(base::BindOnce(&ipfs::IpfsUrlLoader::StartRequest, loader));
+
   } else {
-    VLOG(1) << req.url.spec() << " has host '" << req.url.host()
+    VLOG(2) << req.url.spec() << " has host '" << req.url.host()
             << "' and is not being intercepted.";
     std::move(loader_callback).Run({});  // SEP
   }

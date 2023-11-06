@@ -1,6 +1,8 @@
 #ifndef IPFS_IPNS_RECORD_H_
 #define IPFS_IPNS_RECORD_H_
 
+#include <ipfs_client/ipns_cbor_entry.h>
+
 #include <vocab/byte_view.h>
 
 #if __has_include(<third_party/ipfs_client/keys.pb.h>)
@@ -15,32 +17,24 @@
 namespace libp2p::peer {
 class PeerId;
 }
+namespace libp2p::multi {
+struct ContentIdentifier;
+}
 
 namespace ipfs {
 
-/*!
- * \brief Parsed out data contained in the CBOR data of an IPNS record.
- */
-struct IpnsCborEntry {
-  std::string value;     ///< The "value" (target) the name points at
-  std::string validity;  ///< Value to compare for validity (i.e. expiration)
-  std::uint64_t validityType;  ///< Way to deterimine current validity
-  std::uint64_t sequence;  ///< Distinguish other IPNS records for the same name
-  std::uint64_t ttl;       ///< Recommended caching time
-};
+class ContextApi;
 
-using CborDeserializer = IpnsCborEntry(ByteView);
-
-using CryptoSignatureVerifier = bool(ipns::KeyType,
-                                     ByteView,
-                                     ByteView,
-                                     ByteView);
+constexpr static std::size_t MAX_IPNS_PB_SERIALIZED_SIZE = 10 * 1024;
 
 std::optional<IpnsCborEntry> ValidateIpnsRecord(
     ByteView top_level_bytes,
+    libp2p::multi::ContentIdentifier const& name,
+    ContextApi&);
+std::optional<IpnsCborEntry> ValidateIpnsRecord(
+    ByteView top_level_bytes,
     libp2p::peer::PeerId const& name,
-    CryptoSignatureVerifier,
-    CborDeserializer);
+    ContextApi&);
 
 /*!
  * \brief Data from IPNS record modulo the verification parts
