@@ -17,6 +17,7 @@ class IpfsChromium(ConanFile):
         'abseil/20230125.3',
         'boost/1.81.0',
         'gtest/1.13.0',
+        'nlohmann_json/3.11.2',
         'openssl/1.1.1t',
         _PB,
     ]

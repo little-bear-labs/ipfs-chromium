@@ -19,6 +19,7 @@
 
 namespace ipfs {
 class Block;
+class ContextApi;
 struct ValidatedIpns;
 }
 
@@ -40,6 +41,7 @@ using ResolveResult = std::variant<MoreDataNeeded, Response, ProvenAbsent>;
 class DagNode : public std::enable_shared_from_this<DagNode> {
  protected:
   std::vector<std::pair<std::string, Link>> links_;
+  std::shared_ptr<ContextApi> api_;
 
  public:
   using BlockLookup = std::function<NodePtr(std::string const&)>;
@@ -50,6 +52,8 @@ class DagNode : public std::enable_shared_from_this<DagNode> {
   virtual NodePtr rooted();
   virtual NodePtr deroot();
   virtual DirShard* as_hamt();  // Wish I had access to dynamic_cast
+
+  void set_api(std::shared_ptr<ContextApi>);
 
   static NodePtr fromBlock(Block const&);
   static NodePtr fromIpnsRecord(ValidatedIpns const&);

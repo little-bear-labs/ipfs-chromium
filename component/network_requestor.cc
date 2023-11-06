@@ -1,6 +1,6 @@
 #include "network_requestor.h"
 
-#include "gateway_requests.h"
+#include "chromium_ipfs_context.h"
 #include "inter_request_state.h"
 
 using Self = ipfs::NetworkRequestor;

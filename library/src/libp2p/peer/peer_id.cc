@@ -115,10 +115,6 @@ const std::vector<ipfs::Byte>& PeerId::toVector() const {
   return hash_.toBuffer();
 }
 
-std::string PeerId::toHex() const {
-  return hash_.toHex();
-}
-
 const multi::Multihash& PeerId::toMultihash() const {
   return hash_;
 }

@@ -1,10 +1,12 @@
 #include "inter_request_state.h"
 
-#include "gateway_requests.h"
+#include "chromium_ipfs_context.h"
 #include "network_requestor.h"
 
 #include "base/logging.h"
 #include "content/public/browser/browser_context.h"
+
+#include <ipfs_client/gw/default_requestor.h>
 
 #include <ipfs_client/dag_listener.h>
 #include <ipfs_client/ipfs_request.h>
@@ -26,10 +28,10 @@ auto Self::FromBrowserContext(content::BrowserContext* context)
   }
   base::SupportsUserData::Data* existing = context->GetUserData(user_data_key);
   if (existing) {
-    VLOG(1) << "Re-using existing IPFS state.";
+    VLOG(2) << "Re-using existing IPFS state.";
     return *static_cast<ipfs::InterRequestState*>(existing);
   }
-  LOG(INFO) << "Creating new IPFS state for this browser context.";
+  VLOG(1) << "Creating new IPFS state for this browser context.";
   auto owned = std::make_unique<ipfs::InterRequestState>(context->GetPath());
   ipfs::InterRequestState* raw = owned.get();
   context->SetUserData(user_data_key, std::move(owned));
@@ -59,12 +61,13 @@ auto Self::requestor() -> BlockRequestor& {
   }
   return requestor_;
 }
-std::shared_ptr<ipfs::GatewayRequests> Self::api() {
+std::shared_ptr<ipfs::ChromiumIpfsContext> Self::api() {
   auto existing = api_.lock();
   if (existing) {
     return existing;
   }
-  auto created = std::make_shared<ipfs::GatewayRequests>(*this);
+  auto created =
+      std::make_shared<ipfs::ChromiumIpfsContext>(*this, network_context_);
   api_ = created;
   auto t = std::time(nullptr);
   if (t - last_discovery_ > 300) {
@@ -90,7 +93,7 @@ void send_gateway_request(Self* me,
   struct DagListenerAdapter final : public ipfs::DagListener {
     std::shared_ptr<ipfs::gw::GatewayRequest> gw_req;
     std::string bytes;
-    std::shared_ptr<ipfs::GatewayRequests> api;
+    std::shared_ptr<ipfs::ChromiumIpfsContext> api;
     void ReceiveBlockBytes(std::string_view b) override {
       LOG(INFO) << "DagListenerAdapter::ReceiveBlockBytes(" << b.size() << "B)";
       bytes.assign(b);
@@ -119,25 +122,18 @@ void send_gateway_request(Self* me,
                 9, req);
   sched.IssueRequests(me->api());
 }
-std::string detect_mime(Self* me,
-                        std::string a,
-                        std::string_view b,
-                        std::string const& c) {
-  auto api = me->api();
-  return static_cast<ipfs::ContextApi*>(api.get())->MimeType(a, b, c);
-}
 }  // namespace
 
 auto Self::orchestrator() -> Orchestrator& {
   if (!orc_) {
     auto gwreq = [this](auto p) { send_gateway_request(this, p); };
-    auto mimer = [this](auto a, auto b, auto& c) {
-      return detect_mime(this, a, b, c);
-    };
-    orc_ = std::make_shared<Orchestrator>(gwreq, mimer);
+    auto rtor = gw::default_requestor(gateways().GenerateList(), api());
+    orc_ = std::make_shared<Orchestrator>(gwreq, rtor, api());
   }
   return *orc_;
 }
-
+void Self::set_network_context(raw_ptr<network::mojom::NetworkContext> val) {
+  network_context_ = val;
+}
 Self::InterRequestState(base::FilePath p) : disk_path_{p} {}
 Self::~InterRequestState() noexcept {}

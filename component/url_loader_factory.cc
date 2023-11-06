@@ -42,17 +42,19 @@ void ipfs::IpfsURLLoaderFactory::CreateLoaderAndStart(
   VLOG(1) << "IPFS subresource: case=" << scheme_
           << " url=" << request.url.spec();
   DCHECK(default_factory_);
-  if (scheme_ == "ipfs") {
+  if (scheme_ == "ipfs" || scheme_ == "ipns") {
     auto ptr = std::make_shared<IpfsUrlLoader>(
         *default_factory_, InterRequestState::FromBrowserContext(context_));
     ptr->StartRequest(ptr, request, std::move(loader), std::move(client));
-  } else if (scheme_ == "ipns") {
-    auto ptr = std::make_shared<IpnsUrlLoader>(
-        InterRequestState::FromBrowserContext(context_), request.url.host(),
-        network_context_, *default_factory_);
-    ptr->StartHandling(ptr, request, std::move(loader), std::move(client));
 
-  } else {
-    NOTREACHED();
-  }
+  } /* else if (scheme_ == "ipns") {
+     auto ptr = std::make_shared<IpnsUrlLoader>(
+         InterRequestState::FromBrowserContext(context_), request.url.host(),
+         network_context_, *default_factory_);
+     ptr->StartHandling(ptr, request, std::move(loader), std::move(client));
+
+   } else {
+     NOTREACHED();
+   }
+      */
 }

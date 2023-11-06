@@ -29,8 +29,7 @@ void ipfs::Scheduler::Enqueue(std::shared_ptr<ContextApi> api,
                               std::string_view accept,
                               Priority p,
                               std::shared_ptr<gw::GatewayRequest> top) {
-  LOG(INFO) << "Scheduler::Enqueue(...," << suffix << ',' << accept << ',' << p
-            << ')';
+  VLOG(1) << "Sched::EnQ(...," << suffix << ',' << accept << ',' << p << ')';
   if (!top) {
     LOG(ERROR) << "No IpfsRequest?";
   }

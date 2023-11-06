@@ -103,4 +103,11 @@ function(with_vocab target)
                 OpenSSL::Crypto
         )
     endif()
+    find_package(nlohmann_json)
+    if(nlohmann_json_FOUND)
+        target_link_libraries(${target}
+            PUBLIC
+                nlohmann_json::nlohmann_json
+        )
+    endif()
 endfunction()

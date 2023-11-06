@@ -1,18 +1,20 @@
-#include "gateway_requests.h"
+#include "chromium_ipfs_context.h"
 
+#include "block_http_request.h"
 #include "crypto_api.h"
 #include "inter_request_state.h"
 #include "ipns_cbor.h"
 
+#include <services/network/public/cpp/simple_url_loader.h>
 #include "base/strings/escape.h"
 #include "net/base/mime_sniffer.h"
 #include "net/base/mime_util.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 #include <ipfs_client/dag_block.h>
+#include <ipfs_client/ipfs_request.h>
 #include <ipfs_client/ipns_record.h>
 
 #include <libp2p/multi/content_identifier_codec.hpp>
@@ -20,7 +22,7 @@
 
 #include <base/logging.h>
 
-using Self = ipfs::GatewayRequests;
+using Self = ipfs::ChromiumIpfsContext;
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("ipfs_gateway_request", R"(
@@ -207,17 +209,10 @@ bool Self::ProcessResponse(BusyGateway& gw,
   auto duration = (end_time - start_time).InMillisecondsRoundedUp();
   if (cid.value().content_type ==
       libp2p::multi::MulticodecType::Code::LIBP2P_KEY) {
-    auto as_peer = libp2p::peer::PeerId::fromHash(cid.value().content_address);
-    if (!as_peer.has_value()) {
-      LOG(INFO) << cid_str
-                << " has the codec of being a libp2p key, like one would "
-                   "expect of a Peer ID, but it does not parse as a Peer ID.";
-      return false;
-    }
     auto* bytes = reinterpret_cast<Byte const*>(body->data());
-    auto record =
-        ValidateIpnsRecord({bytes, body->size()}, as_peer.value(),
-                           crypto_api::VerifySignature, ParseCborIpns);
+    //    auto record = ValidateIpnsRecord({bytes, body->size()},
+    //    as_peer.value(),          crypto_api::VerifySignature, ParseCborIpns);
+    auto record = ValidateIpnsRecord({bytes, body->size()}, cid.value(), *this);
     if (!record.has_value()) {
       LOG(ERROR) << "IPNS record failed to validate! From: " << gw.url();
       return false;
@@ -247,7 +242,9 @@ bool Self::ProcessResponse(BusyGateway& gw,
       auto& orc = state_->orchestrator();
       orc.add_node(cid_str, ipld::DagNode::fromBlock(block));
       if (gw.srcreq) {
-        orc.build_response(gw.srcreq->dependent);
+        if (gw.srcreq->dependent->ready_after()) {
+          orc.build_response(gw.srcreq->dependent);
+        }
       } else {
         LOG(ERROR) << "This BusyGateway with response has no top-level "
                       "IpfsRequest associated with it "
@@ -291,13 +288,14 @@ std::string Self::MimeType(std::string extension,
   } else {
     result.clear();
   }
-  if (net::SniffMimeType({content.data(), content.size()}, GURL{url}, result,
+  auto head_size = std::min(content.size(), 999'999UL);
+  if (net::SniffMimeType({content.data(), head_size}, GURL{url}, result,
                          net::ForceSniffFileUrlsForHtml::kDisabled, &result)) {
     VLOG(1) << "Got " << result << " from content of " << url;
   }
   if (result.empty() || result == "application/octet-stream") {
     // C'mon, man
-    net::SniffMimeTypeFromLocalData({content.data(), content.size()}, &result);
+    net::SniffMimeTypeFromLocalData({content.data(), head_size}, &result);
     LOG(INFO) << "Falling all the way back to content type " << result;
   }
   return result;
@@ -319,14 +317,49 @@ void Self::RequestByCid(std::string cid,
                  prio, {});
   sched_.IssueRequests(me);
 }
+void Self::SendDnsTextRequest(std::string host,
+                              DnsTextResultsCallback res,
+                              DnsTextCompleteCallback don) {
+  if (dns_reqs_.find(host) != dns_reqs_.end()) {
+    LOG(ERROR) << "Requested resolution of DNSLink host " << host
+               << " multiple times.";
+  }
+  auto don_wrap = [don, this, host]() {
+    don();
+    LOG(INFO) << "Finished resolving " << host << " via DNSLink";
+    dns_reqs_.erase(host);
+  };
+  dns_reqs_[host] = std::make_unique<DnsTxtRequest>(host, res, don_wrap,
+                                                    network_context_.get());
+}
+void Self::SendHttpRequest(HttpRequestDescription req_inf,
+                           HttpCompleteCallback cb) const {
+  DCHECK(loader_factory_);
+  auto ptr = std::make_shared<BlockHttpRequest>(req_inf, cb);
+  ptr->send(loader_factory_);
+}
+auto Self::deserialize_cbor(ByteView bytes) const -> IpnsCborEntry {
+  return ParseCborIpns(bytes);
+}
+bool Self::verify_key_signature(SigningKeyType t,
+                                ByteView signature,
+                                ByteView data,
+                                ByteView key_bytes) const {
+  return crypto_api::VerifySignature(static_cast<ipns::KeyType>(t), signature,
+                                     data, key_bytes);
+}
 
-Self::GatewayRequests(InterRequestState& state)
-    : state_{state},
+Self::ChromiumIpfsContext(
+    InterRequestState& state,
+    raw_ptr<network::mojom::NetworkContext> network_context)
+    : network_context_{network_context},
+      state_{state},
       sched_([this]() { return state_->gateways().GenerateList(); }) {}
-Self::~GatewayRequests() {
+Self::~ChromiumIpfsContext() {
   LOG(WARNING) << "API dtor - are all URIs loaded?";
 }
 
 Self::GatewayUrlLoader::GatewayUrlLoader(BusyGateway&& bg)
     : GatewayRequest(std::move(bg)) {}
 Self::GatewayUrlLoader::~GatewayUrlLoader() noexcept {}
+

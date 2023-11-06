@@ -2,6 +2,7 @@
     abseil/20220623.1
     boost/1.81.0
     gtest/1.13.0
+    nlohmann_json/3.11.2
     openssl/1.1.1t
     protobuf/3.21.4
 [options]

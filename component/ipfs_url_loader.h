@@ -15,7 +15,7 @@
 #include <list>
 
 namespace ipfs {
-class GatewayRequests;
+class ChromiumIpfsContext;
 class UnixFsPathResolver;
 }  // namespace ipfs
 
@@ -72,7 +72,7 @@ class IpfsUrlLoader final : public network::mojom::URLLoader,
   mojo::ScopedDataPipeProducerHandle pipe_prod_ = {};
   mojo::ScopedDataPipeConsumerHandle pipe_cons_ = {};
   bool complete_ = false;
-  std::shared_ptr<GatewayRequests> api_;
+  std::shared_ptr<ChromiumIpfsContext> api_;
   std::string original_url_;
   std::shared_ptr<ipfs::UnixFsPathResolver> resolver_;
   std::string partial_block_;

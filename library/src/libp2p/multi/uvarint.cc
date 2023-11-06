@@ -55,10 +55,6 @@ std::vector<ipfs::Byte> const& UVarint::toVector() const {
   return bytes_;
 }
 
-std::string UVarint::toHex() const {
-  return hex_upper(bytes_);
-}
-
 size_t UVarint::size() const {
   return bytes_.size();
 }

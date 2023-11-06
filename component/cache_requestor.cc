@@ -1,6 +1,6 @@
 #include "cache_requestor.h"
 
-#include "gateway_requests.h"
+#include "chromium_ipfs_context.h"
 #include "inter_request_state.h"
 
 #include <base/timer/timer.h>
