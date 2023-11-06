@@ -104,8 +104,8 @@ Problem overview</h1>
 <p>To date the dominant ways of sharing IPFS URLs, including linking to them, involve specifying a particular gateway.</p>
 <p>See <a href="https://docs.ipfs.tech/how-to/address-ipfs-on-web/#ipfs-addressing-in-brief">Addressing IPFS on the web</a></p>
 <p>This has a number of problems, from privacy to performance to availability. And of course it's largely subverted many of the reasons one may have chosen IPFS in the first place.</p>
-<p>The biggest problem with using <a href="https://docs.ipfs.tech/how-to/address-ipfs-on-web/#native-urls">IPFS-schemed URLs</a> (sometimes referred to as "Native URLs") is sharing them. Typically one cannot assume your audience has a native client available. For example, one will note that this document <em><em>about</em> IPFS URLs</em> has not yet linked to a document using such a URL. To see why, click <a href="ipfs://QmbKWyoaCK9nKDfSsNAkJQrbxMDLriyyqkXsTSSwt9B227/how-to/address-ipfs-on-web/#native-urls">this static version of the previous link</a></p>
-<p>A lesser problem with all existing addressing attempts: even if you're using an IPFS scheme, it's generally easier to get away with doing 1:1 rewriting of IPFS URLs to HTTP URLs. So <a href="https://ecosystem.ipfs.tech/?filters=enabled&amp;tags=ipfs-http-client,py-ipfs-http-client,js-ipfs-https-client,http-gateway">many projects</a> do just that, especially if those projects want to interact with a Web browser. This isn't as bad if the user can make their own choice of gateway and has access to information needed to make that decision wisely. But it's still leaving quite a lot of value on the table.</p>
+<p>The biggest problem with using <a href="https://docs.ipfs.tech/how-to/address-ipfs-on-web/#native-urls">Native URLs</a> is sharing them. Typically one cannot assume your audience has a native client available. For example, one will note that this document <em><em>about</em> IPFS URLs</em> has not yet linked to a document using such a URL. To see why, click <a href="ipfs://QmbKWyoaCK9nKDfSsNAkJQrbxMDLriyyqkXsTSSwt9B227/how-to/address-ipfs-on-web/#native-urls">this static version of the previous link</a></p>
+<p>A lesser problem with all existing addressing attempts: even if you're using native URLs, it's generally easier to get away with doing 1:1 rewriting of IPFS URLs to HTTP URLs. So <a href="https://ecosystem.ipfs.tech/?filters=enabled&amp;tags=ipfs-http-client,py-ipfs-http-client,js-ipfs-https-client,http-gateway">many projects</a> do just that. This is extra, especially true if those projects want to interact with a Web browser. This isn't as bad if the user can make their own choice of gateway and has access to information needed to make that decision wisely. But it's still leaving quite a lot on the table.</p>
 <h1><a class="anchor" id="autotoc_md22"></a>
 Some Sample Uses</h1>
 <h2><a class="anchor" id="autotoc_md23"></a>
@@ -150,13 +150,6 @@ Key differences with this approach</h1>
 </ul>
 <h1><a class="anchor" id="autotoc_md29"></a>
 Compatibility</h1>
-<p>At a high level, the most important features for compatibility are those analagous to <a href="https://specs.ipfs.tech/http-gateways/subdomain-gateway/">subdomain gateway</a> features, but implemented in the client obviating the need for a separate HTTP server, using data from <a href="https://specs.ipfs.tech/http-gateways/trustless-gateway/">trustless gateways</a>.</p>
-<p>As discussed in the proposal, for the purposes of cross-implementation compatibility, we'll seek a common subset of URLs that all implementations support. This implies a common universally-supported-as-input subset of:</p><ul>
-<li>Codec (in the CID field sense)</li>
-<li>Hash algo</li>
-<li>Multibase</li>
-</ul>
-<p>Implementations should also canonicalize URLs to a given case-insensitive multibase. To avoid user confusion, it would be wise if we all chose the same one.</p>
 <h1><a class="anchor" id="autotoc_md30"></a>
 This repository</h1>
 <p>This <a href="https://github.com/little-bear-labs/ipfs-chromium">git repository</a> contains an early experiment into implementing an integrated HTTP-based IPFS client. As implemented, this is a purely racing gateway, that uses a separate request for each node of each DAG. That same request is typically sent to multiple gateways, with the first verified response causing all others to be cancelled.</p>
