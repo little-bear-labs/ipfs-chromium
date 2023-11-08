@@ -66,6 +66,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="classipfs_1_1ContextApi-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -97,12 +98,26 @@ Collaboration diagram for ipfs::ContextApi:</div>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:add4038be9d6e47672e7bc91b6dc73071"><td class="memItemLeft" align="right" valign="top"><a id="add4038be9d6e47672e7bc91b6dc73071"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>HeaderAccess</b> = std::function&lt; std::string(std::string_view)&gt;</td></tr>
+<tr class="separator:add4038be9d6e47672e7bc91b6dc73071"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a773b06cd032369ec7951743814a013c5"><td class="memItemLeft" align="right" valign="top"><a id="a773b06cd032369ec7951743814a013c5"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>HttpCompleteCallback</b> = std::function&lt; void(std::int16_t, std::string_view, HeaderAccess)&gt;</td></tr>
+<tr class="separator:a773b06cd032369ec7951743814a013c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad08ae7fd02bbf270925cdc497193aee3"><td class="memItemLeft" align="right" valign="top"><a id="ad08ae7fd02bbf270925cdc497193aee3"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>DnsTextCompleteCallback</b> = std::function&lt; void(std::vector&lt; std::string &gt; const  &amp;)&gt;</td></tr>
+<tr class="separator:ad08ae7fd02bbf270925cdc497193aee3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae2f8055f3e06450f106b0b618d19cc77"><td class="memItemLeft" align="right" valign="top"><a id="ae2f8055f3e06450f106b0b618d19cc77"></a>
-virtual std::shared_ptr&lt; <a class="el" href="classipfs_1_1GatewayRequest.html">GatewayRequest</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ContextApi.html#ae2f8055f3e06450f106b0b618d19cc77">InitiateGatewayRequest</a> (<a class="el" href="classipfs_1_1BusyGateway.html">BusyGateway</a>)=0</td></tr>
-<tr class="memdesc:ae2f8055f3e06450f106b0b618d19cc77"><td class="mdescLeft">&#160;</td><td class="mdescRight">&lt; Send a single http request to its gateway as scheduled <br /></td></tr>
-<tr class="separator:ae2f8055f3e06450f106b0b618d19cc77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7862561c53ce2740251a6040e12005f7"><td class="memItemLeft" align="right" valign="top"><a id="a7862561c53ce2740251a6040e12005f7"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>SendHttpRequest</b> (std::string url, HttpCompleteCallback cb) const</td></tr>
+<tr class="separator:a7862561c53ce2740251a6040e12005f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f76fd4c2321b6535c004e985e18b9af"><td class="memItemLeft" align="right" valign="top"><a id="a2f76fd4c2321b6535c004e985e18b9af"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>SendDnsTextRequest</b> (std::string hostname, DnsTextCompleteCallback cb)</td></tr>
+<tr class="separator:a2f76fd4c2321b6535c004e985e18b9af"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67c029b3a659deeda252fbc0229e7cc4"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ContextApi.html#a67c029b3a659deeda252fbc0229e7cc4">MimeType</a> (std::string extension, std::string_view content, std::string const &amp;url) const =0</td></tr>
 <tr class="memdesc:a67c029b3a659deeda252fbc0229e7cc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine a mime type for a given file.  <a href="classipfs_1_1ContextApi.html#a67c029b3a659deeda252fbc0229e7cc4">More...</a><br /></td></tr>
 <tr class="separator:a67c029b3a659deeda252fbc0229e7cc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -112,6 +127,9 @@ virtual std::shared_ptr&lt; <a class="el" href="classipfs_1_1GatewayRequest.html
 <tr class="memitem:a1c7cb1d1a94d2ebf7dc67b82d9b7f419"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ContextApi.html#a1c7cb1d1a94d2ebf7dc67b82d9b7f419">Discover</a> (std::function&lt; void(std::vector&lt; std::string &gt;)&gt; cb)=0</td></tr>
 <tr class="memdesc:a1c7cb1d1a94d2ebf7dc67b82d9b7f419"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discover more gateways.  <a href="classipfs_1_1ContextApi.html#a1c7cb1d1a94d2ebf7dc67b82d9b7f419">More...</a><br /></td></tr>
 <tr class="separator:a1c7cb1d1a94d2ebf7dc67b82d9b7f419"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2f8055f3e06450f106b0b618d19cc77"><td class="memItemLeft" align="right" valign="top"><a id="ae2f8055f3e06450f106b0b618d19cc77"></a>
+virtual std::shared_ptr&lt; <a class="el" href="classipfs_1_1GatewayRequest.html">GatewayRequest</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>InitiateGatewayRequest</b> (<a class="el" href="classipfs_1_1BusyGateway.html">BusyGateway</a>)=0</td></tr>
+<tr class="separator:ae2f8055f3e06450f106b0b618d19cc77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface that provides functionality from whatever environment you're using this library in. </p>
@@ -241,8 +259,9 @@ virtual std::shared_ptr&lt; <a class="el" href="classipfs_1_1GatewayRequest.html
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>library/include/ipfs_client/<a class="el" href="context__api_8h_source.html">context_api.h</a></li>
+<li>library/src/ipfs_client/context_api.cc</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

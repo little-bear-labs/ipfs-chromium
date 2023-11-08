@@ -90,47 +90,51 @@ $(function() {
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>ipfs {</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">class </span>Block;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">struct </span>ValidatedIpns;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;}</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">namespace </span>ipfs::ipld {</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">class </span>DagNode;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">using</span> NodePtr = std::shared_ptr&lt;DagNode&gt;;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">class </span>DirShard;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="structipfs_1_1ipld_1_1MoreDataNeeded.html">   31</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structipfs_1_1ipld_1_1MoreDataNeeded.html">MoreDataNeeded</a> {</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  std::vector&lt;std::string&gt; ipfs_abs_paths_;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;};</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">enum class</span> ProvenAbsent {};</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">using</span> ResolveResult = std::variant&lt;MoreDataNeeded, Response, ProvenAbsent&gt;;</div>
-<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classipfs_1_1ipld_1_1DagNode.html">   40</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1ipld_1_1DagNode.html">DagNode</a> : <span class="keyword">public</span> std::enable_shared_from_this&lt;DagNode&gt; {</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  std::vector&lt;std::pair&lt;std::string, Link&gt;&gt; links_;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keyword">using</span> BlockLookup = std::function&lt;NodePtr(std::string <span class="keyword">const</span>&amp;)&gt;;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keyword">virtual</span> ResolveResult resolve(<a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> path,</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                                BlockLookup,</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                                std::string&amp; up_to_here) = 0;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keyword">virtual</span> NodePtr rooted();</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keyword">virtual</span> NodePtr deroot();</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="classipfs_1_1ipld_1_1DirShard.html">DirShard</a>* as_hamt();  <span class="comment">// Wish I had access to dynamic_cast</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keyword">static</span> NodePtr fromBlock(<a class="code" href="classipfs_1_1Block.html">Block</a> <span class="keyword">const</span>&amp;);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keyword">static</span> NodePtr fromIpnsRecord(<a class="code" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> <span class="keyword">const</span>&amp;);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;};</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;}  <span class="comment">// namespace ipfs::ipld</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_DAG_NODE_H_</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">class </span>ContextApi;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">struct </span>ValidatedIpns;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;}</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">namespace </span>ipfs::ipld {</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">class </span>DagNode;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">using</span> NodePtr = std::shared_ptr&lt;DagNode&gt;;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">class </span>DirShard;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="structipfs_1_1ipld_1_1MoreDataNeeded.html">   32</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structipfs_1_1ipld_1_1MoreDataNeeded.html">MoreDataNeeded</a> {</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  std::vector&lt;std::string&gt; ipfs_abs_paths_;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;};</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">enum class</span> ProvenAbsent {};</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">using</span> ResolveResult = std::variant&lt;MoreDataNeeded, Response, ProvenAbsent&gt;;</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="classipfs_1_1ipld_1_1DagNode.html">   41</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1ipld_1_1DagNode.html">DagNode</a> : <span class="keyword">public</span> std::enable_shared_from_this&lt;DagNode&gt; {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  std::vector&lt;std::pair&lt;std::string, Link&gt;&gt; links_;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  std::shared_ptr&lt;ContextApi&gt; api_;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keyword">using</span> BlockLookup = std::function&lt;NodePtr(std::string <span class="keyword">const</span>&amp;)&gt;;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keyword">virtual</span> ResolveResult resolve(<a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> path,</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                                BlockLookup,</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;                                std::string&amp; up_to_here) = 0;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keyword">virtual</span> NodePtr rooted();</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keyword">virtual</span> NodePtr deroot();</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="classipfs_1_1ipld_1_1DirShard.html">DirShard</a>* as_hamt();  <span class="comment">// Wish I had access to dynamic_cast</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordtype">void</span> set_api(std::shared_ptr&lt;ContextApi&gt;);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keyword">static</span> NodePtr fromBlock(<a class="code" href="classipfs_1_1Block.html">Block</a> <span class="keyword">const</span>&amp;);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keyword">static</span> NodePtr fromIpnsRecord(<a class="code" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> <span class="keyword">const</span>&amp;);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;};</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}  <span class="comment">// namespace ipfs::ipld</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_DAG_NODE_H_</span></div>
 <div class="ttc" id="aclassipfs_1_1Block_html"><div class="ttname"><a href="classipfs_1_1Block.html">ipfs::Block</a></div><div class="ttdoc">Something to which a CID may refer directly.</div><div class="ttdef"><b>Definition:</b> dag_block.h:32</div></div>
-<div class="ttc" id="aclassipfs_1_1ipld_1_1DagNode_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DagNode.html">ipfs::ipld::DagNode</a></div><div class="ttdoc">A block, an IPNS record, etc.</div><div class="ttdef"><b>Definition:</b> dag_node.h:40</div></div>
+<div class="ttc" id="aclassipfs_1_1ipld_1_1DagNode_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DagNode.html">ipfs::ipld::DagNode</a></div><div class="ttdoc">A block, an IPNS record, etc.</div><div class="ttdef"><b>Definition:</b> dag_node.h:41</div></div>
 <div class="ttc" id="aclassipfs_1_1ipld_1_1DirShard_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DirShard.html">ipfs::ipld::DirShard</a></div><div class="ttdef"><b>Definition:</b> directory_shard.h:7</div></div>
 <div class="ttc" id="astructipfs_1_1SlashDelimited_html"><div class="ttname"><a href="structipfs_1_1SlashDelimited.html">ipfs::SlashDelimited</a></div><div class="ttdef"><b>Definition:</b> slash_delimited.h:8</div></div>
 <div class="ttc" id="astructipfs_1_1ValidatedIpns_html"><div class="ttname"><a href="structipfs_1_1ValidatedIpns.html">ipfs::ValidatedIpns</a></div><div class="ttdoc">Data from IPNS record modulo the verification parts.</div><div class="ttdef"><b>Definition:</b> ipns_record.h:58</div></div>
-<div class="ttc" id="astructipfs_1_1ipld_1_1MoreDataNeeded_html"><div class="ttname"><a href="structipfs_1_1ipld_1_1MoreDataNeeded.html">ipfs::ipld::MoreDataNeeded</a></div><div class="ttdef"><b>Definition:</b> dag_node.h:31</div></div>
+<div class="ttc" id="astructipfs_1_1ipld_1_1MoreDataNeeded_html"><div class="ttname"><a href="structipfs_1_1ipld_1_1MoreDataNeeded.html">ipfs::ipld::MoreDataNeeded</a></div><div class="ttdef"><b>Definition:</b> dag_node.h:32</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
