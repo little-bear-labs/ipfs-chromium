@@ -83,9 +83,9 @@ Inheritance diagram for ipfs::ContextApi:</div>
 <div class="dyncontent">
 <div class="center"><img src="classipfs_1_1ContextApi__inherit__graph.png" border="0" usemap="#aipfs_1_1ContextApi_inherit__map" alt="Inheritance graph"/></div>
 <map name="aipfs_1_1ContextApi_inherit__map" id="aipfs_1_1ContextApi_inherit__map">
-<area shape="rect" title="Interface that provides functionality from whatever environment you&#39;re using this library in." alt="" coords="39,95,165,121"/>
-<area shape="rect" href="classipfs_1_1GatewayRequests.html" title=" " alt="" coords="16,169,188,196"/>
-<area shape="rect" title=" " alt="" coords="5,5,199,47"/>
+<area shape="rect" title="Interface that provides functionality from whatever environment you&#39;re using this library in." alt="" coords="41,95,167,121"/>
+<area shape="rect" href="classipfs_1_1ChromiumIpfsContext.html" title=" " alt="" coords="5,169,203,196"/>
+<area shape="rect" title=" " alt="" coords="7,5,201,47"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -106,18 +106,21 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>HeaderAccess</b> = s
 <tr class="memitem:a773b06cd032369ec7951743814a013c5"><td class="memItemLeft" align="right" valign="top"><a id="a773b06cd032369ec7951743814a013c5"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>HttpCompleteCallback</b> = std::function&lt; void(std::int16_t, std::string_view, HeaderAccess)&gt;</td></tr>
 <tr class="separator:a773b06cd032369ec7951743814a013c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad08ae7fd02bbf270925cdc497193aee3"><td class="memItemLeft" align="right" valign="top"><a id="ad08ae7fd02bbf270925cdc497193aee3"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>DnsTextCompleteCallback</b> = std::function&lt; void(std::vector&lt; std::string &gt; const  &amp;)&gt;</td></tr>
-<tr class="separator:ad08ae7fd02bbf270925cdc497193aee3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae91abb80059b783742776516ef0d6b3c"><td class="memItemLeft" align="right" valign="top"><a id="ae91abb80059b783742776516ef0d6b3c"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>DnsTextResultsCallback</b> = std::function&lt; void(std::vector&lt; std::string &gt; const  &amp;)&gt;</td></tr>
+<tr class="separator:ae91abb80059b783742776516ef0d6b3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a843c6115dc16c7466babf5053b0dc43d"><td class="memItemLeft" align="right" valign="top"><a id="a843c6115dc16c7466babf5053b0dc43d"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>DnsTextCompleteCallback</b> = std::function&lt; void(void)&gt;</td></tr>
+<tr class="separator:a843c6115dc16c7466babf5053b0dc43d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a7862561c53ce2740251a6040e12005f7"><td class="memItemLeft" align="right" valign="top"><a id="a7862561c53ce2740251a6040e12005f7"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>SendHttpRequest</b> (std::string url, HttpCompleteCallback cb) const</td></tr>
 <tr class="separator:a7862561c53ce2740251a6040e12005f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f76fd4c2321b6535c004e985e18b9af"><td class="memItemLeft" align="right" valign="top"><a id="a2f76fd4c2321b6535c004e985e18b9af"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>SendDnsTextRequest</b> (std::string hostname, DnsTextCompleteCallback cb)</td></tr>
-<tr class="separator:a2f76fd4c2321b6535c004e985e18b9af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4e579d451b60d325c5f6e9f5a2818f2"><td class="memItemLeft" align="right" valign="top"><a id="ad4e579d451b60d325c5f6e9f5a2818f2"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>SendDnsTextRequest</b> (std::string hostname, DnsTextResultsCallback, DnsTextCompleteCallback)=0</td></tr>
+<tr class="separator:ad4e579d451b60d325c5f6e9f5a2818f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67c029b3a659deeda252fbc0229e7cc4"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ContextApi.html#a67c029b3a659deeda252fbc0229e7cc4">MimeType</a> (std::string extension, std::string_view content, std::string const &amp;url) const =0</td></tr>
 <tr class="memdesc:a67c029b3a659deeda252fbc0229e7cc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine a mime type for a given file.  <a href="classipfs_1_1ContextApi.html#a67c029b3a659deeda252fbc0229e7cc4">More...</a><br /></td></tr>
 <tr class="separator:a67c029b3a659deeda252fbc0229e7cc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -168,7 +171,7 @@ virtual std::shared_ptr&lt; <a class="el" href="classipfs_1_1GatewayRequest.html
 </dl>
 <dl class="section note"><dt>Note</dt><dd>TRAILING SLASH (/) EXPECTED! </dd></dl>
 
-<p>Implemented in <a class="el" href="classipfs_1_1GatewayRequests.html#a5c5e252a6f60c994338445463379d0be">ipfs::GatewayRequests</a>.</p>
+<p>Implemented in <a class="el" href="classipfs_1_1ChromiumIpfsContext.html#a37de464cb24c823d4fc4f9e50c087e59">ipfs::ChromiumIpfsContext</a>.</p>
 
 </div>
 </div>

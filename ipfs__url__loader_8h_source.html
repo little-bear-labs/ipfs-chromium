@@ -86,7 +86,7 @@ $(function() {
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;list&gt;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>ipfs {</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">class </span>GatewayRequests;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">class </span>ChromiumIpfsContext;</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">class </span>UnixFsPathResolver;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
@@ -143,7 +143,7 @@ $(function() {
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  mojo::ScopedDataPipeProducerHandle pipe_prod_ = {};</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  mojo::ScopedDataPipeConsumerHandle pipe_cons_ = {};</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keywordtype">bool</span> complete_ = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  std::shared_ptr&lt;GatewayRequests&gt; api_;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  std::shared_ptr&lt;ChromiumIpfsContext&gt; api_;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  std::string original_url_;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  std::shared_ptr&lt;ipfs::UnixFsPathResolver&gt; resolver_;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  std::string partial_block_;</div>
