@@ -183,7 +183,7 @@ Gateway Request</h3>
 <div class="line">    goodfree --NO--&gt; badfree{&quot;Are there any FREE that have not already TaskFailed this request?&quot;} </div>
 <div class="line">    badfree --NO--&gt; anybusy{&quot;Are there any BUSY gateways?&quot;} </div>
 <div class="line">    anybusy --YES--&gt; wait((&quot;Wait for pending requests to finish (return flow control)&quot;))</div>
-<div class="line">    badfree --YES--&gt; selbf[&quot;Select the one with the fewest TaskFailed requests, initial priority tiebreaks&quot;] </div>
+<div class="line">    badfree --YES--&gt; selbf[&quot;Select the one with the fewest TaskFailed requests, initial parallel tiebreaks&quot;] </div>
 <div class="line">    selbf --&gt; mark_busy[&quot;Mark the gateway as BUSY&quot;]</div>
 <div class="line">    goodfree --YES--&gt; selbf</div>
 <div class="line">    mark_busy --&gt; send[&quot;Create and send an HTTP URLRequest&quot;]</div>
@@ -193,11 +193,11 @@ Gateway Request</h3>
 <div class="line">    resp[/&quot;URL response&quot;/] --&gt; markfree[&quot;Mark the gateway as FREE&quot;] --&gt; success{&quot;status=200 + body?&quot;} </div>
 <div class="line">    style resp fill:#FFE,color:black</div>
 <div class="line">    success --YES--&gt; cancel[&quot;Cancel identical requests&quot;] --&gt; markgood[&quot;Mark the gateway as GOOD&quot;] </div>
-<div class="line">    markgood --&gt; incprio[&quot;Indicate to Gateways that this gateway&#39;s score/priority should be a bit higher&quot;] </div>
+<div class="line">    markgood --&gt; incprio[&quot;Indicate to Gateways that this gateway&#39;s score/parallel should be a bit higher&quot;] </div>
 <div class="line">    incprio ----&gt; successed([&quot;Return response (see previous diagram)&quot;])</div>
 <div class="line">    style successed fill:#9CF,color:black</div>
 <div class="line">    success --NO--&gt; addbad[&quot;Add the URL suffix to this gateway&#39;s set of failures.&quot;] </div>
-<div class="line">    addbad --&gt; decprio[Indicate to Gateways that this gateway&#39;s score/priority should be a bit lower] --&gt; selreq</div>
+<div class="line">    addbad --&gt; decprio[Indicate to Gateways that this gateway&#39;s score/parallel should be a bit lower] --&gt; selreq</div>
 <div class="line">    anybusy --NO---&gt; all_failed([&quot;As all gateways have TaskFailed on a given request, report that failure&quot;])</div>
 <div class="line">    style all_failed fill:#9CF,color:black</div>
 </div><!-- fragment --><h2><a class="anchor" id="autotoc_md43"></a>

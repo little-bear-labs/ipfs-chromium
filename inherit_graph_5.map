@@ -1,3 +1,20 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$classipfs_1_1Gateway.html" title="A known http gateway serving up blocks &amp; IPNS records." alt="" coords="5,5,117,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,251,151,293"/>
+<area shape="rect" id="node2" href="$classipfs_1_1ContextApi.html" title="Interface that provides functionality from whatever environment you&#39;re using this library in." alt="" coords="253,259,379,285"/>
+<area shape="rect" id="node4" href="$classipfs_1_1DagListener.html" title="Implemented by things waiting on a particular path through a DAG." alt="" coords="250,309,382,336"/>
+<area shape="rect" id="node6" href="$classipfs_1_1NameListener.html" title="Implemented by classes that await IPNS and/or DNSLink resolution." alt="" coords="243,411,389,437"/>
+<area shape="rect" id="node8" href="$classipfs_1_1Orchestrator.html" title=" " alt="" coords="249,132,383,159"/>
+<area shape="rect" id="node9" href="$classipfs_1_1ipld_1_1DagNode.html" title="A block, an IPNS record, etc." alt="" coords="243,183,389,209"/>
+<area shape="rect" id="node3" href="$classipfs_1_1ChromiumIpfsContext.html" title=" " alt="" coords="481,309,679,336"/>
+<area shape="rect" id="node5" href="$classipfs_1_1IpfsUrlLoader.html" title=" " alt="" coords="509,360,651,387"/>
+<area shape="rect" id="node7" href="$classipfs_1_1IpnsUrlLoader.html" title=" " alt="" coords="508,411,652,437"/>
+<area shape="rect" id="node10" href="$classipfs_1_1ipld_1_1Chunk.html" title=" " alt="" coords="517,208,643,235"/>
+<area shape="rect" id="node11" href="$classipfs_1_1ipld_1_1DirShard.html" title=" " alt="" coords="509,259,651,285"/>
+<area shape="rect" id="node12" href="$classipfs_1_1ipld_1_1IpnsName.html" title=" " alt="" coords="504,5,656,32"/>
+<area shape="rect" id="node13" href="$classipfs_1_1ipld_1_1Root.html" title=" " alt="" coords="522,56,638,83"/>
+<area shape="rect" id="node14" href="$classipfs_1_1ipld_1_1SmallDirectory.html" title=" " alt="" coords="489,107,671,133"/>
+<area shape="rect" id="node15" href="$classipfs_1_1ipld_1_1UnixfsFile.html" title=" " alt="" coords="505,157,655,184"/>
+<area shape="rect" id="node16" title=" " alt="" coords="199,461,433,488"/>
+<area shape="rect" id="node17" href="$classipfs_1_1DnsTxtRequest.html" title=" " alt="" coords="503,461,657,488"/>
+<area shape="rect" id="node18" href="$classnetwork_1_1mojom_1_1URLLoader.html" title=" " alt="" coords="213,360,419,387"/>
 </map>

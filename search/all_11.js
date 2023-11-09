@@ -1,17 +1,15 @@
 var searchData=
 [
-  ['tablestruct_5fipfs_5f5fclient_5f2fipns_5f5frecord_5f2eproto_146',['TableStruct_ipfs_5fclient_2fipns_5frecord_2eproto',['../structTableStruct__ipfs__5fclient__2fipns__5frecord__2eproto.html',1,'']]],
-  ['tablestruct_5fipfs_5f5fclient_5f2fkeys_5f2eproto_147',['TableStruct_ipfs_5fclient_2fkeys_2eproto',['../structTableStruct__ipfs__5fclient__2fkeys__2eproto.html',1,'']]],
-  ['tablestruct_5fipfs_5f5fclient_5f2fpb_5f5fdag_5f2eproto_148',['TableStruct_ipfs_5fclient_2fpb_5fdag_2eproto',['../structTableStruct__ipfs__5fclient__2fpb__5fdag__2eproto.html',1,'']]],
-  ['tablestruct_5fipfs_5f5fclient_5f2funix_5f5ffs_5f2eproto_149',['TableStruct_ipfs_5fclient_2funix_5ffs_2eproto',['../structTableStruct__ipfs__5fclient__2funix__5ffs__2eproto.html',1,'']]],
-  ['task_150',['task',['../classipfs_1_1BusyGateway.html#a708a062f0d81df40a71624a02ff769dd',1,'ipfs::BusyGateway::task()'],['../classipfs_1_1GatewayRequest.html#a27d4f4d99ac3d9af1fe14bee32325ae9',1,'ipfs::GatewayRequest::task()']]],
-  ['taskcancelled_151',['TaskCancelled',['../classipfs_1_1Gateway.html#a6443a9ae266ab2029a9020080ab87e5f',1,'ipfs::Gateway']]],
-  ['taskcomplete_152',['TaskComplete',['../classipfs_1_1Scheduler.html#a86da3f2d1d2fade7c2179ae60d53077b',1,'ipfs::Scheduler']]],
-  ['taskfailed_153',['TaskFailed',['../classipfs_1_1Gateway.html#a5e14fea33a7960b0642e3e4d01ad6a7f',1,'ipfs::Gateway']]],
-  ['tasksuccess_154',['TaskSuccess',['../classipfs_1_1Gateway.html#a0f47cfa59d9758daa57883b2f54b1f45',1,'ipfs::Gateway']]],
-  ['todo_20list_155',['TODO list',['../md_doc_todo.html',1,'']]],
-  ['todo_20list_156',['Todo List',['../todo.html',1,'']]],
-  ['ttl_157',['ttl',['../structipfs_1_1IpnsCborEntry.html#a9ed80270b760af94c80aaff2ed3c7525',1,'ipfs::IpnsCborEntry']]],
-  ['type_158',['type',['../classipfs_1_1Block.html#a068a5ff05f02d811d1f7fb76f2e40674',1,'ipfs::Block']]],
-  ['type_159',['Type',['../classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e',1,'ipfs::Block']]]
+  ['scheduler_139',['Scheduler',['../classipfs_1_1Scheduler.html',1,'ipfs::Scheduler'],['../classipfs_1_1Scheduler.html#a41471b57a96e38d1e022ae5b21694ef5',1,'ipfs::Scheduler::Scheduler()']]],
+  ['scoring_140',['scoring',['../md_library_src_ipfs_client_scoring.html',1,'']]],
+  ['sequence_141',['sequence',['../structipfs_1_1IpnsCborEntry.html#ad8a4a90517e3370dff6a7193a6c58acd',1,'ipfs::IpnsCborEntry::sequence()'],['../structipfs_1_1ValidatedIpns.html#a2011a9f44bb95f9d130c72ba6644b4ba',1,'ipfs::ValidatedIpns::sequence()']]],
+  ['serialize_142',['Serialize',['../structipfs_1_1ValidatedIpns.html#ace2f45fb79408347deee98d8b90ddb57',1,'ipfs::ValidatedIpns']]],
+  ['serializedstoragehook_143',['SerializedStorageHook',['../classipfs_1_1BlockStorage.html#abfce56beba3484d42067349101bd868a',1,'ipfs::BlockStorage']]],
+  ['slashdelimited_144',['SlashDelimited',['../structipfs_1_1SlashDelimited.html',1,'ipfs']]],
+  ['smalldirectory_145',['SmallDirectory',['../classipfs_1_1ipld_1_1SmallDirectory.html',1,'ipfs::ipld']]],
+  ['step_146',['Step',['../classipfs_1_1UnixFsPathResolver.html#ae530dadb2b8806ed9d14b701ad062e4a',1,'ipfs::UnixFsPathResolver']]],
+  ['stoplistening_147',['StopListening',['../classipfs_1_1BlockStorage.html#aedca96e0978a421fc5d117d967eba22a',1,'ipfs::BlockStorage']]],
+  ['storage_148',['storage',['../classipfs_1_1unix__fs_1_1NodeHelper.html#a9411b7dc7699aefc97e36a4cef64ca10',1,'ipfs::unix_fs::NodeHelper']]],
+  ['store_149',['Store',['../classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5',1,'ipfs::BlockStorage']]],
+  ['success_150',['Success',['../classipfs_1_1BusyGateway.html#a7174447d442be540ba43e079bcee3c79',1,'ipfs::BusyGateway']]]
 ];
