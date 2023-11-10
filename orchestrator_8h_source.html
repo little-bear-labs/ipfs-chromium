@@ -91,8 +91,8 @@ $(function() {
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keyword">using</span> MimeDetection = std::function&lt;</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;      std::string(std::string, std::string_view, std::string <span class="keyword">const</span>&amp;)&gt;;</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classipfs_1_1Orchestrator.html">Orchestrator</a>(GatewayAccess,</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;      std::shared_ptr&lt;ContextApi&gt; = {},</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;      std::shared_ptr&lt;gw::Requestor&gt; request_handling_override = {});</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                        std::shared_ptr&lt;gw::Requestor&gt; requestor,</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                        std::shared_ptr&lt;ContextApi&gt; = {});</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keywordtype">void</span> build_response(std::shared_ptr&lt;IpfsRequest&gt;);</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keywordtype">void</span> add_node(std::string key, ipld::NodePtr);</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>

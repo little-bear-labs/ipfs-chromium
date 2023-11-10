@@ -106,7 +106,7 @@ $(function() {
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  };</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr&lt;network::mojom::URLLoaderFactory&gt;</a> loader_factory_ = <span class="keyword">nullptr</span>;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr&lt;network::mojom::NetworkContext&gt;</a> network_context_;  <span class="comment">// TODO initialize</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr&lt;network::mojom::NetworkContext&gt;</a> network_context_;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  raw_ref&lt;InterRequestState&gt; state_;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <a class="code" href="classipfs_1_1Scheduler.html">Scheduler</a> sched_;</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  std::function&lt;void(std::vector&lt;std::string&gt;)&gt; disc_cb_;</div>
@@ -144,22 +144,23 @@ $(function() {
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                    Priority);</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <a class="code" href="classipfs_1_1ChromiumIpfsContext.html">ChromiumIpfsContext</a>(<a class="code" href="classipfs_1_1InterRequestState.html">InterRequestState</a>&amp;);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  ~<a class="code" href="classipfs_1_1ChromiumIpfsContext.html">ChromiumIpfsContext</a>();</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordtype">void</span> SetLoaderFactory(network::mojom::URLLoaderFactory&amp;);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <a class="code" href="classipfs_1_1Scheduler.html">Scheduler</a>&amp; scheduler();</div>
-<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="classipfs_1_1ChromiumIpfsContext.html#a37de464cb24c823d4fc4f9e50c087e59">   80</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1ChromiumIpfsContext.html#a37de464cb24c823d4fc4f9e50c087e59">Discover</a>(std::function&lt;<span class="keywordtype">void</span>(std::vector&lt;std::string&gt;)&gt;) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;};</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_CHROMIUM_IPFS_CONTEXT_H_</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <a class="code" href="classipfs_1_1ChromiumIpfsContext.html">ChromiumIpfsContext</a>(<a class="code" href="classipfs_1_1InterRequestState.html">InterRequestState</a>&amp;,</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                      <a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr&lt;network::mojom::NetworkContext&gt;</a> network_context);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  ~<a class="code" href="classipfs_1_1ChromiumIpfsContext.html">ChromiumIpfsContext</a>();</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordtype">void</span> SetLoaderFactory(network::mojom::URLLoaderFactory&amp;);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <a class="code" href="classipfs_1_1Scheduler.html">Scheduler</a>&amp; scheduler();</div>
+<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="classipfs_1_1ChromiumIpfsContext.html#a37de464cb24c823d4fc4f9e50c087e59">   81</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1ChromiumIpfsContext.html#a37de464cb24c823d4fc4f9e50c087e59">Discover</a>(std::function&lt;<span class="keywordtype">void</span>(std::vector&lt;std::string&gt;)&gt;) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;};</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_CHROMIUM_IPFS_CONTEXT_H_</span></div>
 <div class="ttc" id="aclassipfs_1_1BusyGateway_html"><div class="ttname"><a href="classipfs_1_1BusyGateway.html">ipfs::BusyGateway</a></div><div class="ttdoc">RAII class embodying the assignment of a given task to a given gateway.</div><div class="ttdef"><b>Definition:</b> busy_gateway.h:30</div></div>
 <div class="ttc" id="aclassipfs_1_1ChromiumIpfsContext_html"><div class="ttname"><a href="classipfs_1_1ChromiumIpfsContext.html">ipfs::ChromiumIpfsContext</a></div><div class="ttdef"><b>Definition:</b> chromium_ipfs_context.h:29</div></div>
 <div class="ttc" id="aclassipfs_1_1ChromiumIpfsContext_html_a37de464cb24c823d4fc4f9e50c087e59"><div class="ttname"><a href="classipfs_1_1ChromiumIpfsContext.html#a37de464cb24c823d4fc4f9e50c087e59">ipfs::ChromiumIpfsContext::Discover</a></div><div class="ttdeci">void Discover(std::function&lt; void(std::vector&lt; std::string &gt;)&gt;) override</div><div class="ttdoc">Discover more gateways.</div></div>
 <div class="ttc" id="aclassipfs_1_1ContextApi_html"><div class="ttname"><a href="classipfs_1_1ContextApi.html">ipfs::ContextApi</a></div><div class="ttdoc">Interface that provides functionality from whatever environment you're using this library in.</div><div class="ttdef"><b>Definition:</b> context_api.h:44</div></div>
 <div class="ttc" id="aclassipfs_1_1GatewayRequest_html"><div class="ttname"><a href="classipfs_1_1GatewayRequest.html">ipfs::GatewayRequest</a></div><div class="ttdoc">Represents an issued request.</div><div class="ttdef"><b>Definition:</b> context_api.h:21</div></div>
-<div class="ttc" id="aclassipfs_1_1InterRequestState_html"><div class="ttname"><a href="classipfs_1_1InterRequestState.html">ipfs::InterRequestState</a></div><div class="ttdef"><b>Definition:</b> inter_request_state.h:21</div></div>
+<div class="ttc" id="aclassipfs_1_1InterRequestState_html"><div class="ttname"><a href="classipfs_1_1InterRequestState.html">ipfs::InterRequestState</a></div><div class="ttdef"><b>Definition:</b> inter_request_state.h:22</div></div>
 <div class="ttc" id="aclassipfs_1_1NetworkRequestor_html"><div class="ttname"><a href="classipfs_1_1NetworkRequestor.html">ipfs::NetworkRequestor</a></div><div class="ttdef"><b>Definition:</b> network_requestor.h:12</div></div>
 <div class="ttc" id="aclassipfs_1_1Scheduler_html"><div class="ttname"><a href="classipfs_1_1Scheduler.html">ipfs::Scheduler</a></div><div class="ttdoc">Matchmaker for Gateway &amp; Task.</div><div class="ttdef"><b>Definition:</b> scheduler.h:27</div></div>
 <div class="ttc" id="aclassipfs_1_1raw__ptr_html"><div class="ttname"><a href="classipfs_1_1raw__ptr.html">ipfs::raw_ptr&lt; network::mojom::URLLoaderFactory &gt;</a></div></div>

@@ -70,6 +70,7 @@ $(function() {
 <a href="#pro-types">Protected Types</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="#friends">Friends</a> &#124;
 <a href="classipfs_1_1gw_1_1Requestor-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">ipfs::gw::Requestor Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
@@ -80,11 +81,14 @@ Inheritance diagram for ipfs::gw::Requestor:</div>
 <div class="dyncontent">
 <div class="center"><img src="classipfs_1_1gw_1_1Requestor__inherit__graph.png" border="0" usemap="#aipfs_1_1gw_1_1Requestor_inherit__map" alt="Inheritance graph"/></div>
 <map name="aipfs_1_1gw_1_1Requestor_inherit__map" id="aipfs_1_1gw_1_1Requestor_inherit__map">
-<area shape="rect" title=" " alt="" coords="5,81,152,108"/>
-<area shape="rect" href="classipfs_1_1gw_1_1BlockRequestSplitter.html" title=" " alt="" coords="202,5,418,32"/>
-<area shape="rect" href="classipfs_1_1gw_1_1DnsLinkRequestor.html" title=" " alt="" coords="211,56,409,83"/>
-<area shape="rect" href="classipfs_1_1gw_1_1InlineRequestHandler.html" title=" " alt="" coords="200,107,420,133"/>
-<area shape="rect" href="classipfs_1_1gw_1_1UnlimitedGatewayHttpRequestor.html" title=" " alt="" coords="209,158,411,199"/>
+<area shape="rect" title=" " alt="" coords="240,132,387,159"/>
+<area shape="rect" href="classipfs_1_1gw_1_1BlockRequestSplitter.html" title=" " alt="" coords="443,5,659,32"/>
+<area shape="rect" href="classipfs_1_1gw_1_1DnsLinkRequestor.html" title=" " alt="" coords="451,56,650,83"/>
+<area shape="rect" href="classipfs_1_1gw_1_1GatewayHttpRequestor.html" title=" " alt="" coords="435,107,667,133"/>
+<area shape="rect" href="classipfs_1_1gw_1_1InlineRequestHandler.html" title=" " alt="" coords="441,157,661,184"/>
+<area shape="rect" href="classipfs_1_1gw_1_1RequestorPool.html" title=" " alt="" coords="463,208,638,235"/>
+<area shape="rect" href="classipfs_1_1gw_1_1TerminatingRequestor.html" title=" " alt="" coords="439,259,662,285"/>
+<area shape="rect" title=" " alt="" coords="5,125,192,166"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -92,8 +96,9 @@ Collaboration diagram for ipfs::gw::Requestor:</div>
 <div class="dyncontent">
 <div class="center"><img src="classipfs_1_1gw_1_1Requestor__coll__graph.png" border="0" usemap="#aipfs_1_1gw_1_1Requestor_coll__map" alt="Collaboration graph"/></div>
 <map name="aipfs_1_1gw_1_1Requestor_coll__map" id="aipfs_1_1gw_1_1Requestor_coll__map">
-<area shape="rect" title=" " alt="" coords="27,109,173,136"/>
-<area shape="rect" title=" " alt="" coords="5,5,195,47"/>
+<area shape="rect" title=" " alt="" coords="131,109,277,136"/>
+<area shape="rect" title=" " alt="" coords="5,5,192,47"/>
+<area shape="rect" title=" " alt="" coords="216,5,405,47"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -108,9 +113,14 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>request</b> (std::sha
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-types"></a>
 Protected Types</h2></td></tr>
-<tr class="memitem:a66cf8a5618dff338c24083a255cd5517"><td class="memItemLeft" align="right" valign="top"><a id="a66cf8a5618dff338c24083a255cd5517"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>HandleOutcome</b> { <b>NOT_HANDLED</b>
+<tr class="memitem:a66cf8a5618dff338c24083a255cd5517"><td class="memItemLeft" align="right" valign="top"><a id="a66cf8a5618dff338c24083a255cd5517"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>HandleOutcome</b> { <br />
+&#160;&#160;<b>NOT_HANDLED</b>
 , <b>PENDING</b>
 , <b>DONE</b>
+, <b>PARALLEL</b>
+, <br />
+&#160;&#160;<b>MAYBE_LATER</b>
+<br />
  }</td></tr>
 <tr class="separator:a66cf8a5618dff338c24083a255cd5517"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -146,6 +156,12 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a773155aabdea83458824db3654babcf5"><td class="memItemLeft" align="right" valign="top"><a id="a773155aabdea83458824db3654babcf5"></a>
 std::shared_ptr&lt; <a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>api_</b></td></tr>
 <tr class="separator:a773155aabdea83458824db3654babcf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
+Friends</h2></td></tr>
+<tr class="memitem:ad1fd44530412fc007772b89f83799b1b"><td class="memItemLeft" align="right" valign="top"><a id="ad1fd44530412fc007772b89f83799b1b"></a>
+class&#160;</td><td class="memItemRight" valign="bottom"><b>RequestorPool</b></td></tr>
+<tr class="separator:ad1fd44530412fc007772b89f83799b1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/gw/<a class="el" href="requestor_8h_source.html">requestor.h</a></li>
