@@ -110,16 +110,16 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>request</b> (std::sha
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pro_types_classipfs_1_1gw_1_1Requestor"><td colspan="2" onclick="javascript:toggleInherit('pro_types_classipfs_1_1gw_1_1Requestor')"><img src="closed.png" alt="-"/>&#160;Protected Types inherited from <a class="el" href="classipfs_1_1gw_1_1Requestor.html">ipfs::gw::Requestor</a></td></tr>
-<tr class="memitem:a66cf8a5618dff338c24083a255cd5517 inherit pro_types_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="a66cf8a5618dff338c24083a255cd5517"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>HandleOutcome</b> { <br />
-&#160;&#160;<b>NOT_HANDLED</b>
-, <b>PENDING</b>
-, <b>DONE</b>
-, <b>PARALLEL</b>
+<tr class="memitem:a879fa21c08df6c4831b5adf218ef6b83 inherit pro_types_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="a879fa21c08df6c4831b5adf218ef6b83"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>HandleOutcome</b> : char { <br />
+&#160;&#160;<b>NOT_HANDLED</b> = 'N'
+, <b>PENDING</b> = 'P'
+, <b>DONE</b> = 'D'
+, <b>PARALLEL</b> = 'L'
 , <br />
-&#160;&#160;<b>MAYBE_LATER</b>
+&#160;&#160;<b>MAYBE_LATER</b> = 'M'
 <br />
  }</td></tr>
-<tr class="separator:a66cf8a5618dff338c24083a255cd5517 inherit pro_types_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a879fa21c08df6c4831b5adf218ef6b83 inherit pro_types_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classipfs_1_1gw_1_1Requestor"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classipfs_1_1gw_1_1Requestor')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classipfs_1_1gw_1_1Requestor.html">ipfs::gw::Requestor</a></td></tr>
 <tr class="memitem:a7ede9018374c96ccf77a3c231902c1cf inherit pro_methods_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="a7ede9018374c96ccf77a3c231902c1cf"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>iterate_nodes</b> (<a class="el" href="structipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> const &amp;req, <a class="el" href="structipfs_1_1Response.html">Response</a> const &amp;res, std::function&lt; void(std::string, std::shared_ptr&lt; <a class="el" href="classipfs_1_1ipld_1_1DagNode.html">ipld::DagNode</a> &gt;)&gt;) const</td></tr>

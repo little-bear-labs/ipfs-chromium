@@ -92,12 +92,12 @@ $(function() {
 <div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="classipfs_1_1gw_1_1Requestor.html">   21</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1gw_1_1Requestor.html">Requestor</a> : <span class="keyword">public</span> std::enable_shared_from_this&lt;Requestor&gt; {</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; <span class="keyword">protected</span>:</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="classipfs_1_1gw_1_1RequestorPool.html">RequestorPool</a>;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keyword">enum class</span> HandleOutcome {</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    NOT_HANDLED,</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    PENDING,</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    DONE,</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    PARALLEL,</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    MAYBE_LATER</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keyword">enum class</span> HandleOutcome : char {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    NOT_HANDLED = <span class="charliteral">&#39;N&#39;</span>,</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    PENDING = <span class="charliteral">&#39;P&#39;</span>,</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    DONE = <span class="charliteral">&#39;D&#39;</span>,</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    PARALLEL = <span class="charliteral">&#39;L&#39;</span>,</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    MAYBE_LATER = <span class="charliteral">&#39;M&#39;</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  };</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keyword">virtual</span> HandleOutcome handle(RequestPtr) = 0;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keyword">virtual</span> std::string_view name() <span class="keyword">const</span> = 0;</div>
@@ -126,7 +126,7 @@ $(function() {
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;}  <span class="comment">// namespace ipfs::gw</span></div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_REQUESTOR_H_</span></div>
-<div class="ttc" id="aclassipfs_1_1gw_1_1RequestorPool_html"><div class="ttname"><a href="classipfs_1_1gw_1_1RequestorPool.html">ipfs::gw::RequestorPool</a></div><div class="ttdef"><b>Definition:</b> requestor_pool.h:7</div></div>
+<div class="ttc" id="aclassipfs_1_1gw_1_1RequestorPool_html"><div class="ttname"><a href="classipfs_1_1gw_1_1RequestorPool.html">ipfs::gw::RequestorPool</a></div><div class="ttdef"><b>Definition:</b> requestor_pool.h:9</div></div>
 <div class="ttc" id="aclassipfs_1_1gw_1_1Requestor_html"><div class="ttname"><a href="classipfs_1_1gw_1_1Requestor.html">ipfs::gw::Requestor</a></div><div class="ttdef"><b>Definition:</b> requestor.h:21</div></div>
 <div class="ttc" id="astructipfs_1_1Response_html"><div class="ttname"><a href="structipfs_1_1Response.html">ipfs::Response</a></div><div class="ttdef"><b>Definition:</b> response.h:10</div></div>
 <div class="ttc" id="astructipfs_1_1gw_1_1GatewayRequest_html"><div class="ttname"><a href="structipfs_1_1gw_1_1GatewayRequest.html">ipfs::gw::GatewayRequest</a></div><div class="ttdef"><b>Definition:</b> gateway_request.h:27</div></div>
