@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['httprequestdescription_67',['HttpRequestDescription',['../structipfs_1_1HttpRequestDescription.html',1,'ipfs']]]
+  ['httprequestdescription_66',['HttpRequestDescription',['../structipfs_1_1HttpRequestDescription.html',1,'ipfs']]]
 ];

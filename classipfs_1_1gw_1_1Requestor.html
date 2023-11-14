@@ -104,6 +104,9 @@ Collaboration diagram for ipfs::gw::Requestor:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:aabb9fbb4d0be489d4a71c898b0f995b1"><td class="memItemLeft" align="right" valign="top"><a id="aabb9fbb4d0be489d4a71c898b0f995b1"></a>
+virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>name</b> () const =0</td></tr>
+<tr class="separator:aabb9fbb4d0be489d4a71c898b0f995b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8e6f3a27dd66d7ea07118958462ff81"><td class="memItemLeft" align="right" valign="top"><a id="af8e6f3a27dd66d7ea07118958462ff81"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>request</b> (std::shared_ptr&lt; <a class="el" href="structipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> &gt;)</td></tr>
 <tr class="separator:af8e6f3a27dd66d7ea07118958462ff81"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -129,9 +132,6 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:ad30cae22004617553c29195aca469389"><td class="memItemLeft" align="right" valign="top"><a id="ad30cae22004617553c29195aca469389"></a>
 virtual HandleOutcome&#160;</td><td class="memItemRight" valign="bottom"><b>handle</b> (RequestPtr)=0</td></tr>
 <tr class="separator:ad30cae22004617553c29195aca469389"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aabb9fbb4d0be489d4a71c898b0f995b1"><td class="memItemLeft" align="right" valign="top"><a id="aabb9fbb4d0be489d4a71c898b0f995b1"></a>
-virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>name</b> () const =0</td></tr>
-<tr class="separator:aabb9fbb4d0be489d4a71c898b0f995b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ede9018374c96ccf77a3c231902c1cf"><td class="memItemLeft" align="right" valign="top"><a id="a7ede9018374c96ccf77a3c231902c1cf"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>iterate_nodes</b> (<a class="el" href="structipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> const &amp;req, <a class="el" href="structipfs_1_1Response.html">Response</a> const &amp;res, std::function&lt; void(std::string, std::shared_ptr&lt; <a class="el" href="classipfs_1_1ipld_1_1DagNode.html">ipld::DagNode</a> &gt;)&gt;) const</td></tr>
 <tr class="separator:a7ede9018374c96ccf77a3c231902c1cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
