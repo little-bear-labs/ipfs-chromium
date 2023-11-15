@@ -1,15 +1,19 @@
 var searchData=
 [
-  ['scheduler_134',['Scheduler',['../classipfs_1_1Scheduler.html',1,'ipfs::Scheduler'],['../classipfs_1_1Scheduler.html#a41471b57a96e38d1e022ae5b21694ef5',1,'ipfs::Scheduler::Scheduler()']]],
-  ['scoring_135',['scoring',['../md_library_src_ipfs_client_scoring.html',1,'']]],
-  ['sequence_136',['sequence',['../structipfs_1_1IpnsCborEntry.html#ad8a4a90517e3370dff6a7193a6c58acd',1,'ipfs::IpnsCborEntry::sequence()'],['../structipfs_1_1ValidatedIpns.html#a2011a9f44bb95f9d130c72ba6644b4ba',1,'ipfs::ValidatedIpns::sequence()']]],
-  ['serialize_137',['Serialize',['../structipfs_1_1ValidatedIpns.html#ace2f45fb79408347deee98d8b90ddb57',1,'ipfs::ValidatedIpns']]],
-  ['serializedstoragehook_138',['SerializedStorageHook',['../classipfs_1_1BlockStorage.html#abfce56beba3484d42067349101bd868a',1,'ipfs::BlockStorage']]],
-  ['slashdelimited_139',['SlashDelimited',['../structipfs_1_1SlashDelimited.html',1,'ipfs']]],
-  ['smalldirectory_140',['SmallDirectory',['../classipfs_1_1ipld_1_1SmallDirectory.html',1,'ipfs::ipld']]],
-  ['step_141',['Step',['../classipfs_1_1UnixFsPathResolver.html#ae530dadb2b8806ed9d14b701ad062e4a',1,'ipfs::UnixFsPathResolver']]],
-  ['stoplistening_142',['StopListening',['../classipfs_1_1BlockStorage.html#aedca96e0978a421fc5d117d967eba22a',1,'ipfs::BlockStorage']]],
-  ['storage_143',['storage',['../classipfs_1_1unix__fs_1_1NodeHelper.html#a9411b7dc7699aefc97e36a4cef64ca10',1,'ipfs::unix_fs::NodeHelper']]],
-  ['store_144',['Store',['../classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5',1,'ipfs::BlockStorage']]],
-  ['success_145',['Success',['../classipfs_1_1BusyGateway.html#a7174447d442be540ba43e079bcee3c79',1,'ipfs::BusyGateway']]]
+  ['raw_5fptr_125',['raw_ptr',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
+  ['raw_5fptr_3c_20ipfs_3a_3ablockstorage_20_3e_126',['raw_ptr&lt; ipfs::BlockStorage &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
+  ['raw_5fptr_3c_20ipfs_3a_3acontextapi_20_3e_127',['raw_ptr&lt; ipfs::ContextApi &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
+  ['raw_5fptr_3c_20ipfs_3a_3ascheduler_20_3e_128',['raw_ptr&lt; ipfs::Scheduler &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
+  ['raw_5fptr_3c_20ipfs_3a_3aunixfspathresolver_20_3e_129',['raw_ptr&lt; ipfs::UnixFsPathResolver &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
+  ['raw_5fptr_3c_20network_3a_3amojom_3a_3anetworkcontext_20_3e_130',['raw_ptr&lt; network::mojom::NetworkContext &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
+  ['raw_5fptr_3c_20network_3a_3amojom_3a_3aurlloaderfactory_20_3e_131',['raw_ptr&lt; network::mojom::URLLoaderFactory &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
+  ['readme_132',['README',['../md_component_README.html',1,'']]],
+  ['receiveblockbytes_133',['ReceiveBlockBytes',['../classipfs_1_1DagListener.html#aef396ef3a0ed6fcd6d0dcb862839197f',1,'ipfs::DagListener']]],
+  ['requestbycid_134',['RequestByCid',['../classipfs_1_1BlockRequestor.html#a925ee8cd1e6de64de3f40f3f90fe969e',1,'ipfs::BlockRequestor']]],
+  ['requestor_135',['Requestor',['../classipfs_1_1gw_1_1Requestor.html',1,'ipfs::gw']]],
+  ['requestorpool_136',['RequestorPool',['../classipfs_1_1gw_1_1RequestorPool.html',1,'ipfs::gw']]],
+  ['resolution_5fms_137',['resolution_ms',['../structipfs_1_1ValidatedIpns.html#a6b30cf75683f0a4e62d38dea2cca5696',1,'ipfs::ValidatedIpns']]],
+  ['resolver_138',['resolver',['../classipfs_1_1unix__fs_1_1NodeHelper.html#ad8e80b0ce6ff888639c58956eb3be0e4',1,'ipfs::unix_fs::NodeHelper']]],
+  ['response_139',['Response',['../structipfs_1_1Response.html',1,'ipfs']]],
+  ['root_140',['Root',['../classipfs_1_1ipld_1_1Root.html',1,'ipfs::ipld']]]
 ];
