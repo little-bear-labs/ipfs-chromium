@@ -6,7 +6,6 @@
 
 #include "ipfs_client/gateways.h"
 #include "ipfs_client/ipfs_request.h"
-#include "ipfs_client/unixfs_path_resolver.h"
 
 #include "base/debug/stack_trace.h"
 #include "base/notreached.h"
@@ -77,7 +76,7 @@ void ipfs::IpfsUrlLoader::StartRequest(
     auto cid_str = resource_request.url.host();
     auto path = resource_request.url.path();
     auto abs_path = "/" + ns + "/" + cid_str + path;
-    LOG(INFO) << resource_request.url.spec() << " -> " << abs_path;
+    VLOG(1) << resource_request.url.spec() << " -> " << abs_path;
     me->root_ = cid_str;
     me->api_->SetLoaderFactory(*(me->lower_loader_factory_));
     auto whendone = [me](IpfsRequest const& req, ipfs::Response const& res) {
@@ -87,7 +86,7 @@ void ipfs::IpfsUrlLoader::StartRequest(
         me->ReceiveBlockBytes(res.body_);
       }
       me->status_ = res.status_;
-      if (res.status_ / 100 == 4) {
+      if (res.status_ == Response::IMMUTABLY_GONE.status_) {
         auto p = req.path();
         p.pop();
         std::string cid{p.pop()};
@@ -101,17 +100,6 @@ void ipfs::IpfsUrlLoader::StartRequest(
     me->state_->orchestrator().build_response(req);
   } else {
     LOG(ERROR) << "Wrong scheme: " << resource_request.url.scheme();
-  }
-}
-
-void ipfs::IpfsUrlLoader::TakeStep() {
-  if (complete_) {
-    LOG(INFO) << "Timed step(" << original_url_ << "): done.";
-    stepper_->Stop();
-    stepper_.reset();
-  } else {
-    VLOG(2) << "Timed step(" << original_url_ << "): still going.";
-    resolver_->Step(shared_from_this());
   }
 }
 
@@ -137,7 +125,9 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   }
   complete_ = true;
   auto head = network::mojom::URLResponseHead::New();
-  head->mime_type = mime_type;
+  if (mime_type.size()) {
+    head->mime_type = mime_type;
+  }
   std::uint32_t byte_count = partial_block_.size();
   VLOG(1) << "Calling WriteData(" << byte_count << ")";
   pipe_prod_->WriteData(partial_block_.data(), &byte_count,
@@ -153,14 +143,13 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   auto* reason =
       net::GetHttpReasonPhrase(static_cast<net::HttpStatusCode>(status_));
   auto status_line = base::StringPrintf("HTTP/1.1 %d %s", status_, reason);
-  LOG(INFO) << "Returning with status line '" << status_line << "'.\n";
+  VLOG(1) << "Returning with status line '" << status_line << "'.\n";
   head->headers->ReplaceStatusLine(status_line);
-  head->headers->SetHeader("Content-Type", mime_type);
+  if (mime_type.size()) {
+    head->headers->SetHeader("Content-Type", mime_type);
+  }
   head->headers->SetHeader("Access-Control-Allow-Origin", "*");
   head->was_fetched_via_spdy = false;
-  if (resolver_) {
-    AppendGatewayHeaders(resolver_->involved_cids(), *head->headers);
-  }
   for (auto& [n, v] : additional_outgoing_headers_) {
     VLOG(1) << "Appending 'additional' header:" << n << '=' << v << '.';
     head->headers->AddHeader(n, v);
@@ -168,9 +157,8 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   VLOG(1) << "Calling PopulateParsedHeaders";
   head->parsed_headers =
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});
-  VLOG(1) << "Sending response for " << original_url_ << " with mime type "
-          << head->mime_type << " @" << (void*)(this)
-      ;
+  LOG(INFO) << "Sending response for " << original_url_ << " with mime type "
+            << head->mime_type << " and status line " << status_line;
   client_->OnReceiveResponse(std::move(head), std::move(pipe_cons_),
                              absl::nullopt);
   client_->OnComplete(network::URLLoaderCompletionStatus{});
@@ -193,10 +181,4 @@ void ipfs::IpfsUrlLoader::ReceiveBlockBytes(std::string_view content) {
   partial_block_.append(content);
   VLOG(2) << "Recived a block of size " << content.size() << " now have "
           << partial_block_.size() << " bytes.";
-}
-
-void ipfs::IpfsUrlLoader::AppendGatewayHeaders(
-    std::vector<std::string> const& cids,
-    net::HttpResponseHeaders& out) {
-  summarize_headers(cids, root_, out, state_->storage());
 }

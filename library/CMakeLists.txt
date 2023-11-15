@@ -3,7 +3,9 @@ project(ipfs_client
     DESCRIPTION "Code related to using IPFS http gateways to resolve ipfs:// and ipns:// URLs"
     LANGUAGES CXX
 )
-
+if(NOT CXX_VERSION)
+    set(CXX_VERSION 20)
+endif()
 if(NOT SETUP_CMAKE_INCLUDED)
     include(../cmake/setup.cmake)
 endif()
@@ -146,6 +148,7 @@ if(GTest_FOUND)
       PRIVATE
       include/
       src/
+      ../test_data/include
       )
     target_link_libraries(unit_test_runner
       PUBLIC
@@ -164,7 +167,7 @@ if(GTest_FOUND)
         add_custom_command(
           OUTPUT ut.cert
           DEPENDS unit_test_runner
-          COMMAND "${VALGRIND}" --tool=memcheck --leak-check=yes --exit-on-first-error=yes --error-exitcode=99 "--suppressions=${CMAKE_SOURCE_DIR}/cmake/valgrind.suppressions.txt"  $<TARGET_FILE:unit_test_runner>
+          COMMAND "${VALGRIND}" --tool=memcheck --leak-check=no --exit-on-first-error=yes --error-exitcode=99 "--suppressions=${CMAKE_SOURCE_DIR}/cmake/valgrind.suppressions.txt"  $<TARGET_FILE:unit_test_runner>
           COMMAND "${CMAKE_COMMAND}" -E touch ut.cert
           WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
         )

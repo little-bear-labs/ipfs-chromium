@@ -24,21 +24,19 @@ Self& Self::or_else(std::shared_ptr<Self> p) {
     next_ = p;
   }
   if (api_ && !p->api_) {
-    LOG(INFO) << name() << " granting context to " << p->name();
+    VLOG(1) << name() << " granting context to " << p->name();
     p->api_ = api_;
   }
   return *this;
 }
 
 void Self::request(ReqPtr req) {
-  if (!req) {
+  if (!req || req->type == Type::Zombie) {
     return;
   }
   switch (handle(req)) {
     case HandleOutcome::MAYBE_LATER:
-      if (!(req->retry_at)) {
-        req->retry_at = shared_from_this();
-      }
+      // TODO
       forward(req);
       break;
     case HandleOutcome::PARALLEL:
@@ -104,29 +102,18 @@ void Self::iterate_nodes(
 }
 void Self::receive_response(ipfs::gw::RequestPtr req,
                             ipfs::Response const& res) const {
-  if (!req->orchestrator) {
-    LOG(ERROR) << name() << ": Got response for " << req->debug_string()
-               << " but it doesn't have its orchestrator pointer set, so can't "
-                  "deliver response.";
-    return;
-  }
-  auto o = req->orchestrator;
-  iterate_nodes(*req, res,
-                [o](std::string k, ipld::NodePtr n) { o->add_node(k, n); });
   if (res.status_ / 100 == 2) {
-    req->orchestrator->build_response(req->dependent);
+    req->RespondSuccessfully(res.body_, api_.get());
   } else if (req->parallel == 0) {
-    if (req->retry_at) {
-      auto p = req->retry_at;
-      req->retry_at.reset();
-      p->request(req);
-    } else {
-      LOG(ERROR) << "Finally gave up on " << req->debug_string();
-    }
+    LOG(ERROR) << "Finally failing on " << req->debug_string();
+    definitive_failure(req);
   }
 }
 void Self::forward(ipfs::gw::RequestPtr req) const {
   if (next_) {
     next_->request(req);
   }
+}
+void Self::api(std::shared_ptr<ContextApi> a) {
+  api_ = a;
 }

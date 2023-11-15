@@ -1,7 +1,6 @@
 #ifndef IPFS_CONTEXT_API_H_
 #define IPFS_CONTEXT_API_H_
 
-#include "busy_gateway.h"
 #include "ipns_cbor_entry.h"
 #include "signing_key_type.h"
 
@@ -15,18 +14,6 @@
 namespace ipfs {
 class IpfsRequest;
 
-/*!
- * \brief Represents an issued request
- */
-class GatewayRequest {
- public:
-  BusyGateway gateway;  ///< The assignment
-
-  GatewayRequest(BusyGateway&&);  ///< Move-only
-  virtual ~GatewayRequest() noexcept;
-  std::string task() const;  ///< Same as gateway.task()
-  std::string url() const;   ///< Same as gateway.url()
-};
 
 struct HttpRequestDescription {
   std::string url;
@@ -34,6 +21,7 @@ struct HttpRequestDescription {
   std::string accept;
   std::optional<std::size_t> max_response_size;
   bool operator==(HttpRequestDescription const&) const;
+  bool operator<(HttpRequestDescription const&) const;
 };
 
 /**
@@ -99,9 +87,6 @@ class ContextApi : public std::enable_shared_from_this<ContextApi> {
    */
   virtual void Discover(std::function<void(std::vector<std::string>)> cb) = 0;
 
-  // TODO drop
-  virtual std::shared_ptr<GatewayRequest> InitiateGatewayRequest(
-      BusyGateway) = 0;
 };
 
 }  // namespace ipfs

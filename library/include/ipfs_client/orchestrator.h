@@ -19,8 +19,7 @@ class Orchestrator : public std::enable_shared_from_this<Orchestrator> {
       std::function<void(std::shared_ptr<gw::GatewayRequest>)>;
   using MimeDetection = std::function<
       std::string(std::string, std::string_view, std::string const&)>;
-  explicit Orchestrator(GatewayAccess,
-                        std::shared_ptr<gw::Requestor> requestor,
+  explicit Orchestrator(std::shared_ptr<gw::Requestor> requestor,
                         std::shared_ptr<ContextApi> = {});
   void build_response(std::shared_ptr<IpfsRequest>);
   bool add_node(std::string key, ipld::NodePtr);
@@ -28,7 +27,7 @@ class Orchestrator : public std::enable_shared_from_this<Orchestrator> {
 
  private:
   flat_map<std::string, ipld::NodePtr> dags_;
-  GatewayAccess gw_requestor_;
+  //  GatewayAccess gw_requestor_;
   std::shared_ptr<ContextApi> api_;
   std::shared_ptr<gw::Requestor> requestor_;
 

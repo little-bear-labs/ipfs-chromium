@@ -51,7 +51,7 @@ TEST(BlockTest, AdHoc) {
   std::for_each(directory_iterator("."), directory_iterator(), [](auto e) {
     if (is_regular_file(e) && e.path().extension() == ".block") {
       LOG(INFO) << e.path();
-      auto cid = Codec ::fromString(e.path().stem()).value();
+      auto cid = Codec::fromString(e.path().stem().string()).value();
       std::ifstream f{e.path()};
       std::stringstream buffer;
       buffer << f.rdbuf();

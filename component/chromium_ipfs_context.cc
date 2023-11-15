@@ -87,183 +87,6 @@ void Self::Discover(std::function<void(std::vector<std::string>)> cb) {
                "https://orchestrator.strn.pl/nodes/nearby";
   discovery_loader->DownloadToString(loader_factory_, std::move(bound), MB);
 }
-
-auto Self::InitiateGatewayRequest(BusyGateway assigned)
-    -> std::shared_ptr<GatewayRequest> {
-  auto url = assigned.url();
-
-  GOOGLE_DCHECK_GT(url.size(), 0U);
-  auto url_suffix = assigned.task();
-  auto req = std::make_unique<network::ResourceRequest>();
-  req->url = GURL{url};
-  req->priority = net::HIGHEST;  // TODO
-  if (!assigned.accept().empty()) {
-    req->headers.SetHeader("Accept", assigned.accept());
-  }
-  auto out = std::make_shared<GatewayUrlLoader>(std::move(assigned));
-  GOOGLE_DCHECK_GT(out->gateway->url_prefix().size(), 0U);
-  out->loader = network::SimpleURLLoader::Create(std::move(req),
-                                                 kTrafficAnnotation, FROM_HERE);
-  if (url.find("format=ipns-record") == std::string::npos) {
-    out->loader->SetTimeoutDuration(base::Seconds(32));
-  } else {
-    VLOG(1) << "Doing an IPNS record query, so giving it a long timeout.";
-    out->loader->SetTimeoutDuration(base::Seconds(256));
-  }
-  auto start_time = base::TimeTicks::Now();
-  //  out->listener = listener;
-  auto cb = base::BindOnce(&Self::OnResponse, base::Unretained(this),
-                           shared_from_this(), out, start_time);
-  DCHECK(loader_factory_);
-  // TODO - proper requesting with full features (SetPriority, etc.).
-  out->loader->DownloadToString(loader_factory_, std::move(cb), 2UL * MB);
-  return out;
-}
-void Self::OnResponse(std::shared_ptr<ContextApi> api,
-                      std::shared_ptr<GatewayUrlLoader> req,
-                      base::TimeTicks start_time,
-                      std::unique_ptr<std::string> body) {
-  auto sz = body ? body->size() : 0UL;
-  LOG(INFO) << "OnResponse(...," << start_time << ", " << sz << "B )";
-  DCHECK(req);
-  auto task = req->task();
-  if (task.empty()) {
-    LOG(ERROR) << "Got a response for an empty task!";
-    return;
-  }
-  auto url = req->url();
-  //  LOG(INFO) << "Got a response for " << task << " via " << url;
-  auto& bg = req->gateway;
-  auto& ldr = req->loader;
-  //  auto listener = req->listener;
-  if (ProcessResponse(bg, ldr.get(), body.get(), start_time)) {
-    LOG(INFO) << url << " success.";
-    bg.Success(state_->gateways(), shared_from_this());
-  } else {
-    LOG(INFO) << url << " failure.";
-    bg.Failure(state_->gateways(), shared_from_this());
-  }
-  VLOG(1) << "Recheck for more activity.";
-  state_->storage().CheckListening();
-  state_->scheduler().IssueRequests(api);
-}
-
-bool Self::ProcessResponse(BusyGateway& gw,
-                           network::SimpleURLLoader* ldr,
-                           std::string* body,
-                           base::TimeTicks start_time) {
-  auto end_time = base::TimeTicks::Now();
-  if (!gw) {
-    LOG(ERROR) << "No gateway.";
-    return false;
-  }
-  VLOG(2) << "ProcessResponse(" << gw.url() << ')';
-  if (!ldr) {
-    LOG(ERROR) << "No loader for processing " << gw.url();
-    return false;
-  }
-  if (!body) {
-    LOG(INFO) << "ProcessResponse(" << gw.url()
-              << ") Null body - presumably http error.\n";
-    return false;
-  }
-  network::mojom::URLResponseHead const* head = ldr->ResponseInfo();
-  if (!head) {
-    LOG(INFO) << "ProcessResponse(" << gw.url() << ") Null head.\n";
-    return false;
-  }
-  DCHECK(gw.url().find("?format=") < gw.url().size() || gw.accept().size() > 0);
-  std::string reported_content_type;
-  head->headers->EnumerateHeader(nullptr, "Content-Type",
-                                 &reported_content_type);
-  // application/vnd.ipld.raw
-  //  -- OR --
-  // application/vnd.ipfs.ipns-record
-  constexpr std::string_view content_type_prefix{"application/vnd.ip"};
-  if (reported_content_type.compare(0, content_type_prefix.size(),
-                                    content_type_prefix)) {
-    VLOG(1) << '\n'
-            << gw.url() << " reported a content type of "
-            << reported_content_type
-            << " strongly implying that it's a full request, not a single "
-               "block. TODO: Remove "
-               << gw->url_prefix() << " from list of gateways?\n";
-    state_->gateways().demote(gw->url_prefix());
-    return false;
-  }
-  auto cid_str = gw.task();
-  cid_str.erase(0, 5);  // ipfs/
-  auto qmark = cid_str.find('?');
-  if (qmark < cid_str.size()) {
-    cid_str.erase(qmark);
-  }
-  if (state_->storage().Get(cid_str)) {
-    // LOG(INFO) << "Got multiple successful responses for " << cid_str;
-    return true;
-  }
-  auto cid = libp2p::multi::ContentIdentifierCodec::fromString(cid_str);
-  if (!cid.has_value()) {
-    LOG(ERROR) << "Invalid CID '" << cid_str << "'.";
-    return false;
-  }
-  auto duration = (end_time - start_time).InMillisecondsRoundedUp();
-  if (cid.value().content_type ==
-      libp2p::multi::MulticodecType::Code::LIBP2P_KEY) {
-    auto* bytes = reinterpret_cast<Byte const*>(body->data());
-    //    auto record = ValidateIpnsRecord({bytes, body->size()},
-    //    as_peer.value(),          crypto_api::VerifySignature, ParseCborIpns);
-    auto record = ValidateIpnsRecord({bytes, body->size()}, cid.value(), *this);
-    if (!record.has_value()) {
-      LOG(ERROR) << "IPNS record failed to validate! From: " << gw.url();
-      return false;
-    }
-    LOG(INFO) << "IPNS record from " << gw.url() << " points " << cid_str
-              << " to " << record.value().value;
-    ValidatedIpns entry{record.value()};
-    entry.resolution_ms = duration;
-    entry.gateway_source = gw->url_prefix();
-    state_->names().AssignName(cid_str, std::move(entry));
-    scheduler().IssueRequests(shared_from_this());
-    return true;
-  } else {
-    Block block{cid.value(), *body};
-    if (block.cid_matches_data()) {
-      head->headers->SetHeader("Block-Source",
-                               cid_str + ", " + gw->url_prefix() + " @" +
-                                   std::to_string(std::time(nullptr)));
-      VLOG(1) << "L3: Storing CID=" << cid_str;
-      // Note this header is added _after_ storing in long-term cache
-      head->headers->SetHeader(
-          "Server-Timing",
-          "gateway-fetch-" + cid_str + ";desc=\"" + gw->url_prefix() +
-              " : load over http(s)\";dur=" + std::to_string(duration));
-      state_->storage().Store(cid_str, cid.value(),
-                              head->headers->raw_headers(), *body);
-      auto& orc = state_->orchestrator();
-      orc.add_node(cid_str, ipld::DagNode::fromBlock(block));
-      if (gw.srcreq) {
-        if (gw.srcreq->dependent->ready_after()) {
-          orc.build_response(gw.srcreq->dependent);
-        }
-      } else {
-        LOG(ERROR) << "This BusyGateway with response has no top-level "
-                      "IpfsRequest associated with it "
-                   << gw.url() << " " << gw.accept();
-      }
-      scheduler().IssueRequests(shared_from_this());
-      return true;
-    } else {
-      LOG(ERROR) << "You tried to store some bytes as a block for a CID ("
-                 << cid_str << ") that does not correspond to those bytes!";
-      // TODO ban the gateway outright
-      return false;
-    }
-  }
-}
-
-auto Self::scheduler() -> Scheduler& {
-  return sched_;
-}
 void Self::SetLoaderFactory(network::mojom::URLLoaderFactory& lf) {
   loader_factory_ = &lf;
   if (disc_cb_) {
@@ -308,15 +131,6 @@ std::string Self::UnescapeUrlComponent(std::string_view comp) const {
   VLOG(1) << "UnescapeUrlComponent(" << comp << ")->'" << result << "'";
   return result;
 }
-void Self::RequestByCid(std::string cid,
-                        std::shared_ptr<DagListener> listener,
-                        Priority prio) {
-  auto me = shared_from_this();
-  LOG(ERROR) << "Look out! RequestByCid(" << cid << ",...," << prio << ')';
-  sched_.Enqueue(me, listener, {}, "ipfs/" + cid, "application/vnd.ipld.raw",
-                 prio, {});
-  sched_.IssueRequests(me);
-}
 void Self::SendDnsTextRequest(std::string host,
                               DnsTextResultsCallback res,
                               DnsTextCompleteCallback don) {
@@ -352,14 +166,8 @@ bool Self::verify_key_signature(SigningKeyType t,
 Self::ChromiumIpfsContext(
     InterRequestState& state,
     raw_ptr<network::mojom::NetworkContext> network_context)
-    : network_context_{network_context},
-      state_{state},
-      sched_([this]() { return state_->gateways().GenerateList(); }) {}
+    : network_context_{network_context}, state_{state} {}
 Self::~ChromiumIpfsContext() {
   LOG(WARNING) << "API dtor - are all URIs loaded?";
 }
-
-Self::GatewayUrlLoader::GatewayUrlLoader(BusyGateway&& bg)
-    : GatewayRequest(std::move(bg)) {}
-Self::GatewayUrlLoader::~GatewayUrlLoader() noexcept {}
 

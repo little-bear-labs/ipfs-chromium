@@ -25,14 +25,13 @@ ipfs::GeneratedDirectoryListing::GeneratedDirectoryListing(
 }
 
 void ipfs::GeneratedDirectoryListing::AddEntry(std::string_view name) {
-  //  auto path = base_path_;
-  //  path.append(name);
-  //  AddLink(name, path);
-  AddLink(name, name);
+  auto path = base_path_;
+  path.append(name);
+  AddLink(name, path);
 }
 void ipfs::GeneratedDirectoryListing::AddLink(std::string_view name,
                                               std::string_view path) {
-  LOG(INFO) << "Adding link to generated index.html " << name << '=' << path;
+  VLOG(1) << "Adding link to generated index.html " << name << '=' << path;
   html_.append("      <li>\n")
       .append("        <a href='")
       .append(path)

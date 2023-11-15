@@ -9,7 +9,7 @@
 #include <base/memory/scoped_refptr.h>
 #include <base/time/time.h>
 
-#include <ipfs_client/block_requestor.h>
+#include <ipfs_client/gw/requestor.h>
 
 #include <memory>
 
@@ -18,18 +18,14 @@ namespace ipfs {
 class BlockStorage;
 class InterRequestState;
 
-class CacheRequestor : public BlockRequestor {
+class CacheRequestor : public gw::Requestor {
  public:
-  CacheRequestor(net::CacheType, InterRequestState&, base::FilePath);
-  virtual ~CacheRequestor() noexcept;
+  CacheRequestor(InterRequestState&, base::FilePath);
+  ~CacheRequestor() noexcept override;
   void Store(std::string cid, std::string headers, std::string body);
-  void FetchEntry(std::string key,
-                net::RequestPriority priority,
-                std::function<void(std::string_view, std::string_view)> hit,
-                std::function<void()> miss);
   void Expire(std::string const& key);
 
-  std::string_view name() const;
+  std::string_view name() const override;
 
  private:
   struct Task {
@@ -37,27 +33,19 @@ class CacheRequestor : public BlockRequestor {
     Task(Task const&);
     ~Task() noexcept;
     std::string key;
-    std::shared_ptr<DagListener> listener;
     base::TimeTicks start = base::TimeTicks::Now();
     std::string header;
     std::string body;
     scoped_refptr<net::IOBufferWithSize> buf;
     std::shared_ptr<disk_cache::Entry> entry;
-    std::function<void(std::string_view, std::string_view)> hit;
-    std::function<void()> miss;
+    gw::RequestPtr request;
 
     void SetHeaders(std::string_view);
-    void Fail();
   };
-  net::CacheType const type_;
   raw_ref<InterRequestState> state_;
   std::unique_ptr<disk_cache::Backend> cache_;
   bool pending_ = false;
   base::FilePath path_;
-
-  void RequestByCid(std::string cid,
-                    std::shared_ptr<DagListener>,
-                    Priority) override;
 
   void Start();
 
@@ -75,6 +63,8 @@ class CacheRequestor : public BlockRequestor {
                        std::string body,
                        std::shared_ptr<disk_cache::Entry> entry,
                        int);
+  void Miss(Task&);
+  HandleOutcome handle(RequestPtr) override;
 };
 }  // namespace ipfs
 

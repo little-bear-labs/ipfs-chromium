@@ -11,7 +11,6 @@
 #include <ipfs_client/dag_listener.h>
 #include <ipfs_client/ipfs_request.h>
 #include <ipfs_client/response.h>
-#include <ipfs_client/scheduler.h>
 
 using Self = ipfs::InterRequestState;
 
@@ -31,35 +30,11 @@ auto Self::FromBrowserContext(content::BrowserContext* context)
     VLOG(2) << "Re-using existing IPFS state.";
     return *static_cast<ipfs::InterRequestState*>(existing);
   }
-  VLOG(1) << "Creating new IPFS state for this browser context.";
+  VLOG(2) << "Creating new IPFS state for this browser context.";
   auto owned = std::make_unique<ipfs::InterRequestState>(context->GetPath());
   ipfs::InterRequestState* raw = owned.get();
   context->SetUserData(user_data_key, std::move(owned));
   return *raw;
-}
-auto Self::serialized_caches() -> std::array<decltype(mem_), 2> {
-  if (!mem_) {
-    auto p = mem_ = std::make_shared<CacheRequestor>(
-        net::CacheType::MEMORY_CACHE, *this, base::FilePath{});
-    storage().AddStorageHook(
-        [p](auto c, auto h, auto b) { p->Store(c, h, b); });
-  }
-  if (!dsk_) {
-    auto p = dsk_ = std::make_shared<CacheRequestor>(net::CacheType::DISK_CACHE,
-                                                     *this, disk_path_);
-    storage().AddStorageHook(
-        [p](auto c, auto h, auto b) { p->Store(c, h, b); });
-  }
-  return {mem_, dsk_};
-}
-auto Self::requestor() -> BlockRequestor& {
-  if (!requestor_.Valid()) {
-    serialized_caches();
-    requestor_.Add(mem_);
-    requestor_.Add(dsk_);
-    requestor_.Add(std::make_shared<NetworkRequestor>(*this));
-  }
-  return requestor_;
 }
 std::shared_ptr<ipfs::ChromiumIpfsContext> Self::api() {
   auto existing = api_.lock();
@@ -76,59 +51,17 @@ std::shared_ptr<ipfs::ChromiumIpfsContext> Self::api() {
   }
   return created;
 }
-auto Self::scheduler() -> Scheduler& {
-  auto api = api_.lock();
-  DCHECK(api);
-  return api->scheduler();
-}
-
-namespace {
-
-void send_gateway_request(Self* me,
-                          std::shared_ptr<ipfs::gw::GatewayRequest> req) {
-  if (!req->dependent) {
-    LOG(FATAL) << "This makes no sense whatsoever - why do you want to request "
-                  "things if nothing awaits.";
+auto Self::cache() -> std::shared_ptr<CacheRequestor>& {
+  if (!cache_) {
+    cache_ = std::make_shared<CacheRequestor>(*this, disk_path_);
   }
-  struct DagListenerAdapter final : public ipfs::DagListener {
-    std::shared_ptr<ipfs::gw::GatewayRequest> gw_req;
-    std::string bytes;
-    std::shared_ptr<ipfs::ChromiumIpfsContext> api;
-    void ReceiveBlockBytes(std::string_view b) override {
-      LOG(INFO) << "DagListenerAdapter::ReceiveBlockBytes(" << b.size() << "B)";
-      bytes.assign(b);
-    }
-    void BlocksComplete(std::string mime_type) override {
-      LOG(INFO) << "DagListenerAdapter::BlocksComplete(" << mime_type << ")";
-      ipfs::Response r{mime_type, 200, std::move(bytes), ""};
-      gw_req->dependent->finish(r);
-    }
-    void NotHere(std::string_view cid, std::string_view path) override {
-      LOG(INFO) << "DagListenerAdapter::NotHere(" << cid << ',' << path << ")";
-      api->scheduler().IssueRequests(api);
-    }
-    void DoesNotExist(std::string_view cid, std::string_view path) override {
-      LOG(INFO) << "DagListenerAdapter::DoesNotExist(" << cid << ',' << path
-                << ")";
-      ipfs::Response r{"", 404, "", ""};
-      gw_req->dependent->finish(r);
-    }
-  };
-  auto dl = std::make_shared<DagListenerAdapter>();
-  dl->api = me->api();
-  dl->gw_req = req;
-  auto& sched = me->scheduler();
-  sched.Enqueue(me->api(), dl, {}, req->url_suffix().substr(1), req->accept(),
-                9, req);
-  sched.IssueRequests(me->api());
+  return cache_;
 }
-}  // namespace
-
 auto Self::orchestrator() -> Orchestrator& {
   if (!orc_) {
-    auto gwreq = [this](auto p) { send_gateway_request(this, p); };
-    auto rtor = gw::default_requestor(gateways().GenerateList(), api());
-    orc_ = std::make_shared<Orchestrator>(gwreq, rtor, api());
+    auto rtor =
+        gw::default_requestor(gateways().GenerateList(), cache(), api());
+    orc_ = std::make_shared<Orchestrator>(rtor, api());
   }
   return *orc_;
 }

@@ -13,7 +13,7 @@ class IpnsName : public DagNode {
                         std::string& up_to_here) override;
 
  public:
-  IpnsName(std::string target_abs_path);
+  IpnsName(std::string_view target_abs_path);
   virtual ~IpnsName() noexcept {}
 };
 }  // namespace ipfs::ipld

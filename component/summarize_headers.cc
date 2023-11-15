@@ -4,7 +4,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 #include <ipfs_client/block_storage.h>
-
+/*
 void ipfs::summarize_headers(std::vector<std::string> const& cids,
                              std::string const& root,
                              net::HttpResponseHeaders& out,
@@ -103,3 +103,4 @@ void ipfs::summarize_headers(std::vector<std::string> const& cids,
     out.AddHeader("Ipfs-Block-Source", val.str());
   }
 }
+*/

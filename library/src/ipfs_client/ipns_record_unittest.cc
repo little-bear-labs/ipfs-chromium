@@ -40,10 +40,6 @@ struct Api final : public ipfs::ContextApi {
     return true;
   }
   void Discover(std::function<void(std::vector<std::string>)> cb) { throw 1; }
-  std::shared_ptr<ipfs::GatewayRequest> InitiateGatewayRequest(
-      ipfs::BusyGateway) {
-    throw 1;
-  }
   std::function<ipfs::IpnsCborEntry(ipfs::ByteView)> dser_;
   Api(std::function<ipfs::IpnsCborEntry(ipfs::ByteView)> f = {}) {
     if (f) {

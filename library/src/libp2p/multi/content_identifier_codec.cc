@@ -213,7 +213,7 @@ auto ContentIdentifierCodec::toStringOfBase(const ContentIdentifier& cid,
   return result;
 }
 
-auto ContentIdentifierCodec::fromString(const std::string& str)
+auto ContentIdentifierCodec::fromString(std::string_view str)
     -> ipfs::expected<ContentIdentifier, DecodeError> {
   if (str.size() < 2) {
     return ipfs::unexpected<DecodeError>{DecodeError::CID_TOO_SHORT};

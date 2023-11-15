@@ -47,7 +47,7 @@ class Block {
    * \note It's not really a string - certainly not text in any way.
    *    It's just a container of arbitrary bytes.
    */
-  Block(Cid const& cid, std::string const& bytes);
+  Block(Cid const& cid, std::string_view bytes);
 
   Block(Block const&);
   Block& operator=(Block const&) = default;

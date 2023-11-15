@@ -4,6 +4,7 @@
 #include <ipfs_client/gw/gateway_request.h>
 
 #include <ipfs_client/context_api.h>
+#include <vocab/raw_ptr.h>
 
 namespace network {
 struct ResourceRequest;

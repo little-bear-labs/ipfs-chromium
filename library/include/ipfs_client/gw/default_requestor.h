@@ -7,6 +7,7 @@
 
 namespace ipfs::gw {
 std::shared_ptr<Requestor> default_requestor(GatewayList,
+                                             std::shared_ptr<Requestor> early,
                                              std::shared_ptr<ContextApi>);
 }
 

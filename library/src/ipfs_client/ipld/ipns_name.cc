@@ -4,7 +4,8 @@
 
 using Self = ipfs::ipld::IpnsName;
 
-Self::IpnsName(std::string target_abs_path) : target_path_{target_abs_path} {}
+Self::IpnsName(std::string_view target_abs_path)
+    : target_path_{target_abs_path} {}
 
 auto Self::resolve(ipfs::SlashDelimited path,
                    ipfs::ipld::DagNode::BlockLookup blu,

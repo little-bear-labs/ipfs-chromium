@@ -14,6 +14,7 @@ struct Response {
   std::string location_;
 
   static Response PLAIN_NOT_FOUND;
+  static Response IMMUTABLY_GONE;
   static Response HOST_NOT_FOUND;
 
   constexpr static std::uint16_t HOST_NOT_FOUND_STATUS = 503;

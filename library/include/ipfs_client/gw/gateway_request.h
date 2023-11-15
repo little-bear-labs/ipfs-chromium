@@ -15,6 +15,9 @@
 namespace ipfs {
 class IpfsRequest;
 class Orchestrator;
+namespace ipld {
+class DagNode;
+}
 }  // namespace ipfs
 
 namespace ipfs::gw {
@@ -24,13 +27,17 @@ enum class Type { Block, Car, Ipns, DnsLink, Providers, Identity, Zombie };
 
 constexpr std::size_t BLOCK_RESPONSE_BUFFER_SIZE = 2 * 1024 * 1024;
 
-struct GatewayRequest {
+class GatewayRequest {
+  std::shared_ptr<Orchestrator> orchestrator_;
+  std::vector<std::function<void(std::string_view)>> bytes_received_hooks;
+
+  void ParseNodes(std::string_view, ContextApi* api);
+
+ public:
   Type type;
   std::string main_param;  ///< CID, IPNS name, hostname
   std::string path;        ///< For CAR requests
   std::shared_ptr<IpfsRequest> dependent;
-  std::shared_ptr<Orchestrator> orchestrator;
-  std::shared_ptr<Requestor> retry_at;
   std::optional<libp2p::multi::ContentIdentifier> cid;
   short parallel = 0;
   std::string affinity;
@@ -43,6 +50,9 @@ struct GatewayRequest {
   std::optional<std::size_t> max_response_size() const;
   std::optional<HttpRequestDescription> describe_http() const;
   std::string debug_string() const;
+  void orchestrator(std::shared_ptr<Orchestrator> const&);
+  bool RespondSuccessfully(std::string_view, ContextApi* api);
+  void Hook(std::function<void(std::string_view)>);
 
   static std::shared_ptr<GatewayRequest> fromIpfsPath(SlashDelimited);
 };

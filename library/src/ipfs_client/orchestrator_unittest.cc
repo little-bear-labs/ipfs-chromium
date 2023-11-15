@@ -22,12 +22,12 @@ using Success = i::Response;
 using Codec = libp2p::multi::ContentIdentifierCodec;
 
 namespace {
-struct FakeApi final : public ipfs::ContextApi {
+struct MockApi final : public ipfs::ContextApi {
   bool verify_key_signature(ipfs::SigningKeyType,
                             ipfs::ByteView signature,
                             ipfs::ByteView data,
                             ipfs::ByteView key_bytes) const {
-    return false;
+    return true;
   }
   std::string MimeType(std::string e,
                        std::string_view c,
@@ -46,10 +46,14 @@ struct FakeApi final : public ipfs::ContextApi {
   std::string UnescapeUrlComponent(std::string_view u) const {
     return std::string{u};
   }
-  ipfs::IpnsCborEntry deserialize_cbor(ipfs::ByteView) const { return {}; }
-  std::shared_ptr<ipfs::GatewayRequest> InitiateGatewayRequest(
-      ipfs::BusyGateway) {
-    return nullptr;
+  std::vector<ipfs::IpnsCborEntry> mutable ipns_entries;
+  ipfs::IpnsCborEntry deserialize_cbor(ipfs::ByteView) const {
+    if (ipns_entries.empty()) {
+      return {};
+    }
+    auto rv = ipns_entries[0];
+    ipns_entries.erase(ipns_entries.begin());
+    return rv;
   }
   void Discover(std::function<void(std::vector<std::string>)> cb) {}
   void SendDnsTextRequest(std::string,
@@ -62,7 +66,6 @@ struct TestRequestor final : public ig::Requestor {
   std::string_view name() const { return "return test requestor"; }
   HandleOutcome handle(ig::RequestPtr r) {
     auto cid = r->main_param;
-    auto orc_ = r->orchestrator;
     auto base_dir = std::filesystem::path{__FILE__};
     while (!is_directory(base_dir / "test_data" / "blocks") &&
            base_dir.generic_string().size() > 2) {
@@ -79,16 +82,21 @@ struct TestRequestor final : public ig::Requestor {
           auto ec = std::system(cmd.c_str());
           EXPECT_EQ(ec, 0);
         }
-        ipfs::ipns::IpnsEntry entry;
         std::ifstream fs{f};
-        auto parsed = entry.ParseFromIstream(&fs);
-        EXPECT_TRUE(parsed);
-        ipfs::ValidatedIpns testingnoneed2validate;
-        testingnoneed2validate.value = entry.value();
-        auto node = ii::DagNode::fromIpnsRecord(testingnoneed2validate);
-        orc_->add_node(cid, node);
+        std::string buf(std::filesystem::file_size(f) + 1, '\0');
+        fs.read(buf.data(), buf.size());
+        MockApi api;
+        ipfs::ipns::IpnsEntry entry;
+        EXPECT_TRUE(entry.ParseFromArray(buf.data(), buf.size() - 1));
+        api.ipns_entries.push_back({entry.value(), entry.validity(),
+                                    static_cast<unsigned>(entry.validitytype()),
+                                    entry.sequence(), entry.ttl()});
+        buf.resize(buf.size() - 1);
+        r->RespondSuccessfully(buf, &api);
       } break;
       case i::gw::Type::Car:
+        r->type = i::gw::Type::Block;
+        [[fallthrough]];
       case i::gw::Type::Block: {
         auto blocs_dir = base_dir / "test_data" / "blocks";
         EXPECT_TRUE(is_directory(blocs_dir));
@@ -96,10 +104,10 @@ struct TestRequestor final : public ig::Requestor {
         EXPECT_TRUE(is_regular_file(f)) << cid << " missing";
         if (is_regular_file(f)) {
           std::ifstream fs{f};
-          ipfs::Block block{Codec::fromString(cid).value(), fs};
-          EXPECT_TRUE(block.valid()) << f;
-          auto new_node = ii::DagNode::fromBlock(block);
-          orc_->add_node(cid, new_node);
+          std::string buf(std::filesystem::file_size(f) + 1, '\0');
+          fs.read(buf.data(), buf.size());
+          buf.resize(buf.size() - 1);
+          r->RespondSuccessfully(buf, api_.get());
         } else {
           auto cmd =
               "ipfs block get " + cid + " > '" + f.generic_string() + "'";
@@ -123,17 +131,17 @@ struct TestRequestor final : public ig::Requestor {
         std::ifstream fs{f};
         std::string target;
         std::getline(fs, target);
-        orc_->add_node(cid, std::make_shared<ipfs::ipld::IpnsName>(target));
+        r->RespondSuccessfully(target, api_.get());
       } break;
       default:
         return HandleOutcome::DONE;
     }
-    orc_->build_response(r->dependent);
+
     return HandleOutcome::DONE;
   }
 };
 struct OrchestratingRealData : public ::testing::Test {
-  std::shared_ptr<FakeApi> api_ = std::make_shared<FakeApi>();
+  std::shared_ptr<MockApi> api_ = std::make_shared<MockApi>();
   std::shared_ptr<i::Orchestrator> orc_;
   OrchestratingRealData() {
     auto f = [](auto) {};
@@ -141,8 +149,8 @@ struct OrchestratingRealData : public ::testing::Test {
     resp_.status_ = 0;
     resp_.mime_ = "uninit - no mime provided";
     resp_.location_ = "uninit";
-    orc_ = std::make_shared<i::Orchestrator>(
-        f, std::make_shared<TestRequestor>(), api_);
+    orc_ = std::make_shared<i::Orchestrator>(std::make_shared<TestRequestor>(),
+                                             api_);
   }
   i::Response resp_;
   void dorequest(std::string_view ipfs_path) {
@@ -236,14 +244,14 @@ TEST_F(OrchestratingRealData, examples_articles_generates_list) {
   EXPECT_EQ(resp_.status_, 200);
   EXPECT_EQ(resp_.mime_, "text/html");
   EXPECT_EQ(resp_.body_, R"(<html>
-  <title>/ipfs/QmQyqMY5vUBSbSxyitJqthgwZunCQjDVtNd8ggVCxzuPQ4/examples/articles/ (directory listing)</title>
+  <title>/examples/articles/ (directory listing)</title>
   <body>
     <ul>
       <li>
-        <a href='/ipfs/QmQyqMY5vUBSbSxyitJqthgwZunCQjDVtNd8ggVCxzuPQ4/examples/'>..</a>
+        <a href='/examples/'>..</a>
       </li>
       <li>
-        <a href='2022'>2022</a>
+        <a href='/examples/articles/2022'>2022</a>
       </li>
     </ul>
   </body>

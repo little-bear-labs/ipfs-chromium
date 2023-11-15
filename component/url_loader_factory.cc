@@ -2,7 +2,6 @@
 
 #include "inter_request_state.h"
 #include "ipfs_url_loader.h"
-#include "ipns_url_loader.h"
 
 void ipfs::IpfsURLLoaderFactory::Create(
     NonNetworkURLLoaderFactoryMap* in_out,
@@ -39,7 +38,7 @@ void ipfs::IpfsURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     net::MutableNetworkTrafficAnnotationTag const&  // traffic_annotation
 ) {
-  VLOG(1) << "IPFS subresource: case=" << scheme_
+  VLOG(2) << "IPFS subresource: case=" << scheme_
           << " url=" << request.url.spec();
   DCHECK(default_factory_);
   if (scheme_ == "ipfs" || scheme_ == "ipns") {

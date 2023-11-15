@@ -26,11 +26,11 @@ auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
 }
 auto Self::check(ipfs::gw::RequestPtr req, std::size_t start) -> HandleOutcome {
   using O = HandleOutcome;
-  if (req->type == Type::Zombie) {
-    return O::DONE;
-  }
   auto next_retry = pool.size();
   for (auto i = start; i < pool.size(); ++i) {
+    if (req->type == Type::Zombie) {
+      return O::DONE;
+    }
     auto& tor = pool[i];
     switch (tor->handle(req)) {
       case O::DONE:
@@ -51,7 +51,8 @@ auto Self::check(ipfs::gw::RequestPtr req, std::size_t start) -> HandleOutcome {
     }
   }
   if (req->parallel > 0) {
-    LOG(INFO) << req->parallel << " requestors have picked up the task.";
+    LOG(INFO) << req->parallel << " requestors have picked up the task "
+              << req->debug_string();
     return O::PENDING;
   }
   if (next_retry < pool.size()) {
@@ -60,7 +61,7 @@ auto Self::check(ipfs::gw::RequestPtr req, std::size_t start) -> HandleOutcome {
     waiting.emplace(req, next_retry);
     return O::PENDING;
   }
-  LOG(WARNING) << "Have exhausted all requestors in pool looking for "
-               << req->debug_string();
+  LOG(INFO) << "Have exhausted all requestors in pool looking for "
+            << req->debug_string();
   return O::NOT_HANDLED;
 }

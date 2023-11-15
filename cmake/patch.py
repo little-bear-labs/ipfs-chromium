@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-
+import sys
 from os import listdir, remove
 from os.path import dirname, join, realpath, splitext
 from subprocess import check_call, check_output
@@ -150,7 +150,7 @@ class Patcher:
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
-        fuzz = 59877
+        fuzz = 59878
         def check(version, version_set, s):
             i = as_int(version)
             by = (fuzz,0)
@@ -182,10 +182,19 @@ class Patcher:
         return map(lambda x: x[1:], result)
 
     def out_of_date(self, p):
-        with open(f'{self.pdir}/{p}.patch') as f:
+        file_path = f'{self.pdir}/{p}.patch'
+        with open(file_path) as f:
             lines = f.readlines()
-            fl = Patcher.file_lines(lines, 'chrome/browser/flag-metadata.json')
-            return '+    "name": "enable-ipfs",\n' in fl
+            if not Patcher.has_file_line(lines, 'chrome/browser/flag-metadata.json', '+    "name": "enable-ipfs",'):
+                print(p, 'does not have enable-ipfs in flag-metadata.json', file_path, file=sys.stderr)
+                return True
+        return False
+
+    @staticmethod
+    def has_file_line(lines: list[str], path: str, line: str):
+        fl = Patcher.file_lines(lines, path)
+        return (line + '\n') in fl
+
 
     @staticmethod
     def file_lines(lines: list[str], path):
@@ -194,11 +203,16 @@ class Patcher:
             # print('Did not find',start,'in',lines)
             return []
         i = lines.index(start) + 1
-        #print(start,'found at',i)
         for j in range(i, i + 9999):
             if len(lines) == j or lines[j].startswith('diff --git'):
                 return lines[i:j]
         return []
+
+    def list_ood(self, to_check: list[str], sense: bool):
+        to_check.sort()
+        for p in to_check:
+            if self.out_of_date(p) == sense:
+                print(p)
 
 
 if __name__ == '__main__':
@@ -221,10 +235,26 @@ if __name__ == '__main__':
     elif argv[1] == 'old':
         pr = Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug')
         if len(argv) > 2:
-            for p in argv[2:]:
-                print(p, pr.out_of_date(p))
+            pr.list_ood(argv[2:], True)
         else:
-            for p in pr.available():
-                print(p, pr.out_of_date(p))
+            pr.list_ood(list(pr.available()), True)
+    elif argv[1] == 'new':
+        pr = Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug')
+        if len(argv) > 2:
+            pr.list_ood(argv[2:], False)
+        else:
+            pr.list_ood(list(pr.available()), False)
+    elif argv[1] == 'git':
+        pr = Patcher(realpath(join(dirname(__file__), '..')), 'git', 'Debug')
+        pre = '?? component/patches/'
+        suf = 'patch'
+        for line in pr.git(['status','--porcelain']).splitlines():
+            if line.startswith(pre) and line.endswith(suf):
+                end = len(line) - len(suf) - 1
+                pch = line[len(pre):end]
+                if pr.out_of_date(pch):
+                    exit(9)
+                else:
+                    pr.git(['add', line[3:]])
     else:
         Patcher(*argv[1:]).create_patch_file()

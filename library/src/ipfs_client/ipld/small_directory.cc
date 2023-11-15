@@ -24,10 +24,12 @@ auto Self::resolve(SlashDelimited path, BlockLookup blu, std::string& to_here)
     -> ResolveResult {
   if (!path) {
     LOG(INFO) << "Directory listing requested.";
-    GeneratedDirectoryListing index_html{to_here};
+    SlashDelimited dir_path{to_here};
+    dir_path.pop_n(2);
+    GeneratedDirectoryListing index_html{dir_path.to_string()};
     for (auto& [name, link] : links_) {
-      LOG(INFO) << "Listing " << to_here << " encountered " << name << '='
-                << link.cid;
+      VLOG(1) << "Listing " << dir_path.to_string() << " encountered " << name
+              << '=' << link.cid;
       if (name == "index.html") {
         auto& n = node(link, blu);
         if (n) {
@@ -47,12 +49,12 @@ auto Self::resolve(SlashDelimited path, BlockLookup blu, std::string& to_here)
     return Response{"text/html", 200, index_html.Finish(), ""};
   }
   auto name = api_->UnescapeUrlComponent(path.pop());
-  LOG(INFO) << "Looking for '" << name << "' in directory.";
+  VLOG(1) << "Looking for '" << name << "' in directory " << to_here;
   // TODO binary search
   auto match = [&name](auto& l) { return l.first == name; };
   auto it = std::find_if(links_.begin(), links_.end(), match);
   if (links_.end() == it) {
-    LOG(INFO) << name << " does not exist in directory.";
+    LOG(INFO) << name << " does not exist in directory " << to_here;
     return ProvenAbsent{};
   }
   auto& link = it->second;
@@ -62,7 +64,7 @@ auto Self::resolve(SlashDelimited path, BlockLookup blu, std::string& to_here)
       to_here.push_back('/');
     }
     to_here.append(name);
-    LOG(INFO) << "Descending into " << link.cid << " for " << name;
+    VLOG(1) << "Descending into " << link.cid << " for " << name;
     return nod->resolve(path, blu, to_here);
   } else {
     LOG(INFO) << "Should descending into " << link.cid << " for " << name

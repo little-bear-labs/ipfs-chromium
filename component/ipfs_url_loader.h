@@ -2,7 +2,6 @@
 #define COMPONENTS_IPFS_URL_LOADER_H_ 1
 
 #include "ipfs_client/dag_listener.h"
-#include "ipfs_client/scheduler.h"
 
 #include "base/debug/debugging_buildflags.h"
 #include "base/timer/timer.h"
@@ -16,7 +15,6 @@
 
 namespace ipfs {
 class ChromiumIpfsContext;
-class UnixFsPathResolver;
 }  // namespace ipfs
 
 namespace network::mojom {
@@ -74,7 +72,6 @@ class IpfsUrlLoader final : public network::mojom::URLLoader,
   bool complete_ = false;
   std::shared_ptr<ChromiumIpfsContext> api_;
   std::string original_url_;
-  std::shared_ptr<ipfs::UnixFsPathResolver> resolver_;
   std::string partial_block_;
   std::vector<std::pair<std::string,std::string>> additional_outgoing_headers_;
   std::shared_ptr<network::mojom::URLLoader> extra_;
