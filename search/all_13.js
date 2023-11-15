@@ -1,14 +1,9 @@
 var searchData=
 [
-  ['unescapeurlcomponent_168',['UnescapeUrlComponent',['../classipfs_1_1ContextApi.html#a5bafd20d2efe1e61dab0bda78ff53988',1,'ipfs::ContextApi']]],
-  ['unixfsfile_169',['UnixfsFile',['../classipfs_1_1ipld_1_1UnixfsFile.html',1,'ipfs::ipld']]],
-  ['unixfspathresolver_170',['UnixFsPathResolver',['../classipfs_1_1UnixFsPathResolver.html',1,'ipfs::UnixFsPathResolver'],['../classipfs_1_1UnixFsPathResolver.html#abcd98f1f53831b2ab37353ee526f8d8c',1,'ipfs::UnixFsPathResolver::UnixFsPathResolver()']]],
-  ['unixtime_171',['UnixTime',['../classipfs_1_1unix__fs_1_1UnixTime.html',1,'ipfs::unix_fs']]],
-  ['unixtimedefaulttypeinternal_172',['UnixTimeDefaultTypeInternal',['../structipfs_1_1unix__fs_1_1UnixTimeDefaultTypeInternal.html',1,'ipfs::unix_fs']]],
-  ['unparsed_173',['unparsed',['../classipfs_1_1Block.html#a9fbbfa4679da83ae03aac455a1afd972',1,'ipfs::Block']]],
-  ['url_174',['url',['../classipfs_1_1BusyGateway.html#a26f5bda1c52fbfe68456427342d7ec90',1,'ipfs::BusyGateway::url()'],['../classipfs_1_1GatewayRequest.html#aa6fa4b5ee6897708f80e5c0d729096c2',1,'ipfs::GatewayRequest::url()']]],
-  ['url_5fprefix_175',['url_prefix',['../classipfs_1_1Gateway.html#ab34481e2d6b4af901fa56d9b4e453e4a',1,'ipfs::Gateway']]],
-  ['urlloader_176',['URLLoader',['../classnetwork_1_1mojom_1_1URLLoader.html',1,'network::mojom']]],
-  ['urlspec_177',['UrlSpec',['../structipfs_1_1UrlSpec.html',1,'ipfs']]],
-  ['use_5funtil_178',['use_until',['../structipfs_1_1ValidatedIpns.html#a7005820591f6108965891bf0bd9e1abb',1,'ipfs::ValidatedIpns']]]
+  ['valid_171',['valid',['../classipfs_1_1Block.html#ab8252491c2d9c805fd074267d34891e7',1,'ipfs::Block']]],
+  ['valid_172',['Valid',['../classipfs_1_1ChainedRequestors.html#aaedfc83e0923810a77771212d2487632',1,'ipfs::ChainedRequestors']]],
+  ['validatedipns_173',['ValidatedIpns',['../structipfs_1_1ValidatedIpns.html',1,'ipfs::ValidatedIpns'],['../structipfs_1_1ValidatedIpns.html#a31c5bd8b61786b29ed47eb25d7f78fcb',1,'ipfs::ValidatedIpns::ValidatedIpns()']]],
+  ['validity_174',['validity',['../structipfs_1_1IpnsCborEntry.html#ad0cbbb2c8235b02d87a60ee3de46caa1',1,'ipfs::IpnsCborEntry']]],
+  ['validitytype_175',['validityType',['../structipfs_1_1IpnsCborEntry.html#a31db7b54ab37f849481861700aa4f62f',1,'ipfs::IpnsCborEntry']]],
+  ['value_176',['value',['../structipfs_1_1IpnsCborEntry.html#af8bc58e9ebc44afd97ed81a353efd588',1,'ipfs::IpnsCborEntry::value()'],['../structipfs_1_1ValidatedIpns.html#ae6de004a615521a7ca1dbf18df0dc028',1,'ipfs::ValidatedIpns::value()']]]
 ];

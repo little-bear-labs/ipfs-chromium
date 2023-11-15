@@ -73,93 +73,51 @@ $(function() {
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define IPFS_CONTEXT_API_H_</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &quot;busy_gateway.h&quot;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;ipns_cbor_entry.h&quot;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;signing_key_type.h&quot;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;vocab/byte_view.h&gt;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;cstdint&gt;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;optional&gt;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>ipfs {</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">class </span>IpfsRequest;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="classipfs_1_1GatewayRequest.html">   21</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1GatewayRequest.html">GatewayRequest</a> {</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="classipfs_1_1GatewayRequest.html#aeef061b6aa94a18011340e404af461f8">   23</a></span>&#160;  <a class="code" href="classipfs_1_1BusyGateway.html">BusyGateway</a> <a class="code" href="classipfs_1_1GatewayRequest.html#aeef061b6aa94a18011340e404af461f8">gateway</a>;  </div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; </div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">namespace </span>ipfs {</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">class </span>IpfsRequest;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
+<div class="line"><a name="l00015"></a><span class="lineno"><a class="line" href="classipfs_1_1GatewayRequest.html">   15</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1GatewayRequest.html">GatewayRequest</a> {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="classipfs_1_1GatewayRequest.html#aeef061b6aa94a18011340e404af461f8">   17</a></span>&#160;  <a class="code" href="classipfs_1_1BusyGateway.html">BusyGateway</a> <a class="code" href="classipfs_1_1GatewayRequest.html#aeef061b6aa94a18011340e404af461f8">gateway</a>;  </div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <a class="code" href="classipfs_1_1GatewayRequest.html#a3717a586bca3240f710010964b317b85">GatewayRequest</a>(<a class="code" href="classipfs_1_1BusyGateway.html">BusyGateway</a>&amp;&amp;);  </div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classipfs_1_1GatewayRequest.html">GatewayRequest</a>() noexcept;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  std::<span class="keywordtype">string</span> <a class="code" href="classipfs_1_1GatewayRequest.html#a27d4f4d99ac3d9af1fe14bee32325ae9">task</a>() const;  </div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  std::<span class="keywordtype">string</span> <a class="code" href="classipfs_1_1GatewayRequest.html#aa6fa4b5ee6897708f80e5c0d729096c2">url</a>() const;   </div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;};</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <a class="code" href="classipfs_1_1GatewayRequest.html#a3717a586bca3240f710010964b317b85">GatewayRequest</a>(<a class="code" href="classipfs_1_1BusyGateway.html">BusyGateway</a>&amp;&amp;);  </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classipfs_1_1GatewayRequest.html">GatewayRequest</a>() noexcept;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  std::<span class="keywordtype">string</span> <a class="code" href="classipfs_1_1GatewayRequest.html#a27d4f4d99ac3d9af1fe14bee32325ae9">task</a>() const;  </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  std::<span class="keywordtype">string</span> <a class="code" href="classipfs_1_1GatewayRequest.html#aa6fa4b5ee6897708f80e5c0d729096c2">url</a>() const;   </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;};</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="structipfs_1_1HttpRequestDescription.html">   31</a></span>&#160;struct <a class="code" href="structipfs_1_1HttpRequestDescription.html">HttpRequestDescription</a> {</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  std::string <a class="code" href="classipfs_1_1GatewayRequest.html#aa6fa4b5ee6897708f80e5c0d729096c2">url</a>;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordtype">int</span> timeout_seconds;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  std::string accept;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  std::optional&lt;std::size_t&gt; max_response_size;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keywordtype">bool</span> operator==(<a class="code" href="structipfs_1_1HttpRequestDescription.html">HttpRequestDescription</a> <span class="keyword">const</span>&amp;) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;};</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classipfs_1_1ContextApi.html">   45</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1ContextApi.html">ContextApi</a> : <span class="keyword">public</span> std::enable_shared_from_this&lt;ContextApi&gt; {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keyword">using</span> <a class="code" href="structipfs_1_1HttpRequestDescription.html">HttpRequestDescription</a> = <a class="code" href="structipfs_1_1HttpRequestDescription.html">::ipfs::HttpRequestDescription</a>;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keyword">using</span> HeaderAccess = std::function&lt;std::string(std::string_view)&gt;;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keyword">using</span> HttpCompleteCallback =</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      std::function&lt;void(std::int16_t, std::string_view, HeaderAccess)&gt;;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> SendHttpRequest(<a class="code" href="structipfs_1_1HttpRequestDescription.html">HttpRequestDescription</a>,</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                               HttpCompleteCallback cb) <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keyword">using</span> DnsTextResultsCallback =</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      std::function&lt;void(std::vector&lt;std::string&gt; <span class="keyword">const</span>&amp;)&gt;;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keyword">using</span> DnsTextCompleteCallback = std::function&lt;void(<span class="keywordtype">void</span>)&gt;;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> SendDnsTextRequest(std::string hostname,</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                                  DnsTextResultsCallback,</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                                  DnsTextCompleteCallback) = 0;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="classipfs_1_1ContextApi.html#a67c029b3a659deeda252fbc0229e7cc4">   67</a></span>&#160;  <span class="keyword">virtual</span> std::string <a class="code" href="classipfs_1_1ContextApi.html#a67c029b3a659deeda252fbc0229e7cc4">MimeType</a>(std::string extension,</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                               std::string_view content,</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                               std::string <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1GatewayRequest.html#aa6fa4b5ee6897708f80e5c0d729096c2">url</a>) <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
-<div class="line"><a name="l00077"></a><span class="lineno"><a class="line" href="classipfs_1_1ContextApi.html#a5bafd20d2efe1e61dab0bda78ff53988">   77</a></span>&#160;  <span class="keyword">virtual</span> std::string <a class="code" href="classipfs_1_1ContextApi.html#a5bafd20d2efe1e61dab0bda78ff53988">UnescapeUrlComponent</a>(std::string_view url_comp) <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keyword">using</span> <a class="code" href="structipfs_1_1IpnsCborEntry.html">IpnsCborEntry</a> = <a class="code" href="structipfs_1_1IpnsCborEntry.html">::ipfs::IpnsCborEntry</a>;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// TODO: accept the Type as a parameter as a reference to a base that knows</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="comment">// about its members</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="structipfs_1_1IpnsCborEntry.html">IpnsCborEntry</a> deserialize_cbor(ByteView) <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keyword">using</span> SigningKeyType = ::ipfs::SigningKeyType;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keyword">using</span> ByteView = ::ipfs::ByteView;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> verify_key_signature(SigningKeyType,</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                                    ByteView signature,</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                                    ByteView data,</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                                    ByteView key_bytes) <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
-<div class="line"><a name="l00100"></a><span class="lineno"><a class="line" href="classipfs_1_1ContextApi.html#a1c7cb1d1a94d2ebf7dc67b82d9b7f419">  100</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1ContextApi.html#a1c7cb1d1a94d2ebf7dc67b82d9b7f419">Discover</a>(std::function&lt;<span class="keywordtype">void</span>(std::vector&lt;std::string&gt;)&gt; cb) = 0;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="comment">// TODO drop</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keyword">virtual</span> std::shared_ptr&lt;GatewayRequest&gt; InitiateGatewayRequest(</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      <a class="code" href="classipfs_1_1BusyGateway.html">BusyGateway</a>) = 0;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;};</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160; </div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160; </div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="classipfs_1_1ContextApi.html">   31</a></span>&#160;class <a class="code" href="classipfs_1_1ContextApi.html">ContextApi</a> : public std::enable_shared_from_this&lt;<a class="code" href="classipfs_1_1ContextApi.html">ContextApi</a>&gt; {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="classipfs_1_1ContextApi.html#ae2f8055f3e06450f106b0b618d19cc77">   34</a></span>&#160;  <span class="keyword">virtual</span> std::shared_ptr&lt;GatewayRequest&gt; <a class="code" href="classipfs_1_1ContextApi.html#ae2f8055f3e06450f106b0b618d19cc77">InitiateGatewayRequest</a>(</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      <a class="code" href="classipfs_1_1BusyGateway.html">BusyGateway</a>) = 0;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="classipfs_1_1ContextApi.html#a67c029b3a659deeda252fbc0229e7cc4">   43</a></span>&#160;  <span class="keyword">virtual</span> std::string <a class="code" href="classipfs_1_1ContextApi.html#a67c029b3a659deeda252fbc0229e7cc4">MimeType</a>(std::string extension,</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                               std::string_view content,</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                               std::string <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1GatewayRequest.html#aa6fa4b5ee6897708f80e5c0d729096c2">url</a>) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
+<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="classipfs_1_1ContextApi.html#a5bafd20d2efe1e61dab0bda78ff53988">   53</a></span>&#160;  <span class="keyword">virtual</span> std::string <a class="code" href="classipfs_1_1ContextApi.html#a5bafd20d2efe1e61dab0bda78ff53988">UnescapeUrlComponent</a>(std::string_view url_comp) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="classipfs_1_1ContextApi.html#a1c7cb1d1a94d2ebf7dc67b82d9b7f419">   64</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1ContextApi.html#a1c7cb1d1a94d2ebf7dc67b82d9b7f419">Discover</a>(std::function&lt;<span class="keywordtype">void</span>(std::vector&lt;std::string&gt;)&gt; cb) = 0;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;};</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassipfs_1_1BusyGateway_html"><div class="ttname"><a href="classipfs_1_1BusyGateway.html">ipfs::BusyGateway</a></div><div class="ttdoc">RAII class embodying the assignment of a given task to a given gateway.</div><div class="ttdef"><b>Definition:</b> busy_gateway.h:30</div></div>
-<div class="ttc" id="aclassipfs_1_1ContextApi_html"><div class="ttname"><a href="classipfs_1_1ContextApi.html">ipfs::ContextApi</a></div><div class="ttdoc">Interface that provides functionality from whatever environment you're using this library in.</div><div class="ttdef"><b>Definition:</b> context_api.h:45</div></div>
+<div class="ttc" id="aclassipfs_1_1ContextApi_html"><div class="ttname"><a href="classipfs_1_1ContextApi.html">ipfs::ContextApi</a></div><div class="ttdoc">Interface that provides functionality from whatever environment you're using this library in.</div><div class="ttdef"><b>Definition:</b> context_api.h:31</div></div>
 <div class="ttc" id="aclassipfs_1_1ContextApi_html_a1c7cb1d1a94d2ebf7dc67b82d9b7f419"><div class="ttname"><a href="classipfs_1_1ContextApi.html#a1c7cb1d1a94d2ebf7dc67b82d9b7f419">ipfs::ContextApi::Discover</a></div><div class="ttdeci">virtual void Discover(std::function&lt; void(std::vector&lt; std::string &gt;)&gt; cb)=0</div><div class="ttdoc">Discover more gateways.</div></div>
 <div class="ttc" id="aclassipfs_1_1ContextApi_html_a5bafd20d2efe1e61dab0bda78ff53988"><div class="ttname"><a href="classipfs_1_1ContextApi.html#a5bafd20d2efe1e61dab0bda78ff53988">ipfs::ContextApi::UnescapeUrlComponent</a></div><div class="ttdeci">virtual std::string UnescapeUrlComponent(std::string_view url_comp) const =0</div><div class="ttdoc">Remove URL escaping, e.g. %20.</div></div>
 <div class="ttc" id="aclassipfs_1_1ContextApi_html_a67c029b3a659deeda252fbc0229e7cc4"><div class="ttname"><a href="classipfs_1_1ContextApi.html#a67c029b3a659deeda252fbc0229e7cc4">ipfs::ContextApi::MimeType</a></div><div class="ttdeci">virtual std::string MimeType(std::string extension, std::string_view content, std::string const &amp;url) const =0</div><div class="ttdoc">Determine a mime type for a given file.</div></div>
-<div class="ttc" id="aclassipfs_1_1GatewayRequest_html"><div class="ttname"><a href="classipfs_1_1GatewayRequest.html">ipfs::GatewayRequest</a></div><div class="ttdoc">Represents an issued request.</div><div class="ttdef"><b>Definition:</b> context_api.h:21</div></div>
+<div class="ttc" id="aclassipfs_1_1ContextApi_html_ae2f8055f3e06450f106b0b618d19cc77"><div class="ttname"><a href="classipfs_1_1ContextApi.html#ae2f8055f3e06450f106b0b618d19cc77">ipfs::ContextApi::InitiateGatewayRequest</a></div><div class="ttdeci">virtual std::shared_ptr&lt; GatewayRequest &gt; InitiateGatewayRequest(BusyGateway)=0</div><div class="ttdoc">&lt; Send a single http request to its gateway as scheduled</div></div>
+<div class="ttc" id="aclassipfs_1_1GatewayRequest_html"><div class="ttname"><a href="classipfs_1_1GatewayRequest.html">ipfs::GatewayRequest</a></div><div class="ttdoc">Represents an issued request.</div><div class="ttdef"><b>Definition:</b> context_api.h:15</div></div>
 <div class="ttc" id="aclassipfs_1_1GatewayRequest_html_a27d4f4d99ac3d9af1fe14bee32325ae9"><div class="ttname"><a href="classipfs_1_1GatewayRequest.html#a27d4f4d99ac3d9af1fe14bee32325ae9">ipfs::GatewayRequest::task</a></div><div class="ttdeci">std::string task() const</div><div class="ttdoc">Same as gateway.task()</div><div class="ttdef"><b>Definition:</b> context_api.cc:13</div></div>
 <div class="ttc" id="aclassipfs_1_1GatewayRequest_html_a3717a586bca3240f710010964b317b85"><div class="ttname"><a href="classipfs_1_1GatewayRequest.html#a3717a586bca3240f710010964b317b85">ipfs::GatewayRequest::GatewayRequest</a></div><div class="ttdeci">GatewayRequest(BusyGateway &amp;&amp;)</div><div class="ttdoc">Move-only.</div><div class="ttdef"><b>Definition:</b> context_api.cc:5</div></div>
 <div class="ttc" id="aclassipfs_1_1GatewayRequest_html_aa6fa4b5ee6897708f80e5c0d729096c2"><div class="ttname"><a href="classipfs_1_1GatewayRequest.html#aa6fa4b5ee6897708f80e5c0d729096c2">ipfs::GatewayRequest::url</a></div><div class="ttdeci">std::string url() const</div><div class="ttdoc">Same as gateway.url()</div><div class="ttdef"><b>Definition:</b> context_api.cc:10</div></div>
-<div class="ttc" id="aclassipfs_1_1GatewayRequest_html_aeef061b6aa94a18011340e404af461f8"><div class="ttname"><a href="classipfs_1_1GatewayRequest.html#aeef061b6aa94a18011340e404af461f8">ipfs::GatewayRequest::gateway</a></div><div class="ttdeci">BusyGateway gateway</div><div class="ttdoc">The assignment.</div><div class="ttdef"><b>Definition:</b> context_api.h:23</div></div>
-<div class="ttc" id="astructipfs_1_1HttpRequestDescription_html"><div class="ttname"><a href="structipfs_1_1HttpRequestDescription.html">ipfs::HttpRequestDescription</a></div><div class="ttdef"><b>Definition:</b> context_api.h:31</div></div>
-<div class="ttc" id="astructipfs_1_1IpnsCborEntry_html"><div class="ttname"><a href="structipfs_1_1IpnsCborEntry.html">ipfs::IpnsCborEntry</a></div><div class="ttdoc">Parsed out data contained in the CBOR data of an IPNS record.</div><div class="ttdef"><b>Definition:</b> ipns_cbor_entry.h:11</div></div>
+<div class="ttc" id="aclassipfs_1_1GatewayRequest_html_aeef061b6aa94a18011340e404af461f8"><div class="ttname"><a href="classipfs_1_1GatewayRequest.html#aeef061b6aa94a18011340e404af461f8">ipfs::GatewayRequest::gateway</a></div><div class="ttdeci">BusyGateway gateway</div><div class="ttdoc">The assignment.</div><div class="ttdef"><b>Definition:</b> context_api.h:17</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
