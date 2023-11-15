@@ -21,7 +21,6 @@ std::string_view Self::name() const {
 }
 auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
   DCHECK(r);
-  DCHECK(r->orchestrator);
   DCHECK(r->dependent);
   DCHECK_GT(prefix_.size(), 0UL);
   if (!r->is_http()) {
@@ -32,7 +31,7 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
   if (seen_.count(req_key)) {
     return HandleOutcome::NOT_HANDLED;
   }
-  if (target(*r) <= r->parallel) {
+  if (target(*r) <= r->parallel + pending_) {
     return HandleOutcome::MAYBE_LATER;
   }
   auto desc = r->describe_http();
@@ -47,43 +46,50 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
   } else {
     desc.value().url.insert(0, prefix_);
   }
+  desc.value().timeout_seconds += extra_seconds_;
   auto cb = [this, r](std::int16_t status, std::string_view body,
                       ContextApi::HeaderAccess) {
     if (r->parallel) {
       r->parallel--;
     }
-    if (pending) {
-      pending--;
+    if (pending_) {
+      pending_--;
     }
-    if (status / 100 == 2) {
-      auto nod = node_from_type(r->cid, r->type, body);
-      if (nod) {
-        if (r->orchestrator->add_node(r->main_param, nod)) {
-          r->type = Type::Zombie;
-          r->orchestrator->build_response(r->dependent);
-        }
-        if (typ_good_.insert(r->type).second) {
-          LOG(INFO) << prefix_ << " OK with requests of type "
-                    << static_cast<int>(r->type);
-        } else if (typ_bad_.erase(r->type)) {
-          LOG(INFO) << prefix_ << " truly OK with requests of type "
-                    << static_cast<int>(r->type);
-        }
-        if (aff_good_.insert(r->affinity).second) {
-          LOG(INFO) << prefix_ << " likes requests in the neighborhood of "
-                    << r->affinity;
-        } else if (aff_bad_.erase(r->affinity)) {
-          LOG(INFO) << prefix_ << " truly OK with affinity " << r->affinity;
-        }
-        return;
-      } else {
-        LOG(INFO) << "Got an unuseful response from " << prefix_
-                  << " forwarding request " << r->debug_string()
-                  << " to next requestor.";
+    if (body.find("thx scammers") != std::string_view ::npos) {
+      LOG(ERROR) << r->debug_string() << " on " << prefix_
+                 << " RETURNED THIS!! '" << body << "'!";
+    }
+    if (r->type == Type::Zombie) {
+      return;
+    } else if (status == 408) {
+      extra_seconds_++;
+    } else if (status / 100 == 2) {
+      if (!r->RespondSuccessfully(body, api_.get())) {
+      } else if (typ_good_.insert(r->type).second) {
+        VLOG(1) << prefix_ << " OK with requests of type "
+                << static_cast<int>(r->type);
+      } else if (typ_bad_.erase(r->type)) {
+        LOG(INFO) << prefix_ << " truly OK with requests of type "
+                  << static_cast<int>(r->type);
       }
+      if (aff_good_.insert(r->affinity).second) {
+        VLOG(1) << prefix_ << " likes requests in the neighborhood of "
+                << r->affinity;
+      } else if (aff_bad_.erase(r->affinity)) {
+        LOG(INFO) << prefix_ << " truly OK with affinity " << r->affinity;
+      }
+      LOG(INFO) << prefix_ << " had a success on " << r->debug_string();
+      LOG(INFO) << "Promote(" << prefix_ << ')';
+      ++strength_;
+      return;
     } else {
-      LOG(INFO) << r->debug_string() << " got a failure of status " << status
-                << " from " << prefix_;
+      VLOG(1) << "Got an unuseful response from " << prefix_
+              << " forwarding request " << r->debug_string()
+              << " to next requestor.";
+    }
+    LOG(INFO) << "Demote(" << prefix_ << ')';
+    if (strength_ > 0) {
+      --strength_;
     }
     aff_bad_.insert(r->affinity);
     typ_bad_.insert(r->type);
@@ -92,13 +98,14 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
   DCHECK(api_);
   api_->SendHttpRequest(desc.value(), cb);
   seen_.insert(req_key);
-  pending++;
+  pending_++;
   return HandleOutcome::PENDING;
 }
 
 Self::GatewayHttpRequestor(std::string gateway_prefix,
+                           int strength,
                            std::shared_ptr<ContextApi> api)
-    : prefix_{gateway_prefix} {
+    : prefix_{gateway_prefix}, strength_{strength} {
   api_ = api;
 }
 Self::~GatewayHttpRequestor() {}
@@ -110,9 +117,11 @@ ipfs::ipld::NodePtr Self::node_from_type(std::optional<Cid> const& cid,
     case ReqTyp::Block: {
       if (cid.has_value()) {
         ipfs::Block blk{cid.value(), std::string{body}};
-        if (blk.valid() && blk.cid_matches_data()) {
+        if (blk.cid_matches_data()) {
           return ipfs::ipld::DagNode::fromBlock(blk);
         }
+      } else {
+        LOG(ERROR) << "Block request on an invalid CID.";
       }
       return {};
     }
@@ -150,9 +159,9 @@ ipfs::ipld::NodePtr Self::node_from_type(std::optional<Cid> const& cid,
   return {};  // TODO
 }
 int Self::target(GatewayRequest const& r) const {
-  int result = 0;
-  if (pending == 0) {
-    result += 1;
+  int result = (strength_ - pending_) / 2;
+  if (!pending_) {
+    ++result;
   }
   if (typ_good_.count(r.type)) {
     result += 3;

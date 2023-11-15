@@ -62,9 +62,10 @@ ipfs::Block::Block(Cid const& c, std::istream& s) : cid_(c) {
   std::tie(valid_, fs_node_) = InitBlock(c.content_type, s, node_, fsdata_);
 }
 
-ipfs::Block::Block(Cid const& c, std::string const& s)
+ipfs::Block::Block(Cid const& c, std::string_view s)
     : cid_(c), original_bytes_(s) {
-  std::tie(valid_, fs_node_) = InitBlock(c.content_type, s, node_, fsdata_);
+  std::tie(valid_, fs_node_) =
+      InitBlock(c.content_type, original_bytes_, node_, fsdata_);
 }
 
 ipfs::Block::Block(Block const& rhs)

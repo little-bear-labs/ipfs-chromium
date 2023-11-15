@@ -1,6 +1,12 @@
 #include <ipfs_client/gw/gateway_request.h>
 
+#include <ipfs_client/ipld/dag_node.h>
+#include <ipfs_client/ipld/ipns_name.h>
+
+#include <ipfs_client/dag_block.h>
+#include <ipfs_client/ipfs_request.h>
 #include <ipfs_client/ipns_record.h>
+#include <ipfs_client/orchestrator.h>
 #include <ipfs_client/response.h>
 
 #include "log_macros.h"
@@ -14,39 +20,39 @@ using CidCodec = libp2p::multi::ContentIdentifierCodec;
 
 std::shared_ptr<Self> Self::fromIpfsPath(ipfs::SlashDelimited p) {
   auto name_space = p.pop();
-  auto result = std::make_shared<Self>();
-  result->main_param = p.pop();
-  auto maybe_cid = CidCodec::fromString(result->main_param);
+  auto r = std::make_shared<Self>();
+  r->main_param = p.pop();
+  auto maybe_cid = CidCodec::fromString(r->main_param);
   if (maybe_cid.has_value()) {
-    result->cid = maybe_cid.value();
+    r->cid = maybe_cid.value();
   } else {
-    result->cid = std::nullopt;
+    r->cid = std::nullopt;
   }
   if (name_space == "ipfs") {
-    if (!result->cid.has_value()) {
+    if (!r->cid.has_value()) {
       LOG(ERROR) << "IPFS request with invalid/unsupported CID "
-                 << result->main_param;
+                 << r->main_param;
       return {};
     }
-    if (result->cid.value().content_address.getType() ==
+    if (r->cid.value().content_address.getType() ==
         libp2p::multi::HashType::identity) {
-      result->type = Type::Identity;
+      r->type = Type::Identity;
     } else {
-      result->path = p.pop_all();
-      result->type = result->path.empty() ? Type::Block : Type::Car;
+      r->path = p.pop_all();
+      r->type = r->path.empty() ? Type::Block : Type::Car;
     }
   } else if (name_space == "ipns") {
-    result->path = p.pop_all();
-    if (CidCodec::fromString(result->main_param).has_value()) {
-      result->type = Type::Ipns;
+    r->path = p.pop_all();
+    if (CidCodec::fromString(r->main_param).has_value()) {
+      r->type = Type::Ipns;
     } else {
-      result->type = Type::DnsLink;
+      r->type = Type::DnsLink;
     }
   } else {
     LOG(FATAL) << "Unsupported namespace in ipfs path: /" << name_space << '/'
                << p.pop_all();
   }
-  return result;
+  return r;
 }
 
 std::string Self::url_suffix() const {
@@ -99,15 +105,15 @@ std::string_view Self::accept() const {
 short Self::timeout_seconds() const {
   switch (type) {
     case Type::DnsLink:
-      return 32;
+      return 16;
     case Type::Block:
-      return 64;
+      return 33;
     case Type::Providers:
-      return 128;
+      return 64;
     case Type::Car:
-      return 256;
+      return 128;
     case Type::Ipns:
-      return 512;
+      return 256;
     case Type::Identity:
     case Type::Zombie:
       return 0;
@@ -193,6 +199,61 @@ std::string Self::debug_string() const {
   if (!path.empty()) {
     oss << ' ' << path;
   }
+  if (dependent) {
+    oss << " for=" << dependent->path().to_string();
+  }
   oss << " plel=" << parallel << '}';
   return oss.str();
+}
+bool Self::RespondSuccessfully(std::string_view bytes, ContextApi* api) {
+  bool success = false;
+  switch (type) {
+    case Type::Block: {
+      DCHECK(cid.has_value());
+      ipfs::Block b{cid.value(), bytes};
+      auto node = ipfs::ipld::DagNode::fromBlock(b);
+      success = orchestrator_->add_node(main_param, node);
+    } break;
+    case Type::Ipns:
+      if (cid.has_value()) {
+        DCHECK(api);
+        auto byte_ptr = reinterpret_cast<ipfs::Byte const*>(bytes.data());
+        auto rec = ipfs::ValidateIpnsRecord({byte_ptr, bytes.size()},
+                                            cid.value(), *api);
+        if (rec.has_value()) {
+          auto node = ipfs::ipld::DagNode::fromIpnsRecord(rec.value());
+          success = orchestrator_->add_node(main_param, node);
+        } else {
+          LOG(ERROR) << "IPNS record failed to validate!";
+        }
+      }
+      break;
+    case Type::DnsLink:
+      LOG(INFO) << "Resolved " << debug_string() << " to " << bytes;
+      success = orchestrator_->add_node(
+          main_param, std::make_shared<ipld::IpnsName>(bytes));
+
+      break;
+    default:
+      LOG(FATAL) << "TODO " << static_cast<int>(type);
+  }
+  if (success) {
+    VLOG(1) << debug_string() << " successfully responded to by "
+            << bytes.size() << " B of data.";
+    for (auto& hook : bytes_received_hooks) {
+      hook(bytes);
+    }
+    bytes_received_hooks.clear();
+  } else {
+    LOG(INFO) << "Failure to process " << bytes.size()
+              << "B of data as a response to " << debug_string();
+  }
+  orchestrator_->build_response(dependent);
+  return success;
+}
+void Self::Hook(std::function<void(std::string_view)> f) {
+  bytes_received_hooks.push_back(f);
+}
+void Self::orchestrator(std::shared_ptr<Orchestrator> const& orc) {
+  orchestrator_ = orc;
 }

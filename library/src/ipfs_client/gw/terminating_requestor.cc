@@ -14,15 +14,9 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
     return HandleOutcome::DONE;
   } else if (r->parallel) {
     return HandleOutcome::PENDING;
-  } else if (r->retry_at) {
-    LOG(INFO) << "Calling through retry...";
-    auto p = r->retry_at;
-    r->retry_at.reset();
-    p->request(r);
-    return HandleOutcome::PENDING;
   } else {
-    LOG(ERROR) << "Out of options, giving up on gateway request "
-               << r->debug_string();
+    LOG(WARNING) << "Out of options, giving up on gateway request "
+                 << r->debug_string();
     definitive_failure(r);
     return HandleOutcome::DONE;
   }

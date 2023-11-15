@@ -2,7 +2,6 @@
 
 #include "inter_request_state.h"
 #include "ipfs_url_loader.h"
-#include "ipns_url_loader.h"
 
 #include "base/logging.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -40,8 +39,6 @@ void Interceptor::MaybeCreateLoader(network::ResourceRequest const& req,
         .Run(base::BindOnce(&ipfs::IpfsUrlLoader::StartRequest, loader));
 
   } else {
-    VLOG(2) << req.url.spec() << " has host '" << req.url.host()
-            << "' and is not being intercepted.";
     std::move(loader_callback).Run({});  // SEP
   }
 }

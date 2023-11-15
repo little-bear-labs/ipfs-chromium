@@ -5,6 +5,7 @@
 #include "ipns_name.h"
 #include "root.h"
 #include "small_directory.h"
+#include "symlink.h"
 #include "unixfs_file.h"
 
 #include <ipfs_client/dag_block.h>
@@ -21,6 +22,8 @@ std::shared_ptr<Node> Node::fromBlock(ipfs::Block const& block) {
       return std::make_shared<Chunk>(block.chunk_data());
     case Block::Type::NonFs:
       return std::make_shared<Chunk>(block.unparsed());
+    case Block::Type::Symlink:
+      return std::make_shared<Symlink>(block.chunk_data());
     case Block::Type::Directory:
       result = std::make_shared<SmallDirectory>();
       break;
@@ -63,4 +66,8 @@ auto Node::as_hamt() -> DirShard* {
 }
 void Node::set_api(std::shared_ptr<ContextApi> api) {
   api_ = api;
+}
+
+std::ostream& operator<<(std::ostream& s, ipfs::ipld::PathChange const& c) {
+  return s << "PathChange{" << c.new_path << '}';
 }

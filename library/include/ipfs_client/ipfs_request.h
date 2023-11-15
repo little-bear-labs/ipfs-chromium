@@ -23,6 +23,7 @@ class IpfsRequest {
   void finish(Response& r);
   void till_next(std::size_t);
   bool ready_after();
+  void new_path(std::string_view);
 };
 }  // namespace ipfs
 

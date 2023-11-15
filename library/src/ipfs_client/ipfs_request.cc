@@ -12,7 +12,7 @@ void Self::till_next(std::size_t w) {
   waiting_ = w;
 }
 void Self::finish(ipfs::Response& r) {
-  LOG(INFO) << "IpfsRequest::finish(" << waiting_ << ");";
+  VLOG(1) << "IpfsRequest::finish(" << waiting_ << ");";
   if (waiting_) {
     if (--waiting_) {
       return;
@@ -26,4 +26,7 @@ void Self::finish(ipfs::Response& r) {
 }
 bool Self::ready_after() {
   return waiting_ == 0 || 0 == --waiting_;
+}
+void Self::new_path(std::string_view sv) {
+  path_.assign(sv);
 }

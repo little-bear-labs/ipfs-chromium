@@ -13,7 +13,17 @@
 #include <vector>
 
 namespace ipfs {
-using GatewayList = std::vector<Gateway>;
+struct GatewaySpec {
+  std::string prefix;
+  unsigned strength;
+  bool operator<(GatewaySpec const& r) const {
+    if (strength == r.strength) {
+      return prefix < r.prefix;
+    }
+    return strength > r.strength;
+  }
+};
+using GatewayList = std::vector<GatewaySpec>;
 class ContextApi;
 
 /*!

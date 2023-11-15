@@ -78,7 +78,7 @@ class ContentIdentifierCodec {
    * @return CID
    */
   static ipfs::expected<ContentIdentifier, DecodeError> fromString(
-      const std::string& str);
+      std::string_view str);
 };
 
 std::string_view Stringify(libp2p::multi::ContentIdentifierCodec::DecodeError);

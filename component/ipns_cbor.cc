@@ -30,7 +30,7 @@ void Assign(cbor::Value::MapValue const& m, char const* n, V& out) {
     return;
   }
   if (Assign(i->second, out)) {
-    LOG(INFO) << "Assigned successfully '" << n << "'='" << out << "'.";
+    VLOG(1) << "Assigned successfully '" << n << "'='" << out << "'.";
   } else {
     LOG(ERROR) << "Type mismatch on " << n
                << " type received: " << static_cast<int>(i->second.type());

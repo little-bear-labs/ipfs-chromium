@@ -25,7 +25,8 @@ std::string_view Self::name() const {
 }
 namespace {
 bool parse_results(ipfs::gw::RequestPtr req,
-                   std::vector<std::string> const& results);
+                   std::vector<std::string> const& results,
+                   ipfs::ContextApi*);
 }
 auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
   if (req->type != Type::DnsLink) {
@@ -34,8 +35,9 @@ auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
   // std::function requires target be copy-constructible
   auto success = std::make_shared<bool>();
   *success = false;
-  auto res = [req, success](std::vector<std::string> const& results) {
-    *success = *success || parse_results(req, results);
+  auto a = api_;
+  auto res = [req, success, a](std::vector<std::string> const& results) {
+    *success = *success || parse_results(req, results, a.get());
   };
   auto don = [success, req]() {
     LOG(INFO) << "DNSLink request completed for " << req->main_param
@@ -49,17 +51,15 @@ auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
 }
 namespace {
 bool parse_results(ipfs::gw::RequestPtr req,
-                   std::vector<std::string> const& results) {
+                   std::vector<std::string> const& results,
+                   ipfs::ContextApi* api) {
   constexpr auto prefix = "dnslink="sv;
   LOG(INFO) << "Scanning " << results.size() << " DNS TXT records for "
             << req->main_param << " looking for dnslink...";
   for (auto& result : results) {
     if (absl::StartsWith(result, prefix)) {
       LOG(INFO) << "DNSLink result=" << result;
-      auto target = result.substr(prefix.size());
-      auto node = std::make_shared<ipfs::ipld::IpnsName>(target);
-      req->orchestrator->add_node(req->main_param, node);
-      req->orchestrator->build_response(req->dependent);
+      req->RespondSuccessfully(result.substr(prefix.size()), api);
       return true;
     } else {
       LOG(INFO) << "Irrelevant TXT result, ignored: " << result;

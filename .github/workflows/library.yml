@@ -123,7 +123,7 @@ jobs:
           conan profile path default
           grep -n . `conan profile path default`
           echo "compiler=apple-clang" >> `conan profile path default`
-          echo "compiler.cppstd=17" >> `conan profile path default`
+          echo "compiler.cppstd=20" >> `conan profile path default`
           echo "compiler.libcxx=libc++" >> `conan profile path default`
           echo "compiler.version=14.0" >> `conan profile path default`
           conan profile show

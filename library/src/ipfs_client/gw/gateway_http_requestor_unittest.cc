@@ -1,6 +1,6 @@
 #include <ipfs_client/gw/gateway_http_requestor.h>
 
-#include <gtest/gtest.h>
+#include <mock_api.h>
 
 #include <ipfs_client/ipfs_request.h>
 #include <ipfs_client/orchestrator.h>
@@ -12,40 +12,7 @@ using P = ipfs::gw::RequestPtr;
 using namespace std::literals;
 
 namespace {
-struct FakeApi final : public ipfs::ContextApi {
-  std::vector<HttpRequestDescription> mutable http_requests_sent;
-  std::vector<HttpCompleteCallback> mutable cbs;
-  void SendHttpRequest(HttpRequestDescription d,
-                       HttpCompleteCallback cb) const {
-    http_requests_sent.push_back(d);
-    cbs.push_back(cb);
-  }
 
-  void SendDnsTextRequest(std::string hostname,
-                          DnsTextResultsCallback,
-                          DnsTextCompleteCallback) {}
-  std::string MimeType(std::string extension,
-                       std::string_view content,
-                       std::string const& url) const {
-    return "";
-  }
-  std::string UnescapeUrlComponent(std::string_view url_comp) const {
-    return "";
-  }
-  IpnsCborEntry deserialize_cbor(ByteView) const { return {}; }
-  bool verify_key_signature(SigningKeyType,
-                            ByteView signature,
-                            ByteView data,
-                            ByteView key_bytes) const {
-    return true;
-  }
-
-  void Discover(std::function<void(std::vector<std::string>)> cb) {}
-  std::shared_ptr<ipfs::GatewayRequest> InitiateGatewayRequest(
-      ipfs::BusyGateway) {
-    return {};
-  }
-};
 struct FakeRtor : public ipfs::gw::Requestor {
   std::string_view name() const { return "fake requestor"; }
   std::vector<P> requests_forwarded;
@@ -55,8 +22,8 @@ struct FakeRtor : public ipfs::gw::Requestor {
   }
 };
 struct GatewayHttpRequestorTest : public ::testing::Test {
-  std::shared_ptr<FakeApi> api = std::make_shared<FakeApi>();
-  std::shared_ptr<T> t = std::make_shared<T>("scheme://host", api);
+  std::shared_ptr<MockApi> api = std::make_shared<MockApi>();
+  std::shared_ptr<T> t = std::make_shared<T>("scheme://host", 1, api);
   std::shared_ptr<FakeRtor> chain = std::make_shared<FakeRtor>();
   std::shared_ptr<ipfs::Orchestrator> orc;
   P req() {
@@ -65,8 +32,7 @@ struct GatewayHttpRequestorTest : public ::testing::Test {
     auto noop2 = [](auto, auto) {};
     auto req = R::fromIpfsPath(
         "/ipfs/bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"sv);
-    req->orchestrator = orc =
-        std::make_shared<ipfs::Orchestrator>(noop, t, api);
+    req->orchestrator(orc = std::make_shared<ipfs::Orchestrator>(t, api));
     req->dependent = std::make_shared<ipfs::IpfsRequest>(
         "/ipfs/bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku",
         noop2);
@@ -86,7 +52,7 @@ TEST_F(GatewayHttpRequestorTest, without_slash) {
             "bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku");
 }
 TEST_F(GatewayHttpRequestorTest, with_slash) {
-  t = std::make_shared<T>("scheme://host/", api);
+  t = std::make_shared<T>("scheme://host/", 1, api);
   t->request(req());
   EXPECT_EQ(api->http_requests_sent.size(), 1);
   EXPECT_EQ(api->http_requests_sent.at(0).url,
@@ -122,9 +88,11 @@ TEST_F(GatewayHttpRequestorTest, high_parallel_means_maybe_later) {
   auto r = req();
   r->parallel = 8;
   t->request(r);
+  t.reset();
   EXPECT_EQ(api->http_requests_sent.size(), 0);
   EXPECT_EQ(api->cbs.size(), 0);
   EXPECT_EQ(chain->requests_forwarded.size(), 1);
+  t.reset();
 }
 TEST_F(GatewayHttpRequestorTest, high_parallel_passeswithaffinity) {
   auto r = req();

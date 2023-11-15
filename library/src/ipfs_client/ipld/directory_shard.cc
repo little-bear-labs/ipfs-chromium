@@ -21,8 +21,8 @@ using Self = ipfs::ipld::DirShard;
 auto Self::resolve(ipfs::SlashDelimited relpath,
                    ipfs::ipld::DagNode::BlockLookup blu,
                    std::string& to_here) -> ResolveResult {
-  LOG(INFO) << "DirShard::resolve(" << to_here << " / " << relpath.to_string()
-            << ')';
+  VLOG(1) << "DirShard::resolve(" << to_here << " / " << relpath.to_string()
+          << ')';
   if (!relpath) {
     // TODO check if index.html is present and if not implement indexing
     auto result = resolve("index.html"sv, blu, to_here);
@@ -57,9 +57,8 @@ auto Self::resolve_internal(ipfs::ipld::DirShard::HashIter hash_b,
       return MoreDataNeeded{std::vector{"/ipfs/" + link.cid}};
     }
     if (absl::EndsWith(name, element_name)) {
-      LOG(INFO) << "Found " << element_name
-                << ", leaving HAMT sharded directory " << name << "->"
-                << link.cid;
+      VLOG(1) << "Found " << element_name << ", leaving HAMT sharded directory "
+              << name << "->" << link.cid;
       return link.node->resolve(path_after_dir, blu, path_to_dir);
     }
     auto downcast = link.node->as_hamt();
@@ -68,8 +67,8 @@ auto Self::resolve_internal(ipfs::ipld::DirShard::HashIter hash_b,
         LOG(ERROR) << "Ran out of hash bits.";
         return ProvenAbsent{};
       }
-      LOG(INFO) << "Found hash chunk, continuing to next level of HAMT sharded "
-                   "directory "
+      VLOG(1) << "Found hash chunk, continuing to next level of HAMT sharded "
+                 "directory "
                 << name << "->" << link.cid;
       return downcast->resolve_internal(std::next(hash_b), hash_e, element_name,
                                         path_after_dir, blu, path_to_dir);

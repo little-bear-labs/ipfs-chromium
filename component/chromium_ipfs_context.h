@@ -5,7 +5,6 @@
 
 #include <ipfs_client/block_storage.h>
 #include <ipfs_client/context_api.h>
-#include <ipfs_client/scheduler.h>
 
 #include <base/memory/raw_ref.h>
 #include <base/time/time.h>
@@ -27,22 +26,12 @@ class IpfsRequest;
 class NetworkRequestor;
 
 class ChromiumIpfsContext final : public ContextApi {
-  struct GatewayUrlLoader : public ipfs::GatewayRequest {
-    GatewayUrlLoader(BusyGateway&&);
-    GatewayUrlLoader(GatewayRequest&&);
-    ~GatewayUrlLoader() noexcept override;
-    std::unique_ptr<network::SimpleURLLoader> loader;
-  };
-
   raw_ptr<network::mojom::URLLoaderFactory> loader_factory_ = nullptr;
   raw_ptr<network::mojom::NetworkContext> network_context_;
   raw_ref<InterRequestState> state_;
-  Scheduler sched_;
   std::function<void(std::vector<std::string>)> disc_cb_;
   std::map<std::string, std::unique_ptr<DnsTxtRequest>> dns_reqs_;
 
-  void Request(std::string task, std::shared_ptr<DagListener>, Priority);
-  std::shared_ptr<GatewayRequest> InitiateGatewayRequest(BusyGateway) override;
   std::string MimeType(std::string extension,
                        std::string_view content,
                        std::string const& url) const override;
@@ -58,26 +47,13 @@ class ChromiumIpfsContext final : public ContextApi {
                             ByteView data,
                             ByteView key_bytes) const override;
 
-  void OnResponse(std::shared_ptr<ContextApi>,
-                  std::shared_ptr<GatewayUrlLoader>,
-                  base::TimeTicks,
-                  std::unique_ptr<std::string>);
-  bool ProcessResponse(BusyGateway&,
-                       network::SimpleURLLoader*,
-                       std::string*,
-                       base::TimeTicks);
   friend class NetworkRequestor;
-
-  void RequestByCid(std::string cid,
-                    std::shared_ptr<DagListener>,
-                    Priority);
 
  public:
   ChromiumIpfsContext(InterRequestState&,
                       raw_ptr<network::mojom::NetworkContext> network_context);
   ~ChromiumIpfsContext();
   void SetLoaderFactory(network::mojom::URLLoaderFactory&);
-  Scheduler& scheduler();
   void Discover(std::function<void(std::vector<std::string>)>) override;
 };
 

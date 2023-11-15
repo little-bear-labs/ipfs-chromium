@@ -33,6 +33,6 @@ TEST(GatewaysTest, AddingNewGatewayShowsUpInList) {
   tested.AddGateways({"newly_added"});
   auto list = tested.GenerateList();
   EXPECT_TRUE(std::any_of(list.begin(), list.end(), [](auto& g) {
-    return g.url_prefix() == "http://newly_added/";
+    return g.prefix == "http://newly_added/";
   }));
 }

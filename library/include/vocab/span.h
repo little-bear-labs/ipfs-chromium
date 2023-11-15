@@ -1,20 +1,20 @@
 #ifndef IPFS_SPAN_H_
 #define IPFS_SPAN_H_
 
-#if __has_include("base/containers/span.h")
+#if __cpp_lib_span
+#include <span>
+
+namespace ipfs {
+template <class Value>
+using span = std::span<Value>;
+}  // namespace ipfs
+
+#elif __has_include("base/containers/span.h")
 
 #include "base/containers/span.h"
 namespace ipfs {
 template <class Value>
 using span = base::span<Value>;
-}  // namespace ipfs
-
-#elif __has_cpp_attribute(__cpp_lib_span)
-
-#include <span>
-namespace ipfs {
-template <class Value>
-using span = std::span<Value>;
 }  // namespace ipfs
 
 #elif __has_include(<absl/types/span.h>)

@@ -11,10 +11,10 @@ using namespace std::literals;
 
 using Self = ipfs::Orchestrator;
 
-Self::Orchestrator(GatewayAccess ga,
-                   std::shared_ptr<gw::Requestor> requestor,
+Self::Orchestrator(std::shared_ptr<gw::Requestor> requestor,
                    std::shared_ptr<ContextApi> api)
-    : gw_requestor_{ga}, api_{api}, requestor_{requestor} {
+    //    : gw_requestor_{ga}, api_{api}, requestor_{requestor} {
+    : api_{api}, requestor_{requestor} {
   DCHECK(requestor);
 }
 
@@ -23,7 +23,7 @@ void Self::build_response(std::shared_ptr<IpfsRequest> req) {
     return;
   }
   auto req_path = req->path();
-  LOG(INFO) << "build_response(" << req_path.to_string() << ')';
+  VLOG(1) << "build_response(" << req_path.to_string() << ')';
   req_path.pop();  // namespace
   std::string affinity{req_path.pop()};
   auto it = dags_.find(affinity);
@@ -32,8 +32,8 @@ void Self::build_response(std::shared_ptr<IpfsRequest> req) {
       build_response(req);
     }
   } else {
-    LOG(INFO) << "Requesting root " << affinity << " resolve path "
-              << req_path.to_string();
+    VLOG(1) << "Requesting root " << affinity << " resolve path "
+            << req_path.to_string();
     from_tree(req, it->second, req_path, affinity);
   }
 }
@@ -63,19 +63,21 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
       }
     }
     req->finish(*response);
+  } else if (std::holds_alternative<ipld::PathChange>(result)) {
+    auto& np = std::get<ipld::PathChange>(result);
+    LOG(INFO) << "Symlink converts request to " << req->path().to_string()
+              << " into " << np.new_path
+              << ". TODO - check for infinite loops.";
+    req->new_path(np.new_path);
+    build_response(req);
   } else if (std::get_if<ipld::ProvenAbsent>(&result)) {
-    req->finish(Response::PLAIN_NOT_FOUND);
+    req->finish(Response::IMMUTABLY_GONE);
   } else {
-    auto& missing_paths =
-        std::get<ipld::MoreDataNeeded>(result).ipfs_abs_paths_;
-    req->till_next(missing_paths.size());
-    bool repeat = false;
-    for (auto& path : missing_paths) {
-      if (gw_request(req, std::string_view{path}, affinity)) {
-        repeat = true;
-      }
-    }
-    if (repeat) {
+    auto& mps = std::get<ipld::MoreDataNeeded>(result).ipfs_abs_paths_;
+    req->till_next(mps.size());
+    if (std::any_of(mps.begin(), mps.end(), [this, &req, &affinity](auto& p) {
+          return gw_request(req, SlashDelimited{p}, affinity);
+        })) {
       from_tree(req, node, relative_path, affinity);
     }
   }
@@ -85,7 +87,7 @@ bool Self::gw_request(std::shared_ptr<IpfsRequest> ir,
                       std::string const& aff) {
   auto req = gw::GatewayRequest::fromIpfsPath(path);
   req->dependent = ir;
-  req->orchestrator = shared_from_this();
+  req->orchestrator(shared_from_this());
   req->affinity = aff;
   //  gw_requestor_(req);
   requestor_->request(req);
@@ -94,7 +96,7 @@ bool Self::gw_request(std::shared_ptr<IpfsRequest> ir,
 
 bool Self::add_node(std::string key, ipfs::ipld::NodePtr p) {
   if (p) {
-    LOG(INFO) << "add_node(" << key << ')';
+    VLOG(1) << "add_node(" << key << ')';
     if (dags_.insert({key, p}).second) {
       p->set_api(api_);
       return true;
@@ -114,8 +116,8 @@ std::string Self::sniff(ipfs::SlashDelimited p, std::string const& body) const {
     ext.assign(file_name, dot + 1);
   }
   auto result = api_->MimeType(ext, body, fake_url);
-  LOG(INFO) << "Deduced mime from (ext=" << ext << " body of " << body.size()
-            << " bytes, 'url'=" << fake_url << ")=" << result;
+  VLOG(1) << "Deduced mime from (ext=" << ext << " body of " << body.size()
+          << " bytes, 'url'=" << fake_url << ")=" << result;
   return result;
 }
 

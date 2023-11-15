@@ -13,8 +13,7 @@ auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
   if (req->type != gw::Type::Identity) {
     return HandleOutcome::NOT_HANDLED;
   }
-  auto node = std::make_shared<ipld::Chunk>(std::string{req->identity_data()});
-  req->orchestrator->add_node(req->main_param, node);
-  req->orchestrator->build_response(req->dependent);
+  std::string data{req->identity_data()};
+  req->RespondSuccessfully(data, api_.get());
   return HandleOutcome::DONE;
 }

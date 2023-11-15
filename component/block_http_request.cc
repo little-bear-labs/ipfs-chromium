@@ -51,9 +51,25 @@ void Self::send(raw_ptr<network::mojom::URLLoaderFactory> loader_factory) {
 void Self::OnResponse(std::shared_ptr<Self>,
                       std::unique_ptr<std::string> body) {
   DCHECK(loader_);
-  int status = loader_->NetError() ? 500 : 200;
+  int status;
+  switch (loader_->NetError()) {
+    case net::Error::OK:
+      status = 200;
+      break;
+    case net::Error::ERR_TIMED_OUT:
+      status = 408;
+      break;
+    default:
+      status = 500;
+  }
   ContextApi::HeaderAccess header_accessor = [](auto) { return std::string{}; };
   auto sz = body ? body->size() : 0UL;
+  if (loader_->NetError() == net::Error::ERR_TIMED_OUT) {
+    VLOG(1) << "HTTP request timed out: " << inf_.url << " after "
+            << inf_.timeout_seconds << "s.";
+  } else if (loader_->NetError()) {
+    LOG(INFO) << "NetErr " << loader_->NetError() << " for " << inf_.url;
+  }
   VLOG(1) << "Handling HTTP response body of size " << sz << " with NetErr "
           << loader_->NetError() << " for " << inf_.url;
   auto const* head = loader_->ResponseInfo();
@@ -73,7 +89,7 @@ void Self::OnResponse(std::shared_ptr<Self>,
       return val;
     };
   } else {
-    LOG(WARNING) << "No response header info?";
+    VLOG(1) << "No response header info?";
   }
   if (body) {
     callback_(status, *body, header_accessor);

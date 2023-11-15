@@ -14,7 +14,7 @@ struct Response;
 }  // namespace ipfs
 
 namespace ipfs::gw {
-struct GatewayRequest;
+class GatewayRequest;
 class RequestPool;
 using RequestPtr = std::shared_ptr<GatewayRequest>;
 
@@ -45,11 +45,13 @@ class Requestor : public std::enable_shared_from_this<Requestor> {
   std::shared_ptr<ContextApi> api_;
 
  public:
+  using RequestPtr = ::ipfs::gw::RequestPtr;
   virtual std::string_view name() const = 0;
   
   virtual ~Requestor() noexcept {}
   void request(std::shared_ptr<GatewayRequest>);
   Requestor& or_else(std::shared_ptr<Requestor> p);
+  void api(std::shared_ptr<ContextApi>);
 
  private:
   std::shared_ptr<Requestor> next_;
