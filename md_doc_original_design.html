@@ -176,13 +176,13 @@ Gateway Request</h3>
 <li>For each gateway, a set of TaskFailed requests (URL suffixes)</li>
 </ul>
 <div class="fragment"><div class="line">graph TD;</div>
-<div class="line">    start([&quot;URL suffix from above flow&quot;]) --&gt; add[(&quot;Add to pending requests&quot;)]</div>
+<div class="line">    start([&quot;URL suffix from above flow&quot;]) --&gt; add[(&quot;Add to pending_ requests&quot;)]</div>
 <div class="line">    style start fill:#9CF,color:black</div>
-<div class="line">    add --&gt; selreq[&quot;Select the pending request with the lowest dup count&quot;] --&gt; incdup[&quot;Increase its dup count&quot;] </div>
+<div class="line">    add --&gt; selreq[&quot;Select the pending_ request with the lowest dup count&quot;] --&gt; incdup[&quot;Increase its dup count&quot;] </div>
 <div class="line">    incdup --&gt; goodfree{&quot;Is there a gateway that is both GOOD and FREE&quot;} </div>
 <div class="line">    goodfree --NO--&gt; badfree{&quot;Are there any FREE that have not already TaskFailed this request?&quot;} </div>
 <div class="line">    badfree --NO--&gt; anybusy{&quot;Are there any BUSY gateways?&quot;} </div>
-<div class="line">    anybusy --YES--&gt; wait((&quot;Wait for pending requests to finish (return flow control)&quot;))</div>
+<div class="line">    anybusy --YES--&gt; wait((&quot;Wait for pending_ requests to finish (return flow control)&quot;))</div>
 <div class="line">    badfree --YES--&gt; selbf[&quot;Select the one with the fewest TaskFailed requests, initial parallel tiebreaks&quot;] </div>
 <div class="line">    selbf --&gt; mark_busy[&quot;Mark the gateway as BUSY&quot;]</div>
 <div class="line">    goodfree --YES--&gt; selbf</div>

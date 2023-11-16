@@ -1,4 +1,0 @@
-<map id="ipfs::BlockStorage::Store" name="ipfs::BlockStorage::Store">
-<area shape="rect" id="node1" title="Store a Block for later access." alt="" coords="5,5,145,47"/>
-<area shape="rect" id="node2" href="$classipfs_1_1BlockStorage.html#a62c0428161a796bc977d5b42d0bd2c73" title="Normally called internally." alt="" coords="193,5,333,47"/>
-</map>

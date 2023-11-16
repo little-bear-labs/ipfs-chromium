@@ -141,13 +141,14 @@ $(function() {
 <div class="line"><a name="l00100"></a><span class="lineno"><a class="line" href="classipfs_1_1ContextApi.html#a1c7cb1d1a94d2ebf7dc67b82d9b7f419">  100</a></span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1ContextApi.html#a1c7cb1d1a94d2ebf7dc67b82d9b7f419">Discover</a>(std::function&lt;<span class="keywordtype">void</span>(std::vector&lt;std::string&gt;)&gt; cb) = 0;</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="comment">// TODO drop</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keyword">virtual</span> std::shared_ptr&lt;GatewayRequest&gt; InitiateGatewayRequest(</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      <a class="code" href="classipfs_1_1BusyGateway.html">BusyGateway</a>) = 0;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;};</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160; </div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160; </div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keyword">virtual</span> std::shared_ptr&lt;GatewayRequest&gt; InitiateGatewayRequest(<a class="code" href="classipfs_1_1BusyGateway.html">BusyGateway</a>) {</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keywordflow">return</span> {};</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  }</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;};</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; </div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassipfs_1_1BusyGateway_html"><div class="ttname"><a href="classipfs_1_1BusyGateway.html">ipfs::BusyGateway</a></div><div class="ttdoc">RAII class embodying the assignment of a given task to a given gateway.</div><div class="ttdef"><b>Definition:</b> busy_gateway.h:30</div></div>
 <div class="ttc" id="aclassipfs_1_1ContextApi_html"><div class="ttname"><a href="classipfs_1_1ContextApi.html">ipfs::ContextApi</a></div><div class="ttdoc">Interface that provides functionality from whatever environment you're using this library in.</div><div class="ttdef"><b>Definition:</b> context_api.h:45</div></div>
 <div class="ttc" id="aclassipfs_1_1ContextApi_html_a1c7cb1d1a94d2ebf7dc67b82d9b7f419"><div class="ttname"><a href="classipfs_1_1ContextApi.html#a1c7cb1d1a94d2ebf7dc67b82d9b7f419">ipfs::ContextApi::Discover</a></div><div class="ttdeci">virtual void Discover(std::function&lt; void(std::vector&lt; std::string &gt;)&gt; cb)=0</div><div class="ttdoc">Discover more gateways.</div></div>

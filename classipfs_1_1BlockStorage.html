@@ -94,18 +94,18 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae4a4b1798f6c0c15a5e081ab3520cad5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5">Store</a> (std::string cid_str, Cid const &amp;cid, std::string headers, std::string const &amp;body, <a class="el" href="classipfs_1_1Block.html">Block</a> &amp;&amp;block)</td></tr>
 <tr class="memdesc:ae4a4b1798f6c0c15a5e081ab3520cad5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store a <a class="el" href="classipfs_1_1Block.html" title="Something to which a CID may refer directly.">Block</a> for later access.  <a href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5">More...</a><br /></td></tr>
 <tr class="separator:ae4a4b1798f6c0c15a5e081ab3520cad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a86b5317273b0d593121067e96ab9a238"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classipfs_1_1Block.html">Block</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockStorage.html#a86b5317273b0d593121067e96ab9a238">Get</a> (std::string const &amp;cid)</td></tr>
-<tr class="memdesc:a86b5317273b0d593121067e96ab9a238"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a block!  <a href="classipfs_1_1BlockStorage.html#a86b5317273b0d593121067e96ab9a238">More...</a><br /></td></tr>
-<tr class="separator:a86b5317273b0d593121067e96ab9a238"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a73f9d3ad3c9dead6ae9709e1289e1e6a"><td class="memItemLeft" align="right" valign="top">std::string const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockStorage.html#a73f9d3ad3c9dead6ae9709e1289e1e6a">GetHeaders</a> (std::string const &amp;cid)</td></tr>
-<tr class="memdesc:a73f9d3ad3c9dead6ae9709e1289e1e6a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get HTTP headers associated with the block.  <a href="classipfs_1_1BlockStorage.html#a73f9d3ad3c9dead6ae9709e1289e1e6a">More...</a><br /></td></tr>
-<tr class="separator:a73f9d3ad3c9dead6ae9709e1289e1e6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08e857b2b5528dbad6236fcf190ea73f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classipfs_1_1Block.html">Block</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockStorage.html#a08e857b2b5528dbad6236fcf190ea73f">Get</a> (std::string const &amp;cid)</td></tr>
+<tr class="memdesc:a08e857b2b5528dbad6236fcf190ea73f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get a block!  <a href="classipfs_1_1BlockStorage.html#a08e857b2b5528dbad6236fcf190ea73f">More...</a><br /></td></tr>
+<tr class="separator:a08e857b2b5528dbad6236fcf190ea73f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27810bf3b073334337a71172d3f4aa41"><td class="memItemLeft" align="right" valign="top">std::string const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockStorage.html#a27810bf3b073334337a71172d3f4aa41">GetHeaders</a> (std::string const &amp;cid)</td></tr>
+<tr class="memdesc:a27810bf3b073334337a71172d3f4aa41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get HTTP headers associated with the block.  <a href="classipfs_1_1BlockStorage.html#a27810bf3b073334337a71172d3f4aa41">More...</a><br /></td></tr>
+<tr class="separator:a27810bf3b073334337a71172d3f4aa41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0071537003f3fc45bc09da2372bac766"><td class="memItemLeft" align="right" valign="top"><a id="a0071537003f3fc45bc09da2372bac766"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockStorage.html#a0071537003f3fc45bc09da2372bac766">AddListening</a> (<a class="el" href="classipfs_1_1UnixFsPathResolver.html">UnixFsPathResolver</a> *)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockStorage.html#a0071537003f3fc45bc09da2372bac766">AddListening</a> (UnixFsPathResolver *)</td></tr>
 <tr class="memdesc:a0071537003f3fc45bc09da2372bac766"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicate that a particular path resolver is waiting on a CID to become available. <br /></td></tr>
 <tr class="separator:a0071537003f3fc45bc09da2372bac766"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aedca96e0978a421fc5d117d967eba22a"><td class="memItemLeft" align="right" valign="top"><a id="aedca96e0978a421fc5d117d967eba22a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockStorage.html#aedca96e0978a421fc5d117d967eba22a">StopListening</a> (<a class="el" href="classipfs_1_1UnixFsPathResolver.html">UnixFsPathResolver</a> *)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockStorage.html#aedca96e0978a421fc5d117d967eba22a">StopListening</a> (UnixFsPathResolver *)</td></tr>
 <tr class="memdesc:aedca96e0978a421fc5d117d967eba22a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicate that a particular path resolver is no longer waiting. <br /></td></tr>
 <tr class="separator:aedca96e0978a421fc5d117d967eba22a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62c0428161a796bc977d5b42d0bd2c73"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockStorage.html#a62c0428161a796bc977d5b42d0bd2c73">CheckListening</a> ()</td></tr>
@@ -174,26 +174,17 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>Store</b> (Cid const 
 
 <p>Normally called internally. </p>
 <p>Checks to see if any listening path resolver appears to be waiting on a CID which is now available. </p>
-<div class="dynheader">
-Here is the caller graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="classipfs_1_1BlockStorage_a62c0428161a796bc977d5b42d0bd2c73_icgraph.png" border="0" usemap="#aclassipfs_1_1BlockStorage_a62c0428161a796bc977d5b42d0bd2c73_icgraph" alt=""/></div>
-<map name="aclassipfs_1_1BlockStorage_a62c0428161a796bc977d5b42d0bd2c73_icgraph" id="aclassipfs_1_1BlockStorage_a62c0428161a796bc977d5b42d0bd2c73_icgraph">
-<area shape="rect" title="Normally called internally." alt="" coords="193,5,333,47"/>
-<area shape="rect" href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5" title="Store a Block for later access." alt="" coords="5,5,145,47"/>
-</map>
-</div>
 
 </div>
 </div>
-<a id="a86b5317273b0d593121067e96ab9a238"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a86b5317273b0d593121067e96ab9a238">&#9670;&nbsp;</a></span>Get()</h2>
+<a id="a08e857b2b5528dbad6236fcf190ea73f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08e857b2b5528dbad6236fcf190ea73f">&#9670;&nbsp;</a></span>Get()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classipfs_1_1Block.html">ipfs::Block</a> const  * ipfs::BlockStorage::Get </td>
+          <td class="memname"><a class="el" href="classipfs_1_1Block.html">Block</a> const* ipfs::BlockStorage::Get </td>
           <td>(</td>
           <td class="paramtype">std::string const &amp;&#160;</td>
           <td class="paramname"><em>cid</em></td><td>)</td>
@@ -213,14 +204,14 @@ Here is the caller graph for this function:</div>
 
 </div>
 </div>
-<a id="a73f9d3ad3c9dead6ae9709e1289e1e6a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a73f9d3ad3c9dead6ae9709e1289e1e6a">&#9670;&nbsp;</a></span>GetHeaders()</h2>
+<a id="a27810bf3b073334337a71172d3f4aa41"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27810bf3b073334337a71172d3f4aa41">&#9670;&nbsp;</a></span>GetHeaders()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::string const  * ipfs::BlockStorage::GetHeaders </td>
+          <td class="memname">std::string const* ipfs::BlockStorage::GetHeaders </td>
           <td>(</td>
           <td class="paramtype">std::string const &amp;&#160;</td>
           <td class="paramname"><em>cid</em></td><td>)</td>
@@ -255,7 +246,7 @@ Here is the caller graph for this function:</div>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">ipfs::Cid const &amp;&#160;</td>
+          <td class="paramtype">Cid const &amp;&#160;</td>
           <td class="paramname"><em>cid</em>, </td>
         </tr>
         <tr>
@@ -296,21 +287,11 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Whether this block is now stored in *this </dd></dl>
-<div class="dynheader">
-Here is the call graph for this function:</div>
-<div class="dyncontent">
-<div class="center"><img src="classipfs_1_1BlockStorage_ae4a4b1798f6c0c15a5e081ab3520cad5_cgraph.png" border="0" usemap="#aclassipfs_1_1BlockStorage_ae4a4b1798f6c0c15a5e081ab3520cad5_cgraph" alt=""/></div>
-<map name="aclassipfs_1_1BlockStorage_ae4a4b1798f6c0c15a5e081ab3520cad5_cgraph" id="aclassipfs_1_1BlockStorage_ae4a4b1798f6c0c15a5e081ab3520cad5_cgraph">
-<area shape="rect" title="Store a Block for later access." alt="" coords="5,5,145,47"/>
-<area shape="rect" href="classipfs_1_1BlockStorage.html#a62c0428161a796bc977d5b42d0bd2c73" title="Normally called internally." alt="" coords="193,5,333,47"/>
-</map>
-</div>
 
 </div>
 </div>
-<hr/>The documentation for this class was generated from the following files:<ul>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/<a class="el" href="block__storage_8h_source.html">block_storage.h</a></li>
-<li>library/src/ipfs_client/block_storage.cc</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

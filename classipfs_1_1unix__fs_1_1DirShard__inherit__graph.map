@@ -1,4 +1,0 @@
-<map id="ipfs::unix_fs::DirShard" name="ipfs::unix_fs::DirShard">
-<area shape="rect" id="node1" title="Process a sharded directory (likely over multiple blocks)" alt="" coords="16,80,181,107"/>
-<area shape="rect" id="node2" href="$classipfs_1_1unix__fs_1_1NodeHelper.html" title="Deal with a block that is a UnixFS node of some sort." alt="" coords="5,5,192,32"/>
-</map>

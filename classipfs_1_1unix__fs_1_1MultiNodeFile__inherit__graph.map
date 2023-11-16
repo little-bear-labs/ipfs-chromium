@@ -1,4 +1,0 @@
-<map id="ipfs::unix_fs::MultiNodeFile" name="ipfs::unix_fs::MultiNodeFile">
-<area shape="rect" id="node1" title="Process a file that&#39;s not a block but an almagation of blocks." alt="" coords="5,80,204,107"/>
-<area shape="rect" id="node2" href="$classipfs_1_1unix__fs_1_1NodeHelper.html" title="Deal with a block that is a UnixFS node of some sort." alt="" coords="11,5,198,32"/>
-</map>

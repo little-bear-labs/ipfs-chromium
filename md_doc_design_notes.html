@@ -175,10 +175,10 @@ Scoring</h1>
 </li>
 </ul>
 <p>When issuing a request to another gateway, it checks the gateways in descending-score order:</p><ul>
-<li>If the gateway already has a request for that data pending, or has already failed to return successfully, it's skipped.</li>
-<li>If the gateways score is less than the number of pending requests currently sent to that gateway, it's skipped as it's considered already-too-busy</li>
+<li>If the gateway already has a request for that data pending_, or has already failed to return successfully, it's skipped.</li>
+<li>If the gateways score is less than the number of pending_ requests currently sent to that gateway, it's skipped as it's considered already-too-busy</li>
 <li>The "need" is generally calculated as the target number of gateways desired to be involved (based on request parallel), subtracting the number of gateways currently processing a request for this data.</li>
-<li>If the "need" is less than half the count of pending requests on this gateway, it's skipped as it's simply not urgent enough to justify further overloading this gateway.</li>
+<li>If the "need" is less than half the count of pending_ requests on this gateway, it's skipped as it's simply not urgent enough to justify further overloading this gateway.</li>
 </ul>
 <p>On a side-note, the hard-coded starting points for the scoring effectively encodes known information about those gateways. For example: <a href="http://localhost:8080/">http://localhost:8080/</a> is scored extremely highly. There's a good chance it has the resource you're looking for, and if it doesn't you may want to send a request that way anyhow so that it will in the future. Conversely, <a href="https://ipfs.anonymize.com/">https://ipfs.anonymize.com/</a> is rarely helpful and is barely hanging on at the bottom. <a href="https://jcsl.hopto.org/">https://jcsl.hopto.org/</a> is scored higher than one might imagine, given that it's not even commercially-hosted. But ipfs-chromium today is disproportionately used on the same set of test links, and jcsl.hopto will generally have those because it's John's home and his node.</p>
 <p>[^1]: At some point this should be fixed. A difference in choice of multibase encoding or even codec should not cause a new entry. Different hash algos, on the other hand, are unavoidably incomparable. </p>
