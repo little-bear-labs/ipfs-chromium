@@ -6,6 +6,5 @@ var searchData=
   ['blockrequestor_13',['BlockRequestor',['../classipfs_1_1BlockRequestor.html',1,'ipfs']]],
   ['blockrequestsplitter_14',['BlockRequestSplitter',['../classipfs_1_1gw_1_1BlockRequestSplitter.html',1,'ipfs::gw']]],
   ['blockscomplete_15',['BlocksComplete',['../classipfs_1_1DagListener.html#a4828dd07c64933f4052e5a8dc2bfa107',1,'ipfs::DagListener']]],
-  ['blockstorage_16',['BlockStorage',['../classipfs_1_1BlockStorage.html',1,'ipfs']]],
-  ['busygateway_17',['BusyGateway',['../classipfs_1_1BusyGateway.html',1,'ipfs']]]
+  ['blockstorage_16',['BlockStorage',['../classipfs_1_1BlockStorage.html',1,'ipfs']]]
 ];

@@ -95,34 +95,35 @@ $(function() {
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <a class="code" href="classipfs_1_1IpnsNames.html">IpnsNames</a> names_;</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  std::weak_ptr&lt;ChromiumIpfsContext&gt; api_;</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  std::time_t last_discovery_ = 0;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  std::shared_ptr&lt;CacheRequestor&gt; mem_, dsk_;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  std::shared_ptr&lt;CacheRequestor&gt; cache_;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  base::FilePath <span class="keyword">const</span> disk_path_;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  std::shared_ptr&lt;Orchestrator&gt; orc_;  <span class="comment">// TODO - map of origin to Orchestrator</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr&lt;network::mojom::NetworkContext&gt;</a> network_context_;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <a class="code" href="classipfs_1_1InterRequestState.html">InterRequestState</a>(base::FilePath);</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  ~<a class="code" href="classipfs_1_1InterRequestState.html">InterRequestState</a>() noexcept <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <a class="code" href="classipfs_1_1Gateways.html">Gateways</a>&amp; gateways() { <span class="keywordflow">return</span> gws_; }</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <a class="code" href="classipfs_1_1IpnsNames.html">IpnsNames</a>&amp; names() { <span class="keywordflow">return</span> names_; }</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <a class="code" href="classipfs_1_1Scheduler.html">Scheduler</a>&amp; scheduler();</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  std::shared_ptr&lt;ChromiumIpfsContext&gt; api();</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  std::array&lt;std::shared_ptr&lt;CacheRequestor&gt;,2&gt; serialized_caches();</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <a class="code" href="classipfs_1_1Orchestrator.html">Orchestrator</a>&amp; orchestrator();</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordtype">void</span> set_network_context(<a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr&lt;network::mojom::NetworkContext&gt;</a>);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keyword">static</span> <a class="code" href="classipfs_1_1InterRequestState.html">InterRequestState</a>&amp; FromBrowserContext(content::BrowserContext*);</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;};</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_INTER_REQUEST_STATE_H_</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  std::shared_ptr&lt;CacheRequestor&gt;&amp; cache();</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <a class="code" href="classipfs_1_1InterRequestState.html">InterRequestState</a>(base::FilePath);</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  ~<a class="code" href="classipfs_1_1InterRequestState.html">InterRequestState</a>() noexcept <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <a class="code" href="classipfs_1_1Gateways.html">Gateways</a>&amp; gateways() { <span class="keywordflow">return</span> gws_; }</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <a class="code" href="classipfs_1_1IpnsNames.html">IpnsNames</a>&amp; names() { <span class="keywordflow">return</span> names_; }</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  Scheduler&amp; scheduler();</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  std::shared_ptr&lt;ChromiumIpfsContext&gt; api();</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  std::array&lt;std::shared_ptr&lt;CacheRequestor&gt;,2&gt; serialized_caches();</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <a class="code" href="classipfs_1_1Orchestrator.html">Orchestrator</a>&amp; orchestrator();</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordtype">void</span> set_network_context(<a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr&lt;network::mojom::NetworkContext&gt;</a>);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keyword">static</span> <a class="code" href="classipfs_1_1InterRequestState.html">InterRequestState</a>&amp; FromBrowserContext(content::BrowserContext*);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;};</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_INTER_REQUEST_STATE_H_</span></div>
 <div class="ttc" id="aclassipfs_1_1ChainedRequestors_html"><div class="ttname"><a href="classipfs_1_1ChainedRequestors.html">ipfs::ChainedRequestors</a></div><div class="ttdoc">A BlockRequestor that chains together BlockRequestors.</div><div class="ttdef"><b>Definition:</b> chained_requestors.h:14</div></div>
-<div class="ttc" id="aclassipfs_1_1Gateways_html"><div class="ttname"><a href="classipfs_1_1Gateways.html">ipfs::Gateways</a></div><div class="ttdoc">All known IPFS gateways.</div><div class="ttdef"><b>Definition:</b> gateways.h:22</div></div>
+<div class="ttc" id="aclassipfs_1_1Gateways_html"><div class="ttname"><a href="classipfs_1_1Gateways.html">ipfs::Gateways</a></div><div class="ttdoc">All known IPFS gateways.</div><div class="ttdef"><b>Definition:</b> gateways.h:32</div></div>
 <div class="ttc" id="aclassipfs_1_1InterRequestState_html"><div class="ttname"><a href="classipfs_1_1InterRequestState.html">ipfs::InterRequestState</a></div><div class="ttdef"><b>Definition:</b> inter_request_state.h:21</div></div>
 <div class="ttc" id="aclassipfs_1_1IpnsNames_html"><div class="ttname"><a href="classipfs_1_1IpnsNames.html">ipfs::IpnsNames</a></div><div class="ttdoc">Fast synchronous access to IPNS &amp; DNSLink name resolution.</div><div class="ttdef"><b>Definition:</b> ipns_names.h:14</div></div>
 <div class="ttc" id="aclassipfs_1_1Orchestrator_html"><div class="ttname"><a href="classipfs_1_1Orchestrator.html">ipfs::Orchestrator</a></div><div class="ttdef"><b>Definition:</b> orchestrator.h:16</div></div>
-<div class="ttc" id="aclassipfs_1_1Scheduler_html"><div class="ttname"><a href="classipfs_1_1Scheduler.html">ipfs::Scheduler</a></div><div class="ttdoc">Matchmaker for Gateway &amp; Task.</div><div class="ttdef"><b>Definition:</b> scheduler.h:27</div></div>
 <div class="ttc" id="aclassipfs_1_1raw__ptr_html"><div class="ttname"><a href="classipfs_1_1raw__ptr.html">ipfs::raw_ptr&lt; network::mojom::NetworkContext &gt;</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

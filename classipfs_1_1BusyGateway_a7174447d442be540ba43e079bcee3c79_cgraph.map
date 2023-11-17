@@ -1,4 +1,0 @@
-<map id="ipfs::BusyGateway::Success" name="ipfs::BusyGateway::Success">
-<area shape="rect" id="node1" title="Indicate that the task has successfully completed." alt="" coords="5,5,156,47"/>
-<area shape="rect" id="node2" href="$classipfs_1_1Gateways.html#adab386521eef3497215c666ad770ce26" title="Good gateway, handle more!" alt="" coords="204,13,387,39"/>
-</map>
