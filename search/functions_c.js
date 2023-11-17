@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['previouslyfailed_271',['PreviouslyFailed',['../classipfs_1_1Gateway.html#a977edc6a5919f0a1a30e15e7c3d28aa5',1,'ipfs::Gateway']]],
-  ['promote_272',['promote',['../classipfs_1_1Gateways.html#adab386521eef3497215c666ad770ce26',1,'ipfs::Gateways']]]
+  ['previouslyfailed_273',['PreviouslyFailed',['../classipfs_1_1Gateway.html#a977edc6a5919f0a1a30e15e7c3d28aa5',1,'ipfs::Gateway']]],
+  ['promote_274',['promote',['../classipfs_1_1Gateways.html#adab386521eef3497215c666ad770ce26',1,'ipfs::Gateways']]]
 ];
