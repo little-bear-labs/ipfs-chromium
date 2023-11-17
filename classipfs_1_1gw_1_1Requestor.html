@@ -116,11 +116,14 @@ Public Member Functions</h2></td></tr>
 virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>name</b> () const =0</td></tr>
 <tr class="separator:aabb9fbb4d0be489d4a71c898b0f995b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8e6f3a27dd66d7ea07118958462ff81"><td class="memItemLeft" align="right" valign="top"><a id="af8e6f3a27dd66d7ea07118958462ff81"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>request</b> (std::shared_ptr&lt; <a class="el" href="structipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> &gt;)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>request</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> &gt;)</td></tr>
 <tr class="separator:af8e6f3a27dd66d7ea07118958462ff81"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a703eb07f92c8051d2a7dee116e729666"><td class="memItemLeft" align="right" valign="top"><a id="a703eb07f92c8051d2a7dee116e729666"></a>
 <a class="el" href="classipfs_1_1gw_1_1Requestor.html">Requestor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>or_else</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1gw_1_1Requestor.html">Requestor</a> &gt; p)</td></tr>
 <tr class="separator:a703eb07f92c8051d2a7dee116e729666"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab206cf9f3726391bed89e8493e66d83d"><td class="memItemLeft" align="right" valign="top"><a id="ab206cf9f3726391bed89e8493e66d83d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>api</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &gt;)</td></tr>
+<tr class="separator:ab206cf9f3726391bed89e8493e66d83d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-types"></a>
 Protected Types</h2></td></tr>
@@ -141,7 +144,7 @@ Protected Member Functions</h2></td></tr>
 virtual HandleOutcome&#160;</td><td class="memItemRight" valign="bottom"><b>handle</b> (RequestPtr)=0</td></tr>
 <tr class="separator:ad30cae22004617553c29195aca469389"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7ede9018374c96ccf77a3c231902c1cf"><td class="memItemLeft" align="right" valign="top"><a id="a7ede9018374c96ccf77a3c231902c1cf"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>iterate_nodes</b> (<a class="el" href="structipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> const &amp;req, <a class="el" href="structipfs_1_1Response.html">Response</a> const &amp;res, std::function&lt; void(std::string, std::shared_ptr&lt; <a class="el" href="classipfs_1_1ipld_1_1DagNode.html">ipld::DagNode</a> &gt;)&gt;) const</td></tr>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>iterate_nodes</b> (<a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> const &amp;req, <a class="el" href="structipfs_1_1Response.html">Response</a> const &amp;res, std::function&lt; void(std::string, std::shared_ptr&lt; <a class="el" href="classipfs_1_1ipld_1_1DagNode.html">ipld::DagNode</a> &gt;)&gt;) const</td></tr>
 <tr class="separator:a7ede9018374c96ccf77a3c231902c1cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57b2eae081fa4e73db5e9f30a6fed294"><td class="memItemLeft" align="right" valign="top"><a id="a57b2eae081fa4e73db5e9f30a6fed294"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>receive_response</b> (RequestPtr, <a class="el" href="structipfs_1_1Response.html">ipfs::Response</a> const &amp;) const</td></tr>
