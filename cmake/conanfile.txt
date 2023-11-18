@@ -1,10 +1,11 @@
 [requires]
-    abseil/20220623.1
+    abseil/20230802.1
     boost/1.81.0
+    c-ares/1.22.1
     gtest/1.13.0
     nlohmann_json/3.11.2
     openssl/1.1.1t
-    protobuf/3.21.4
+    protobuf/3.20.0
 [options]
     boost/*:header_only=True
     boost/*:without_container=False #ipfs_client may use boost

@@ -77,11 +77,11 @@ void ipfs::Gateways::AddGateways(std::vector<std::string> v) {
   }
 }
 
-std::vector<std::pair<std::string, int>> ipfs::Gateways::DefaultGateways() {
+auto ipfs::Gateways::DefaultGateways() -> GatewayList {
   auto* ovr = std::getenv("IPFS_GATEWAY");
   if (ovr && *ovr) {
     std::istringstream user_override{ovr};
-    std::vector<std::pair<std::string, int>> result;
+    GatewayList result;
     std::string gw;
     while (user_override >> gw) {
       if ( gw.empty() ) {
@@ -90,32 +90,31 @@ std::vector<std::pair<std::string, int>> ipfs::Gateways::DefaultGateways() {
       if ( gw.back() != '/' ) {
         gw.push_back('/');
       }
-      result.emplace_back( gw, 0 );
+      result.push_back( {gw, 0} );
     }
     auto N = static_cast<int>(result.size());
     for (auto i = 0; i < N; ++i) {
       auto& r = result[i];
-      r.second = N - i;
-      LOG(INFO) << "User-specified gateway: " << r.first << '=' << r.second;
+      r.strength = N - i;
+      LOG(INFO) << "User-specified gateway: " << r.prefix << '=' << r.strength;
     }
     return result;
   }
-  return {{"http://localhost:8080/"s, 930},
-          {"https://ipfs.io/"s, 927},
-          {"https://gateway.ipfs.io/"s, 924},
-          {"https://jcsl.hopto.org/"s, 921},
-          {"https://dweb.link/"s, 912},
-          {"https://ipfs.joaoleitao.org/"s, 883},
-          {"https://gateway.pinata.cloud/"s, 880},
-          {"https://ipfs.runfission.com/"s, 843},
-          {"https://nftstorage.link/"s, 554},
-          {"https://w3s.link/"s, 312},
-          {"https://ipfs.jpu.jp/"s, 306},
-          {"https://ipfs.fleek.co/"s, 288},
-          {"https://jorropo.net/"s, 238},
-          {"https://permaweb.eu.org/"s, 234},
-          {"https://hardbin.com/"s, 212},
-          {"https://ipfs.scalaproject.io/"s, 26},
-          {"https://ipfs.soul-network.com/"s, 8},
-          {"https://storry.tv/"s, 8}};
+  return {{"http://localhost:8080/"s, 935},
+          {"https://ipfs.io/"s, 928},
+          {"https://gateway.ipfs.io/"s, 926},
+          {"https://jcsl.hopto.org/"s, 925},
+          {"https://dweb.link/"s, 812},
+          {"https://ipfs.joaoleitao.org/"s, 699},
+          {"https://gateway.pinata.cloud/"s, 566},
+          {"https://ipfs.runfission.com/"s, 432},
+          {"https://nftstorage.link/"s, 333},
+          {"https://w3s.link/"s, 249},
+          {"https://ipfs.fleek.co/"s, 216},
+          {"https://ipfs.jpu.jp/"s, 183},
+          {"https://permaweb.eu.org/"s, 144},
+          {"https://jorropo.net/"s, 91},
+          {"https://hardbin.com/"s, 46},
+          {"https://ipfs.soul-network.com/"s, 1},
+          {"https://storry.tv/"s, 0}};
 }

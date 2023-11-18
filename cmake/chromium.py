@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
-from cache_vars import build_dir, vars, verbose
+from cache_vars import build_dir, vars
 from patch import Patcher
+from verbose import verbose
 
 from glob import glob
 from os import environ, makedirs, remove
@@ -155,7 +156,7 @@ def copy_missing_and_changed_files(source, target):
             if not isdir(t):
                 makedirs(t)
             continue
-        if s.endswith('_unittest.cc'):
+        if s.endswith('_unittest.cc') or 'inclusive' in s:
             continue
         ext = splitext(s)[-1]
         if ext in ignore_exts:

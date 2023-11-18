@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
-index 9feb694b4e410..fe16faf7a9fa3 100644
+index d2ece5b728926..3c4d51064b946 100644
 --- a/chrome/browser/BUILD.gn
 +++ b/chrome/browser/BUILD.gn
 @@ -40,6 +40,7 @@ import("//rlz/buildflags/buildflags.gni")
@@ -10,7 +10,7 @@ index 9feb694b4e410..fe16faf7a9fa3 100644
  import("//third_party/protobuf/proto_library.gni")
  import("//third_party/webrtc/webrtc.gni")
  import("//third_party/widevine/cdm/widevine.gni")
-@@ -2657,6 +2658,10 @@ static_library("browser") {
+@@ -2651,6 +2652,10 @@ static_library("browser") {
        ]
      }
  
@@ -22,10 +22,10 @@ index 9feb694b4e410..fe16faf7a9fa3 100644
        deps += [ "//chrome/browser/screen_ai:screen_ai_dlc_installer" ]
      }
 diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
-index aba92a8ce8422..e5b409742ae49 100644
+index 68fa04fbffc20..1b6b5e306dac7 100644
 --- a/chrome/browser/about_flags.cc
 +++ b/chrome/browser/about_flags.cc
-@@ -213,6 +213,7 @@
+@@ -209,6 +209,7 @@
  #include "third_party/blink/public/common/features_generated.h"
  #include "third_party/blink/public/common/forcedark/forcedark_switches.h"
  #include "third_party/blink/public/common/switches.h"
@@ -33,7 +33,7 @@ index aba92a8ce8422..e5b409742ae49 100644
  #include "ui/accessibility/accessibility_features.h"
  #include "ui/accessibility/accessibility_switches.h"
  #include "ui/base/ui_base_features.h"
-@@ -314,6 +315,10 @@
+@@ -309,6 +310,10 @@
  #include "extensions/common/switches.h"
  #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
  
@@ -44,7 +44,7 @@ index aba92a8ce8422..e5b409742ae49 100644
  #if BUILDFLAG(ENABLE_PDF)
  #include "pdf/pdf_features.h"
  #endif
-@@ -9787,6 +9792,14 @@ const FeatureEntry kFeatureEntries[] = {
+@@ -9888,6 +9893,14 @@ const FeatureEntry kFeatureEntries[] = {
       flag_descriptions::kOmitCorsClientCertDescription, kOsAll,
       FEATURE_VALUE_TYPE(network::features::kOmitCorsClientCert)},
  
@@ -110,10 +110,10 @@ index 4c88614c68c25..f8bb12a3b0c2e 100644
  
    // Also check for schemes registered via registerProtocolHandler(), which
 diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
-index cac5aa93883dc..c8beecf246eb2 100644
+index b833f2cd54253..07a71010c48a6 100644
 --- a/chrome/browser/chrome_content_browser_client.cc
 +++ b/chrome/browser/chrome_content_browser_client.cc
-@@ -229,6 +229,8 @@
+@@ -232,6 +232,8 @@
  #include "components/error_page/common/localized_error.h"
  #include "components/error_page/content/browser/net_error_auto_reloader.h"
  #include "components/google/core/common/google_switches.h"
@@ -122,7 +122,7 @@ index cac5aa93883dc..c8beecf246eb2 100644
  #include "components/keep_alive_registry/keep_alive_types.h"
  #include "components/keep_alive_registry/scoped_keep_alive.h"
  #include "components/language/core/browser/pref_names.h"
-@@ -366,6 +368,7 @@
+@@ -372,6 +374,7 @@
  #include "third_party/blink/public/common/switches.h"
  #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
  #include "third_party/blink/public/public_buildflags.h"
@@ -130,7 +130,7 @@ index cac5aa93883dc..c8beecf246eb2 100644
  #include "third_party/widevine/cdm/buildflags.h"
  #include "ui/base/clipboard/clipboard_format_type.h"
  #include "ui/base/l10n/l10n_util.h"
-@@ -489,6 +492,12 @@
+@@ -495,6 +498,12 @@
  #include "chrome/browser/fuchsia/chrome_browser_main_parts_fuchsia.h"
  #endif
  
@@ -143,7 +143,7 @@ index cac5aa93883dc..c8beecf246eb2 100644
  #if BUILDFLAG(IS_CHROMEOS)
  #include "base/debug/leak_annotations.h"
  #include "chrome/browser/apps/intent_helper/chromeos_disabled_apps_throttle.h"
-@@ -6170,12 +6179,23 @@ void ChromeContentBrowserClient::
+@@ -6167,12 +6176,23 @@ void ChromeContentBrowserClient::
          const absl::optional<url::Origin>& request_initiator_origin,
          NonNetworkURLLoaderFactoryMap* factories) {
  #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS) || \
@@ -169,7 +169,7 @@ index cac5aa93883dc..c8beecf246eb2 100644
  
  #if BUILDFLAG(IS_CHROMEOS_ASH)
    if (web_contents) {
-@@ -6317,6 +6337,11 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
+@@ -6314,6 +6334,11 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
      scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
    std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
        interceptors;
@@ -181,11 +181,27 @@ index cac5aa93883dc..c8beecf246eb2 100644
  #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
    interceptors.push_back(
        std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(
+diff --git a/chrome/browser/flag-metadata.json b/chrome/browser/flag-metadata.json
+index 07e463a9bc282..72c84781e6087 100644
+--- a/chrome/browser/flag-metadata.json
++++ b/chrome/browser/flag-metadata.json
+@@ -2865,6 +2865,11 @@
+     "owners": [ "hanxi@chromium.org", "wychen@chromium.org" ],
+     "expiry_milestone": 130
+   },
++  {
++    "name": "enable-ipfs",
++    "owners": [ "//components/ipfs/OWNERS" ],
++    "expiry_milestone": 150
++  },
+   {
+     "name": "enable-isolated-sandboxed-iframes",
+     "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
 diff --git a/chrome/browser/flag_descriptions.cc b/chrome/browser/flag_descriptions.cc
-index cc1f3549227e9..a4ab4f1e09ea2 100644
+index 48e9016fb159b..b951a676a44af 100644
 --- a/chrome/browser/flag_descriptions.cc
 +++ b/chrome/browser/flag_descriptions.cc
-@@ -248,6 +248,11 @@ const char kEnableBenchmarkingDescription[] =
+@@ -274,6 +274,11 @@ const char kEnableBenchmarkingDescription[] =
      "after 3 restarts. On the third restart, the flag will appear to be off "
      "but the effect is still active.";
  
@@ -198,7 +214,7 @@ index cc1f3549227e9..a4ab4f1e09ea2 100644
      "Preloading Settings on Performance Page";
  const char kPreloadingOnPerformancePageDescription[] =
 diff --git a/chrome/browser/flag_descriptions.h b/chrome/browser/flag_descriptions.h
-index 5dd5c631c33e2..e8b0deb43e13f 100644
+index 0f7403c147adf..5222f9b39d3c2 100644
 --- a/chrome/browser/flag_descriptions.h
 +++ b/chrome/browser/flag_descriptions.h
 @@ -22,6 +22,7 @@
@@ -209,7 +225,7 @@ index 5dd5c631c33e2..e8b0deb43e13f 100644
  
  // This file declares strings used in chrome://flags. These messages are not
  // translated, because instead of end-users they target Chromium developers and
-@@ -165,6 +166,11 @@ extern const char kDownloadWarningImprovementsDescription[];
+@@ -172,6 +173,11 @@ extern const char kDownloadWarningImprovementsDescription[];
  extern const char kEnableBenchmarkingName[];
  extern const char kEnableBenchmarkingDescription[];
  
@@ -238,6 +254,397 @@ index 246ec9c5c911f..5d66d133a7907 100644
  }
  
  std::u16string ChromeContentClient::GetLocalizedString(int message_id) {
+diff --git a/components/cbor/reader.cc b/components/cbor/reader.cc
+index 306ba52fa4944..6b13b3a679a65 100644
+--- a/components/cbor/reader.cc
++++ b/components/cbor/reader.cc
+@@ -22,7 +22,7 @@
+ namespace cbor {
+ 
+ namespace constants {
+-const char kUnsupportedMajorType[] = "Unsupported major type.";
++const char kUnsupportedMajorType[] = "Unsupported major type operation.";
+ }
+ 
+ namespace {
+@@ -156,7 +156,11 @@ absl::optional<Value> Reader::DecodeCompleteDataItem(const Config& config,
+     case Value::Type::FLOAT_VALUE:
+       // Floating point values also go here since they are also type 7.
+       return DecodeToSimpleValueOrFloat(*header, config);
+-    case Value::Type::TAG:  // We explicitly don't support TAG.
++    case Value::Type::TAG:
++      if (config.parse_tags) {
++        return ReadTagContent(*header, config, max_nesting_level);
++      }
++      break;
+     case Value::Type::NONE:
+     case Value::Type::INVALID_UTF8:
+       break;
+@@ -347,6 +351,17 @@ absl::optional<Value> Reader::ReadByteStringContent(
+   return Value(std::move(cbor_byte_string));
+ }
+ 
++absl::optional<Value> Reader::ReadTagContent(
++    const Reader::DataItemHeader& header,
++    const Config& config,
++    int max_nesting_level) {
++  auto tagged_content = DecodeCompleteDataItem(config, max_nesting_level);
++  if (tagged_content.has_value()) {
++    tagged_content.value().SetTag(header.value);
++  }
++  return tagged_content;
++}
++
+ absl::optional<Value> Reader::ReadArrayContent(
+     const Reader::DataItemHeader& header,
+     const Config& config,
+diff --git a/components/cbor/reader.h b/components/cbor/reader.h
+index f0b43a5517528..a57e277a1bc66 100644
+--- a/components/cbor/reader.h
++++ b/components/cbor/reader.h
+@@ -130,6 +130,11 @@ class CBOR_EXPORT Reader {
+     // during decoding will set raise the `UNSUPPORTED_FLOATING_POINT_VALUE`
+     // error.
+     bool allow_floating_point = false;
++
++    // If the parser encounters a TAG element, should it be parsed out and
++    // the tag value saved (true), or should the entire node and its content
++    // be discarded (false)
++    bool parse_tags = false;
+   };
+ 
+   Reader(const Reader&) = delete;
+@@ -204,6 +209,9 @@ class CBOR_EXPORT Reader {
+   absl::optional<Value> ReadMapContent(const DataItemHeader& header,
+                                        const Config& config,
+                                        int max_nesting_level);
++  absl::optional<Value> ReadTagContent(const DataItemHeader& header,
++                                       const Config& config,
++                                       int max_nesting_level);
+   absl::optional<uint8_t> ReadByte();
+   absl::optional<base::span<const uint8_t>> ReadBytes(uint64_t num_bytes);
+   bool IsKeyInOrder(const Value& new_key,
+diff --git a/components/cbor/reader_unittest.cc b/components/cbor/reader_unittest.cc
+index 83d44a48d6dfa..a6ec5299b3241 100644
+--- a/components/cbor/reader_unittest.cc
++++ b/components/cbor/reader_unittest.cc
+@@ -1451,5 +1451,42 @@ TEST(CBORReaderTest, AllowInvalidUTF8) {
+   EXPECT_FALSE(cbor);
+   EXPECT_EQ(Reader::DecoderError::INVALID_UTF8, error);
+ }
++TEST(CBORReaderTest, RejectsTagUnderDefaultConfig) {
++  static const uint8_t kTaggedCbor[] = {
++    0xd8, 0x2a, 0x58, 0x25, 0x00, 0x01, 0x71, 0x12, 0x20, 0x69, 0xea, 0x07,
++    0x40, 0xf9, 0x80, 0x7a, 0x28, 0xf4, 0xd9, 0x32, 0xc6, 0x2e, 0x7c, 0x1c,
++    0x83, 0xbe, 0x05, 0x5e, 0x55, 0x07, 0x2c, 0x90, 0x26, 0x6a, 0xb3, 0xe7,
++    0x9d, 0xf6, 0x3a, 0x36, 0x5b
++  };
++  Reader::Config config;
++  absl::optional<Value> cbor = Reader::Read(kTaggedCbor, config);
++  EXPECT_FALSE(cbor.has_value());
++}
++TEST(CBORReaderTest, ReadsTagWhenConfiguredToDoSo) {
++  static const uint8_t kTaggedCbor[] = {
++    0xd8, 0x2a, 0x58, 0x25, 0x00, 0x01, 0x71, 0x12, 0x20, 0x69, 0xea, 0x07,
++    0x40, 0xf9, 0x80, 0x7a, 0x28, 0xf4, 0xd9, 0x32, 0xc6, 0x2e, 0x7c, 0x1c,
++    0x83, 0xbe, 0x05, 0x5e, 0x55, 0x07, 0x2c, 0x90, 0x26, 0x6a, 0xb3, 0xe7,
++    0x9d, 0xf6, 0x3a, 0x36, 0x5b
++  };
++  Reader::Config config;
++  config.parse_tags = true;
++  absl::optional<Value> cbor = Reader::Read(kTaggedCbor, config);
++  EXPECT_TRUE(cbor.has_value());
++  auto& v = cbor.value();
++  EXPECT_TRUE(v.has_tag());
++  EXPECT_EQ(v.GetTag(),42UL);
++  EXPECT_TRUE(v.is_bytestring());
++  EXPECT_EQ(v.type(), Value::Type::BYTE_STRING);
++  auto& bytes = v.GetBytestring();
++  EXPECT_EQ(bytes.size(), 37UL);
++  EXPECT_EQ(bytes.at(0), 0x00);//identity multibase (e.g. not base-encoded, bytes are themselves)
++  EXPECT_EQ(bytes.at(1), 0x01);//CID version 1
++  EXPECT_EQ(bytes.at(2), 0x71);//codec = dag-cbor
++  EXPECT_EQ(bytes.at(3), 0x12);//multihash = 18 = sha2-256
++  EXPECT_EQ(bytes.at(4), 0x20);//hash length = 32 bytes
++  EXPECT_EQ(bytes.at(5), 0x69);//first byte of hash digest
++  EXPECT_EQ(bytes.at(36),0x5b);//last  byte of hash digest
++}
+ 
+ }  // namespace cbor
+diff --git a/components/cbor/values.cc b/components/cbor/values.cc
+index 02498209c820e..34055aef24cfe 100644
+--- a/components/cbor/values.cc
++++ b/components/cbor/values.cc
+@@ -66,32 +66,34 @@ Value::Value(Type type) : type_(type) {
+   NOTREACHED();
+ }
+ 
+-Value::Value(SimpleValue in_simple)
+-    : type_(Type::SIMPLE_VALUE), simple_value_(in_simple) {
++Value::Value(SimpleValue in_simple, uint64_t tag)
++    : type_(Type::SIMPLE_VALUE), simple_value_(in_simple), tag_(tag) {
+   CHECK(static_cast<int>(in_simple) >= 20 && static_cast<int>(in_simple) <= 23);
+ }
+ 
+-Value::Value(bool boolean_value) : type_(Type::SIMPLE_VALUE) {
++Value::Value(bool boolean_value, uint64_t tag) : type_(Type::SIMPLE_VALUE), tag_(tag) {
+   simple_value_ = boolean_value ? Value::SimpleValue::TRUE_VALUE
+                                 : Value::SimpleValue::FALSE_VALUE;
+ }
+ 
+-Value::Value(double float_value)
+-    : type_(Type::FLOAT_VALUE), float_value_(float_value) {}
++Value::Value(double float_value, uint64_t tag)
++    : type_(Type::FLOAT_VALUE), float_value_(float_value), tag_(tag) {}
+ 
+-Value::Value(int integer_value)
+-    : Value(base::checked_cast<int64_t>(integer_value)) {}
++Value::Value(int integer_value, uint64_t tag)
++    : Value(base::checked_cast<int64_t>(integer_value), tag) {}
+ 
+-Value::Value(int64_t integer_value) : integer_value_(integer_value) {
++Value::Value(int64_t integer_value, uint64_t tag) : integer_value_(integer_value), tag_(tag) {
+   type_ = integer_value >= 0 ? Type::UNSIGNED : Type::NEGATIVE;
+ }
+ 
+-Value::Value(base::span<const uint8_t> in_bytes)
++Value::Value(base::span<const uint8_t> in_bytes, uint64_t tag)
+     : type_(Type::BYTE_STRING),
+-      bytestring_value_(in_bytes.begin(), in_bytes.end()) {}
++      bytestring_value_(in_bytes.begin(), in_bytes.end()),
++      tag_(tag)
++      {}
+ 
+-Value::Value(base::span<const uint8_t> in_bytes, Type type)
+-    : type_(type), bytestring_value_(in_bytes.begin(), in_bytes.end()) {
++Value::Value(base::span<const uint8_t> in_bytes, Type type, uint64_t tag)
++    : type_(type), bytestring_value_(in_bytes.begin(), in_bytes.end()), tag_(tag) {
+   DCHECK(type_ == Type::BYTE_STRING || type_ == Type::INVALID_UTF8);
+ }
+ 
+@@ -117,7 +119,8 @@ Value::Value(std::string&& in_string, Type type) noexcept : type_(type) {
+   }
+ }
+ 
+-Value::Value(base::StringPiece in_string, Type type) : type_(type) {
++Value::Value(base::StringPiece in_string, Type type, uint64_t tag)
++: type_(type), tag_(tag) {
+   switch (type_) {
+     case Type::STRING:
+       new (&string_value_) std::string();
+@@ -133,16 +136,18 @@ Value::Value(base::StringPiece in_string, Type type) : type_(type) {
+   }
+ }
+ 
+-Value::Value(const ArrayValue& in_array) : type_(Type::ARRAY), array_value_() {
++Value::Value(const ArrayValue& in_array, uint64_t tag)
++: type_(Type::ARRAY), array_value_(), tag_(tag) {
+   array_value_.reserve(in_array.size());
+   for (const auto& val : in_array)
+     array_value_.emplace_back(val.Clone());
+ }
+ 
+-Value::Value(ArrayValue&& in_array) noexcept
+-    : type_(Type::ARRAY), array_value_(std::move(in_array)) {}
++Value::Value(ArrayValue&& in_array, uint64_t tag) noexcept
++    : type_(Type::ARRAY), array_value_(std::move(in_array)), tag_(tag) {}
+ 
+-Value::Value(const MapValue& in_map) : type_(Type::MAP), map_value_() {
++Value::Value(const MapValue& in_map, uint64_t tag)
++: type_(Type::MAP), map_value_(), tag_(tag) {
+   map_value_.reserve(in_map.size());
+   for (const auto& it : in_map)
+     map_value_.emplace_hint(map_value_.end(), it.first.Clone(),
+@@ -168,31 +173,36 @@ Value Value::Clone() const {
+     case Type::NONE:
+       return Value();
+     case Type::INVALID_UTF8:
+-      return Value(bytestring_value_, Type::INVALID_UTF8);
++      return Value(bytestring_value_, Type::INVALID_UTF8, tag_);
+     case Type::UNSIGNED:
+     case Type::NEGATIVE:
+-      return Value(integer_value_);
++      return Value(integer_value_, tag_);
+     case Type::BYTE_STRING:
+-      return Value(bytestring_value_);
++      return Value(bytestring_value_, tag_);
+     case Type::STRING:
+-      return Value(string_value_);
++      return Value(string_value_, Type::STRING, tag_);
+     case Type::ARRAY:
+-      return Value(array_value_);
++      return Value(array_value_, tag_);
+     case Type::MAP:
+-      return Value(map_value_);
++      return Value(map_value_, tag_);
+     case Type::TAG:
+       NOTREACHED() << constants::kUnsupportedMajorType;
+       return Value();
+     case Type::SIMPLE_VALUE:
+-      return Value(simple_value_);
++      return Value(simple_value_, tag_);
+     case Type::FLOAT_VALUE:
+-      return Value(float_value_);
++      return Value(float_value_, tag_);
+   }
+ 
+   NOTREACHED();
+   return Value();
+ }
+ 
++Value& Value::SetTag(uint64_t tag) noexcept {
++  tag_ = tag;
++  return *this;
++}
++
+ Value::SimpleValue Value::GetSimpleValue() const {
+   CHECK(is_simple());
+   return simple_value_;
+@@ -258,9 +268,14 @@ const Value::BinaryValue& Value::GetInvalidUTF8() const {
+   return bytestring_value_;
+ }
+ 
++uint64_t Value::GetTag() const {
++  CHECK(has_tag());
++  return tag_;
++}
++
+ void Value::InternalMoveConstructFrom(Value&& that) {
+   type_ = that.type_;
+-
++  tag_  = that.tag_;
+   switch (type_) {
+     case Type::UNSIGNED:
+     case Type::NEGATIVE:
+diff --git a/components/cbor/values.h b/components/cbor/values.h
+index d81ef5607c55a..10216a8dcdc57 100644
+--- a/components/cbor/values.h
++++ b/components/cbor/values.h
+@@ -127,28 +127,29 @@ class CBOR_EXPORT Value {
+ 
+   explicit Value(Type type);
+ 
+-  explicit Value(SimpleValue in_simple);
+-  explicit Value(bool boolean_value);
+-  explicit Value(double in_float);
++  explicit Value(SimpleValue in_simple, uint64_t tag = NO_TAG);
++  explicit Value(bool boolean_value, uint64_t tag = NO_TAG);
++  explicit Value(double in_float, uint64_t tag = NO_TAG);
+ 
+-  explicit Value(int integer_value);
+-  explicit Value(int64_t integer_value);
++  explicit Value(int integer_value, uint64_t tag = NO_TAG);
++  explicit Value(int64_t integer_value, uint64_t tag = NO_TAG);
+   explicit Value(uint64_t integer_value) = delete;
+ 
+-  explicit Value(base::span<const uint8_t> in_bytes);
++  explicit Value(base::span<const uint8_t> in_bytes, uint64_t tag = NO_TAG);
+   explicit Value(BinaryValue&& in_bytes) noexcept;
+ 
+   explicit Value(const char* in_string, Type type = Type::STRING);
+   explicit Value(std::string&& in_string, Type type = Type::STRING) noexcept;
+-  explicit Value(base::StringPiece in_string, Type type = Type::STRING);
++  explicit Value(base::StringPiece in_string, Type type = Type::STRING, uint64_t tag = NO_TAG);
+ 
+-  explicit Value(const ArrayValue& in_array);
+-  explicit Value(ArrayValue&& in_array) noexcept;
++  explicit Value(const ArrayValue& in_array, uint64_t tag = NO_TAG);
++  explicit Value(ArrayValue&& in_array, uint64_t tag = NO_TAG) noexcept;
+ 
+-  explicit Value(const MapValue& in_map);
++  explicit Value(const MapValue& in_map, uint64_t tag = NO_TAG);
+   explicit Value(MapValue&& in_map) noexcept;
+ 
+   Value& operator=(Value&& that) noexcept;
++  Value& SetTag(uint64_t) noexcept;
+ 
+   Value(const Value&) = delete;
+   Value& operator=(const Value&) = delete;
+@@ -179,6 +180,7 @@ class CBOR_EXPORT Value {
+   bool is_string() const { return type() == Type::STRING; }
+   bool is_array() const { return type() == Type::ARRAY; }
+   bool is_map() const { return type() == Type::MAP; }
++  bool has_tag() const { return tag_ != NO_TAG; }
+ 
+   // These will all fatally assert if the type doesn't match.
+   SimpleValue GetSimpleValue() const;
+@@ -194,12 +196,13 @@ class CBOR_EXPORT Value {
+   const ArrayValue& GetArray() const;
+   const MapValue& GetMap() const;
+   const BinaryValue& GetInvalidUTF8() const;
++  uint64_t GetTag() const;
+ 
+  private:
+   friend class Reader;
+   // This constructor allows INVALID_UTF8 values to be created, which only
+   // |Reader| and InvalidUTF8StringValueForTesting() may do.
+-  Value(base::span<const uint8_t> in_bytes, Type type);
++  Value(base::span<const uint8_t> in_bytes, Type type, uint64_t tag = NO_TAG);
+ 
+   Type type_;
+ 
+@@ -213,6 +216,11 @@ class CBOR_EXPORT Value {
+     MapValue map_value_;
+   };
+ 
++  //This value specified as Invalid,
++  //  used here to represent absence of TAG
++  constexpr static uint64_t NO_TAG = 0xFFFF;
++  uint64_t tag_ = NO_TAG;
++
+   void InternalMoveConstructFrom(Value&& that);
+   void InternalCleanup();
+ };
+diff --git a/components/cbor/writer.cc b/components/cbor/writer.cc
+index bb22754d36a07..aae4027836377 100644
+--- a/components/cbor/writer.cc
++++ b/components/cbor/writer.cc
+@@ -47,6 +47,9 @@ bool Writer::EncodeCBOR(const Value& node,
+   if (max_nesting_level < 0)
+     return false;
+ 
++  if (node.has_tag()) {
++    StartItem(Value::Type::TAG, node.GetTag());
++  }
+   switch (node.type()) {
+     case Value::Type::NONE: {
+       StartItem(Value::Type::BYTE_STRING, 0);
+diff --git a/components/cbor/writer_unittest.cc b/components/cbor/writer_unittest.cc
+index e3bffe20734bc..0ed569ae164a0 100644
+--- a/components/cbor/writer_unittest.cc
++++ b/components/cbor/writer_unittest.cc
+@@ -522,4 +522,31 @@ TEST(CBORWriterTest, OverlyNestedCBOR) {
+   EXPECT_FALSE(Writer::Write(Value(map), 4).has_value());
+ }
+ 
++TEST(CBORWriterTest, CanWriteTag) {
++  std::array<uint8_t,37> content{
++      0x00, 0x01, 0x71, 0x12, 0x20,
++      0x69, 0xea, 0x07, 0x40, 0xf9,
++      0x80, 0x7a, 0x28, 0xf4, 0xd9,
++      0x32, 0xc6, 0x2e, 0x7c, 0x1c,
++      0x83, 0xbe, 0x05, 0x5e, 0x55,
++      0x07, 0x2c, 0x90, 0x26, 0x6a,
++      0xb3, 0xe7, 0x9d, 0xf6, 0x3a,
++      0x36, 0x5b
++    };
++  Value to_write(content);
++  to_write.SetTag(42);
++  auto result = Writer::Write(to_write);
++  EXPECT_TRUE(result.has_value());
++  auto& bytes = result.value();
++  EXPECT_EQ(bytes.size(), 41UL);
++  EXPECT_EQ(bytes.at(0), 0xd8);
++  EXPECT_EQ(bytes.at(1), 0x2a);
++  EXPECT_EQ(bytes.at(2), 0x58);
++  EXPECT_EQ(bytes.at(3), 0x25);
++  for (auto i = 0UL; i < content.size(); ++i) {
++    ASSERT_LT(i + 4UL, bytes.size());
++    ASSERT_EQ(content.at(i), bytes.at(i+4UL));
++  }
++}
++
+ }  // namespace cbor
 diff --git a/components/open_from_clipboard/clipboard_recent_content_generic.cc b/components/open_from_clipboard/clipboard_recent_content_generic.cc
 index 4dcafecbc66c6..d205209c08162 100644
 --- a/components/open_from_clipboard/clipboard_recent_content_generic.cc

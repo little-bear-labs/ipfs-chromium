@@ -5,6 +5,7 @@
 #include <vocab/slash_delimited.h>
 
 #include <numeric>
+#include <unordered_set>
 
 namespace r = ipfs::redirects;
 using namespace std::literals;
@@ -26,6 +27,7 @@ constexpr int PARSE_ERROR_STATUS = 500;
 r::Directive::Directive(std::string_view from, std::string_view to, int status)
     : to_{to}, status_{status} {
   SlashDelimited comp_str_s{from};
+  std::unordered_set<std::string_view> placeholders;
   while (comp_str_s) {
     auto comp_str = comp_str_s.pop();
     if (comp_str.empty()) {
@@ -34,7 +36,12 @@ r::Directive::Directive(std::string_view from, std::string_view to, int status)
     } else if (comp_str == "*") {
       components_.emplace_back(ComponentType::SPLAT, comp_str);
     } else if (comp_str[0] == ':') {
-      components_.emplace_back(ComponentType::PLACEHOLDER, comp_str);
+      if (placeholders.insert(comp_str).second) {
+        components_.emplace_back(ComponentType::PLACEHOLDER, comp_str);
+      } else {
+        to_.assign("ERROR: Duplicate placeholder ").append(comp_str);
+        return;
+      }
     } else {
       components_.emplace_back(ComponentType::LITERAL, comp_str);
     }
@@ -75,6 +82,9 @@ std::uint16_t r::Directive::rewrite(std::string& path) const {
   }
 }
 std::string r::Directive::error() const {
+  if (starts_with(to_, "ERROR: ")) {
+    return to_;
+  }
   if (status_ < 200 || status_ > 451) {
     return "UNSUPPORTED STATUS " + std::to_string(status_);
   }

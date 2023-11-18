@@ -5,6 +5,7 @@
 
 #include <vocab/flat_mapset.h>
 
+#include <ctime>
 #include <queue>
 #include <vector>
 
@@ -13,11 +14,16 @@ class RequestorPool : public Requestor {
   std::string_view name() const override;
   HandleOutcome handle(RequestPtr) override;
 
-  HandleOutcome check(RequestPtr, std::size_t);
+  std::vector<std::shared_ptr<Requestor>> pool_;
+  struct Waiting {
+    RequestPtr req;
+    std::size_t at_idx;
+    std::time_t when;
+  };
+  std::queue<Waiting> waiting_;
 
-  std::vector<std::shared_ptr<Requestor>> pool;
-  std::queue<std::pair<RequestPtr, std::size_t>> waiting;
-
+  HandleOutcome check(Waiting);
+  
  public:
   RequestorPool& add(std::shared_ptr<Requestor>);
 };

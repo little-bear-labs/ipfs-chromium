@@ -6,8 +6,6 @@
 #include <base/timer/timer.h>
 #include <net/http/http_response_headers.h>
 
-#include <ipfs_client/dag_listener.h>
-
 using Self = ipfs::CacheRequestor;
 namespace dc = disk_cache;
 
@@ -72,7 +70,7 @@ void Self::StartFetch(Task& task, net::RequestPriority priority) {
 }
 void Self::Miss(Task& task) {
   if (task.request) {
-    VLOG(1) << "Cache miss on " << task.request->debug_string();
+    VLOG(2) << "Cache miss on " << task.request->debug_string();
     auto req = task.request;
     task.request->Hook([this, req](std::string_view bytes) {
       Store(req->main_param, "TODO", std::string{bytes});
@@ -128,22 +126,27 @@ void Self::OnHeaderRead(Task task, int code) {
 }
 void Self::OnBodyRead(Task task, int code) {
   if (code <= 0) {
-    LOG(ERROR) << "Failed to read body for entry " << task.key << " in "
-               << name();
+    LOG(INFO) << "Failed to read body for entry " << task.key << " in "
+              << name();
     Miss(task);
     return;
   }
   task.body.assign(task.buf->data(), static_cast<std::size_t>(code));
   if (task.request) {
-    LOG(INFO) << "Cache hit on " << task.key << " for "
-              << task.request->debug_string();
     task.SetHeaders(name());
-    task.request->RespondSuccessfully(task.body, api_.get());
+    if (task.request->RespondSuccessfully(task.body, api_)) {
+      VLOG(2) << "Cache hit on " << task.key << " for "
+              << task.request->debug_string();
+    } else {
+      LOG(ERROR) << "Had a BAD cached response for " << task.key;
+      Expire(task.key);
+      Miss(task);
+    }
   }
 }
 void Self::Store(std::string cid, std::string headers, std::string body) {
-  LOG(INFO) << "Store(" << name() << ',' << cid << ',' << headers.size() << ','
-            << body.size() << ')';
+  VLOG(1) << "Store(" << name() << ',' << cid << ',' << headers.size() << ','
+          << body.size() << ')';
   auto bound = base::BindOnce(&Self::OnEntryCreated, base::Unretained(this),
                               cid, headers, body);
   auto res = cache_->OpenOrCreateEntry(cid, net::LOW, std::move(bound));

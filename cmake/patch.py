@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 import sys
-from os import listdir, remove
-from os.path import dirname, join, realpath, splitext
+from os import listdir, makedirs, remove
+from os.path import exists, dirname, join, realpath, splitext
+from shutil import copyfile, rmtree
 from subprocess import check_call, check_output
 from sys import argv, executable, platform, stderr
 from time import ctime
+from verbose import verbose
 
 try:
     import requests
@@ -37,12 +39,41 @@ class Patcher:
     def __init__(self, chromium_source_dir, git_bin, build_type):
         self.csrc = chromium_source_dir
         self.pdir = realpath(join(dirname(__file__), '..', 'component', 'patches'))
+        self.edir = realpath(join(dirname(__file__), '..', 'chromium_edits'))
         self.gbin = git_bin
         self.btyp = build_type
         self.up_rels = {}
 
     def create_patch_file(self):
         tag = self.tag_name()
+        write_dir = join(self.edir, tag)
+        if exists(write_dir):
+            rmtree(write_dir)
+        for lin in self.git(['status', '--porcelain'], and_strip=False).splitlines():
+            stat = lin[0:2]
+            path = lin[3:]
+            from_path = join(self.csrc, path)
+            to_path = join(write_dir, path)
+            to_dir = dirname(to_path)
+            if 'components/ipfs' in path:
+                verbose('Not putting component into edit tree')
+            elif 'third_party/ipfs_client' in path:
+                verbose('Not putting library into edit tree')
+            elif stat == ' M':
+                diff_out = self.git(['diff', '--patch', tag, path], and_strip=False)
+                if diff_out:
+                    makedirs(to_dir, exist_ok=True)
+                    to_path += '.patch'
+                    with open(to_path, 'w') as to_f:
+                        to_f.write(diff_out)
+                        print(to_path)
+            elif stat == '??':
+                print('Copy', from_path, '->', to_path)
+                makedirs(to_dir, exist_ok=True)
+                copyfile(from_path, to_path)
+            else:
+                print('Unhandled git status', stat, 'for', path)
+                exit(32)
         self.git(['add', 'url/url_canon_ipfs.cc'])
         diff = self.git(['diff', '--patch', tag])
         name = tag
@@ -67,9 +98,16 @@ class Patcher:
         patch_path = join(self.pdir, win+'.patch')
         self.git(['apply', '--verbose', patch_path], out=False)
 
-    def git(self, args, out=True) -> str:
+    def git(self, args: list[str], out: bool = True, and_strip: bool = True) -> str:
+        if and_strip and not out:
+            print("Combination of options does not make sense - one can't strip output one does not have.")
+            exit(31)
         if out:
-            return check_output([self.gbin, '-C', self.csrc] + args, text=True).strip()
+            result = check_output([self.gbin, '-C', self.csrc] + args, text=True)
+            if and_strip:
+                return result.strip()
+            else:
+                return result
         else:
             check_call([self.gbin, '-C', self.csrc] + args, text=True)
             return ''
@@ -150,7 +188,7 @@ class Patcher:
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
-        fuzz = 59878
+        fuzz = 59880
         def check(version, version_set, s):
             i = as_int(version)
             by = (fuzz,0)

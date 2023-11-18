@@ -64,9 +64,11 @@ function(with_vocab target)
             "${CMAKE_CURRENT_BINARY_DIR}/library"
     )
     find_package(Protobuf REQUIRED)
+    find_package(c-ares REQUIRED)
     target_link_libraries(${target}
         PRIVATE
             protobuf::libprotobuf
+            c-ares::cares
     )
     target_include_directories(${target}
         SYSTEM
@@ -75,8 +77,7 @@ function(with_vocab target)
             ${protobuf_INCLUDE_DIR}
     )
     find_package(absl)
-    find_package(Boost)
-    #TODO If not available at all... maybe just turn off sha support?
+    find_package(Boost REQUIRED CONFIG)
     find_package(OpenSSL
             COMPONENTS
             Crypto

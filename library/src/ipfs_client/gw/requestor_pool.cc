@@ -13,25 +13,31 @@ Self& Self::add(std::shared_ptr<Requestor> r) {
   if (api_ && !(r->api_)) {
     r->api_ = api_;
   }
-  pool.push_back(r);
+  pool_.push_back(r);
   r->or_else(shared_from_this());
   return *this;
 }
 auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
-  for (auto i = 0UL; i * 2 < waiting.size(); ++i) {
-    auto popped = waiting.front();
-    check(popped.first, popped.second);
+  auto now = std::time(nullptr);
+  for (auto i = 0UL; i * 2 < waiting_.size(); ++i) {
+    auto& t = waiting_.front().when;
+    if (t != now) {
+      auto to_pop = waiting_.front();
+      waiting_.pop();
+      check(to_pop);
+    }
   }
-  return check(req, 0UL);
+  return check({req, 0UL, 0L});
 }
-auto Self::check(ipfs::gw::RequestPtr req, std::size_t start) -> HandleOutcome {
+auto Self::check(Waiting w) -> HandleOutcome {
   using O = HandleOutcome;
-  auto next_retry = pool.size();
-  for (auto i = start; i < pool.size(); ++i) {
+  auto next_retry = pool_.size();
+  auto req = w.req;
+  for (auto i = w.at_idx; i < pool_.size(); ++i) {
     if (req->type == Type::Zombie) {
       return O::DONE;
     }
-    auto& tor = pool[i];
+    auto& tor = pool_[i];
     switch (tor->handle(req)) {
       case O::DONE:
         LOG(INFO) << "RequestorPool::handle returning DONE because a member of "
@@ -42,7 +48,7 @@ auto Self::check(ipfs::gw::RequestPtr req, std::size_t start) -> HandleOutcome {
         req->parallel++;
         break;
       case O::MAYBE_LATER:
-        if (next_retry == pool.size()) {
+        if (next_retry == pool_.size()) {
           next_retry = i;
         }
         break;
@@ -51,17 +57,14 @@ auto Self::check(ipfs::gw::RequestPtr req, std::size_t start) -> HandleOutcome {
     }
   }
   if (req->parallel > 0) {
-    LOG(INFO) << req->parallel << " requestors have picked up the task "
-              << req->debug_string();
     return O::PENDING;
   }
-  if (next_retry < pool.size()) {
-    LOG(INFO) << "No requestors are available for " << req->debug_string()
-              << " right now, will retry at index " << next_retry;
-    waiting.emplace(req, next_retry);
+  if (next_retry < pool_.size()) {
+    w.when = std::time(nullptr);
+    waiting_.emplace(w);
     return O::PENDING;
   }
-  LOG(INFO) << "Have exhausted all requestors in pool looking for "
-            << req->debug_string();
+  VLOG(1) << "Have exhausted all requestors in pool looking for "
+          << req->debug_string();
   return O::NOT_HANDLED;
 }

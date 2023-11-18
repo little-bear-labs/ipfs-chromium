@@ -60,6 +60,8 @@ std::string_view lg::LevelDescriptor(Level l) {
       return "error";
     case Level::FATAL:
       return " ### FATAL ERROR ### ";
+    case Level::OFF:
+      return "off";
     default:
       return "Unknown log level used: possible corruption?";
   }

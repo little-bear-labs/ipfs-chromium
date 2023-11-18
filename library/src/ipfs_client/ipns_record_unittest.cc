@@ -1,11 +1,12 @@
 #include <ipfs_client/ipns_record.h>
 
-#include <ipfs_client/context_api.h>
+#include <mock_cbor.h>
+
 #include <ipfs_client/logger.h>
 #include <libp2p/multi/content_identifier_codec.hpp>
 #include <libp2p/peer/peer_id.hpp>
 
-#include <gtest/gtest.h>
+#include <list>
 
 namespace {
 struct Api final : public ipfs::ContextApi {
@@ -32,6 +33,15 @@ struct Api final : public ipfs::ContextApi {
   std::string UnescapeUrlComponent(std::string_view url_comp) const { throw 1; }
   ipfs::IpnsCborEntry deserialize_cbor(ipfs::ByteView b) const {
     return dser_(b);
+  }
+  std::list<std::unique_ptr<MockCbor>> mutable cbors;
+  std::unique_ptr<ipfs::DagCborValue> ParseCbor(ByteView) const {
+    if (cbors.empty()) {
+      return {};
+    }
+    auto r = std::move(cbors.front());
+    cbors.pop_front();
+    return std::move(r);
   }
   bool verify_key_signature(ipfs::SigningKeyType,
                             ipfs::ByteView signature,
@@ -112,6 +122,15 @@ TEST(IpnsRecordTest, AKnownKuboRecord) {
   auto my_name_res = libp2p::peer::PeerId::fromHash(ci.content_address);
   ASSERT_TRUE(my_name_res.has_value());
   auto& my_name = my_name_res.value();
+  auto cbor = std::make_unique<MockCbor>();
+  cbor->set(
+      "Value",
+      "/ipfs/bafybeig57t2dp435aupttilimd6767kppfebaa3gnunmqden66dgkhugwi"s);
+  cbor->set("Validity", "2023-03-24T05:10:02.161162321Z"s);
+  cbor->set("ValidityType", 0UL);
+  cbor->set("Sequence", 384UL);
+  cbor->set("TTL", 60000000000UL);
+  api.cbors.emplace_back(std::move(cbor));
   auto result = ipfs::ValidateIpnsRecord(known_record, my_name, api);
   std::string_view expected{
       "/ipfs/bafybeig57t2dp435aupttilimd6767kppfebaa3gnunmqden66dgkhugwi"};
@@ -172,8 +191,8 @@ TEST(IpnsRecordTest, fromcborentry) {
   ipfs::ValidatedIpns v = e;
   EXPECT_EQ(v.value, "v");
   EXPECT_EQ(v.sequence, 1);
-  EXPECT_EQ(v.use_until, v.cache_until);
-  auto time_left = v.use_until - now;
+  EXPECT_EQ(v.use_until, 1699196799);
+  auto time_left = v.cache_until - now;
   EXPECT_GE(time_left, 1);
   EXPECT_LE(time_left, 3);
 }
@@ -214,6 +233,9 @@ TEST(IpnsRecordTest, V2_Only_Lean) {
     e.value.assign(bin_val.begin(), bin_val.end());
     return e;
   }};
+  auto cbor = std::make_unique<MockCbor>();
+
+  api.cbors.push_back(std::move(cbor));
   auto actual = ipfs::ValidateIpnsRecord(as_seen_in_spec, peer.value(), api);
   EXPECT_TRUE(actual);
 }
@@ -328,6 +350,13 @@ TEST(IpnsRecordTest, has_pubkey_field) {
     e.validityType = v.at("ValidityType");
     return e;
   }};
+  MockCbor cbor;
+  cbor.set("Value", "/ipfs/QmVs9XcHDzXeHmzsmHG73TTgofSqBQpSTRRH36DihgbYf4"s);
+  cbor.set("Validity", "2023-11-07T15:06:39.790199045Z"s);
+  cbor.set("TTL", 60000000000UL);
+  cbor.set("Sequence", 0UL);
+  cbor.set("ValidityType", 0UL);
+  api.cbors.push_back(std::make_unique<MockCbor>(cbor));
   auto actual = ipfs::ValidateIpnsRecord(as_seen_in_spec, c.value(), api);
   EXPECT_TRUE(actual);
 }

@@ -2,6 +2,7 @@
 #define IPFS_CONTEXT_API_H_
 
 #include "ipns_cbor_entry.h"
+#include "dag_cbor_value.h"
 #include "signing_key_type.h"
 
 #include <vocab/byte_view.h>
@@ -32,6 +33,8 @@ struct HttpRequestDescription {
  */
 class ContextApi : public std::enable_shared_from_this<ContextApi> {
  public:
+  virtual ~ContextApi() noexcept {}
+
   using HttpRequestDescription = ::ipfs::HttpRequestDescription;
   using HeaderAccess = std::function<std::string(std::string_view)>;
   using HttpCompleteCallback =
@@ -64,10 +67,9 @@ class ContextApi : public std::enable_shared_from_this<ContextApi> {
    */
   virtual std::string UnescapeUrlComponent(std::string_view url_comp) const = 0;
 
+  virtual std::unique_ptr<DagCborValue> ParseCbor(ByteView) const = 0;
+
   using IpnsCborEntry = ::ipfs::IpnsCborEntry;
-  // TODO: accept the Type as a parameter as a reference to a base that knows
-  // about its members
-  virtual IpnsCborEntry deserialize_cbor(ByteView) const = 0;
 
   using SigningKeyType = ::ipfs::SigningKeyType;
   using ByteView = ::ipfs::ByteView;
@@ -75,17 +77,6 @@ class ContextApi : public std::enable_shared_from_this<ContextApi> {
                                     ByteView signature,
                                     ByteView data,
                                     ByteView key_bytes) const = 0;
-
-  /*!
-   * \brief Discover more gateways.
-   * \details The in-chromium implementation of this hits
-   *    https://orchestrator.strn.pl/nodes/nearby
-   *    Another implementation might kick off an mDNS probe?
-   * \param cb - A callback, called with a list of gateway
-   *    prefixes, e.g. https://gateway.ipfs.io/
-   * \note TRAILING SLASH (/) EXPECTED!
-   */
-  virtual void Discover(std::function<void(std::vector<std::string>)> cb) = 0;
 
 };
 

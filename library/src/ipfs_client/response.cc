@@ -2,7 +2,7 @@
 
 using Self = ipfs::Response;
 
-Self Self::PLAIN_NOT_FOUND{std::string{}, static_cast<std::uint16_t>(404),
+Self Self::PLAIN_NOT_FOUND{"text/html", static_cast<std::uint16_t>(404),
                            std::string{}, std::string{}};
 Self Self::IMMUTABLY_GONE{"text/plain", 410,
                           "Using immutable data it has been proven the "

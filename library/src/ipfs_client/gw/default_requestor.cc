@@ -13,14 +13,14 @@ auto ipfs::gw::default_requestor(ipfs::GatewayList gws,
                                  std::shared_ptr<ContextApi> api)
     -> std::shared_ptr<Requestor> {
   auto result = std::make_shared<gw::InlineRequestHandler>();
-  result->or_else(std::make_shared<DeduplicatingRequestor>());
+  result->or_else(std::make_shared<DeduplicatingRequestor>())
+      .or_else(std::make_shared<gw::BlockRequestSplitter>());
   if (early) {
     result->or_else(early);
     early->api(api);
   }
   auto pool = std::make_shared<gw::RequestorPool>();
-  result->or_else(std::make_shared<gw::BlockRequestSplitter>())
-      .or_else(std::make_shared<gw::DnsLinkRequestor>(api))
+  result->or_else(std::make_shared<gw::DnsLinkRequestor>(api))
       .or_else(pool)
       .or_else(std::make_shared<gw::TerminatingRequestor>());
   for (auto& gw : gws) {

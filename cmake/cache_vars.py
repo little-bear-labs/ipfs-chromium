@@ -4,14 +4,6 @@ from os import getcwd
 from os.path import  join
 from sys import argv,  stderr
 
-if '--verbose' in argv:
-    argv.remove('--verbose')
-    def verbose(*args, **kwargs):
-        print(*args, file=stderr, **kwargs)
-else:
-    def verbose(*args, **kwargs):
-        pass
-
 if len(argv) > 1:
     build_dir = argv[1]
 else:

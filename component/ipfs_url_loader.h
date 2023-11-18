@@ -1,12 +1,11 @@
 #ifndef COMPONENTS_IPFS_URL_LOADER_H_
 #define COMPONENTS_IPFS_URL_LOADER_H_ 1
 
-#include "ipfs_client/dag_listener.h"
-
 #include "base/debug/debugging_buildflags.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -29,8 +28,7 @@ class SimpleURLLoader;
 namespace ipfs {
 class InterRequestState;
 
-class IpfsUrlLoader final : public network::mojom::URLLoader,
-                            public DagListener {
+class IpfsUrlLoader final : public network::mojom::URLLoader {
   void FollowRedirect(
       std::vector<std::string> const& removed_headers,
       net::HttpRequestHeaders const& modified_headers,
@@ -81,10 +79,10 @@ class IpfsUrlLoader final : public network::mojom::URLLoader,
 
   void CreateBlockRequest(std::string cid);
 
-  void ReceiveBlockBytes(std::string_view) override;
-  void BlocksComplete(std::string mime_type) override;
-  void DoesNotExist(std::string_view cid, std::string_view path) override;
-  void NotHere(std::string_view cid, std::string_view path) override;
+  void ReceiveBlockBytes(std::string_view);
+  void BlocksComplete(std::string mime_type);
+  void DoesNotExist(std::string_view cid, std::string_view path);
+  void NotHere(std::string_view cid, std::string_view path);
 
   void StartUnixFsProc(ptr, std::string_view);
   void AppendGatewayHeaders(std::vector<std::string> const& cids, net::HttpResponseHeaders&);

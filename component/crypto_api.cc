@@ -11,14 +11,14 @@ int ToEvpKeyType(ipfs::ipns::KeyType t) {
   using ipfs::ipns::KeyType;
   switch (t) {
     case KeyType::ECDSA:
-      LOG(ERROR) << "Check on ECDSA key type translation.";
+      LOG(ERROR) << "TODO Check on ECDSA key type translation.";
       return EVP_PKEY_EC;
     case KeyType::Ed25519:
       return EVP_PKEY_ED25519;
     case KeyType::RSA:
       return EVP_PKEY_RSA;
     case KeyType::Secp256k1:
-      LOG(ERROR) << "Check on Secp256k1 key type translation.";
+      LOG(ERROR) << "TODO Check on Secp256k1 key type translation.";
       return EVP_PKEY_DSA;
     default:
       LOG(ERROR) << "Invalid key type: " << static_cast<long>(t);
@@ -28,18 +28,7 @@ int ToEvpKeyType(ipfs::ipns::KeyType t) {
 }  // namespace
 
 namespace cpto = ipfs::crypto_api;
-/*
-auto crypt::GetAlgo(ipfs::ipns::KeyType t) -> Algo {
-  switch (t) {
-    case ipfs::ipns::KeyType::Ed25519:
-      return {blink::kWebCryptoAlgorithmIdEcdsa,
-              webcrypto::CreateEcdhImplementation()};
-    default:
-      LOG(ERROR) << "Unimplemented key type: " << static_cast<int>(t);
-      return {};
-  }
-}
- */
+
 bool cpto::VerifySignature(ipfs::ipns::KeyType key_type,
                            ipfs::ByteView signature,
                            ipfs::ByteView data,
@@ -70,18 +59,4 @@ bool cpto::VerifySignature(ipfs::ipns::KeyType key_type,
   //                                 to_verify.data(), to_verify.size());
   LOG(INFO) << "EVP_DigestVerify returned " << result;
   return result == 1;
-  /*
-  auto* pre_p = reinterpret_cast<unsigned char const*>(prefix.data());
-  if (!EVP_DigestVerifyUpdate(ctx.get(), pre_p, prefix.size())) {
-    LOG(ERROR) << "EVP_DigestVerifyUpdate failed on prefix.";
-    return false;
-  }
-  if (!EVP_DigestVerifyUpdate(ctx.get(), data_p, data.size())) {
-    LOG(ERROR) << "EVP_DigestVerifyUpdate failed on actual data.";
-    return false;
-  }
-  auto result = EVP_DigestVerifyFinal(ctx.get(), sig_p, signature.size());
-  LOG(INFO) << "EVP_DigestVerifyFinal returned " << result;
-  return result == 1;
-   */
 }

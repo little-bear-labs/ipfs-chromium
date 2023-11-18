@@ -3,12 +3,20 @@ project(ipfs_client
     DESCRIPTION "Code related to using IPFS http gateways to resolve ipfs:// and ipns:// URLs"
     LANGUAGES CXX
 )
-if(NOT CXX_VERSION)
-    set(CXX_VERSION 20)
-endif()
-if(NOT SETUP_CMAKE_INCLUDED)
+set(old_path ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR};${CMAKE_CURRENT_BINARY_DIR})
+
+if(IN_WORKSPACE)
     include(../cmake/setup.cmake)
+    list(APPEND CMAKE_MODULE_PATH ${old_path})
+else()
+    set(CXX_VERSION 20)
+    find_package(absl REQUIRED CONFIG)
+    find_package(Boost REQUIRED CONFIG)
+    find_package(c-ares REQUIRED CONFIG)
+    find_package(nlohmann_json REQUIRED CONFIG)
 endif()
+
 file(GLOB_RECURSE
     sources
     CONFIGURE_DEPENDS
@@ -23,10 +31,9 @@ file(GLOB_RECURSE
     headers
     include/*.h
 )
-
-file(GLOB
-    protos
-    proto/*/*.proto
+file(GLOB_RECURSE
+  protos
+  proto/*.proto
 )
 
 find_package(Protobuf REQUIRED)
@@ -38,14 +45,13 @@ foreach(proto ${protos})
         OUTPUT "${p}.h" "${p}.cc"
         MAIN_DEPENDENCY "${proto}"
         COMMAND "${CMAKE_COMMAND}" -E make_directory "${d}"
-        COMMAND protobuf::protoc
-        ARGS "--proto_path=${CMAKE_CURRENT_SOURCE_DIR}/proto" "--cpp_out=${d}" "${proto}"
+        COMMAND protobuf::protoc "--proto_path=${CMAKE_CURRENT_SOURCE_DIR}/proto" "--cpp_out=${d}" "${proto}"
     )
     list(APPEND pb_gen "${p}.h" )
     list(APPEND pb_gen "${p}.cc")
+    set_source_files_properties("${p}.h" PROPERTIES GENERATED ON)
     set_source_files_properties("${p}.cc" PROPERTIES GENERATED ON)
 endforeach()
-message(STATUS "pb_gen=${pb_gen}")
 set_source_files_properties(${pb_gen} PROPERTIES GENERATED ON)
 
 add_library(ipfs_client
@@ -69,6 +75,10 @@ foreach(libname ipfs_client ipfs_client_covered)
         PRIVATE
             ${WARNING_FLAGS}
     )
+    target_compile_definitions(${libname}
+      PRIVATE
+        ABSL_USES_STD_STRING_VIEW=1
+    )
     target_include_directories(${libname}
         PUBLIC
             include/
@@ -78,7 +88,19 @@ foreach(libname ipfs_client ipfs_client_covered)
       PRIVATE
         src/
     )
-    with_vocab(${libname})
+    if (IN_WORKSPACE)
+        with_vocab(${libname})
+    else()
+        target_link_libraries(${libname}
+          PUBLIC
+            protobuf::protobuf
+            absl::strings
+            Boost::headers
+	          boost::boost
+            c-ares::cares
+            nlohmann_json::nlohmann_json
+        )
+    endif()
 endforeach()
 
 file(
@@ -124,8 +146,10 @@ add_custom_target(upload_library
 )
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
-  include(CodeCoverage)
-  append_coverage_compiler_flags_to_target(ipfs_client_covered)
+  include(CodeCoverage OPTIONAL RESULT_VARIABLE INCLUDED_COVERAGE)
+  if(INCLUDED_COVERAGE)
+    append_coverage_compiler_flags_to_target(ipfs_client_covered)
+  endif()
 endif()
 
 file(GLOB_RECURSE
@@ -134,7 +158,7 @@ file(GLOB_RECURSE
     src/*_unittest.cc
 )
 find_package(GTest)
-if(GTest_FOUND)
+if(GTest_FOUND AND IN_WORKSPACE)
     enable_testing()
     add_executable(unit_test_runner
       EXCLUDE_FROM_ALL

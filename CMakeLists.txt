@@ -34,6 +34,7 @@ else()
     message(FATAL_ERROR "Unsupported CXX_VERSION: ${CXX_VERSION}")
 endif()
 
+set(IN_WORKSPACE 1)
 include(cmake/chrome.cmake)
 include(cmake/setup.cmake)
 

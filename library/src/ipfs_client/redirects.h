@@ -12,7 +12,7 @@ namespace redirects {
 class Directive {
   enum class ComponentType { LITERAL, PLACEHOLDER, SPLAT };
   std::vector<std::pair<ComponentType, std::string>> components_;
-  std::string const to_;
+  std::string to_;
   int const status_;
 
  public:

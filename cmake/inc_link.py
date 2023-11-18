@@ -21,9 +21,11 @@ source_bases = [
     join(chromium_src,'v8','include'),
     join(chromium_src,'third_party', 'abseil-cpp')
     ]
-for inc_dir in glob(f'{chromium_src}/third_party/**/include', recursive=True):
-    if isdir(inc_dir):
-        source_bases.append(inc_dir)
+for g in [f'{chromium_src}/third_party/**/include', f'{chromium_src}/base/**/src', f'{gen_dir}/base/**/src' ]:
+    for inc_dir in glob(g, recursive=True):
+        if isdir(inc_dir):
+            source_bases.append(inc_dir)
+verbose('source_bases', source_bases)
 
 def makedirs(p):
     if not isdir(p):
@@ -101,6 +103,11 @@ class Command:
             return False
         if not exists( dirname(target) ):
             makedirs(dirname(target))
+        if 'openssl' in target:
+            with open(target, 'w') as tgt:
+                print("//This file included and probably not provided by the conan (newer) version of openssl", file=tgt)
+                print('Stubbed',tgt)
+                return True
         for base in source_bases:
             source = join(base,inc)
             if exists(source):

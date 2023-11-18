@@ -35,13 +35,14 @@ void Self::send(raw_ptr<network::mojom::URLLoaderFactory> loader_factory) {
   req->url = GURL{inf_.url};
   req->priority = net::HIGHEST;  // TODO
   if (!inf_.accept.empty()) {
-    VLOG(2) << inf_.url << " has Accept header " << inf_.accept;
     req->headers.SetHeader("Accept", inf_.accept);
   }
   using L = network::SimpleURLLoader;
   loader_ = L::Create(std::move(req), kTrafficAnnotation, FROM_HERE);
   loader_->SetTimeoutDuration(base::Seconds(inf_.timeout_seconds));
   loader_->SetAllowHttpErrorResults(true);
+  loader_->SetOnResponseStartedCallback(
+      base::BindOnce(&Self::OnResponseHead, base::Unretained(this)));
   auto bound = base::BindOnce(&Self::OnResponse, base::Unretained(this),
                               shared_from_this());
   DCHECK(loader_factory);
@@ -57,43 +58,43 @@ void Self::OnResponse(std::shared_ptr<Self>,
       status = 200;
       break;
     case net::Error::ERR_TIMED_OUT:
+      VLOG(2) << "HTTP request timed out: " << inf_.url << " after "
+              << inf_.timeout_seconds << "s.";
       status = 408;
       break;
     default:
+      VLOG(2) << "NetErr " << loader_->NetError() << " for " << inf_.url;
       status = 500;
   }
-  ContextApi::HeaderAccess header_accessor = [](auto) { return std::string{}; };
-  auto sz = body ? body->size() : 0UL;
-  if (loader_->NetError() == net::Error::ERR_TIMED_OUT) {
-    VLOG(1) << "HTTP request timed out: " << inf_.url << " after "
-            << inf_.timeout_seconds << "s.";
-  } else if (loader_->NetError()) {
-    LOG(INFO) << "NetErr " << loader_->NetError() << " for " << inf_.url;
-  }
-  VLOG(1) << "Handling HTTP response body of size " << sz << " with NetErr "
-          << loader_->NetError() << " for " << inf_.url;
+  //  auto sz = body ? body->size() : 0UL;
   auto const* head = loader_->ResponseInfo();
   if (head) {
-    DCHECK(head->headers);
-    auto status_line = head->headers->GetStatusLine();
-    auto sp = status_line.find(' ');
-    if (sp < status_line.size()) {
-      VLOG(1) << "HTTP response status='" << status_line << "'.";
-      status = std::atoi(status_line.c_str() + sp + 1);
-    } else {
-      LOG(WARNING) << "Status line malformed.";
-    }
-    header_accessor = [head](std::string_view k) {
-      std::string val;
-      head->headers->EnumerateHeader(nullptr, k, &val);
-      return val;
-    };
+    OnResponseHead({}, *head);
+  }
+  auto sp = status_line_.find(' ');
+  if (sp < status_line_.size()) {
+    VLOG(2) << "HTTP response status='" << status_line_ << "'.";
+    status = std::atoi(status_line_.c_str() + sp + 1);
   } else {
-    VLOG(1) << "No response header info?";
+    VLOG(2) << "Status line malformed/missing : '" << status_line_ << "'";
   }
   if (body) {
-    callback_(status, *body, header_accessor);
+    callback_(status, *body, header_accessor_);
   } else {
-    callback_(status, "", header_accessor);
+    callback_(status, "", header_accessor_);
   }
+}
+void Self::OnResponseHead(
+    GURL const&,
+    network::mojom::URLResponseHead const& response_head) {
+  if (!response_head.headers) {
+    return;
+  }
+  auto head = response_head.headers;
+  status_line_ = head->GetStatusLine();
+  header_accessor_ = [head](std::string_view k) {
+    std::string val;
+    head->EnumerateHeader(nullptr, k, &val);
+    return val;
+  };
 }

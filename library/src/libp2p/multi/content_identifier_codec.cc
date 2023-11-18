@@ -95,8 +95,10 @@ std::vector<ipfs::Byte> ContentIdentifierCodec::encodeCIDV0(
     size_t sz) {
   auto digest_res = crypto::sha256(ipfs::ByteView{
       reinterpret_cast<ipfs::Byte const*>(byte_buffer), sz});  // NOLINT
-  //  BOOST_ASSERT(digest_res.has_value());
-  // TODO DCHECK
+  DCHECK(digest_res.has_value());
+  if (!digest_res.has_value()) {
+    return {};
+  }
   auto& hash = digest_res.value();
 
   std::vector<ipfs::Byte> bytes;

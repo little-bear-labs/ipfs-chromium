@@ -11,8 +11,7 @@
 
 #include "log_macros.h"
 
-#define ABSL_USES_STD_STRING_VIEW 1  // Thanks, Windows!
-#include <absl/strings/match.h>
+#include <absl/base/options.h>
 
 using Self = ipfs::gw::DnsLinkRequestor;
 using namespace std::literals;
@@ -26,7 +25,7 @@ std::string_view Self::name() const {
 namespace {
 bool parse_results(ipfs::gw::RequestPtr req,
                    std::vector<std::string> const& results,
-                   ipfs::ContextApi*);
+                   std::shared_ptr<ipfs::ContextApi> const&);
 }
 auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
   if (req->type != Type::DnsLink) {
@@ -37,7 +36,7 @@ auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
   *success = false;
   auto a = api_;
   auto res = [req, success, a](std::vector<std::string> const& results) {
-    *success = *success || parse_results(req, results, a.get());
+    *success = *success || parse_results(req, results, a);
   };
   auto don = [success, req]() {
     LOG(INFO) << "DNSLink request completed for " << req->main_param
@@ -52,12 +51,12 @@ auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
 namespace {
 bool parse_results(ipfs::gw::RequestPtr req,
                    std::vector<std::string> const& results,
-                   ipfs::ContextApi* api) {
+                   std::shared_ptr<ipfs::ContextApi> const& api) {
   constexpr auto prefix = "dnslink="sv;
   LOG(INFO) << "Scanning " << results.size() << " DNS TXT records for "
             << req->main_param << " looking for dnslink...";
   for (auto& result : results) {
-    if (absl::StartsWith(result, prefix)) {
+    if (starts_with(result, prefix)) {
       LOG(INFO) << "DNSLink result=" << result;
       req->RespondSuccessfully(result.substr(prefix.size()), api);
       return true;

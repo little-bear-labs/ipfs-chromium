@@ -39,7 +39,7 @@ class Gateways {
   /*!
    * \brief The hard-coded list of gateways at startup
    */
-  static std::vector<std::pair<std::string, int>> DefaultGateways();
+  static GatewayList DefaultGateways();
 
   Gateways();
   ~Gateways();
