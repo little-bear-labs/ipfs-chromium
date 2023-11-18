@@ -1,18 +1,21 @@
 #include <ipfs_client/ipns_record.h>
 
+#include <ipfs_client/dag_cbor_value.h>
 #include <ipfs_client/context_api.h>
 
+#include <libp2p/crypto/hasher.hpp>
+#include <libp2p/multi/content_identifier.hpp>
+#include <libp2p/peer/peer_id.hpp>
+
 #include "log_macros.h"
+
+#include <time.h>
 
 #if __has_include(<third_party/ipfs_client/ipns_record.pb.h>)
 #include <third_party/ipfs_client/ipns_record.pb.h>
 #else
 #include "ipfs_client/ipns_record.pb.h"
 #endif
-
-#include <libp2p/crypto/hasher.hpp>
-#include <libp2p/multi/content_identifier.hpp>
-#include <libp2p/peer/peer_id.hpp>
 
 namespace {
 bool matches(libp2p::multi::Multihash const& hash,
@@ -45,6 +48,45 @@ auto ipfs::ValidateIpnsRecord(ipfs::ByteView top_level_bytes,
     return {};
   }
 }
+namespace {
+void assign(std::string& out,
+            ipfs::DagCborValue& top,
+            std::string_view key) {
+  auto p = top.at(key);
+  if (!p) {
+    out.assign("Key '").append(key).append("' not present in IPNS CBOR!");
+  } else {
+    // YEP! as_bytes() . There are only 2 string values here, they are logically
+    // text, but they are defined in the spec to be bytes.
+    auto o = p->as_bytes();
+    if (o.has_value()) {
+      auto chars = reinterpret_cast<char const*>(o.value().data());
+      out.assign(chars, o.value().size());
+    } else {
+      out.assign("Key '").append(key).append(
+          "' was not a string in IPNS CBOR!");
+    }
+  }
+}
+void assign(std::uint64_t& out,
+            ipfs::DagCborValue& top,
+            std::string_view key) {
+  auto p = top.at(key);
+  if (!p) {
+    LOG(ERROR) << "Key '" << key << "' is not present in IPNS CBOR!";
+    out = std::numeric_limits<std::uint64_t>::max();
+  } else {
+    auto o = p->as_unsigned();
+    if (o.has_value()) {
+      out = o.value();
+    } else {
+      LOG(ERROR) << "Key '" << key
+                 << "' is not an unsigned integer in IPNS CBOR!";
+      out = std::numeric_limits<std::uint64_t>::max();
+    }
+  }
+}
+}  // namespace
 auto ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
                               libp2p::peer::PeerId const& name,
                               ContextApi& api) -> std::optional<IpnsCborEntry> {
@@ -79,11 +121,18 @@ auto ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
   DCHECK_EQ(entry.validitytype(), 0);
 
   auto parsed =
-      api.deserialize_cbor({reinterpret_cast<Byte const*>(entry.data().data()),
-                            entry.data().size()});
-  if (entry.has_value() && parsed.value != entry.value()) {
-    LOG(ERROR) << "CBOR contains value '" << parsed.value
-               << "' but PB contains value '" << entry.value() << "'!";
+      api.ParseCbor({reinterpret_cast<Byte const*>(entry.data().data()),
+                     entry.data().size()});
+  if (!parsed) {
+    LOG(ERROR) << "CBOR parsing failed.";
+    return {};
+  }
+  IpnsCborEntry result;
+  assign(result.value, *parsed, "Value");
+  if (entry.has_value() && result.value != entry.value()) {
+    LOG(ERROR) << "Mismatch on Value field in IPNS record... CBOR(v2): '"
+               << result.value << "' but PB(v1): '" << entry.value()
+               << "' : " << parsed->html();
     return {};
   }
   ipfs::ByteView public_key;
@@ -133,41 +182,45 @@ auto ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
     return {};
   }
   // TODO check expiration date
-  LOG(INFO) << "V2 verification passed.";
-  // IpnsEntry.value must match IpnsEntry.data[Value]
-  if (entry.has_value() && entry.value() != parsed.value) {
+  if (entry.has_value() && entry.value() != result.value) {
     LOG(ERROR) << "IPNS " << name.toBase58() << " has different values for V1("
-               << entry.value() << ") and V2(" << parsed.value << ')';
+               << entry.value() << ") and V2(" << result.value << ')';
     return {};
   }
-  if (entry.has_validity() && entry.validity() != parsed.validity) {
+  assign(result.validity, *parsed, "Validity");
+  if (entry.has_validity() && entry.validity() != result.validity) {
     LOG(ERROR) << "IPNS " << name.toBase58()
                << " has different validity for V1(" << entry.validity()
-               << ") and V2(" << parsed.validity << ')';
+               << ") and V2(" << result.validity << ')';
     return {};
   }
+  assign(result.validityType, *parsed, "ValidityType");
   if (entry.has_validitytype() &&
-      entry.validitytype() != static_cast<int>(parsed.validityType)) {
+      entry.validitytype() != static_cast<int>(result.validityType)) {
     LOG(ERROR) << "IPNS " << name.toBase58()
                << " has different validity types for V1("
-               << entry.validitytype() << ") and V2(" << parsed.validityType
+               << entry.validitytype() << ") and V2(" << result.validityType
                << ')';
     return {};
   }
-  if (entry.has_sequence() && entry.sequence() != parsed.sequence) {
+  assign(result.sequence, *parsed, "Sequence");
+  if (entry.has_sequence() && entry.sequence() != result.sequence) {
     LOG(ERROR) << "IPNS " << name.toBase58()
                << " has different validity types for V1(" << entry.sequence()
-               << ") and V2(" << parsed.sequence << ')';
+               << ") and V2(" << result.sequence << ')';
     return {};
   }
-  if (entry.has_ttl() && entry.ttl() != parsed.ttl) {
+  assign(result.ttl, *parsed, "TTL");
+  if (entry.has_ttl() && entry.ttl() != result.ttl) {
     LOG(ERROR) << "IPNS " << name.toBase58()
                << " has different validity types for V1(" << entry.ttl()
-               << ") and V2(" << parsed.ttl << ')';
+               << ") and V2(" << result.ttl << ')';
     return {};
   }
-  LOG(INFO) << "V1 verification also passes for " << name.toBase58();
-  return parsed;
+  LOG(INFO) << "IPNS record verification passes for " << name.toBase58()
+            << " sequence: " << result.sequence << " points at "
+            << result.value;
+  return result;
 }
 
 ipfs::ValidatedIpns::ValidatedIpns() = default;
@@ -181,12 +234,12 @@ ipfs::ValidatedIpns::ValidatedIpns(IpnsCborEntry const& e)
   std::tm t = {};
   ss >> std::get_time(&t, "%Y-%m-%dT%H:%M:%S");
   long ttl = (e.ttl / 1'000'000'000UL) + 1;
-  use_until = std::mktime(&t);
+#ifdef _MSC_VER
+  use_until = _mkgmtime(&t);
+#else
+  use_until = timegm(&t);
+#endif
   cache_until = std::time(nullptr) + ttl;
-  if (use_until < cache_until) {
-    LOG(WARNING) << "IPNS record expiring!";
-    use_until = cache_until;
-  }
 }
 
 std::string ipfs::ValidatedIpns::Serialize() const {

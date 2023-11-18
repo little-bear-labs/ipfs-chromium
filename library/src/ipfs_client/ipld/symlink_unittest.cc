@@ -64,3 +64,18 @@ TEST(SymlinkTest, rooted) {
       "/ipns/k51qzi5uqu5dkq4jxcqvujfm2woh4p9y6inrojofxflzdnfht168zf8ynfzuu1/"
       "another/path.txt");
 }
+TEST(SymlinkTest, ipns_absolute) {
+  ii::Symlink sub{"/ipns/en.wikipedia-on-ipfs.org"};
+  ii::DagNode& t = sub;
+  auto blu = [](std::string const&) -> ii::NodePtr {
+    throw std::runtime_error{"Block lookup not expected."};
+  };
+  std::string observed_path_to_link{"/ipns/"};
+  observed_path_to_link
+      .append("k51qzi5uqu5dkq4jxcqvujfm2woh4p9y6inrojofxflzdnfht168zf8ynfzuu1")
+      .append("symlinks/absolute_link.txt");
+  auto res = t.resolve(""sv, blu, observed_path_to_link);
+  EXPECT_TRUE(std::holds_alternative<ii::PathChange>(res));
+  EXPECT_EQ(std::get<ii::PathChange>(res).new_path,
+            "/ipns/en.wikipedia-on-ipfs.org");
+}

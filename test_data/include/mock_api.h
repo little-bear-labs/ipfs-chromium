@@ -4,6 +4,7 @@
 #include <gtest/gtest.h>
 
 #include <ipfs_client/context_api.h>
+#include <ipfs_client/json_cbor_adapter.h>
 
 namespace i = ipfs;
 namespace ig = i::gw;
@@ -40,6 +41,13 @@ struct MockApi final : public i::ContextApi {
   }
 
   void Discover(std::function<void(std::vector<std::string>)> cb) {}
+#if HAS_JSON_CBOR_ADAPTER
+  std::unique_ptr<ipfs::DagCborValue> ParseCbor(ByteView bv) const {
+    return std::make_unique<ipfs::JsonCborAdapter>(nlohmann::json::from_cbor(bv));
+  }
+#else
+  std::unique_ptr<ipfs::DagCborValue> ParseCbor(ByteView bv) const { return {}; }
+#endif
 };
 }  // namespace
 

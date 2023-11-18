@@ -172,6 +172,10 @@ bool ipfs::Block::cid_matches_data() const {
     // TODO - probably remove those constructors and make cid_ not optional
     return true;
   }
+  if (type() == Type::Invalid) {
+    LOG(ERROR) << "CID can't match data on an invalid block.";
+    return false;
+  }
   auto cid_hash = cid_->content_address.getHash();
   auto hash_type = cid_->content_address.getType();
   if (hash_type == libp2p::multi::HashType::identity) {

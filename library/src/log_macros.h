@@ -1,6 +1,7 @@
 #ifndef IPFS_LOG_MACROS_H_
 #define IPFS_LOG_MACROS_H_
 
+#include <string_view>
 
 #if __has_include("base/logging.h") //In Chromium
 
@@ -17,7 +18,7 @@
 #define DCHECK_GT GOOGLE_DCHECK_GT
 #define DCHECK GOOGLE_DCHECK
 #define LOG GOOGLE_LOG
-// TODO
+
 #define VLOG(X)                                       \
   ::google::protobuf::internal::LogFinisher() =       \
       ::google::protobuf::internal::LogMessage(       \
@@ -35,5 +36,18 @@ static bool is_logging_initialized = ::ipfs::log::IsInitialized();
 #endif //Chromium in-tree check
 
 #define L_VAR(X) LOG(INFO) << "VAR " << #X << "='" << (X) << '\'';
+
+inline bool starts_with(std::string_view full_text, std::string_view prefix) {
+  if (prefix.size() > full_text.size()) {
+    return false;
+  }
+  return full_text.substr(0UL, prefix.size()) == prefix;
+}
+inline bool ends_with(std::string_view full_text, std::string_view suffix) {
+  if (suffix.size() > full_text.size()) {
+    return false;
+  }
+  return full_text.substr(full_text.size() - suffix.size()) == suffix;
+}
 
 #endif  // IPFS_LOG_MACROS_H_

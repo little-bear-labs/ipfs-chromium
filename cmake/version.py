@@ -59,7 +59,10 @@ def deduce():
     minor = str((next//100) % 10)
     revision = str((next//10) % 10)
     build = str(next % 10)
-    return '.'.join([major, minor, revision, build])
+    result = '.'.join([major, minor, revision, build])
+    with open(join(here, 'library', 'version.txt'), 'w') as txt:
+        print(result, file=txt)
+    return result
 
 
 if __name__ == "__main__":

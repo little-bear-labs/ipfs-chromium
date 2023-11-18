@@ -1,47 +1,63 @@
 from conan import ConanFile
 from conan.tools.cmake import CMake, CMakeToolchain, CMakeDeps
-from shutil import which
+from shutil import copyfile, which
 import sys
-from os.path import dirname, join, realpath
-sys.path.append(realpath(join(dirname(__file__), '..', 'cmake')))
-import version
+from os.path import dirname, isfile, join, realpath
+
+here = realpath(dirname(__file__))
+sys.path.append(realpath(join(here, '..', 'cmake')))
+sys.path.append(here)
+
+try:
+    import version
+    VERSION = version.deduce()
+except ImportError:
+    VERSION = open(join(here,'version.txt'), 'r').read().strip()
 
 
 class IpfsChromium(ConanFile):
-    name = "ipfs-chromium"
-    version = version.deduce()
+    name = "ipfs_client"
+    version = VERSION
     settings = "os", "compiler", "build_type", "arch"
     generators = "CMakeDeps"
-    _PB = 'protobuf/3.21.9'
+    _PB = 'protobuf/3.20.0'
     requires = [
         'abseil/20230125.3',
         'boost/1.81.0',
-        'gtest/1.13.0',
+        'c-ares/1.22.1',
         'nlohmann_json/3.11.2',
         'openssl/1.1.1t',
         _PB,
     ]
-    default_options = {"boost/*:header_only": True}
+    # default_options = {"boost/*:header_only": True}
     tool_requires = [
         'cmake/3.22.6',
         'ninja/1.11.1',
         _PB,
     ]
-
+    extensions = ['h', 'cc', 'hpp', 'proto']
+    exports_sources = [ '*.txt' ] + [f'**/*.{e}' for e in extensions]
+    exports = 'version.txt'
 
     def generate(self):
         tc = CMakeToolchain(self, 'Ninja')
-        #tc.variables["FOO"] = True
         tc.generate()
 
     def build(self):
         cmake = CMake(self)
         cmake.configure(variables={
-            "CXX_VERSION": 17, #TODO
+            "CXX_VERSION": 20,
             "INSIDE_CONAN": True
         })
-        cmake.build()
+        cmake.build(build_tool_args=['--verbose'])
 
+    def package(self):
+        cmake = CMake(self)
+        cmake.install()
+        print(self.cpp_info.objects)
+
+    def package_info(self):
+        self.cpp_info.libs = ["ipfs_client"]
 
     def build_requirements(self):
         if not which("doxygen"):

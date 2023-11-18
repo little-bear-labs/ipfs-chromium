@@ -6,6 +6,8 @@
 
 #include "log_macros.h"
 
+#include <numeric>
+
 using namespace std::literals;
 
 using Self = ipfs::ipld::SmallDirectory;
@@ -28,7 +30,7 @@ auto Self::resolve(SlashDelimited path, BlockLookup blu, std::string& to_here)
     dir_path.pop_n(2);
     GeneratedDirectoryListing index_html{dir_path.to_string()};
     for (auto& [name, link] : links_) {
-      VLOG(1) << "Listing " << dir_path.to_string() << " encountered " << name
+      VLOG(2) << "Listing " << dir_path.to_string() << " encountered " << name
               << '=' << link.cid;
       if (name == "index.html") {
         auto& n = node(link, blu);
@@ -49,26 +51,32 @@ auto Self::resolve(SlashDelimited path, BlockLookup blu, std::string& to_here)
     return Response{"text/html", 200, index_html.Finish(), ""};
   }
   auto name = api_->UnescapeUrlComponent(path.pop());
-  VLOG(1) << "Looking for '" << name << "' in directory " << to_here;
+  VLOG(2) << "Looking for '" << name << "' in directory " << to_here;
   // TODO binary search
   auto match = [&name](auto& l) { return l.first == name; };
   auto it = std::find_if(links_.begin(), links_.end(), match);
   if (links_.end() == it) {
-    LOG(INFO) << name << " does not exist in directory " << to_here;
+    LOG(INFO) << name << " does not exist in directory " << to_here
+              << ", these do: "
+              << std::accumulate(links_.begin(), links_.end(), std::string{},
+                                 [](auto a, auto& b) {
+                                   auto& n = b.first;
+                                   return a.empty() ? n : a + ";" + n;
+                                 });
     return ProvenAbsent{};
   }
   auto& link = it->second;
   auto& nod = node(link, blu);
   if (nod) {
+    VLOG(2) << to_here << " descending into " << link.cid << " for " << name;
     if (to_here.back() != '/') {
       to_here.push_back('/');
     }
     to_here.append(name);
-    VLOG(1) << "Descending into " << link.cid << " for " << name;
     return nod->resolve(path, blu, to_here);
   } else {
-    LOG(INFO) << "Should descending into " << link.cid << " for " << name
-              << " but can't because it's missing. Will request.";
+    VLOG(1) << "Should descending into " << link.cid << " for " << name
+            << " but can't because it's missing. Will request.";
     return MoreDataNeeded{std::vector{"/ipfs/" + link.cid}};
   }
 }

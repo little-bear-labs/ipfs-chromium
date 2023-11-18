@@ -1,14 +1,12 @@
 #include "inter_request_state.h"
 
 #include "chromium_ipfs_context.h"
-#include "network_requestor.h"
 
 #include "base/logging.h"
 #include "content/public/browser/browser_context.h"
 
 #include <ipfs_client/gw/default_requestor.h>
 
-#include <ipfs_client/dag_listener.h>
 #include <ipfs_client/ipfs_request.h>
 #include <ipfs_client/response.h>
 
@@ -44,11 +42,6 @@ std::shared_ptr<ipfs::ChromiumIpfsContext> Self::api() {
   auto created =
       std::make_shared<ipfs::ChromiumIpfsContext>(*this, network_context_);
   api_ = created;
-  auto t = std::time(nullptr);
-  if (t - last_discovery_ > 300) {
-    created->Discover([this](auto v) { gws_.AddGateways(v); });
-    last_discovery_ = t;
-  }
   return created;
 }
 auto Self::cache() -> std::shared_ptr<CacheRequestor>& {

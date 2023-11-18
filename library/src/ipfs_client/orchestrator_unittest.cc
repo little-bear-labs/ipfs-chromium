@@ -1,8 +1,7 @@
 #include "ipfs_client/orchestrator.h"
 
-#include <gtest/gtest.h>
+#include <mock_cbor.h>
 
-#include <ipfs_client/context_api.h>
 #include <ipfs_client/dag_block.h>
 #include <ipfs_client/ipfs_request.h>
 #include <ipfs_client/ipns_record.h>
@@ -46,7 +45,7 @@ struct MockApi final : public ipfs::ContextApi {
   std::string UnescapeUrlComponent(std::string_view u) const {
     return std::string{u};
   }
-  std::vector<ipfs::IpnsCborEntry> mutable ipns_entries;
+  /*  std::vector<ipfs::IpnsCborEntry> mutable ipns_entries;
   ipfs::IpnsCborEntry deserialize_cbor(ipfs::ByteView) const {
     if (ipns_entries.empty()) {
       return {};
@@ -55,12 +54,22 @@ struct MockApi final : public ipfs::ContextApi {
     ipns_entries.erase(ipns_entries.begin());
     return rv;
   }
+   */
   void Discover(std::function<void(std::vector<std::string>)> cb) {}
   void SendDnsTextRequest(std::string,
                           DnsTextResultsCallback,
                           DnsTextCompleteCallback) {}
   void SendHttpRequest(ipfs::HttpRequestDescription,
                        HttpCompleteCallback) const {}
+  std::vector<MockCbor> mutable cbors;
+  std::unique_ptr<ipfs::DagCborValue> ParseCbor(ByteView) const {
+    if (cbors.empty()) {
+      return {};
+    }
+    auto r = std::make_unique<MockCbor>(cbors.front());
+    cbors.erase(cbors.begin());
+    return std::move(r);
+  }
 };
 struct TestRequestor final : public ig::Requestor {
   std::string_view name() const { return "return test requestor"; }
@@ -85,14 +94,21 @@ struct TestRequestor final : public ig::Requestor {
         std::ifstream fs{f};
         std::string buf(std::filesystem::file_size(f) + 1, '\0');
         fs.read(buf.data(), buf.size());
-        MockApi api;
+        auto api = std::make_shared<MockApi>();
         ipfs::ipns::IpnsEntry entry;
         EXPECT_TRUE(entry.ParseFromArray(buf.data(), buf.size() - 1));
-        api.ipns_entries.push_back({entry.value(), entry.validity(),
-                                    static_cast<unsigned>(entry.validitytype()),
-                                    entry.sequence(), entry.ttl()});
+        //        api.ipns_entries.push_back({entry.value(), entry.validity(),
+        //                                    static_cast<unsigned>(entry.validitytype()),
+        //                                    entry.sequence(), entry.ttl()});
+        MockCbor cbor;
+        cbor.set("Value", entry.value());
+        cbor.set("Validity", entry.validity());
+        cbor.set("ValidityType", entry.validitytype());
+        cbor.set("Sequence", entry.sequence());
+        cbor.set("TTL", entry.ttl());
+        api->cbors.push_back(cbor);
         buf.resize(buf.size() - 1);
-        r->RespondSuccessfully(buf, &api);
+        r->RespondSuccessfully(buf, api);
       } break;
       case i::gw::Type::Car:
         r->type = i::gw::Type::Block;
@@ -107,7 +123,7 @@ struct TestRequestor final : public ig::Requestor {
           std::string buf(std::filesystem::file_size(f) + 1, '\0');
           fs.read(buf.data(), buf.size());
           buf.resize(buf.size() - 1);
-          r->RespondSuccessfully(buf, api_.get());
+          r->RespondSuccessfully(buf, api_);
         } else {
           auto cmd =
               "ipfs block get " + cid + " > '" + f.generic_string() + "'";
@@ -131,7 +147,7 @@ struct TestRequestor final : public ig::Requestor {
         std::ifstream fs{f};
         std::string target;
         std::getline(fs, target);
-        r->RespondSuccessfully(target, api_.get());
+        r->RespondSuccessfully(target, api_);
       } break;
       default:
         return HandleOutcome::DONE;

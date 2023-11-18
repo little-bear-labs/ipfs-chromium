@@ -14,6 +14,6 @@ auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
     return HandleOutcome::NOT_HANDLED;
   }
   std::string data{req->identity_data()};
-  req->RespondSuccessfully(data, api_.get());
+  req->RespondSuccessfully(data, api_);
   return HandleOutcome::DONE;
 }

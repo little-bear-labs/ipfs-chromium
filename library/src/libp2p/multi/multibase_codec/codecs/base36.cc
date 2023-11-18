@@ -2,6 +2,8 @@
 
 #include <vocab/i128.h>
 
+#include <cmath>
+
 #include <algorithm>
 
 namespace det = libp2p::multi::detail;

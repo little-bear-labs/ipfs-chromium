@@ -12,7 +12,9 @@ class SimpleURLLoader;
 }  // namespace network
 namespace network::mojom {
 class URLLoaderFactory;
-}
+class URLResponseHead;
+}  // namespace network::mojom
+class GURL;
 
 namespace ipfs {
 class BlockHttpRequest : public std::enable_shared_from_this<BlockHttpRequest> {
@@ -30,7 +32,12 @@ class BlockHttpRequest : public std::enable_shared_from_this<BlockHttpRequest> {
  private:
   ipfs::HttpRequestDescription const inf_;
   HttpCompleteCallback callback_;
+  std::string status_line_;
+  ContextApi::HeaderAccess header_accessor_ = [](auto) {
+    return std::string{};
+  };
 
+  void OnResponseHead(GURL const&, network::mojom::URLResponseHead const&);
   void OnResponse(std::shared_ptr<BlockHttpRequest>,
                   std::unique_ptr<std::string> body);
 };

@@ -2,7 +2,6 @@
 
 #include "chromium_ipfs_context.h"
 #include "inter_request_state.h"
-#include "summarize_headers.h"
 
 #include "ipfs_client/gateways.h"
 #include "ipfs_client/ipfs_request.h"
@@ -80,8 +79,8 @@ void ipfs::IpfsUrlLoader::StartRequest(
     me->root_ = cid_str;
     me->api_->SetLoaderFactory(*(me->lower_loader_factory_));
     auto whendone = [me](IpfsRequest const& req, ipfs::Response const& res) {
-      LOG(INFO) << "whendone(" << req.path().to_string() << ',' << res.status_
-                << ',' << res.body_.size() << "B mime=" << res.mime_ << ')';
+      VLOG(1) << "whendone(" << req.path().to_string() << ',' << res.status_
+              << ',' << res.body_.size() << "B mime=" << res.mime_ << ')';
       if (!res.body_.empty()) {
         me->ReceiveBlockBytes(res.body_);
       }
@@ -157,8 +156,8 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   VLOG(1) << "Calling PopulateParsedHeaders";
   head->parsed_headers =
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});
-  LOG(INFO) << "Sending response for " << original_url_ << " with mime type "
-            << head->mime_type << " and status line " << status_line;
+  VLOG(1) << "Sending response for " << original_url_ << " with mime type "
+          << head->mime_type << " and status line " << status_line;
   client_->OnReceiveResponse(std::move(head), std::move(pipe_cons_),
                              absl::nullopt);
   client_->OnComplete(network::URLLoaderCompletionStatus{});

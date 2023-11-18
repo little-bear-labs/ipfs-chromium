@@ -3,7 +3,6 @@
 
 #include "cache_requestor.h"
 
-#include "ipfs_client/chained_requestors.h"
 #include "ipfs_client/gateways.h"
 #include "ipfs_client/ipns_names.h"
 #include "ipfs_client/orchestrator.h"
@@ -20,7 +19,6 @@ class Scheduler;
 class ChromiumIpfsContext;
 class InterRequestState : public base::SupportsUserData::Data {
   Gateways gws_;
-  ChainedRequestors requestor_;
   IpnsNames names_;
   std::weak_ptr<ChromiumIpfsContext> api_;
   std::time_t last_discovery_ = 0;

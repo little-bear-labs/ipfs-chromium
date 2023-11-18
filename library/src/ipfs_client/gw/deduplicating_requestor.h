@@ -12,7 +12,11 @@ class DeduplicatingRequestor final : public Requestor {
   std::string_view name() const override;
   HandleOutcome handle(RequestPtr) override;
 
-  std::map<HttpRequestDescription, std::weak_ptr<GatewayRequest>> seen_;
+  struct PastPass {
+    std::weak_ptr<GatewayRequest> ptr;
+    std::time_t t;
+  };
+  std::map<HttpRequestDescription, PastPass> seen_;
 };
 }  // namespace ipfs::gw
 

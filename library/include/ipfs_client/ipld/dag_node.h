@@ -4,8 +4,7 @@
 #include "link.h"
 
 #include <ipfs_client/gw/gateway_request.h>
-#include "ipfs_client/response.h"
-
+#include <ipfs_client/response.h>
 #include <vocab/slash_delimited.h>
 
 #include <cstdint>
@@ -21,8 +20,10 @@ namespace ipfs {
 class Block;
 class ContextApi;
 struct ValidatedIpns;
+}  // namespace ipfs
+namespace libp2p::multi {
+struct ContentIdentifier;
 }
-
 namespace ipfs::ipld {
 
 class DagNode;
@@ -53,6 +54,10 @@ class DagNode : public std::enable_shared_from_this<DagNode> {
                                 BlockLookup,
                                 std::string& up_to_here) = 0;
 
+  using Cid = libp2p::multi::ContentIdentifier;
+  static NodePtr fromBytes(std::shared_ptr<ContextApi> const& api,
+                           Cid const&,
+                           std::string_view bytes);
   static NodePtr fromBlock(Block const&);
   static NodePtr fromIpnsRecord(ValidatedIpns const&);
 

@@ -4,6 +4,7 @@
 #include <vocab/slash_delimited.h>
 
 #include <functional>
+#include <memory>
 #include <string>
 
 namespace ipfs {
@@ -24,6 +25,8 @@ class IpfsRequest {
   void till_next(std::size_t);
   bool ready_after();
   void new_path(std::string_view);
+
+  static std::shared_ptr<IpfsRequest> fromUrl(std::string url, Finisher);
 };
 }  // namespace ipfs
 

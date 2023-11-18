@@ -47,45 +47,52 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
     desc.value().url.insert(0, prefix_);
   }
   desc.value().timeout_seconds += extra_seconds_;
-  auto cb = [this, r](std::int16_t status, std::string_view body,
-                      ContextApi::HeaderAccess) {
+  auto cb = [this, r, desc](std::int16_t status, std::string_view body,
+                            ContextApi::HeaderAccess ha) {
     if (r->parallel) {
       r->parallel--;
     }
     if (pending_) {
       pending_--;
     }
-    if (body.find("thx scammers") != std::string_view ::npos) {
-      LOG(ERROR) << r->debug_string() << " on " << prefix_
-                 << " RETURNED THIS!! '" << body << "'!";
-    }
     if (r->type == Type::Zombie) {
       return;
     } else if (status == 408) {
       extra_seconds_++;
     } else if (status / 100 == 2) {
-      if (!r->RespondSuccessfully(body, api_.get())) {
-      } else if (typ_good_.insert(r->type).second) {
-        VLOG(1) << prefix_ << " OK with requests of type "
-                << static_cast<int>(r->type);
-      } else if (typ_bad_.erase(r->type)) {
-        LOG(INFO) << prefix_ << " truly OK with requests of type "
+      auto ct = ha("content-type");
+      std::transform(ct.begin(), ct.end(), ct.begin(), ::tolower);
+      if (ct.empty()) {
+        LOG(ERROR) << "No content-type header?";
+      }
+      if (ct.size() && desc->accept.size() && ct != desc->accept) {
+        LOG(WARNING) << "Requested with Accept: " << desc->accept
+                     << " but received response with content-type: " << ct;
+        LOG(INFO) << "Demote(" << prefix_ << ')';
+      } else if (!r->RespondSuccessfully(body, api_)) {
+        LOG(ERROR) << "Got an unuseful response from " << prefix_
+                   << " forwarding request " << r->debug_string()
+                   << " to next requestor.";
+      } else {
+        // Good cases
+        if (typ_good_.insert(r->type).second) {
+          VLOG(1) << prefix_ << " OK with requests of type "
                   << static_cast<int>(r->type);
+        } else if (typ_bad_.erase(r->type)) {
+          VLOG(1) << prefix_ << " truly OK with requests of type "
+                  << static_cast<int>(r->type);
+        }
+        if (aff_good_.insert(r->affinity).second) {
+          VLOG(1) << prefix_ << " likes requests in the neighborhood of "
+                  << r->affinity;
+        } else if (aff_bad_.erase(r->affinity)) {
+          VLOG(1) << prefix_ << " truly OK with affinity " << r->affinity;
+        }
+        VLOG(2) << prefix_ << " had a success on " << r->debug_string();
+        LOG(INFO) << "Promote(" << prefix_ << ')';
+        ++strength_;
+        return;
       }
-      if (aff_good_.insert(r->affinity).second) {
-        VLOG(1) << prefix_ << " likes requests in the neighborhood of "
-                << r->affinity;
-      } else if (aff_bad_.erase(r->affinity)) {
-        LOG(INFO) << prefix_ << " truly OK with affinity " << r->affinity;
-      }
-      LOG(INFO) << prefix_ << " had a success on " << r->debug_string();
-      LOG(INFO) << "Promote(" << prefix_ << ')';
-      ++strength_;
-      return;
-    } else {
-      VLOG(1) << "Got an unuseful response from " << prefix_
-              << " forwarding request " << r->debug_string()
-              << " to next requestor.";
     }
     LOG(INFO) << "Demote(" << prefix_ << ')';
     if (strength_ > 0) {

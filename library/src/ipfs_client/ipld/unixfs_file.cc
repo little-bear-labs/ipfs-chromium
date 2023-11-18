@@ -33,14 +33,12 @@ auto Self::resolve(ipfs::SlashDelimited path,
         body.append(std::get<Response>(recurse).body_);
       }
     } else {
-      LOG(INFO) << "In order to resolve the file at path " << to_here
-                << " I need CID " << link.cid;
+      VLOG(2) << "In order to resolve the file at path " << to_here
+              << " I need CID " << link.cid;
       missing.push_back("/ipfs/" + link.cid);
     }
   }
   if (missing.empty()) {
-    LOG(INFO) << "Assembled file (or file part) of " << body.size()
-              << " bytes from multiple nodes.";
     return Response{
         "",
         200,

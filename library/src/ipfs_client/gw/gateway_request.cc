@@ -1,5 +1,6 @@
 #include <ipfs_client/gw/gateway_request.h>
 
+#include <ipfs_client/ipld/chunk.h>
 #include <ipfs_client/ipld/dag_node.h>
 #include <ipfs_client/ipld/ipns_name.h>
 
@@ -107,7 +108,7 @@ short Self::timeout_seconds() const {
     case Type::DnsLink:
       return 16;
     case Type::Block:
-      return 33;
+      return 34;
     case Type::Providers:
       return 64;
     case Type::Car:
@@ -205,15 +206,24 @@ std::string Self::debug_string() const {
   oss << " plel=" << parallel << '}';
   return oss.str();
 }
-bool Self::RespondSuccessfully(std::string_view bytes, ContextApi* api) {
+bool Self::RespondSuccessfully(std::string_view bytes,
+                               std::shared_ptr<ContextApi> const& api) {
+  using namespace ipfs::ipld;
   bool success = false;
   switch (type) {
     case Type::Block: {
       DCHECK(cid.has_value());
-      ipfs::Block b{cid.value(), bytes};
-      auto node = ipfs::ipld::DagNode::fromBlock(b);
+      if (!cid.has_value()) {
+        LOG(ERROR) << "Your CID doesn't even hae a value!";
+        return false;
+      }
+      auto node = DagNode::fromBytes(api, cid.value(), bytes);
       success = orchestrator_->add_node(main_param, node);
     } break;
+    case Type::Identity:
+      success = orchestrator_->add_node(
+          main_param, std::make_shared<Chunk>(std::string{bytes}));
+      break;
     case Type::Ipns:
       if (cid.has_value()) {
         DCHECK(api);
@@ -221,10 +231,11 @@ bool Self::RespondSuccessfully(std::string_view bytes, ContextApi* api) {
         auto rec = ipfs::ValidateIpnsRecord({byte_ptr, bytes.size()},
                                             cid.value(), *api);
         if (rec.has_value()) {
-          auto node = ipfs::ipld::DagNode::fromIpnsRecord(rec.value());
+          auto node = DagNode::fromIpnsRecord(rec.value());
           success = orchestrator_->add_node(main_param, node);
         } else {
           LOG(ERROR) << "IPNS record failed to validate!";
+          return false;
         }
       }
       break;
@@ -234,21 +245,19 @@ bool Self::RespondSuccessfully(std::string_view bytes, ContextApi* api) {
           main_param, std::make_shared<ipld::IpnsName>(bytes));
 
       break;
+    case Type::Car:
+      LOG(WARNING) << "TODO - handle responses to CAR requests.";
+      break;
     default:
-      LOG(FATAL) << "TODO " << static_cast<int>(type);
+      LOG(ERROR) << "TODO " << static_cast<int>(type);
   }
   if (success) {
-    VLOG(1) << debug_string() << " successfully responded to by "
-            << bytes.size() << " B of data.";
     for (auto& hook : bytes_received_hooks) {
       hook(bytes);
     }
     bytes_received_hooks.clear();
-  } else {
-    LOG(INFO) << "Failure to process " << bytes.size()
-              << "B of data as a response to " << debug_string();
+    orchestrator_->build_response(dependent);
   }
-  orchestrator_->build_response(dependent);
   return success;
 }
 void Self::Hook(std::function<void(std::string_view)> f) {

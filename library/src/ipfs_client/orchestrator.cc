@@ -23,7 +23,7 @@ void Self::build_response(std::shared_ptr<IpfsRequest> req) {
     return;
   }
   auto req_path = req->path();
-  VLOG(1) << "build_response(" << req_path.to_string() << ')';
+  VLOG(2) << "build_response(" << req_path.to_string() << ')';
   req_path.pop();  // namespace
   std::string affinity{req_path.pop()};
   auto it = dags_.find(affinity);
@@ -32,7 +32,7 @@ void Self::build_response(std::shared_ptr<IpfsRequest> req) {
       build_response(req);
     }
   } else {
-    VLOG(1) << "Requesting root " << affinity << " resolve path "
+    VLOG(2) << "Requesting root " << affinity << " resolve path "
             << req_path.to_string();
     from_tree(req, it->second, req_path, affinity);
   }
@@ -96,13 +96,12 @@ bool Self::gw_request(std::shared_ptr<IpfsRequest> ir,
 
 bool Self::add_node(std::string key, ipfs::ipld::NodePtr p) {
   if (p) {
-    VLOG(1) << "add_node(" << key << ')';
     if (dags_.insert({key, p}).second) {
       p->set_api(api_);
-      return true;
     }
+    return true;
   } else {
-    LOG(ERROR) << "NULL block attempted to be added for " << key;
+    LOG(INFO) << "NULL block attempted to be added for " << key;
   }
   return false;
 }
@@ -116,7 +115,7 @@ std::string Self::sniff(ipfs::SlashDelimited p, std::string const& body) const {
     ext.assign(file_name, dot + 1);
   }
   auto result = api_->MimeType(ext, body, fake_url);
-  VLOG(1) << "Deduced mime from (ext=" << ext << " body of " << body.size()
+  VLOG(2) << "Deduced mime from (ext=" << ext << " body of " << body.size()
           << " bytes, 'url'=" << fake_url << ")=" << result;
   return result;
 }

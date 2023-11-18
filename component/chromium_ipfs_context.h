@@ -29,7 +29,6 @@ class ChromiumIpfsContext final : public ContextApi {
   raw_ptr<network::mojom::URLLoaderFactory> loader_factory_ = nullptr;
   raw_ptr<network::mojom::NetworkContext> network_context_;
   raw_ref<InterRequestState> state_;
-  std::function<void(std::vector<std::string>)> disc_cb_;
   std::map<std::string, std::unique_ptr<DnsTxtRequest>> dns_reqs_;
 
   std::string MimeType(std::string extension,
@@ -41,20 +40,18 @@ class ChromiumIpfsContext final : public ContextApi {
                           DnsTextCompleteCallback) override;
   void SendHttpRequest(HttpRequestDescription req_inf,
                        HttpCompleteCallback cb) const override;
-  IpnsCborEntry deserialize_cbor(ByteView) const override;
   bool verify_key_signature(SigningKeyType,
                             ByteView signature,
                             ByteView data,
                             ByteView key_bytes) const override;
 
-  friend class NetworkRequestor;
+  std::unique_ptr<DagCborValue> ParseCbor(ByteView) const override;
 
  public:
   ChromiumIpfsContext(InterRequestState&,
                       raw_ptr<network::mojom::NetworkContext> network_context);
-  ~ChromiumIpfsContext();
+  ~ChromiumIpfsContext() noexcept override;
   void SetLoaderFactory(network::mojom::URLLoaderFactory&);
-  void Discover(std::function<void(std::vector<std::string>)>) override;
 };
 
 }  // namespace ipfs

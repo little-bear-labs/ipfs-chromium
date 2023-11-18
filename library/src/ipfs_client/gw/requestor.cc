@@ -42,8 +42,6 @@ void Self::request(ReqPtr req) {
     case HandleOutcome::PARALLEL:
     case HandleOutcome::NOT_HANDLED:
       if (next_) {
-        VLOG(2) << name() << " not handled request, passing along to "
-                << next_->name();
         next_->request(req);
       } else {
         LOG(ERROR) << "Ran out of Requestors in the chain while looking for "
@@ -53,10 +51,9 @@ void Self::request(ReqPtr req) {
       }
       break;
     case HandleOutcome::PENDING:
-      VLOG(1) << req->debug_string() << " sent via requestor " << name();
       break;
     case HandleOutcome::DONE:
-      VLOG(1) << req->debug_string() << " finished synchronously: " << name();
+      VLOG(2) << req->debug_string() << " finished synchronously: " << name();
       break;
   }
 }
@@ -103,7 +100,7 @@ void Self::iterate_nodes(
 void Self::receive_response(ipfs::gw::RequestPtr req,
                             ipfs::Response const& res) const {
   if (res.status_ / 100 == 2) {
-    req->RespondSuccessfully(res.body_, api_.get());
+    req->RespondSuccessfully(res.body_, api_);
   } else if (req->parallel == 0) {
     LOG(ERROR) << "Finally failing on " << req->debug_string();
     definitive_failure(req);

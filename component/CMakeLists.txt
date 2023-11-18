@@ -161,6 +161,7 @@ target_include_directories(out_of_tree
   SYSTEM
   BEFORE
   PRIVATE
+    "../chromium_tree/oot"
     "${protobuf_INCLUDE_DIR}"
     "${CMAKE_CURRENT_BINARY_DIR}/inc_link"
   )
