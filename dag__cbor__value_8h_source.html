@@ -83,24 +83,26 @@ $(function() {
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <span class="keyword">virtual</span> std::unique_ptr&lt;DagCborValue&gt; at(std::string_view) <span class="keyword">const</span> = 0;</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keyword">virtual</span> std::optional&lt;std::uint64_t&gt; as_unsigned() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keyword">virtual</span> std::optional&lt;std::string&gt; as_string() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <span class="keyword">virtual</span> std::optional&lt;std::vector&lt;std::uint8_t&gt;&gt; as_bytes() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keyword">virtual</span> std::optional&lt;bool&gt; as_bool() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="keyword">using</span> Cid = libp2p::multi::ContentIdentifier;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keyword">virtual</span> std::optional&lt;Cid&gt; as_link() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> is_map() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> is_array() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="keyword">using</span> MapElementCallback = std::function&lt;void(std::string_view,<a class="code" href="classipfs_1_1DagCborValue.html">DagCborValue</a> <span class="keyword">const</span>&amp;)&gt;;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keyword">using</span> ArrayElementCallback = std::function&lt;void(<a class="code" href="classipfs_1_1DagCborValue.html">DagCborValue</a> <span class="keyword">const</span>&amp;)&gt;;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> iterate_map(MapElementCallback) <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> iterate_array(ArrayElementCallback) <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  std::string html() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keywordtype">void</span> html(std::ostream&amp;) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classipfs_1_1DagCborValue.html">DagCborValue</a>() noexcept {}</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;};</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;}</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_DAG_CBOR_VALUE_H_</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keyword">virtual</span> std::optional&lt;std::int64_t&gt; as_signed() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <span class="keyword">virtual</span> std::optional&lt;double&gt; as_float() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keyword">virtual</span> std::optional&lt;std::string&gt; as_string() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="keyword">virtual</span> std::optional&lt;std::vector&lt;std::uint8_t&gt;&gt; as_bytes() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keyword">virtual</span> std::optional&lt;bool&gt; as_bool() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keyword">using</span> Cid = libp2p::multi::ContentIdentifier;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keyword">virtual</span> std::optional&lt;Cid&gt; as_link() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> is_map() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> is_array() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keyword">using</span> MapElementCallback = std::function&lt;void(std::string_view,<a class="code" href="classipfs_1_1DagCborValue.html">DagCborValue</a> <span class="keyword">const</span>&amp;)&gt;;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keyword">using</span> ArrayElementCallback = std::function&lt;void(<a class="code" href="classipfs_1_1DagCborValue.html">DagCborValue</a> <span class="keyword">const</span>&amp;)&gt;;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> iterate_map(MapElementCallback) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> iterate_array(ArrayElementCallback) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  std::string html() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keywordtype">void</span> html(std::ostream&amp;) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classipfs_1_1DagCborValue.html">DagCborValue</a>() noexcept {}</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;};</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;}</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_DAG_CBOR_VALUE_H_</span></div>
 <div class="ttc" id="aclassipfs_1_1DagCborValue_html"><div class="ttname"><a href="classipfs_1_1DagCborValue.html">ipfs::DagCborValue</a></div><div class="ttdef"><b>Definition:</b> dag_cbor_value.h:11</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
