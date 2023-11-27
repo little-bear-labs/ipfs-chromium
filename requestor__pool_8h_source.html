@@ -76,26 +76,32 @@ $(function() {
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;vocab/flat_mapset.h&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;queue&gt;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>ipfs::gw {</div>
-<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="classipfs_1_1gw_1_1RequestorPool.html">   12</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1gw_1_1RequestorPool.html">RequestorPool</a> : <span class="keyword">public</span> <a class="code" href="classipfs_1_1gw_1_1Requestor.html">Requestor</a> {</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  std::string_view name() <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  HandleOutcome handle(RequestPtr) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  HandleOutcome check(RequestPtr, std::size_t);</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  std::vector&lt;std::shared_ptr&lt;Requestor&gt;&gt; pool;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  std::queue&lt;std::pair&lt;RequestPtr, std::size_t&gt;&gt; waiting;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <a class="code" href="classipfs_1_1gw_1_1RequestorPool.html">RequestorPool</a>&amp; add(std::shared_ptr&lt;Requestor&gt;);</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;};</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;}  <span class="comment">// namespace ipfs::gw</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_REQUESTOR_POOL_H_</span></div>
-<div class="ttc" id="aclassipfs_1_1gw_1_1RequestorPool_html"><div class="ttname"><a href="classipfs_1_1gw_1_1RequestorPool.html">ipfs::gw::RequestorPool</a></div><div class="ttdef"><b>Definition:</b> requestor_pool.h:12</div></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;ctime&gt;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;queue&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>ipfs::gw {</div>
+<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="classipfs_1_1gw_1_1RequestorPool.html">   13</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1gw_1_1RequestorPool.html">RequestorPool</a> : <span class="keyword">public</span> <a class="code" href="classipfs_1_1gw_1_1Requestor.html">Requestor</a> {</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  std::string_view name() <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  HandleOutcome handle(RequestPtr) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  std::vector&lt;std::shared_ptr&lt;Requestor&gt;&gt; pool_;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="keyword">struct </span>Waiting {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    RequestPtr req;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    std::size_t at_idx;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    std::time_t when;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  };</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  std::queue&lt;Waiting&gt; waiting_;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  HandleOutcome check(Waiting);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  </div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <a class="code" href="classipfs_1_1gw_1_1RequestorPool.html">RequestorPool</a>&amp; add(std::shared_ptr&lt;Requestor&gt;);</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;};</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;}  <span class="comment">// namespace ipfs::gw</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_REQUESTOR_POOL_H_</span></div>
+<div class="ttc" id="aclassipfs_1_1gw_1_1RequestorPool_html"><div class="ttname"><a href="classipfs_1_1gw_1_1RequestorPool.html">ipfs::gw::RequestorPool</a></div><div class="ttdef"><b>Definition:</b> requestor_pool.h:13</div></div>
 <div class="ttc" id="aclassipfs_1_1gw_1_1Requestor_html"><div class="ttname"><a href="classipfs_1_1gw_1_1Requestor.html">ipfs::gw::Requestor</a></div><div class="ttdef"><b>Definition:</b> requestor.h:21</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

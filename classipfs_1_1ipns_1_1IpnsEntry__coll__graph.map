@@ -1,11 +1,6 @@
 <map id="ipfs::ipns::IpnsEntry" name="ipfs::ipns::IpnsEntry">
-<area shape="rect" id="node1" title=" " alt="" coords="641,107,792,134"/>
-<area shape="rect" id="node2" title=" " alt="" coords="281,5,462,47"/>
-<area shape="rect" id="node3" title=" " alt="" coords="296,175,447,216"/>
-<area shape="rect" id="node4" title=" " alt="" coords="26,182,101,209"/>
-<area shape="rect" id="node5" title=" " alt="" coords="44,105,83,131"/>
-<area shape="rect" id="node6" title=" " alt="" coords="15,349,112,375"/>
-<area shape="rect" id="node7" title=" " alt="" coords="8,399,119,426"/>
-<area shape="rect" id="node8" title=" " alt="" coords="5,298,121,325"/>
-<area shape="rect" id="node9" title=" " alt="" coords="267,241,476,267"/>
+<area shape="rect" id="node1" title=" " alt="" coords="155,139,306,165"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,5,187,47"/>
+<area shape="rect" id="node3" title=" " alt="" coords="211,13,250,39"/>
+<area shape="rect" id="node4" title=" " alt="" coords="319,13,529,39"/>
 </map>

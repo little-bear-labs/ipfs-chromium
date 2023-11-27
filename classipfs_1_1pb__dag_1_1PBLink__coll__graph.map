@@ -1,10 +1,5 @@
 <map id="ipfs::pb_dag::PBLink" name="ipfs::pb_dag::PBLink">
-<area shape="rect" id="node1" title=" " alt="" coords="211,213,365,240"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,109,187,151"/>
-<area shape="rect" id="node3" title=" " alt="" coords="211,109,365,151"/>
-<area shape="rect" id="node4" title=" " alt="" coords="76,5,151,32"/>
-<area shape="rect" id="node5" title=" " alt="" coords="175,5,273,32"/>
-<area shape="rect" id="node6" title=" " alt="" coords="297,5,407,32"/>
-<area shape="rect" id="node7" title=" " alt="" coords="431,5,547,32"/>
-<area shape="rect" id="node8" title=" " alt="" coords="389,117,427,143"/>
+<area shape="rect" id="node1" title=" " alt="" coords="86,109,239,136"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,5,187,47"/>
+<area shape="rect" id="node3" title=" " alt="" coords="211,13,250,39"/>
 </map>

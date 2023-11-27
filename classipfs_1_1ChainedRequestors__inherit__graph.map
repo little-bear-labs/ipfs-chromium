@@ -1,4 +1,0 @@
-<map id="ipfs::ChainedRequestors" name="ipfs::ChainedRequestors">
-<area shape="rect" id="node1" title="A BlockRequestor that chains together BlockRequestors." alt="" coords="5,80,185,107"/>
-<area shape="rect" id="node2" href="$classipfs_1_1BlockRequestor.html" title="Interface for classes that can asynchronously fetch a block for a CID." alt="" coords="17,5,173,32"/>
-</map>

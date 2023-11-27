@@ -1,9 +1,5 @@
 <map id="ipfs::ipns::PrivateKey" name="ipfs::ipns::PrivateKey">
-<area shape="rect" id="node1" title=" " alt="" coords="155,199,314,225"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,95,187,136"/>
-<area shape="rect" id="node3" title=" " alt="" coords="409,95,567,136"/>
-<area shape="rect" id="node4" title=" " alt="" coords="233,5,271,32"/>
-<area shape="rect" id="node5" title=" " alt="" coords="311,5,409,32"/>
-<area shape="rect" id="node6" title=" " alt="" coords="433,5,543,32"/>
-<area shape="rect" id="node7" title=" " alt="" coords="567,5,683,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="83,109,242,136"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,5,187,47"/>
+<area shape="rect" id="node3" title=" " alt="" coords="211,13,250,39"/>
 </map>

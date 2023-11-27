@@ -139,57 +139,17 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>SendDnsTextRe
 <tr class="memitem:a5bafd20d2efe1e61dab0bda78ff53988"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ContextApi.html#a5bafd20d2efe1e61dab0bda78ff53988">UnescapeUrlComponent</a> (std::string_view url_comp) const =0</td></tr>
 <tr class="memdesc:a5bafd20d2efe1e61dab0bda78ff53988"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove URL escaping, e.g. %20.  <a href="classipfs_1_1ContextApi.html#a5bafd20d2efe1e61dab0bda78ff53988">More...</a><br /></td></tr>
 <tr class="separator:a5bafd20d2efe1e61dab0bda78ff53988"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0cb99e335785d43080a50699b2074f27"><td class="memItemLeft" align="right" valign="top"><a id="a0cb99e335785d43080a50699b2074f27"></a>
-virtual <a class="el" href="structipfs_1_1IpnsCborEntry.html">IpnsCborEntry</a>&#160;</td><td class="memItemRight" valign="bottom"><b>deserialize_cbor</b> (ByteView) const =0</td></tr>
-<tr class="separator:a0cb99e335785d43080a50699b2074f27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2d21f7308e97ec8b55e7657d3a65e3c"><td class="memItemLeft" align="right" valign="top"><a id="ab2d21f7308e97ec8b55e7657d3a65e3c"></a>
+virtual std::unique_ptr&lt; <a class="el" href="classipfs_1_1DagCborValue.html">DagCborValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ParseCbor</b> (ByteView) const =0</td></tr>
+<tr class="separator:ab2d21f7308e97ec8b55e7657d3a65e3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abb9f38dd8973e6ccdca0013a70c36a10"><td class="memItemLeft" align="right" valign="top"><a id="abb9f38dd8973e6ccdca0013a70c36a10"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>verify_key_signature</b> (SigningKeyType, ByteView signature, ByteView data, ByteView key_bytes) const =0</td></tr>
 <tr class="separator:abb9f38dd8973e6ccdca0013a70c36a10"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c7cb1d1a94d2ebf7dc67b82d9b7f419"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ContextApi.html#a1c7cb1d1a94d2ebf7dc67b82d9b7f419">Discover</a> (std::function&lt; void(std::vector&lt; std::string &gt;)&gt; cb)=0</td></tr>
-<tr class="memdesc:a1c7cb1d1a94d2ebf7dc67b82d9b7f419"><td class="mdescLeft">&#160;</td><td class="mdescRight">Discover more gateways.  <a href="classipfs_1_1ContextApi.html#a1c7cb1d1a94d2ebf7dc67b82d9b7f419">More...</a><br /></td></tr>
-<tr class="separator:a1c7cb1d1a94d2ebf7dc67b82d9b7f419"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface that provides functionality from whatever environment you're using this library in. </p>
 <dl class="section note"><dt>Note</dt><dd>A user of this library must implement this, but will probably do so only once. </dd></dl>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a1c7cb1d1a94d2ebf7dc67b82d9b7f419"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1c7cb1d1a94d2ebf7dc67b82d9b7f419">&#9670;&nbsp;</a></span>Discover()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual void ipfs::ContextApi::Discover </td>
-          <td>(</td>
-          <td class="paramtype">std::function&lt; void(std::vector&lt; std::string &gt;)&gt;&#160;</td>
-          <td class="paramname"><em>cb</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Discover more gateways. </p>
-<p>The in-chromium implementation of this hits <a href="https://orchestrator.strn.pl/nodes/nearby">https://orchestrator.strn.pl/nodes/nearby</a> Another implementation might kick off an mDNS probe? </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cb</td><td>- A callback, called with a list of gateway prefixes, e.g. <a href="https://gateway.ipfs.io/">https://gateway.ipfs.io/</a> </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section note"><dt>Note</dt><dd>TRAILING SLASH (/) EXPECTED! </dd></dl>
-
-<p>Implemented in <a class="el" href="classipfs_1_1ChromiumIpfsContext.html#a37de464cb24c823d4fc4f9e50c087e59">ipfs::ChromiumIpfsContext</a>.</p>
-
-</div>
-</div>
 <a id="a67c029b3a659deeda252fbc0229e7cc4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a67c029b3a659deeda252fbc0229e7cc4">&#9670;&nbsp;</a></span>MimeType()</h2>
 

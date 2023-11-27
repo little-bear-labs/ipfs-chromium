@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ptr_303',['Ptr',['../classipfs_1_1ChainedRequestors.html#a137a0cb88d1328d16947b2649862cb36',1,'ipfs::ChainedRequestors']]]
+  ['serializedstoragehook_289',['SerializedStorageHook',['../classipfs_1_1BlockStorage.html#abfce56beba3484d42067349101bd868a',1,'ipfs::BlockStorage']]]
 ];
