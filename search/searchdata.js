@@ -6,7 +6,7 @@ var indexSectionsWithContent =
   3: "cfgkmprstuv",
   4: "s",
   5: "t",
-  6: "abcdirst"
+  6: "abcdirt"
 };
 
 var indexSectionNames =
