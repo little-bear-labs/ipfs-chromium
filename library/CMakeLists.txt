@@ -95,8 +95,7 @@ foreach(libname ipfs_client ipfs_client_covered)
           PUBLIC
             protobuf::protobuf
             absl::strings
-            Boost::headers
-	          boost::boost
+            boost::boost
             c-ares::cares
             nlohmann_json::nlohmann_json
         )

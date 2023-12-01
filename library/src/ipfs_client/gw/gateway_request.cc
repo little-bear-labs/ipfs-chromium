@@ -108,7 +108,7 @@ short Self::timeout_seconds() const {
     case Type::DnsLink:
       return 16;
     case Type::Block:
-      return 34;
+      return 35;
     case Type::Providers:
       return 64;
     case Type::Car:
@@ -174,25 +174,27 @@ std::optional<std::size_t> Self::max_response_size() const {
   LOG(ERROR) << "Invalid gateway request type " << static_cast<int>(type);
   return std::nullopt;
 }
-std::ostream& operator<<(std::ostream& s, ipfs::gw::Type t) {
+std::string_view ipfs::gw::name(ipfs::gw::Type t) {
   using ipfs::gw::Type;
   switch (t) {
     case Type::Block:
-      return s << "Block";
+      return "Block";
     case Type::Car:
-      return s << "Car";
+      return "Car";
     case Type::Ipns:
-      return s << "Ipns";
+      return "Ipns";
     case Type::DnsLink:
-      return s << "DnsLink";
+      return "DnsLink";
     case Type::Providers:
-      return s << "Providers";
+      return "Providers";
     case Type::Identity:
-      return s << "Identity";
+      return "Identity";
     case Type::Zombie:
-      return s << "CompletedRequest";
+      return "CompletedRequest";
   }
-  return s << "InvalidType=" << static_cast<long>(t);
+  static std::array<char, 19> buf;
+  std::sprintf(buf.data(), "InvalidType %d", static_cast<std::int8_t>(t));
+  return buf.data();
 }
 std::string Self::debug_string() const {
   std::ostringstream oss;

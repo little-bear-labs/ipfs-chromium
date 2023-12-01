@@ -2,6 +2,7 @@
 
 #include "chunk.h"
 #include "dag_cbor_node.h"
+#include "dag_json_node.h"
 #include "directory_shard.h"
 #include "ipns_name.h"
 #include "root.h"
@@ -15,13 +16,6 @@
 #include <libp2p/multi/content_identifier_codec.hpp>
 
 #include "log_macros.h"
-
-#if __has_include(<base/debug/stack_trace.h>)
-#include <base/debug/stack_trace.h>
-#define STACK_TRACE base::debug::StackTrace()
-#else
-#define STACK_TRACE " go ahead and implement stack trace if you want it."
-#endif
 
 using Node = ipfs::ipld::DagNode;
 
@@ -44,6 +38,17 @@ std::shared_ptr<Node> Node::fromBytes(std::shared_ptr<ContextApi> const& api,
             << " does not parse as CBOR.";
       }
     } break;
+    case Codec::DAG_JSON: {
+      auto json = api->ParseJson(bytes);
+      if (json) {
+        result = std::make_shared<DagJsonNode>(std::move(json));
+      } else {
+        LOG(ERROR)
+            << "JSON node "
+            << libp2p::multi::ContentIdentifierCodec::toString(cid).value()
+            << " does not parse as JSON.";
+      }
+    } break;
     case Codec::RAW:
     case Codec::DAG_PB: {
       ipfs::Block b{cid, bytes};
@@ -58,8 +63,7 @@ std::shared_ptr<Node> Node::fromBytes(std::shared_ptr<ContextApi> const& api,
         LOG(ERROR)
             << "Have a response that did not parse as a valid block, cid: "
             << libp2p::multi::ContentIdentifierCodec::toString(cid).value()
-            << " contents: " << bytes.size() << " bytes = " << hex.str() << ' '
-            << STACK_TRACE;
+            << " contents: " << bytes.size() << " bytes = " << hex.str();
       }
     } break;
     default:
@@ -94,7 +98,7 @@ std::shared_ptr<Node> Node::fromBlock(ipfs::Block const& block) {
       }
       break;
     case Block::Type::Invalid:
-      LOG(ERROR) << "Invalid block " << STACK_TRACE;
+      LOG(ERROR) << "Invalid block.";
       return result;
     default:
       LOG(FATAL) << "TODO " << static_cast<long>(block.type());

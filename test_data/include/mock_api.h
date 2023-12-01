@@ -48,6 +48,9 @@ struct MockApi final : public i::ContextApi {
 #else
   std::unique_ptr<ipfs::DagCborValue> ParseCbor(ByteView bv) const { return {}; }
 #endif
+  std::unique_ptr<ipfs::DagJsonValue> ParseJson(std::string_view) const {
+    return {};
+  }
 };
 }  // namespace
 

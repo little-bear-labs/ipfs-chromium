@@ -2,6 +2,7 @@
 
 #include <mock_cbor.h>
 
+#include <ipfs_client/dag_json_value.h>
 #include <ipfs_client/logger.h>
 #include <libp2p/multi/content_identifier_codec.hpp>
 #include <libp2p/peer/peer_id.hpp>
@@ -50,6 +51,9 @@ struct Api final : public ipfs::ContextApi {
     return true;
   }
   void Discover(std::function<void(std::vector<std::string>)> cb) { throw 1; }
+  std::unique_ptr<ipfs::DagJsonValue> ParseJson(std::string_view) const {
+    return {};
+  }
   std::function<ipfs::IpnsCborEntry(ipfs::ByteView)> dser_;
   Api(std::function<ipfs::IpnsCborEntry(ipfs::ByteView)> f = {}) {
     if (f) {

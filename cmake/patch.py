@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
 from os import listdir, makedirs, remove
-from os.path import exists, dirname, join, realpath, splitext
+from os.path import exists, dirname, isdir, join, realpath, splitext
 from shutil import copyfile, rmtree
 from subprocess import check_call, check_output
 from sys import argv, executable, platform, stderr
@@ -99,9 +99,6 @@ class Patcher:
         self.git(['apply', '--verbose', patch_path], out=False)
 
     def git(self, args: list[str], out: bool = True, and_strip: bool = True) -> str:
-        if and_strip and not out:
-            print("Combination of options does not make sense - one can't strip output one does not have.")
-            exit(31)
         if out:
             result = check_output([self.gbin, '-C', self.csrc] + args, text=True)
             if and_strip:
@@ -188,7 +185,7 @@ class Patcher:
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
-        fuzz = 59880
+        fuzz = 59881
         def check(version, version_set, s):
             i = as_int(version)
             by = (fuzz,0)
@@ -220,6 +217,9 @@ class Patcher:
         return map(lambda x: x[1:], result)
 
     def out_of_date(self, p):
+        dir_path = f'{self.edir}/{p}'
+        if not isdir(dir_path):
+            return True
         file_path = f'{self.pdir}/{p}.patch'
         with open(file_path) as f:
             lines = f.readlines()
@@ -232,7 +232,6 @@ class Patcher:
     def has_file_line(lines: list[str], path: str, line: str):
         fl = Patcher.file_lines(lines, path)
         return (line + '\n') in fl
-
 
     @staticmethod
     def file_lines(lines: list[str], path):

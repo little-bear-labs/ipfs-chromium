@@ -46,6 +46,7 @@ class ChromiumIpfsContext final : public ContextApi {
                             ByteView key_bytes) const override;
 
   std::unique_ptr<DagCborValue> ParseCbor(ByteView) const override;
+  std::unique_ptr<DagJsonValue> ParseJson(std::string_view) const override;
 
  public:
   ChromiumIpfsContext(InterRequestState&,

@@ -102,6 +102,15 @@ class AllInclusiveContext final : public ContextApi {
         bytes, false, true, nlohmann::detail::cbor_tag_handler_t::store);
     return std::make_unique<ipfs::JsonCborAdapter>(data);
   }
+  std::unique_ptr<DagJsonValue> ParseJson(
+      std::string_view j_str) const override {
+    auto data = nlohmann::json::parse(j_str);
+    std::ostringstream oss;
+    oss << std::setw(2) << data;
+    GOOGLE_LOG(DEBUG) << "Parsed " << j_str.size()
+                      << " bytes of JSON string and got " << oss.str();
+    return std::make_unique<ipfs::JsonCborAdapter>(data);
+  }
   bool verify_key_signature(SigningKeyType,
                             ByteView,
                             ByteView,
@@ -178,7 +187,6 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     }
     expiry_seconds_ += desc_.timeout_seconds;
     GOOGLE_LOG(DEBUG) << "expiry_seconds_ = " << expiry_seconds_ << '\n';
-    // Set up an HTTP GET request message
     req_.version(11);
     req_.method(boost::beast::http::verb::get);
     req_.target(target_);
@@ -220,7 +228,6 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     // Set a timeout on the operation
     stream_.expires_after(std::chrono::seconds(expiry_seconds_));
     GOOGLE_LOG(TRACE) << desc_.url << " connected.";
-    // Send the HTTP request to the remote host
     boost::beast::http::async_write(
         stream_, req_,
         boost::beast::bind_front_handler(&HttpSession::on_write,
@@ -246,8 +253,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
       std::string rv{res_[k]};
       return rv;
     };
-    GOOGLE_LOG(INFO) << "HTTP read successful(" << desc_.url
-                     << ";host=" << host_ << '(' << host_.size()
+    GOOGLE_LOG(INFO) << "HTTP read (" << desc_.url << ";host=" << host_ << '(' << host_.size()
                      << ");port=" << port_ << ";target=" << target_
                      << ": status=" << res_.result_int() << ", body is "
                      << bytes_transferred << "B, headers... ";
