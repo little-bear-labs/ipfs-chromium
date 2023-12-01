@@ -14,7 +14,7 @@
 
 namespace ipfs {
 class IpfsRequest;
-
+class DagJsonValue;
 
 struct HttpRequestDescription {
   std::string url;
@@ -68,6 +68,7 @@ class ContextApi : public std::enable_shared_from_this<ContextApi> {
   virtual std::string UnescapeUrlComponent(std::string_view url_comp) const = 0;
 
   virtual std::unique_ptr<DagCborValue> ParseCbor(ByteView) const = 0;
+  virtual std::unique_ptr<DagJsonValue> ParseJson(std::string_view) const = 0;
 
   using IpnsCborEntry = ::ipfs::IpnsCborEntry;
 

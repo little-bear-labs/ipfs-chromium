@@ -23,7 +23,16 @@ class DagNode;
 namespace ipfs::gw {
 class Requestor;
 
-enum class Type { Block, Car, Ipns, DnsLink, Providers, Identity, Zombie };
+enum class Type : char {
+  Block,
+  Car,
+  Ipns,
+  DnsLink,
+  Providers,
+  Identity,
+  Zombie
+};
+std::string_view name(Type);
 
 constexpr std::size_t BLOCK_RESPONSE_BUFFER_SIZE = 2 * 1024 * 1024;
 
@@ -60,6 +69,8 @@ class GatewayRequest {
 
 }  // namespace ipfs::gw
 
-std::ostream& operator<<(std::ostream&, ipfs::gw::Type);
+inline std::ostream& operator<<(std::ostream& s, ipfs::gw::Type t) {
+  return s << name(t);
+}
 
 #endif  // IPFS_TRUSTLESS_REQUEST_H_

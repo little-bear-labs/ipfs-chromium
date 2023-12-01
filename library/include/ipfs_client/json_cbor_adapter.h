@@ -1,8 +1,12 @@
 #ifndef IPFS_JSON_CBOR_ADAPTER_H_
 #define IPFS_JSON_CBOR_ADAPTER_H_
 
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/dag_cbor_value.h>
+#include <ipfs_client/dag_json_value.h>
 #include <libp2p/multi/content_identifier_codec.hpp>
+
+#include <iomanip>
+#include <sstream>
 
 #if __has_include(<nlohmann/json.hpp>)
 
@@ -10,11 +14,12 @@
 #define HAS_JSON_CBOR_ADAPTER 1
 
 namespace ipfs {
-class JsonCborAdapter final : public DagCborValue {
+class JsonCborAdapter final : public DagCborValue, public DagJsonValue {
   using CidCodec = libp2p::multi::ContentIdentifierCodec;
   nlohmann::json data_;
 
  public:
+  using Cid = DagCborValue::Cid;
   JsonCborAdapter(nlohmann::json data) : data_{data} {
     if (data_.is_array() && data_.size() == 1UL) {
       data_ = data_[0];
@@ -23,6 +28,12 @@ class JsonCborAdapter final : public DagCborValue {
   std::unique_ptr<DagCborValue> at(std::string_view k) const override {
     if (data_.is_object() && data_.contains(k)) {
       return std::make_unique<JsonCborAdapter>(data_.at(k));
+    }
+    return {};
+  }
+  std::unique_ptr<DagJsonValue> operator[](std::string_view k) const override {
+    if (data_.is_object() && data_.contains(k)) {
+      return std::make_unique<JsonCborAdapter>(data_[k]);
     }
     return {};
   }
@@ -53,6 +64,9 @@ class JsonCborAdapter final : public DagCborValue {
       return data_.get<std::string>();
     }
     return std::nullopt;
+  }
+  std::optional<std::string> get_if_string() const override {
+    return as_string();
   }
   std::optional<bool> as_bool() const override {
     if (data_.is_boolean()) {
@@ -107,6 +121,32 @@ class JsonCborAdapter final : public DagCborValue {
       JsonCborAdapter el(v);
       cb(el);
     }
+  }
+  std::string pretty_print() const override {
+    std::ostringstream result;
+    result << std::setw(2) << data_;
+    return result.str();
+  }
+  std::optional<std::vector<std::string>> object_keys() const override {
+    if (!data_.is_object()) {
+      return std::nullopt;
+    }
+    std::vector<std::string> rv;
+    for (auto& [k, v] : data_.items()) {
+      rv.push_back(k);
+    }
+    return rv;
+  }
+  bool iterate_list(
+      std::function<void(DagJsonValue const&)> cb) const override {
+    if (!data_.is_array()) {
+      return false;
+    }
+    for (auto& v : data_) {
+      JsonCborAdapter wrap(v);
+      cb(wrap);
+    }
+    return true;
   }
 };
 }  // namespace ipfs

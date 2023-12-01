@@ -4,8 +4,15 @@
       <option name="FORCE_COMMANDS_CASE" value="1" />
     </CMakeCodeStyleSettings>
     <Objective-C>
+      <option name="TYPE_QUALIFIERS_PLACEMENT" value="AFTER" />
       <option name="HEADER_GUARD_STYLE_PATTERN" value="IPFS_${FILE_NAME}_${EXT}_" />
     </Objective-C>
+    <Objective-C-extensions>
+      <option name="TYPE_QUALIFIERS_PLACEMENT" value="AFTER" />
+    </Objective-C-extensions>
+    <Objective-C-extensions>
+      <option name="TYPE_QUALIFIERS_PLACEMENT" value="AFTER" />
+    </Objective-C-extensions>
     <clangFormatSettings>
       <option name="ENABLED" value="true" />
     </clangFormatSettings>

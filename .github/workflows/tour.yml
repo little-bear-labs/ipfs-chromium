@@ -1,0 +1,69 @@
+name: Tour de IPFS
+on:
+  pull_request:
+jobs:
+  tour:
+    name: Build clitester and exercize various ipfs_client features
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ipfs_chromium
+        uses: actions/checkout@v4
+        with:
+          path: 'ipfs_chromium'
+      - name: Checkout ipfs_client_clitester
+        uses: actions/checkout@v4
+        with:
+          path: 'ipfs_client_clitester'
+          repository: 'John-LittleBearLabs/ipfs_client_clitester'
+      - name: Install dependencies
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes cmake ninja-build binutils libc6{,-dev}
+          pip3 install conan
+          conan profile detect
+      - name: Build conan_lib
+        run: |
+          conan create ipfs_chromium/library/
+      - name: Configure clitester
+        shell: bash
+        run: |
+          mkdir tester_build
+          set +e
+          cmake \
+            -G Ninja \
+            -S ipfs_client_clitester \
+            -B tester_build \
+            -D CMAKE_BUILD_TYPE=Release
+      - name: Build clitester
+        shell: bash
+        run: cmake --build tester_build --config Release
+      - name: Runit
+        shell: bash
+        run: |
+          set -ex
+          ( timeout 120 python3 ./ipfs_chromium/test_data/test_server.py 8080 2>&1 | tee server.log & ) &
+          for t in {0..9}
+          do
+            if grep -n . server.log
+            then
+              break
+            else
+              sleep $t
+            fi
+          done
+          function url_case() {
+            ./tester_build/clitester trace "${1}://${2}"
+            if cat "_${1}_"* | md5sum | cut -d ' ' -f 1 > actual
+            then
+              echo "${3}" > expected
+              diff actual expected
+              rm -v "_${1}_"*
+            else
+              grep -n . server.log
+              exit 9
+            fi
+          }
+          url_case ipfs bafkqacdjmrsw45djor4q ff483d1ff591898a9942916050d2ca3f
+          true the block itself md5s to b92348005af4ae4795e6f312844fb359, but the response is an HTML preview page
+          url_case ipfs baguqeerah2nswg7r2pvlpbnsz5y4c4pr4wsgbzixdl632w5qxvedqzryf54q 7750fd7b0928f007e1d181763c0dbdb5

@@ -2,27 +2,27 @@
 
 #include "block_http_request.h"
 #include "chromium_cbor_adapter.h"
+#include "chromium_json_adapter.h"
 #include "crypto_api.h"
 #include "inter_request_state.h"
-#include "ipns_cbor.h"
 
 #include <components/cbor/reader.h>
+#include <services/network/public/cpp/simple_url_loader.h>
+#include <services/network/public/mojom/url_response_head.mojom.h>
+
 #include <net/base/mime_sniffer.h>
 #include <net/base/mime_util.h>
-#include <services/network/public/cpp/simple_url_loader.h>
-#include "base/strings/escape.h"
-#include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
-#include "url/gurl.h"
 
-#include <ipfs_client/dag_block.h>
+#include <url/gurl.h>
+
+#include <base/json/json_reader.h>
+#include <base/strings/escape.h>
+
+#include <base/logging.h>
+
 #include <ipfs_client/ipfs_request.h>
 #include <ipfs_client/ipns_record.h>
 
-#include <libp2p/multi/content_identifier_codec.hpp>
-#include <libp2p/peer/peer_id.hpp>
-
-#include <base/logging.h>
 
 using Self = ipfs::ChromiumIpfsContext;
 
@@ -51,7 +51,6 @@ std::string Self::MimeType(std::string extension,
     VLOG(2) << "Got " << result << " from content of " << url;
   }
   if (result.empty() || result == "application/octet-stream") {
-    // C'mon, man
     net::SniffMimeTypeFromLocalData({content.data(), head_size}, &result);
     LOG(INFO) << "Falling all the way back to content type " << result;
   }
@@ -103,12 +102,20 @@ auto Self::ParseCbor(ipfs::ContextApi::ByteView bytes) const
   LOG(ERROR) << "Failed to parse CBOR.";
   return {};
 }
+auto Self::ParseJson(std::string_view j_str) const
+    -> std::unique_ptr<DagJsonValue> {
+  auto d = base::JSONReader::Read(j_str, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (d) {
+    return std::make_unique<ChromiumJsonAdapter>(std::move(d.value()));
+  }
+  return {};
+}
 
 Self::ChromiumIpfsContext(
     InterRequestState& state,
     raw_ptr<network::mojom::NetworkContext> network_context)
     : network_context_{network_context}, state_{state} {}
-Self::~ChromiumIpfsContext() {
+Self::~ChromiumIpfsContext() noexcept {
   LOG(WARNING) << "API dtor - are all URIs loaded?";
 }
 

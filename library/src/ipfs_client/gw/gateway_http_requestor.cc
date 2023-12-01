@@ -47,8 +47,8 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
     desc.value().url.insert(0, prefix_);
   }
   desc.value().timeout_seconds += extra_seconds_;
-  auto cb = [this, r, desc](std::int16_t status, std::string_view body,
-                            ContextApi::HeaderAccess ha) {
+  auto cb = [this, r, desc, req_key](std::int16_t status, std::string_view body,
+                                     ContextApi::HeaderAccess ha) {
     if (r->parallel) {
       r->parallel--;
     }
@@ -57,8 +57,11 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
     }
     if (r->type == Type::Zombie) {
       return;
-    } else if (status == 408) {
+    } else if (status == 408 || status == 504) {
       extra_seconds_++;
+      seen_.erase(req_key);
+      forward(r);
+      return;
     } else if (status / 100 == 2) {
       auto ct = ha("content-type");
       std::transform(ct.begin(), ct.end(), ct.begin(), ::tolower);

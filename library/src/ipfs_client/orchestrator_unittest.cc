@@ -3,6 +3,7 @@
 #include <mock_cbor.h>
 
 #include <ipfs_client/dag_block.h>
+#include <ipfs_client/dag_json_value.h>
 #include <ipfs_client/ipfs_request.h>
 #include <ipfs_client/ipns_record.h>
 #include <ipfs_client/ipns_record.pb.h>
@@ -45,16 +46,9 @@ struct MockApi final : public ipfs::ContextApi {
   std::string UnescapeUrlComponent(std::string_view u) const {
     return std::string{u};
   }
-  /*  std::vector<ipfs::IpnsCborEntry> mutable ipns_entries;
-  ipfs::IpnsCborEntry deserialize_cbor(ipfs::ByteView) const {
-    if (ipns_entries.empty()) {
-      return {};
-    }
-    auto rv = ipns_entries[0];
-    ipns_entries.erase(ipns_entries.begin());
-    return rv;
+  std::unique_ptr<ipfs::DagJsonValue> ParseJson(std::string_view) const {
+    return {};
   }
-   */
   void Discover(std::function<void(std::vector<std::string>)> cb) {}
   void SendDnsTextRequest(std::string,
                           DnsTextResultsCallback,

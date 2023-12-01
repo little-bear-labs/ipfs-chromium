@@ -1,14 +1,11 @@
 #include <ipfs_client/dag_cbor_value.h>
 
+#include <vocab/html_escape.h>
 #include <libp2p/multi/content_identifier_codec.hpp>
 
 #include "log_macros.h"
 
 using Self = ipfs::DagCborValue;
-
-namespace {
-std::string_view html_escape(char c) ;
-}
 
 void Self::html(std::ostream& str) const {
   if (auto u = as_unsigned()) {
@@ -20,12 +17,7 @@ void Self::html(std::ostream& str) const {
   } else if (auto s = as_string()) {
     str << "<p class='cbor_string'><em>&quot;</em>";
     for (auto c : *s) {
-      auto esc = html_escape(c);
-      if (esc.empty()) {
-        str << c;
-      } else {
-        str << esc;
-      }
+      str << html_escape(c);
     }
     str << "<em>&quot;</em></p>\n";
   } else if (auto cid = as_link()) {
@@ -73,17 +65,4 @@ std::string Self::html() const {
   html(oss);
   oss << "</body></html>";
   return oss.str();
-}
-
-namespace {
-std::string_view html_escape(char c) {
-  switch (c) {
-    case '"': return "&quot;";
-    case '\'': return "&apos;";
-    case '<': return "&lt;";
-    case '>': return "&gt;";
-    case '&': return "&amp;";
-    default: return "";
-  }
-}
 }
