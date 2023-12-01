@@ -5,7 +5,7 @@
 <area shape="rect" id="node5" href="$classipfs_1_1NameListener.html" title="Implemented by classes that await IPNS and/or DNSLink resolution." alt="" coords="211,132,357,159"/>
 <area shape="rect" id="node6" href="$classipfs_1_1Orchestrator.html" title=" " alt="" coords="217,183,351,209"/>
 <area shape="rect" id="node7" href="$classipfs_1_1gw_1_1Requestor.html" title=" " alt="" coords="211,233,357,260"/>
-<area shape="rect" id="node16" href="$classipfs_1_1ipld_1_1DagNode.html" title="A block, an IPNS record, etc." alt="" coords="211,613,357,640"/>
+<area shape="rect" id="node16" href="$classipfs_1_1ipld_1_1DagNode.html" title="A block, an IPNS record, etc." alt="" coords="211,639,357,665"/>
 <area shape="rect" id="node4" href="$classipfs_1_1ChromiumIpfsContext.html" title=" " alt="" coords="437,5,634,32"/>
 <area shape="rect" id="node8" href="$classipfs_1_1CacheRequestor.html" title=" " alt="" coords="455,56,615,83"/>
 <area shape="rect" id="node9" href="$classipfs_1_1gw_1_1BlockRequestSplitter.html" title=" " alt="" coords="427,107,643,133"/>
@@ -17,10 +17,11 @@
 <area shape="rect" id="node15" href="$classipfs_1_1gw_1_1TerminatingRequestor.html" title=" " alt="" coords="424,411,647,437"/>
 <area shape="rect" id="node17" href="$classipfs_1_1ipld_1_1Chunk.html" title=" " alt="" coords="472,461,599,488"/>
 <area shape="rect" id="node18" href="$classipfs_1_1ipld_1_1DagCborNode.html" title=" " alt="" coords="447,512,623,539"/>
-<area shape="rect" id="node19" href="$classipfs_1_1ipld_1_1DirShard.html" title=" " alt="" coords="464,563,607,589"/>
-<area shape="rect" id="node20" href="$classipfs_1_1ipld_1_1IpnsName.html" title=" " alt="" coords="459,613,611,640"/>
-<area shape="rect" id="node21" href="$classipfs_1_1ipld_1_1Root.html" title=" " alt="" coords="477,664,593,691"/>
-<area shape="rect" id="node22" href="$classipfs_1_1ipld_1_1SmallDirectory.html" title=" " alt="" coords="444,715,627,741"/>
-<area shape="rect" id="node23" href="$classipfs_1_1ipld_1_1Symlink.html" title=" " alt="" coords="466,765,605,792"/>
-<area shape="rect" id="node24" href="$classipfs_1_1ipld_1_1UnixfsFile.html" title=" " alt="" coords="460,816,611,843"/>
+<area shape="rect" id="node19" href="$classipfs_1_1ipld_1_1DagJsonNode.html" title=" " alt="" coords="449,563,622,589"/>
+<area shape="rect" id="node20" href="$classipfs_1_1ipld_1_1DirShard.html" title=" " alt="" coords="464,613,607,640"/>
+<area shape="rect" id="node21" href="$classipfs_1_1ipld_1_1IpnsName.html" title=" " alt="" coords="459,664,611,691"/>
+<area shape="rect" id="node22" href="$classipfs_1_1ipld_1_1Root.html" title=" " alt="" coords="477,715,593,741"/>
+<area shape="rect" id="node23" href="$classipfs_1_1ipld_1_1SmallDirectory.html" title=" " alt="" coords="444,765,627,792"/>
+<area shape="rect" id="node24" href="$classipfs_1_1ipld_1_1Symlink.html" title=" " alt="" coords="466,816,605,843"/>
+<area shape="rect" id="node25" href="$classipfs_1_1ipld_1_1UnixfsFile.html" title=" " alt="" coords="460,867,611,893"/>
 </map>
