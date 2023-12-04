@@ -100,6 +100,12 @@ virtual std::unique_ptr&lt; <a class="el" href="classipfs_1_1DagJsonValue.html">
 <tr class="memitem:a66a297b4a413dbaa84dfa96036186fce"><td class="memItemLeft" align="right" valign="top"><a id="a66a297b4a413dbaa84dfa96036186fce"></a>
 virtual std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_if_string</b> () const =0</td></tr>
 <tr class="separator:a66a297b4a413dbaa84dfa96036186fce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44596267ee62c02b290c99b0e8d12483"><td class="memItemLeft" align="right" valign="top"><a id="a44596267ee62c02b290c99b0e8d12483"></a>
+virtual std::optional&lt; std::vector&lt; std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>object_keys</b> () const =0</td></tr>
+<tr class="separator:a44596267ee62c02b290c99b0e8d12483"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0aace25928d4f0146c9794ec17c99215"><td class="memItemLeft" align="right" valign="top"><a id="a0aace25928d4f0146c9794ec17c99215"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>iterate_list</b> (std::function&lt; void(<a class="el" href="classipfs_1_1DagJsonValue.html">DagJsonValue</a> const &amp;)&gt;) const =0</td></tr>
+<tr class="separator:a0aace25928d4f0146c9794ec17c99215"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3acc3c3f8b825fdd006def3da7fc75d3"><td class="memItemLeft" align="right" valign="top"><a id="a3acc3c3f8b825fdd006def3da7fc75d3"></a>
 std::optional&lt; Cid &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_if_link</b> () const</td></tr>
 <tr class="separator:a3acc3c3f8b825fdd006def3da7fc75d3"><td class="memSeparator" colspan="2">&#160;</td></tr>

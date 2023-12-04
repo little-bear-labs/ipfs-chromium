@@ -78,23 +78,25 @@ $(function() {
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">namespace </span>ipfs::ipld {</div>
 <div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="classipfs_1_1ipld_1_1DagJsonNode.html">    8</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1ipld_1_1DagJsonNode.html">DagJsonNode</a> final : <span class="keyword">public</span> <a class="code" href="classipfs_1_1ipld_1_1DagNode.html">DagNode</a> {</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;  std::unique_ptr&lt;DagJsonValue&gt; data_;</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  ResolveResult resolve(<a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> path,</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;                        BlockLookup,</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;                        std::string&amp; up_to_here) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <a class="code" href="classipfs_1_1ipld_1_1Link.html">Link</a>* is_link();</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  ResolveResult child_resolve(<a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> path,</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;                              BlockLookup,</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;                              std::string&amp; up_to_here,</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;                              <a class="code" href="classipfs_1_1ipld_1_1Link.html">Link</a>&amp; l);</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <a class="code" href="classipfs_1_1ipld_1_1DagJsonNode.html">DagJsonNode</a>(std::unique_ptr&lt;DagJsonValue&gt;);</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  ~<a class="code" href="classipfs_1_1ipld_1_1DagJsonNode.html">DagJsonNode</a>() noexcept <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;};</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;}  <span class="comment">// namespace ipfs::ipld</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  std::string html_;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;  ResolveResult resolve(<a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> path,</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;                        BlockLookup,</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;                        std::string&amp; up_to_here) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <a class="code" href="classipfs_1_1ipld_1_1Link.html">Link</a>* is_link();</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  ResolveResult child_resolve(<a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> path,</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;                              BlockLookup,</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;                              std::string&amp; up_to_here,</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                              <a class="code" href="classipfs_1_1ipld_1_1Link.html">Link</a>&amp; l);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  std::string <span class="keyword">const</span>&amp; html();</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <a class="code" href="classipfs_1_1ipld_1_1DagJsonNode.html">DagJsonNode</a>(std::unique_ptr&lt;DagJsonValue&gt;);</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  ~<a class="code" href="classipfs_1_1ipld_1_1DagJsonNode.html">DagJsonNode</a>() noexcept <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;};</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_DAG_JSON_NODE_H_</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;}  <span class="comment">// namespace ipfs::ipld</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_DAG_JSON_NODE_H_</span></div>
 <div class="ttc" id="aclassipfs_1_1ipld_1_1DagJsonNode_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DagJsonNode.html">ipfs::ipld::DagJsonNode</a></div><div class="ttdef"><b>Definition:</b> dag_json_node.h:8</div></div>
 <div class="ttc" id="aclassipfs_1_1ipld_1_1DagNode_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DagNode.html">ipfs::ipld::DagNode</a></div><div class="ttdoc">A block, an IPNS record, etc.</div><div class="ttdef"><b>Definition:</b> dag_node.h:46</div></div>
 <div class="ttc" id="aclassipfs_1_1ipld_1_1Link_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1Link.html">ipfs::ipld::Link</a></div><div class="ttdef"><b>Definition:</b> link.h:12</div></div>
