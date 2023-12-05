@@ -10,6 +10,6 @@ var searchData=
   ['terminatingrequestor_131',['TerminatingRequestor',['../classipfs_1_1gw_1_1TerminatingRequestor.html',1,'ipfs::gw']]],
   ['todo_20list_132',['TODO list',['../md_doc_todo.html',1,'']]],
   ['ttl_133',['ttl',['../structipfs_1_1IpnsCborEntry.html#a9ed80270b760af94c80aaff2ed3c7525',1,'ipfs::IpnsCborEntry']]],
-  ['type_134',['type',['../classipfs_1_1Block.html#a068a5ff05f02d811d1f7fb76f2e40674',1,'ipfs::Block']]],
-  ['type_135',['Type',['../classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e',1,'ipfs::Block']]]
+  ['type_134',['Type',['../classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e',1,'ipfs::Block']]],
+  ['type_135',['type',['../classipfs_1_1Block.html#a068a5ff05f02d811d1f7fb76f2e40674',1,'ipfs::Block']]]
 ];
