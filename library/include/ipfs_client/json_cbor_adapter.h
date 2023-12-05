@@ -14,6 +14,7 @@
 #define HAS_JSON_CBOR_ADAPTER 1
 
 namespace ipfs {
+// LCOV_EXCL_START
 class JsonCborAdapter final : public DagCborValue, public DagJsonValue {
   using CidCodec = libp2p::multi::ContentIdentifierCodec;
   nlohmann::json data_;

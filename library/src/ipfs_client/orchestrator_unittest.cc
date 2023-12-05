@@ -7,6 +7,7 @@
 #include <ipfs_client/ipfs_request.h>
 #include <ipfs_client/ipns_record.h>
 #include <ipfs_client/ipns_record.pb.h>
+#include <ipfs_client/logger.h>
 #include <libp2p/multi/content_identifier_codec.hpp>
 
 #include "ipld/ipns_name.h"
@@ -23,6 +24,7 @@ using Codec = libp2p::multi::ContentIdentifierCodec;
 
 namespace {
 struct MockApi final : public ipfs::ContextApi {
+  MockApi() { i::log::SetLevel(i::log::Level::OFF); }
   bool verify_key_signature(ipfs::SigningKeyType,
                             ipfs::ByteView signature,
                             ipfs::ByteView data,
@@ -50,9 +52,17 @@ struct MockApi final : public ipfs::ContextApi {
     return {};
   }
   void Discover(std::function<void(std::vector<std::string>)> cb) {}
-  void SendDnsTextRequest(std::string,
-                          DnsTextResultsCallback,
-                          DnsTextCompleteCallback) {}
+  struct DnsInvocation {
+    std::string host;
+    DnsTextResultsCallback rcb;
+    DnsTextCompleteCallback ccb;
+  };
+  std::vector<DnsInvocation> expected_dns;
+  void SendDnsTextRequest(std::string host,
+                          DnsTextResultsCallback rcb,
+                          DnsTextCompleteCallback ccb) {
+    EXPECT_GE(expected_dns.size(), 1U);
+  }
   void SendHttpRequest(ipfs::HttpRequestDescription,
                        HttpCompleteCallback) const {}
   std::vector<MockCbor> mutable cbors;
@@ -154,6 +164,7 @@ struct OrchestratingRealData : public ::testing::Test {
   std::shared_ptr<MockApi> api_ = std::make_shared<MockApi>();
   std::shared_ptr<i::Orchestrator> orc_;
   OrchestratingRealData() {
+    i::log::SetLevel(i::log::Level::OFF);
     auto f = [](auto) {};
     resp_.body_ = "No response received.";
     resp_.status_ = 0;

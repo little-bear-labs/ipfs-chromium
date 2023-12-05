@@ -108,7 +108,7 @@ short Self::timeout_seconds() const {
     case Type::DnsLink:
       return 16;
     case Type::Block:
-      return 35;
+      return 39;
     case Type::Providers:
       return 64;
     case Type::Car:
@@ -243,9 +243,12 @@ bool Self::RespondSuccessfully(std::string_view bytes,
       break;
     case Type::DnsLink:
       LOG(INFO) << "Resolved " << debug_string() << " to " << bytes;
-      success = orchestrator_->add_node(
-          main_param, std::make_shared<ipld::IpnsName>(bytes));
-
+      if (orchestrator_) {
+        success = orchestrator_->add_node(
+            main_param, std::make_shared<ipld::IpnsName>(bytes));
+      } else {
+        LOG(FATAL) << "I have no orchestrator!!";
+      }
       break;
     case Type::Car:
       LOG(WARNING) << "TODO - handle responses to CAR requests.";

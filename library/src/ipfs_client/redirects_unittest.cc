@@ -9,7 +9,7 @@ using namespace std::literals;
 
 namespace {
 struct RedirectsTest : public ::testing::Test {
-
+  RedirectsTest() { ipfs::log::SetLevel(ipfs::log::Level::OFF); }
   // Sample files for various test cases can be found in QmQyqMY5vUBSbSxyitJqthgwZunCQjDVtNd8ggVCxzuPQ4. Implementations should use it for internal testing.
   r::File sample_file_{
       R"SAMPLE(
@@ -38,6 +38,20 @@ struct RedirectsTest : public ::testing::Test {
           /unavail/* /451.html 451
       )SAMPLE"}
   ;
+  r::File ipfs_tech_{
+      R"REAL(
+        /docs https://docs.ipfs.tech/
+        /docs/* https://docs.ipfs.tech/
+        /blog https://blog.ipfs.tech/
+        /blog/* https://blog.ipfs.tech/:splat
+        /companion-privacy https://github.com/ipfs/ipfs-companion/blob/main/PRIVACY-POLICY.md
+        /privacy https://protocol.ai/legal/#privacy-policy
+        /ipfs /not-a-gateway-404.html 404
+        /ipfs/* /not-a-gateway-404.html 404
+        /ipns /not-a-gateway-404.html 404
+        /ipns/* /not-a-gateway-404.html 404
+        /routing/v1/* /not-a-gateway-404.html 404
+      )REAL"};
 };
 }
 
@@ -71,7 +85,6 @@ TEST_F(RedirectsTest,placeholders) {
   EXPECT_EQ(path,"/articles/2023/10/27/yay.html");
 }
 TEST_F(RedirectsTest,splat) {
-//    ipfs::log::SetLevel(ipfs::log::Level::TRACE);
   auto path = "/splat/one/two/three"s;
   EXPECT_EQ(301, sample_file_.rewrite(path));
   EXPECT_EQ(path,"/redirected-splat/one/two/three");
@@ -118,4 +131,10 @@ TEST_F(RedirectsTest, inputtooshorttomatch) {
 TEST_F(RedirectsTest, invalidFile_onetokenthenwhitespace) {
   r::File f{"justonetokenfollowedbyspace "};
   EXPECT_FALSE(f.valid());
+}
+TEST_F(RedirectsTest, hits_url_to) {
+  auto p = "/blog/2023-05-multigateway-chromium-client/"s;
+  auto status = ipfs_tech_.rewrite(p);
+  EXPECT_EQ(status, 301);
+  EXPECT_EQ(p, "https://blog.ipfs.tech/2023-05-multigateway-chromium-client/");
 }

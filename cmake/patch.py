@@ -185,7 +185,7 @@ class Patcher:
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
-        fuzz = 59881
+        fuzz = 59883
         def check(version, version_set, s):
             i = as_int(version)
             by = (fuzz,0)
@@ -264,11 +264,14 @@ if __name__ == '__main__':
             print(m)
     elif argv[1] == 'releases':
         p = Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug')
-        for os in ['Linux', 'Mac', 'Windows']:
-            for chan in ['Dev', 'Beta', 'Stable', 'Extended']:
+        for chan in ['Dev', 'Beta', 'Stable', 'Extended']:
+            for os in ['Linux', 'Mac', 'Windows']:
                 rels = p.release_versions(chan, os)
-                for rel in rels:
-                    print(chan, os, rel)
+                if len(rels) > 0:
+                    print(f'     {chan:9}{os:7}', rels[0][1])
+                if len(rels) > 1:
+                    print(f'Prev {chan:9}{os:7}', rels[1][1])
+        print("Electron's main branch:", p.electron_version())
     elif argv[1] == 'old':
         pr = Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug')
         if len(argv) > 2:

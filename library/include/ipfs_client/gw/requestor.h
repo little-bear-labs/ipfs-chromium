@@ -53,6 +53,8 @@ class Requestor : public std::enable_shared_from_this<Requestor> {
   Requestor& or_else(std::shared_ptr<Requestor> p);
   void api(std::shared_ptr<ContextApi>);
 
+  void TestAccess(void*);
+
  private:
   std::shared_ptr<Requestor> next_;
 };

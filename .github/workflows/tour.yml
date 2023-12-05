@@ -1,6 +1,5 @@
 name: Tour de IPFS
-on:
-  pull_request:
+on: push
 jobs:
   tour:
     name: Build clitester and exercize various ipfs_client features
@@ -42,28 +41,43 @@ jobs:
         shell: bash
         run: |
           set -ex
-          ( timeout 120 python3 ./ipfs_chromium/test_data/test_server.py 8080 2>&1 | tee server.log & ) &
-          for t in {0..9}
+          ( timeout 3600 python3 ./ipfs_chromium/test_data/test_server.py 8080 2>&1 | tee server.log & ) &
+          for t in 1{0..9}
           do
             if grep -n . server.log
             then
               break
+            elif curl -m $t 'http://localhost:8080/ping'
+            then
+              sleep 1
             else
-              sleep $t
+              sleep ${t}
             fi
           done
           function url_case() {
-            ./tester_build/clitester trace "${1}://${2}"
-            if cat "_${1}_"* | md5sum | cut -d ' ' -f 1 > actual
+            echo "url_case(" "${@}" ")"
+            timeout 300 ./tester_build/clitester note "${1}://${2}"
+            n=`sed 's,[^A-Za-z0-9\.],_,g' <<< ${2}`
+            if cat "_${1}_${n}" | md5sum | cut -d ' ' -f 1 > actual
             then
-              echo "${3}" > expected
-              diff actual expected
-              rm -v "_${1}_"*
+              ls -lrth _ip?s_*
+              if [ $# -ge 3 ]
+              then
+                echo "${3}" > expected
+                diff actual expected
+              fi
             else
-              grep -n . server.log
+              grep -n . server.log || sleep 1
+              ls -lrth _ip?s_*
               exit 9
             fi
           }
           url_case ipfs bafkqacdjmrsw45djor4q ff483d1ff591898a9942916050d2ca3f
           true the block itself md5s to b92348005af4ae4795e6f312844fb359, but the response is an HTML preview page
           url_case ipfs baguqeerah2nswg7r2pvlpbnsz5y4c4pr4wsgbzixdl632w5qxvedqzryf54q 7750fd7b0928f007e1d181763c0dbdb5
+          url_case ipns blog.ipfs.tech/2023-05-multigateway-chromium-client/ 
+          url_case ipns k51qzi5uqu5dijv526o4z2z10ejylnel0bfvrtw53itcmsecffo8yf0zb4g9gi/ipfs-blog/2023-05-multigateway-chromium-client/ 
+          echo diff _ipns_*multigateway*
+          diff _ipns_*multigateway*
+          killall python3
+          

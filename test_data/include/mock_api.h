@@ -20,10 +20,21 @@ struct MockApi final : public i::ContextApi {
     http_requests_sent.push_back(d);
     cbs.push_back(cb);
   }
-
-  void SendDnsTextRequest(std::string hostname,
-                          DnsTextResultsCallback,
-                          DnsTextCompleteCallback) {}
+  struct DnsInvocation {
+    std::string host;
+    std::vector<std::string> txt_records;
+  };
+  std::vector<DnsInvocation> mutable expected_dns;
+  void SendDnsTextRequest(std::string host,
+                          DnsTextResultsCallback rcb,
+                          DnsTextCompleteCallback ccb) {
+    EXPECT_GE(expected_dns.size(), 1U);
+    auto& e = expected_dns.at(0);
+    EXPECT_EQ(e.host, host);
+    rcb(e.txt_records);
+    expected_dns.erase(expected_dns.begin());
+    ccb();
+  }
   std::string MimeType(std::string extension,
                        std::string_view content,
                        std::string const& url) const {

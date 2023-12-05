@@ -1,8 +1,6 @@
 #ifndef CHROMIUM_IPFS_GATEWAYS_H_
 #define CHROMIUM_IPFS_GATEWAYS_H_
 
-#include "export.h"
-#include "gateway.h"
 #include "vocab/flat_mapset.h"
 
 #include <ctime>

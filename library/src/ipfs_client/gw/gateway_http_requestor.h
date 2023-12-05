@@ -6,12 +6,13 @@
 
 #include <set>
 #include <string>
+#include <unordered_map>
 
 namespace ipfs::gw {
 class GatewayHttpRequestor final : public Requestor {
   std::string prefix_;
   int strength_;
-  std::set<std::string> seen_;
+  std::unordered_map<std::string, int> seen_;
   std::set<std::string> aff_good_, aff_bad_;
   std::set<Type> typ_good_, typ_bad_;
   int pending_ = 0;

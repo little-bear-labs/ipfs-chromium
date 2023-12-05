@@ -5,6 +5,7 @@
 
 namespace ipfs::gw {
 class InlineRequestHandler final : public Requestor {
+ public:
   HandleOutcome handle(RequestPtr) override;
   std::string_view name() const override;
 };

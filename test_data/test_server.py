@@ -9,6 +9,11 @@ here = dirname(__file__)
 
 class Handler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
+        if self.path == '/ping':
+            print('ping->pong')
+            self.send_response(200)
+            self.wfile.write(bytes('pong', 'utf-8'))
+            return
         components = self.path.split('/')
         if len(components) != 3:
             print(self.path, 'aka', components, '(size=', len(components), ") doesn't follow the exact pattern expected of /ip?s/arg ... TODO at least return 404 for CAR")
@@ -22,14 +27,17 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 print(f"{self.path} ({components}) not handled request type ({components[0]})", file=sys.stderr)
                 exit(9)
         path = join(path, components[2])
-        with open(path, 'rb') as f:
-            self.send_response(200)
-            mime = self.headers.get('Accept')
-            self.send_header("Content-type", mime)
-            self.end_headers()
-            self.wfile.write(f.read())
-            print('test server responded to', self.path, ' Accept:', mime)
-            return
+        try:
+            with open(path, 'rb') as f:
+                self.send_response(200)
+                mime = self.headers.get('Accept')
+                self.send_header("Content-type", mime)
+                self.end_headers()
+                self.wfile.write(f.read())
+                # print('test server responded to', self.path, ' Accept:', mime)
+                return
+        except OSError as e:
+            print('test server does not have access to ', path, e)
         self.send_response(404)
 
 try:

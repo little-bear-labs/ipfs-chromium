@@ -31,8 +31,6 @@ using Cid = libp2p::multi::ContentIdentifier;
  */
 class Block {
  public:
-  using Multicodec = libp2p::multi::MulticodecType::Code;
-
   /*!
    * \brief Initialize from stream
    * \param cid    - The Content IDentifier
@@ -77,14 +75,6 @@ class Block {
 
   bool is_file() const;  ///< type() == File || type() == FileChunk
 
-  bool is_directory() const;  ///< type() == Directory
-
-  /*!
-   * \brief Get file size from the UnixFS node data
-   * \return zero if such data is not available, e.g. for raw or directory
-   */
-  std::uint64_t file_size() const;
-
   std::string const& chunk_data() const;  ///< data field from a UnixFS node
 
   std::string const& unparsed() const;  ///< Original bytes (with protobuf bits)
@@ -96,10 +86,6 @@ class Block {
   unix_fs::Data const& fsdata() const { return fsdata_; }
 
   Cid const& cid() const;  ///< Getter for Content IDentifier
-
-  void mime_type(std::string_view);  ///< mime type setter - not managed
-
-  std::string const& mime_type() const;  ///< Getter for mime type
 
   bool cid_matches_data() const;  ///< Basic validation
 
@@ -136,7 +122,6 @@ class Block {
 
   std::string LinkCid(ipfs::ByteView) const;
 
-  void InitFromRaw(std::string const& content_bytes);
 };
 
 }  // namespace ipfs

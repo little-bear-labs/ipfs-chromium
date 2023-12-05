@@ -76,6 +76,7 @@ class IpfsUrlLoader final : public network::mojom::URLLoader {
   std::unique_ptr<base::RepeatingTimer> stepper_;
   std::string root_;
   int status_ = 200;
+  std::string resp_loc_;
 
   void CreateBlockRequest(std::string cid);
 

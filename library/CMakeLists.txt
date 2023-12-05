@@ -30,6 +30,7 @@ list(FILTER
 file(GLOB_RECURSE
     headers
     include/*.h
+    include/*.hpp
 )
 file(GLOB_RECURSE
   protos

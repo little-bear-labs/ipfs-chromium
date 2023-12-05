@@ -19,7 +19,7 @@ Self::Orchestrator(std::shared_ptr<gw::Requestor> requestor,
 }
 
 void Self::build_response(std::shared_ptr<IpfsRequest> req) {
-  if (!req->ready_after()) {
+  if (!req || !req->ready_after()) {
     return;
   }
   auto req_path = req->path();
@@ -50,6 +50,10 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
   auto result = root->resolve(relative_path, block_look_up, start);
   auto response = std::get_if<Response>(&result);
   if (response) {
+    VLOG(1) << "Tree gave us a response: status=" << response->status_
+            << " mime=" << response->mime_
+            << " location=" << response->location_ << " body is "
+            << response->body_.size() << " bytes.";
     if (response->mime_.empty() && !response->body_.empty()) {
       if (response->location_.empty()) {
         response->mime_ = sniff(req->path(), response->body_);
@@ -85,11 +89,11 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
 bool Self::gw_request(std::shared_ptr<IpfsRequest> ir,
                       ipfs::SlashDelimited path,
                       std::string const& aff) {
+  LOG(INFO) << "Seeking " << path.to_string();
   auto req = gw::GatewayRequest::fromIpfsPath(path);
   req->dependent = ir;
   req->orchestrator(shared_from_this());
   req->affinity = aff;
-  //  gw_requestor_(req);
   requestor_->request(req);
   return false;
 }

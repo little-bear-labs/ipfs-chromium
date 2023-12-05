@@ -1,0 +1,17 @@
+diff --git a/url/url_util.cc b/url/url_util.cc
+index 9258cfcfada47..daf10e4c3b741 100644
+--- a/url/url_util.cc
++++ b/url/url_util.cc
+@@ -277,6 +277,12 @@ bool DoCanonicalize(const CHAR* spec,
+                                         charset_converter, output,
+                                         output_parsed);
+ 
++  } else if (DoCompareSchemeComponent(spec, scheme, "ipfs")) {
++    // Switch multibase away from case-sensitive ones before continuing canonicalization.
++    ParseStandardURL(spec, spec_len, &parsed_input);
++    success = CanonicalizeIpfsURL(spec, spec_len, parsed_input, scheme_type,
++                                      charset_converter, output, output_parsed);
++
+   } else if (DoIsStandard(spec, scheme, &scheme_type)) {
+     // All "normal" URLs.
+     ParseStandardURL(spec, spec_len, &parsed_input);
