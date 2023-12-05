@@ -94,8 +94,8 @@ std::string r::Directive::error() const {
   if (to_.empty()) {
     return "Empty redirect target location";
   }
-  if (to_.at(0) != '/') {
-    return "Location must begin with /";
+  if (to_.at(0) != '/' && to_.find("://") == std::string::npos) {
+    return "Location must begin with / or be a URL";
   }
   return {};
 }

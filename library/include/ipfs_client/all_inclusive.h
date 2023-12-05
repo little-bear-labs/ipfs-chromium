@@ -36,6 +36,7 @@
 #include <boost/beast/core.hpp>
 #include <boost/beast/core/tcp_stream.hpp>
 #include <boost/beast/http.hpp>
+#include <boost/beast/ssl.hpp>
 
 namespace google::protobuf {
 constexpr LogLevel LOGLEVEL_DEBUG = static_cast<LogLevel>(-1);
@@ -45,6 +46,8 @@ constexpr LogLevel LOGLEVEL_TRACE = static_cast<LogLevel>(-2);
 namespace ipfs {
 
 class HttpSession;
+
+// LCOV_EXCL_START
 
 class AllInclusiveContext final : public ContextApi {
   void SendHttpRequest(HttpRequestDescription,
@@ -119,6 +122,9 @@ class AllInclusiveContext final : public ContextApi {
     return true;
   }
   boost::asio::io_context& io_;
+  boost::asio::ssl::context mutable ssl_ctx_ =
+      boost::asio::ssl::context{boost::asio::ssl::context::tls_client};
+  //      boost::asio::ssl::context{boost::asio::ssl::context::tlsv13_client};
   ares_channel_t* ares_channel_ = nullptr;
   void CAresProcess();
 
@@ -130,7 +136,8 @@ class AllInclusiveContext final : public ContextApi {
 class HttpSession : public std::enable_shared_from_this<HttpSession> {
   using tcp = boost::asio::ip::tcp;
   tcp::resolver resolver_;
-  boost::beast::tcp_stream stream_;
+  boost::asio::ssl::context& ssl_ctx_;
+  boost::beast::ssl_stream<boost::beast::tcp_stream> stream_;
   boost::beast::flat_buffer buffer_;  // (Must persist between reads)
   boost::beast::http::request<boost::beast::http::empty_body> req_;
   boost::beast::http::response<boost::beast::http::string_body> res_;
@@ -142,9 +149,9 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
   std::string parsed_host_;
 
   void fail(boost::beast::error_code ec, char const* what) {
-    std::cout << "\n\tERROR:\t" << what << ": " << ec.message() << ' '
-              << desc_.url << ' ' << host_ << ' ' << port_ << ' ' << target_
-              << std::endl;
+    GOOGLE_LOG(ERROR) << what << ": " << ec.value() << ' ' << ec.message()
+                      << "\n URL:" << desc_.url << "\n HOST:" << host_
+                      << "\n PORT:" << port_ << "\n TARGET:" << target_;
     cb_(500, "", [](auto) { return std::string{}; });
   }
   std::string parse_url() {
@@ -172,10 +179,12 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
 
  public:
   explicit HttpSession(boost::asio::io_context& ioc,
+                       boost::asio::ssl::context& ssc,
                        ipfs::HttpRequestDescription& desc,
                        ipfs::ContextApi::HttpCompleteCallback cb)
       : resolver_(boost::asio::make_strand(ioc)),
-        stream_(boost::asio::make_strand(ioc)),
+        ssl_ctx_(ssc),
+        stream_(boost::asio::make_strand(ioc), ssc),
         cb_{cb},
         desc_{desc} {}
 
@@ -185,8 +194,14 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     if (host_.empty()) {
       host_ = parsed_host_;
     }
-    expiry_seconds_ += desc_.timeout_seconds;
-    GOOGLE_LOG(DEBUG) << "expiry_seconds_ = " << expiry_seconds_ << '\n';
+    // Set SNI Hostname (many hosts need this to handshake successfully)
+    if (!SSL_set_tlsext_host_name(stream_.native_handle(), host_.c_str())) {
+      boost::beast::error_code ec{static_cast<int>(::ERR_get_error()),
+                                  boost::asio::error::get_ssl_category()};
+      GOOGLE_LOG(ERROR) << "SSL early fail: " << ec.message();
+      return;
+    }
+
     req_.version(11);
     req_.method(boost::beast::http::verb::get);
     req_.target(target_);
@@ -195,6 +210,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
       //      std::clog << "Setting Accept: " << desc_.accept << '\n';
       req_.set("Accept", desc_.accept);
     }
+    extend_time();
     GOOGLE_LOG(DEBUG) << "Starting " << desc_.url
                       << " with a host resolution of " << host_ << ':' << port_;
     // Look up the domain name
@@ -208,14 +224,13 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     if (ec)
       return fail(ec, "resolve");
     resolution_ = results;
-    // Set a timeout on the operation
-    stream_.expires_after(std::chrono::seconds(expiry_seconds_));
+    extend_time();
     GOOGLE_LOG(DEBUG) << desc_.url << " Resolved " << host_
                       << ", now connecting to "
                       << req_[boost::beast::http::field::host] << " for "
                       << target_;
     // Make the connection on the IP address we get from a lookup
-    stream_.async_connect(
+    boost::beast::get_lowest_layer(stream_).async_connect(
         results, boost::beast::bind_front_handler(&HttpSession::on_connect,
                                                   shared_from_this()));
   }
@@ -224,10 +239,33 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
                   tcp::resolver::results_type::endpoint_type) {
     if (ec)
       return fail(ec, "connect");
-
-    // Set a timeout on the operation
-    stream_.expires_after(std::chrono::seconds(expiry_seconds_));
+    extend_time();
     GOOGLE_LOG(TRACE) << desc_.url << " connected.";
+    if (use_ssl()) {
+      GOOGLE_LOG(DEBUG) << "Perform the SSL handshake because port=" << port_;
+      stream_.async_handshake(
+          boost::asio::ssl::stream_base::client,
+          boost::beast::bind_front_handler(&HttpSession::on_handshake,
+                                           shared_from_this()));
+    } else {
+      GOOGLE_LOG(DEBUG) << "Skipping the SSL handshake because port=" << port_;
+      boost::beast::http::async_write(
+          boost::beast::get_lowest_layer(stream_), req_,
+          boost::beast::bind_front_handler(&HttpSession::on_write,
+                                           shared_from_this()));
+    }
+  }
+  bool use_ssl() const { return port_ == "443" || port_ == "https"; }
+  void extend_time() {
+    expiry_seconds_ += desc_.timeout_seconds;
+    GOOGLE_LOG(DEBUG) << "expiry_seconds_ = " << expiry_seconds_ << '\n';
+    boost::beast::get_lowest_layer(stream_).expires_after(
+        std::chrono::seconds(expiry_seconds_));
+  }
+  void on_handshake(boost::beast::error_code ec) {
+    if (ec)
+      return fail(ec, "handshake");
+    extend_time();
     boost::beast::http::async_write(
         stream_, req_,
         boost::beast::bind_front_handler(&HttpSession::on_write,
@@ -238,11 +276,18 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     if (ec)
       return fail(ec, "write");
     GOOGLE_LOG(TRACE) << desc_.url << " request written.";
-    // Receive the HTTP response
-    boost::beast::http::async_read(
-        stream_, buffer_, res_,
-        boost::beast::bind_front_handler(&HttpSession::on_read,
-                                         shared_from_this()));
+    extend_time();
+    if (use_ssl()) {
+      boost::beast::http::async_read(
+          stream_, buffer_, res_,
+          boost::beast::bind_front_handler(&HttpSession::on_read,
+                                           shared_from_this()));
+    } else {
+      boost::beast::http::async_read(
+          boost::beast::get_lowest_layer(stream_), buffer_, res_,
+          boost::beast::bind_front_handler(&HttpSession::on_read,
+                                           shared_from_this()));
+    }
   }
 
   void on_read(boost::beast::error_code ec, std::size_t bytes_transferred) {
@@ -257,19 +302,22 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
                      << ");port=" << port_ << ";target=" << target_
                      << ": status=" << res_.result_int() << ", body is "
                      << bytes_transferred << "B, headers... ";
+    if (res_.result_int() == 400) {
+      GOOGLE_LOG(WARNING) << "Got that annoying 400 status: " << res_.body();
+    }
     for (auto& h : res_) {
       auto& n = h.name_string();
       if (n.substr(0, 6) != "Access") {
-        GOOGLE_LOG(INFO) << "\t Header=" << h.name_string() << ": "
-                         << h.value();
+        GOOGLE_LOG(DEBUG) << "\t Header=" << h.name_string() << ": "
+                          << h.value();
       }
     }
     if (res_.result_int() / 100 == 3) {
       auto loc = res_[boost::beast::http::field::location];
       if (loc.size()) {
-        GOOGLE_LOG(WARNING) << "Redirecting to " << loc;
-        res_ = boost::beast::http::response<boost::beast::http::string_body>{};
         desc_.url = loc;
+        GOOGLE_LOG(WARNING) << "Redirecting to " << loc << " aka " << desc_.url;
+        res_ = boost::beast::http::response<boost::beast::http::string_body>{};
         req_.set(boost::beast::http::field::host, parse_url());
         req_.target(target_);
         on_resolve({}, resolution_);
@@ -285,12 +333,22 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
                        << " response incorrect content type: " << content_type
                        << " != " << desc_.accept;
     }
-
-    // Gracefully close the socket
-    stream_.socket().shutdown(tcp::socket::shutdown_both, ec);
-
-    // not_connected happens sometimes so don't bother reporting it.
-    if (ec && ec != boost::beast::errc::not_connected)
+    if (use_ssl()) {
+      stream_.async_shutdown(boost::beast::bind_front_handler(
+          &HttpSession::on_shutdown, shared_from_this()));
+    } else {
+      boost::beast::get_lowest_layer(stream_).close();
+      if (ec && ec != boost::beast::errc::not_connected)
+        return fail(ec, "shutdown");
+    }
+  }
+  void on_shutdown(boost::beast::error_code ec) {
+    if (ec == boost::asio::error::eof) {
+      // Rationale:
+      // http://stackoverflow.com/questions/25587403/boost-asio-ssl-async-shutdown-always-finishes-with-an-error
+      ec = {};
+    }
+    if (ec)
       return fail(ec, "shutdown");
 
     // If we get here then the connection is closed gracefully

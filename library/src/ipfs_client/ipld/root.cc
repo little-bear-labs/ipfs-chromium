@@ -42,6 +42,11 @@ auto Self::resolve(SlashDelimited path, BlockLookup blu, std::string& to_here)
     if (redirects_.has_value() && redirects_.value().valid()) {
       Response* resp = nullptr;
       auto status = redirects_.value().rewrite(missing_path);
+      if (missing_path.find("://") < missing_path.size()) {
+        LOG(INFO) << "_redirects file sent us to a whole URL, scheme-and-all: "
+                  << missing_path << " status=" << status;
+        return Response{"", status, "", missing_path};
+      }
       switch (status / 100) {
         case 0:  // no rewrites available
           return result;
@@ -49,8 +54,7 @@ auto Self::resolve(SlashDelimited path, BlockLookup blu, std::string& to_here)
           return resolve(std::string_view{missing_path}, blu, to_here);
         case 3:
           // Let the redirect happen
-          return Response{"", static_cast<std::uint16_t>(status), "",
-                          missing_path};
+          return Response{"", status, "", missing_path};
         case 4:
           result =
               deroot()->resolve(std::string_view{missing_path}, blu, to_here);

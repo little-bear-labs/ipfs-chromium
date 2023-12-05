@@ -2,6 +2,7 @@
 
 #include <gtest/gtest.h>
 
+#include <vocab/stringify.h>
 #include <libp2p/multi/content_identifier_codec.hpp>
 #include "log_macros.h"
 
@@ -45,6 +46,21 @@ TEST(BlockTest, IdentityBlockValidates) {
   // TODO: if this fails, awesome. Change the block_bytes to "Ipsum lorem"
   EXPECT_TRUE(block.cid_matches_data());
 }
+TEST(BlockTest, DirectoryCopiedIsStillDirectory) {
+  std::string block_bytes("\x0a\x02\x08\x01");
+  EXPECT_EQ(block_bytes.size(), 4U);
+  auto cid = Codec::fromString("bafyaabakaieac").value();
+  ipfs::Block block{cid, block_bytes};
+  EXPECT_TRUE(block.valid());
+  EXPECT_FALSE(block.is_file());
+  EXPECT_TRUE(block.cid_matches_data());
+  EXPECT_EQ(ipfs::Stringify(block.type()), "Directory");
+  auto copy = block;
+  EXPECT_TRUE(copy.valid());
+  EXPECT_FALSE(copy.is_file());
+  EXPECT_TRUE(copy.cid_matches_data());
+  EXPECT_EQ(ipfs::Stringify(copy.type()), "Directory");
+}
 
 TEST(BlockTest, AdHoc) {
   using namespace std::filesystem;
@@ -67,4 +83,18 @@ TEST(BlockTest, AdHoc) {
       });
     }
   });
+}
+
+TEST(BlockTest, TypeNames) {
+  using namespace ipfs;
+  using T = Block::Type;
+  EXPECT_EQ(Stringify(T::Raw), "Raw");
+  EXPECT_EQ(Stringify(T::Directory), "Directory");
+  EXPECT_EQ(Stringify(T::File), "File");
+  EXPECT_EQ(Stringify(T::Metadata), "Metadata");
+  EXPECT_EQ(Stringify(T::Symlink), "Symlink");
+  EXPECT_EQ(Stringify(T::HAMTShard), "HAMTShard");
+  EXPECT_EQ(Stringify(T::FileChunk), "FileChunk");
+  EXPECT_EQ(Stringify(T::NonFs), "NonFs");
+  EXPECT_EQ(Stringify(T::Invalid), "Invalid");
 }

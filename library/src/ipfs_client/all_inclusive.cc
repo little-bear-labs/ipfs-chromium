@@ -107,7 +107,7 @@ void Self::CAresProcess() {
 }
 void Self::SendHttpRequest(HttpRequestDescription desc,
                            HttpCompleteCallback cb) const {
-  auto sess = std::make_shared<HttpSession>(io_, desc, cb);
+  auto sess = std::make_shared<HttpSession>(io_, ssl_ctx_, desc, cb);
   sess->run();
 }
 

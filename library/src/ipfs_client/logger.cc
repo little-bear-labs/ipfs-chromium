@@ -23,10 +23,10 @@ void CheckLevel(google::protobuf::LogLevel lv,
   }
   current_handler(m, f, l, static_cast<lg::Level>(lev));
 }
-
 }  // namespace
 
 void lg::SetLevel(Level lev) {
+  IsInitialized();
   current_level = lev;
 }
 

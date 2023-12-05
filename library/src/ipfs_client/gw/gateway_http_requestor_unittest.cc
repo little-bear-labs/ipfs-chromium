@@ -3,6 +3,7 @@
 #include <mock_api.h>
 
 #include <ipfs_client/ipfs_request.h>
+#include <ipfs_client/logger.h>
 #include <ipfs_client/orchestrator.h>
 
 using T = ipfs::gw::GatewayHttpRequestor;
@@ -22,6 +23,7 @@ struct FakeRtor : public ipfs::gw::Requestor {
   }
 };
 struct GatewayHttpRequestorTest : public ::testing::Test {
+  GatewayHttpRequestorTest() { ipfs::log::SetLevel(ipfs::log::Level::OFF); }
   std::shared_ptr<MockApi> api = std::make_shared<MockApi>();
   std::shared_ptr<T> t = std::make_shared<T>("scheme://host", 1, api);
   std::shared_ptr<FakeRtor> chain = std::make_shared<FakeRtor>();

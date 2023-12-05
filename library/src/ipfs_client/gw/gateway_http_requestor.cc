@@ -28,10 +28,10 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
     return HandleOutcome::NOT_HANDLED;
   }
   auto req_key = r->url_suffix().append(r->accept());
-  if (seen_.count(req_key)) {
+  if (seen_[req_key] > 0xFD) {
     return HandleOutcome::NOT_HANDLED;
   }
-  if (target(*r) <= r->parallel + pending_) {
+  if (target(*r) <= r->parallel + pending_ + seen_[req_key]) {
     return HandleOutcome::MAYBE_LATER;
   }
   auto desc = r->describe_http();
@@ -58,8 +58,8 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
     if (r->type == Type::Zombie) {
       return;
     } else if (status == 408 || status == 504) {
+      // Timeouts
       extra_seconds_++;
-      seen_.erase(req_key);
       forward(r);
       return;
     } else if (status / 100 == 2) {
@@ -96,7 +96,10 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
         ++strength_;
         return;
       }
+    } else if (status / 100 == 4) {
+      seen_[req_key] += 9;
     }
+    seen_[req_key] += 9;
     LOG(INFO) << "Demote(" << prefix_ << ')';
     if (strength_ > 0) {
       --strength_;
@@ -107,7 +110,7 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
   };
   DCHECK(api_);
   api_->SendHttpRequest(desc.value(), cb);
-  seen_.insert(req_key);
+  seen_[req_key]++;
   pending_++;
   return HandleOutcome::PENDING;
 }

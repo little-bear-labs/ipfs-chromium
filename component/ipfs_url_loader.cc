@@ -85,6 +85,7 @@ void ipfs::IpfsUrlLoader::StartRequest(
         me->ReceiveBlockBytes(res.body_);
       }
       me->status_ = res.status_;
+      me->resp_loc_ = res.location_;
       if (res.status_ == Response::IMMUTABLY_GONE.status_) {
         auto p = req.path();
         p.pop();
@@ -135,6 +136,9 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   head->content_length = byte_count;
   head->headers =
       net::HttpResponseHeaders::TryToCreate("access-control-allow-origin: *");
+  if (resp_loc_.size()) {
+    head->headers->AddHeader("Location", resp_loc_);
+  }
   if (!head->headers) {
     LOG(ERROR) << "\n\tFailed to create headers!\n";
     return;
@@ -158,8 +162,17 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});
   VLOG(1) << "Sending response for " << original_url_ << " with mime type "
           << head->mime_type << " and status line " << status_line;
-  client_->OnReceiveResponse(std::move(head), std::move(pipe_cons_),
-                             absl::nullopt);
+  if (status_ / 100 == 3 && resp_loc_.size()) {
+    auto ri = net::RedirectInfo::ComputeRedirectInfo(
+        "GET", GURL{original_url_}, net::SiteForCookies{},
+        net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT,
+        net::ReferrerPolicy::NO_REFERRER, "", status_, GURL{resp_loc_},
+        std::nullopt, false);
+    client_->OnReceiveRedirect(ri, std::move(head));
+  } else {
+    client_->OnReceiveResponse(std::move(head), std::move(pipe_cons_),
+                               absl::nullopt);
+  }
   client_->OnComplete(network::URLLoaderCompletionStatus{});
   stepper_.reset();
 }

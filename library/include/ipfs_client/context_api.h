@@ -1,8 +1,9 @@
 #ifndef IPFS_CONTEXT_API_H_
 #define IPFS_CONTEXT_API_H_
 
-#include "ipns_cbor_entry.h"
 #include "dag_cbor_value.h"
+#include "http_request_description.h"
+#include "ipns_cbor_entry.h"
 #include "signing_key_type.h"
 
 #include <vocab/byte_view.h>
@@ -15,15 +16,6 @@
 namespace ipfs {
 class IpfsRequest;
 class DagJsonValue;
-
-struct HttpRequestDescription {
-  std::string url;
-  int timeout_seconds;
-  std::string accept;
-  std::optional<std::size_t> max_response_size;
-  bool operator==(HttpRequestDescription const&) const;
-  bool operator<(HttpRequestDescription const&) const;
-};
 
 /**
  * \brief Interface that provides functionality from whatever

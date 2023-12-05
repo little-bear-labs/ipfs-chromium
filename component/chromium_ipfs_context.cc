@@ -52,7 +52,7 @@ std::string Self::MimeType(std::string extension,
   }
   if (result.empty() || result == "application/octet-stream") {
     net::SniffMimeTypeFromLocalData({content.data(), head_size}, &result);
-    LOG(INFO) << "Falling all the way back to content type " << result;
+    VLOG(1) << "Falling all the way back to content type " << result;
   }
   return result;
 }

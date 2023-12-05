@@ -56,8 +56,8 @@ auto Self::resolve(SlashDelimited path, BlockLookup blu, std::string& to_here)
   auto match = [&name](auto& l) { return l.first == name; };
   auto it = std::find_if(links_.begin(), links_.end(), match);
   if (links_.end() == it) {
-    LOG(INFO) << name << " does not exist in directory " << to_here
-              << ", these do: "
+    VLOG(1) << name << " does not exist in directory " << to_here
+            << ", these do: "
               << std::accumulate(links_.begin(), links_.end(), std::string{},
                                  [](auto a, auto& b) {
                                    auto& n = b.first;

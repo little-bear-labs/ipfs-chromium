@@ -81,15 +81,6 @@ ipfs::Block::Block() = default;
 
 ipfs::Block::~Block() noexcept {}
 
-void ipfs::Block::InitFromRaw(std::string const& content_bytes) {
-  fsdata_.set_type(unix_fs::Data_DataType_File);
-  fsdata_.set_data(content_bytes);
-  fsdata_.set_filesize(content_bytes.size());
-  node_.set_data(fsdata_.SerializeAsString());
-  valid_ = true;
-  fs_node_ = true;
-}
-
 bool ipfs::Block::valid() const {
   return valid_;
 }
@@ -118,19 +109,6 @@ bool ipfs::Block::is_file() const {
   return valid() && fs_node_ && fsdata_.type() == unix_fs::Data_DataType_File;
 }
 
-bool ipfs::Block::is_directory() const {
-  return valid() && fs_node_ &&
-         fsdata_.type() == unix_fs::Data_DataType_Directory;
-}
-
-std::uint64_t ipfs::Block::file_size() const {
-  if (fs_node_ && fsdata_.has_filesize()) {
-    return fsdata_.filesize();
-  } else {
-    return 0UL;
-  }
-}
-
 std::string const& ipfs::Block::chunk_data() const {
   return fsdata_.data();
 }
@@ -139,16 +117,10 @@ std::string const& ipfs::Block::unparsed() const {
   return node_.data();
 }
 
-// std::string const& ipfs::Block::mime_type() const {
-//   return mime_;
-// }
 auto ipfs::Block::cid() const -> Cid const& {
   DCHECK(cid_.has_value());
   return cid_.value();
 }
-// void ipfs::Block::mime_type(std::string_view val) {
-//   mime_.assign(val);
-// }
 
 std::string ipfs::Block::LinkCid(ipfs::ByteView binary_link_hash) const {
   using Codec = libp2p::multi::ContentIdentifierCodec;

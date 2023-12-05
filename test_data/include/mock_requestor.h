@@ -4,10 +4,15 @@
 #include <ipfs_client/context_api.h>
 #include <ipfs_client/gw/requestor.h>
 
+#include <gtest/gtest.h>
+
+namespace i = ipfs;
+namespace ig = i::gw;
+
 namespace {
-struct MockRequestor final : public ipfs::gw::Requestor {
-  using RequestPtr = ipfs::gw::RequestPtr;
-  using ContextApi = ipfs::ContextApi;
+struct MockRequestor final : public ig::Requestor {
+  using RequestPtr = ig::RequestPtr;
+  using ContextApi = i::ContextApi;
   using O = MockRequestor::HandleOutcome;
   std::vector<RequestPtr> requests;
   std::vector<HandleOutcome> outcomes;
