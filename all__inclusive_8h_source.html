@@ -402,14 +402,14 @@ $(function() {
 <div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;                       &lt;&lt; <span class="stringliteral">&quot; response incorrect content type: &quot;</span> &lt;&lt; content_type</div>
 <div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;                       &lt;&lt; <span class="stringliteral">&quot; != &quot;</span> &lt;&lt; desc_.accept;</div>
 <div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    }</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    stream_.async_shutdown(boost::beast::bind_front_handler(</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;        &amp;HttpSession::on_shutdown, shared_from_this()));</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160; </div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;    <span class="comment">// not_connected happens sometimes so don&#39;t bother reporting it.</span></div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    <span class="keywordflow">if</span> (ec &amp;&amp; ec != boost::beast::errc::not_connected)</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;      <span class="keywordflow">return</span> fail(ec, <span class="stringliteral">&quot;shutdown&quot;</span>);</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160; </div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    <span class="comment">// If we get here then the connection is closed gracefully</span></div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    <span class="keywordflow">if</span> (use_ssl()) {</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;      stream_.async_shutdown(boost::beast::bind_front_handler(</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;          &amp;HttpSession::on_shutdown, shared_from_this()));</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;      boost::beast::get_lowest_layer(stream_).close();</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;      <span class="keywordflow">if</span> (ec &amp;&amp; ec != boost::beast::errc::not_connected)</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        <span class="keywordflow">return</span> fail(ec, <span class="stringliteral">&quot;shutdown&quot;</span>);</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;    }</div>
 <div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;  }</div>
 <div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;  <span class="keywordtype">void</span> on_shutdown(boost::beast::error_code ec) {</div>
 <div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;    <span class="keywordflow">if</span> (ec == boost::asio::error::eof) {</div>
