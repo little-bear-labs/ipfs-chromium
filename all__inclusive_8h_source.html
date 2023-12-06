@@ -376,8 +376,8 @@ $(function() {
 <div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; h : res_) {</div>
 <div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;      <span class="keyword">auto</span>&amp; n = h.name_string();</div>
 <div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;      <span class="keywordflow">if</span> (n.substr(0, 6) != <span class="stringliteral">&quot;Access&quot;</span>) {</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;        GOOGLE_LOG(INFO) &lt;&lt; <span class="stringliteral">&quot;\t Header=&quot;</span> &lt;&lt; h.name_string() &lt;&lt; <span class="stringliteral">&quot;: &quot;</span></div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;                         &lt;&lt; h.value();</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;        GOOGLE_LOG(DEBUG) &lt;&lt; <span class="stringliteral">&quot;\t Header=&quot;</span> &lt;&lt; h.name_string() &lt;&lt; <span class="stringliteral">&quot;: &quot;</span></div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;                          &lt;&lt; h.value();</div>
 <div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;      }</div>
 <div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;    }</div>
 <div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;    <span class="keywordflow">if</span> (res_.result_int() / 100 == 3) {</div>

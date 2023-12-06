@@ -82,7 +82,7 @@ $(function() {
 <div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="classipfs_1_1gw_1_1GatewayHttpRequestor.html">   11</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1gw_1_1GatewayHttpRequestor.html">GatewayHttpRequestor</a> final : <span class="keyword">public</span> <a class="code" href="classipfs_1_1gw_1_1Requestor.html">Requestor</a> {</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  std::string prefix_;</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <span class="keywordtype">int</span> strength_;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  std::unordered_map&lt;std::string, std::size_t&gt; seen_;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  std::unordered_map&lt;std::string, int&gt; seen_;</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  std::set&lt;std::string&gt; aff_good_, aff_bad_;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  std::set&lt;Type&gt; typ_good_, typ_bad_;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keywordtype">int</span> pending_ = 0;</div>
