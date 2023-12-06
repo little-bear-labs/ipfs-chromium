@@ -218,9 +218,9 @@ $(function() {
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  std::string parsed_host_;</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160; </div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  <span class="keywordtype">void</span> fail(boost::beast::error_code ec, <span class="keywordtype">char</span> <span class="keyword">const</span>* what) {</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    std::cout &lt;&lt; <span class="stringliteral">&quot;\n\tERROR:\t&quot;</span> &lt;&lt; what &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; ec.value() &lt;&lt; <span class="charliteral">&#39; &#39;</span></div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;              &lt;&lt; ec.message() &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; desc_.url &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; host_ &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; port_ &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; target_</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;              &lt;&lt; std::endl;</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;    GOOGLE_LOG(ERROR) &lt;&lt; what &lt;&lt; <span class="stringliteral">&quot;: &quot;</span> &lt;&lt; ec.value() &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; ec.message()</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;                      &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; desc_.url &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; host_ &lt;&lt; <span class="charliteral">&#39; &#39;</span> &lt;&lt; port_ &lt;&lt; <span class="charliteral">&#39; &#39;</span></div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;                      &lt;&lt; target_;</div>
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    cb_(500, <span class="stringliteral">&quot;&quot;</span>, [](<span class="keyword">auto</span>) { <span class="keywordflow">return</span> std::string{}; });</div>
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  }</div>
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  std::string parse_url() {</div>
