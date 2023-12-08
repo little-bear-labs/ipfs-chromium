@@ -95,105 +95,90 @@ $(function() {
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
 <div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="classipfs_1_1Block.html">   32</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1Block.html">Block</a> {</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keyword">using</span> Multicodec = libp2p::multi::MulticodecType::Code;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <a class="code" href="classipfs_1_1Block.html#aa6f73edb4a3d9583f30ad74486b27278">Block</a>(Cid <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">cid</a>, std::istream&amp; stream);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <a class="code" href="classipfs_1_1Block.html#aa6f73edb4a3d9583f30ad74486b27278">Block</a>(Cid <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">cid</a>, std::string_view bytes);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <a class="code" href="classipfs_1_1Block.html#aa6f73edb4a3d9583f30ad74486b27278">Block</a>(<a class="code" href="classipfs_1_1Block.html">Block</a> <span class="keyword">const</span>&amp;);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <a class="code" href="classipfs_1_1Block.html">Block</a>&amp; operator=(<a class="code" href="classipfs_1_1Block.html">Block</a> <span class="keyword">const</span>&amp;) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <a class="code" href="classipfs_1_1Block.html#aa6f73edb4a3d9583f30ad74486b27278">Block</a>(Cid <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">cid</a>, std::istream&amp; stream);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <a class="code" href="classipfs_1_1Block.html#aa6f73edb4a3d9583f30ad74486b27278">Block</a>(Cid <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">cid</a>, std::string_view bytes);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <a class="code" href="classipfs_1_1Block.html#aa6f73edb4a3d9583f30ad74486b27278">Block</a>(<a class="code" href="classipfs_1_1Block.html">Block</a> <span class="keyword">const</span>&amp;);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <a class="code" href="classipfs_1_1Block.html">Block</a>&amp; operator=(<a class="code" href="classipfs_1_1Block.html">Block</a> <span class="keyword">const</span>&amp;) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
+<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="classipfs_1_1Block.html#aa6f73edb4a3d9583f30ad74486b27278">   53</a></span>&#160;  <a class="code" href="classipfs_1_1Block.html#aa6f73edb4a3d9583f30ad74486b27278">Block</a>();  </div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
-<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="classipfs_1_1Block.html#aa6f73edb4a3d9583f30ad74486b27278">   55</a></span>&#160;  <a class="code" href="classipfs_1_1Block.html#aa6f73edb4a3d9583f30ad74486b27278">Block</a>();  </div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  ~<a class="code" href="classipfs_1_1Block.html">Block</a>() noexcept;</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  ~<a class="code" href="classipfs_1_1Block.html">Block</a>() noexcept;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1Block.html#ab8252491c2d9c805fd074267d34891e7">valid</a>() const;  </div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; </div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1Block.html#ab8252491c2d9c805fd074267d34891e7">valid</a>() const;  </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">   64</a></span>&#160;  enum class <a class="code" href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">Type</a> {</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    Raw,</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    Directory,</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    File,</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    Metadata,</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    Symlink,</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    HAMTShard,</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    FileChunk,</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    NonFs,</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    Invalid,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  };</div>
+<div class="line"><a name="l00062"></a><span class="lineno"><a class="line" href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">   62</a></span>&#160;  enum class <a class="code" href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">Type</a> {</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    Raw,</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    Directory,</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    File,</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    Metadata,</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    Symlink,</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    HAMTShard,</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    FileChunk,</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    NonFs,</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    Invalid,</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  };</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <a class="code" href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">Type</a> <a class="code" href="classipfs_1_1Block.html#a068a5ff05f02d811d1f7fb76f2e40674">type</a>() <span class="keyword">const</span>;  </div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <a class="code" href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">Type</a> <a class="code" href="classipfs_1_1Block.html#a068a5ff05f02d811d1f7fb76f2e40674">type</a>() <span class="keyword">const</span>;  </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1Block.html#a23264e6906ed7558c94cbcc985d286c2">is_file</a>() <span class="keyword">const</span>;  </div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1Block.html#a23264e6906ed7558c94cbcc985d286c2">is_file</a>() <span class="keyword">const</span>;  </div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  std::string <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1Block.html#a3b5a934d1925ad98228650fc4fb3e6f6">chunk_data</a>() <span class="keyword">const</span>;  </div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1Block.html#ac3320a4781777b6bd96f4bf34fc6923b">is_directory</a>() <span class="keyword">const</span>;  </div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  std::string <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1Block.html#a9fbbfa4679da83ae03aac455a1afd972">unparsed</a>() <span class="keyword">const</span>;  </div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  std::uint64_t <a class="code" href="classipfs_1_1Block.html#ad822fbd69b65bd3e958c8f33ad346599">file_size</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="classipfs_1_1Block.html#ac17705547b9ba01e1b24ff4a2e8c6ac3">   86</a></span>&#160;  <a class="code" href="classipfs_1_1unix__fs_1_1Data.html">unix_fs::Data</a> <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1Block.html#ac17705547b9ba01e1b24ff4a2e8c6ac3">fsdata</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> fsdata_; }</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  std::string <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1Block.html#a3b5a934d1925ad98228650fc4fb3e6f6">chunk_data</a>() <span class="keyword">const</span>;  </div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  Cid <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">cid</a>() <span class="keyword">const</span>;  </div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  std::string <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1Block.html#a9fbbfa4679da83ae03aac455a1afd972">unparsed</a>() <span class="keyword">const</span>;  </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1Block.html#abf18bac471e5245dd782ad9388c9c0a2">cid_matches_data</a>() <span class="keyword">const</span>;  </div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
-<div class="line"><a name="l00096"></a><span class="lineno"><a class="line" href="classipfs_1_1Block.html#ac17705547b9ba01e1b24ff4a2e8c6ac3">   96</a></span>&#160;  <a class="code" href="classipfs_1_1unix__fs_1_1Data.html">unix_fs::Data</a> <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1Block.html#ac17705547b9ba01e1b24ff4a2e8c6ac3">fsdata</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> fsdata_; }</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; </div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  Cid <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">cid</a>() <span class="keyword">const</span>;  </div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; </div>
-<div class="line"><a name="l00100"></a><span class="lineno"><a class="line" href="classipfs_1_1Block.html#ae94522280efa01d4d0f6d7f802c80a15">  100</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1Block.html#ae94522280efa01d4d0f6d7f802c80a15">mime_type</a>(std::string_view);  </div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; </div>
-<div class="line"><a name="l00102"></a><span class="lineno"><a class="line" href="classipfs_1_1Block.html#a71f9a3a5aa5704a75487d65583166281">  102</a></span>&#160;  std::string <span class="keyword">const</span>&amp; <a class="code" href="classipfs_1_1Block.html#a71f9a3a5aa5704a75487d65583166281">mime_type</a>() <span class="keyword">const</span>;  </div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; </div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1Block.html#abf18bac471e5245dd782ad9388c9c0a2">cid_matches_data</a>() <span class="keyword">const</span>;  </div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160; </div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  std::vector&lt;Byte&gt; binary_hash(libp2p::multi::HashType) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">class</span> Functor&gt;</div>
-<div class="line"><a name="l00116"></a><span class="lineno"><a class="line" href="classipfs_1_1Block.html#a8344f0e15846950ccb8804086c7fd4db">  116</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1Block.html#a8344f0e15846950ccb8804086c7fd4db">List</a>(Functor foo)<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; link : node_.links()) {</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      <span class="comment">// protobuf uses string for binary data, too</span></div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;      <span class="keyword">auto</span> hash = ipfs::ByteView{</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;          <span class="keyword">reinterpret_cast&lt;</span>ipfs::Byte const*<span class="keyword">&gt;</span>(link.hash().data()),</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;          link.hash().size()};</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      <span class="keywordflow">if</span> (!foo(link.name(), LinkCid(hash))) {</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      }</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    }</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  }</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160; </div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <a class="code" href="classipfs_1_1pb__dag_1_1PBNode.html">pb_dag::PBNode</a> node_;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <a class="code" href="classipfs_1_1unix__fs_1_1Data.html">unix_fs::Data</a> fsdata_;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keywordtype">bool</span> valid_ = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <span class="keywordtype">bool</span> fs_node_ = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  std::string mime_ = {};</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  std::optional&lt;Cid&gt; cid_ = std::nullopt;</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  std::string original_bytes_;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160; </div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  std::string LinkCid(ipfs::ByteView) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160; </div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  <span class="keywordtype">void</span> InitFromRaw(std::string <span class="keyword">const</span>&amp; content_bytes);</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;};</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160; </div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160; </div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;std::ostream&amp; operator&lt;&lt;(std::ostream&amp;, <a class="code" href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">ipfs::Block::Type</a>);</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160; </div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_DAG_BLOCK_H_</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  std::vector&lt;Byte&gt; binary_hash(libp2p::multi::HashType) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">class</span> Functor&gt;</div>
+<div class="line"><a name="l00102"></a><span class="lineno"><a class="line" href="classipfs_1_1Block.html#a8344f0e15846950ccb8804086c7fd4db">  102</a></span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1Block.html#a8344f0e15846950ccb8804086c7fd4db">List</a>(Functor foo)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; link : node_.links()) {</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      <span class="comment">// protobuf uses string for binary data, too</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;      <span class="keyword">auto</span> hash = ipfs::ByteView{</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;          <span class="keyword">reinterpret_cast&lt;</span>ipfs::Byte const*<span class="keyword">&gt;</span>(link.hash().data()),</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;          link.hash().size()};</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;      <span class="keywordflow">if</span> (!foo(link.name(), LinkCid(hash))) {</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;      }</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    }</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  }</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160; </div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <a class="code" href="classipfs_1_1pb__dag_1_1PBNode.html">pb_dag::PBNode</a> node_;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <a class="code" href="classipfs_1_1unix__fs_1_1Data.html">unix_fs::Data</a> fsdata_;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="keywordtype">bool</span> valid_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="keywordtype">bool</span> fs_node_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  std::string mime_ = {};</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  std::optional&lt;Cid&gt; cid_ = std::nullopt;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  std::string original_bytes_;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160; </div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  std::string LinkCid(ipfs::ByteView) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160; </div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;};</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160; </div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160; </div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;std::ostream&amp; operator&lt;&lt;(std::ostream&amp;, <a class="code" href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">ipfs::Block::Type</a>);</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160; </div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_DAG_BLOCK_H_</span></div>
 <div class="ttc" id="aclassipfs_1_1Block_html"><div class="ttname"><a href="classipfs_1_1Block.html">ipfs::Block</a></div><div class="ttdoc">Something to which a CID may refer directly.</div><div class="ttdef"><b>Definition:</b> dag_block.h:32</div></div>
-<div class="ttc" id="aclassipfs_1_1Block_html_a046d9b979b4f67ea605b918d0e98b41e"><div class="ttname"><a href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">ipfs::Block::Type</a></div><div class="ttdeci">Type</div><div class="ttdoc">The kinds of things a block may be representing.</div><div class="ttdef"><b>Definition:</b> dag_block.h:64</div></div>
-<div class="ttc" id="aclassipfs_1_1Block_html_a068a5ff05f02d811d1f7fb76f2e40674"><div class="ttname"><a href="classipfs_1_1Block.html#a068a5ff05f02d811d1f7fb76f2e40674">ipfs::Block::type</a></div><div class="ttdeci">Type type() const</div><div class="ttdoc">Accessor for this block's type.</div><div class="ttdef"><b>Definition:</b> dag_block.cc:97</div></div>
-<div class="ttc" id="aclassipfs_1_1Block_html_a23264e6906ed7558c94cbcc985d286c2"><div class="ttname"><a href="classipfs_1_1Block.html#a23264e6906ed7558c94cbcc985d286c2">ipfs::Block::is_file</a></div><div class="ttdeci">bool is_file() const</div><div class="ttdoc">type() == File || type() == FileChunk</div><div class="ttdef"><b>Definition:</b> dag_block.cc:117</div></div>
-<div class="ttc" id="aclassipfs_1_1Block_html_a3b5a934d1925ad98228650fc4fb3e6f6"><div class="ttname"><a href="classipfs_1_1Block.html#a3b5a934d1925ad98228650fc4fb3e6f6">ipfs::Block::chunk_data</a></div><div class="ttdeci">std::string const  &amp; chunk_data() const</div><div class="ttdoc">data field from a UnixFS node</div><div class="ttdef"><b>Definition:</b> dag_block.cc:134</div></div>
-<div class="ttc" id="aclassipfs_1_1Block_html_a47f697035e81089ff38d44324bce6aba"><div class="ttname"><a href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">ipfs::Block::cid</a></div><div class="ttdeci">Cid const  &amp; cid() const</div><div class="ttdoc">Getter for Content IDentifier.</div><div class="ttdef"><b>Definition:</b> dag_block.cc:145</div></div>
-<div class="ttc" id="aclassipfs_1_1Block_html_a71f9a3a5aa5704a75487d65583166281"><div class="ttname"><a href="classipfs_1_1Block.html#a71f9a3a5aa5704a75487d65583166281">ipfs::Block::mime_type</a></div><div class="ttdeci">std::string const  &amp; mime_type() const</div><div class="ttdoc">Getter for mime type.</div></div>
-<div class="ttc" id="aclassipfs_1_1Block_html_a8344f0e15846950ccb8804086c7fd4db"><div class="ttname"><a href="classipfs_1_1Block.html#a8344f0e15846950ccb8804086c7fd4db">ipfs::Block::List</a></div><div class="ttdeci">void List(Functor foo) const</div><div class="ttdoc">Iterate through the links of this UnixFS node.</div><div class="ttdef"><b>Definition:</b> dag_block.h:116</div></div>
-<div class="ttc" id="aclassipfs_1_1Block_html_a9fbbfa4679da83ae03aac455a1afd972"><div class="ttname"><a href="classipfs_1_1Block.html#a9fbbfa4679da83ae03aac455a1afd972">ipfs::Block::unparsed</a></div><div class="ttdeci">std::string const  &amp; unparsed() const</div><div class="ttdoc">Original bytes (with protobuf bits)</div><div class="ttdef"><b>Definition:</b> dag_block.cc:138</div></div>
+<div class="ttc" id="aclassipfs_1_1Block_html_a046d9b979b4f67ea605b918d0e98b41e"><div class="ttname"><a href="classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e">ipfs::Block::Type</a></div><div class="ttdeci">Type</div><div class="ttdoc">The kinds of things a block may be representing.</div><div class="ttdef"><b>Definition:</b> dag_block.h:62</div></div>
+<div class="ttc" id="aclassipfs_1_1Block_html_a068a5ff05f02d811d1f7fb76f2e40674"><div class="ttname"><a href="classipfs_1_1Block.html#a068a5ff05f02d811d1f7fb76f2e40674">ipfs::Block::type</a></div><div class="ttdeci">Type type() const</div><div class="ttdoc">Accessor for this block's type.</div><div class="ttdef"><b>Definition:</b> dag_block.cc:88</div></div>
+<div class="ttc" id="aclassipfs_1_1Block_html_a23264e6906ed7558c94cbcc985d286c2"><div class="ttname"><a href="classipfs_1_1Block.html#a23264e6906ed7558c94cbcc985d286c2">ipfs::Block::is_file</a></div><div class="ttdeci">bool is_file() const</div><div class="ttdoc">type() == File || type() == FileChunk</div><div class="ttdef"><b>Definition:</b> dag_block.cc:108</div></div>
+<div class="ttc" id="aclassipfs_1_1Block_html_a3b5a934d1925ad98228650fc4fb3e6f6"><div class="ttname"><a href="classipfs_1_1Block.html#a3b5a934d1925ad98228650fc4fb3e6f6">ipfs::Block::chunk_data</a></div><div class="ttdeci">std::string const  &amp; chunk_data() const</div><div class="ttdoc">data field from a UnixFS node</div><div class="ttdef"><b>Definition:</b> dag_block.cc:112</div></div>
+<div class="ttc" id="aclassipfs_1_1Block_html_a47f697035e81089ff38d44324bce6aba"><div class="ttname"><a href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">ipfs::Block::cid</a></div><div class="ttdeci">Cid const  &amp; cid() const</div><div class="ttdoc">Getter for Content IDentifier.</div><div class="ttdef"><b>Definition:</b> dag_block.cc:120</div></div>
+<div class="ttc" id="aclassipfs_1_1Block_html_a8344f0e15846950ccb8804086c7fd4db"><div class="ttname"><a href="classipfs_1_1Block.html#a8344f0e15846950ccb8804086c7fd4db">ipfs::Block::List</a></div><div class="ttdeci">void List(Functor foo) const</div><div class="ttdoc">Iterate through the links of this UnixFS node.</div><div class="ttdef"><b>Definition:</b> dag_block.h:102</div></div>
+<div class="ttc" id="aclassipfs_1_1Block_html_a9fbbfa4679da83ae03aac455a1afd972"><div class="ttname"><a href="classipfs_1_1Block.html#a9fbbfa4679da83ae03aac455a1afd972">ipfs::Block::unparsed</a></div><div class="ttdeci">std::string const  &amp; unparsed() const</div><div class="ttdoc">Original bytes (with protobuf bits)</div><div class="ttdef"><b>Definition:</b> dag_block.cc:116</div></div>
 <div class="ttc" id="aclassipfs_1_1Block_html_aa6f73edb4a3d9583f30ad74486b27278"><div class="ttname"><a href="classipfs_1_1Block.html#aa6f73edb4a3d9583f30ad74486b27278">ipfs::Block::Block</a></div><div class="ttdeci">Block()</div><div class="ttdoc">Construct an invalid block.</div></div>
-<div class="ttc" id="aclassipfs_1_1Block_html_ab8252491c2d9c805fd074267d34891e7"><div class="ttname"><a href="classipfs_1_1Block.html#ab8252491c2d9c805fd074267d34891e7">ipfs::Block::valid</a></div><div class="ttdeci">bool valid() const</div><div class="ttdoc">Check if the block appears valid.</div><div class="ttdef"><b>Definition:</b> dag_block.cc:93</div></div>
-<div class="ttc" id="aclassipfs_1_1Block_html_abf18bac471e5245dd782ad9388c9c0a2"><div class="ttname"><a href="classipfs_1_1Block.html#abf18bac471e5245dd782ad9388c9c0a2">ipfs::Block::cid_matches_data</a></div><div class="ttdeci">bool cid_matches_data() const</div><div class="ttdoc">Basic validation.</div><div class="ttdef"><b>Definition:</b> dag_block.cc:170</div></div>
-<div class="ttc" id="aclassipfs_1_1Block_html_ac17705547b9ba01e1b24ff4a2e8c6ac3"><div class="ttname"><a href="classipfs_1_1Block.html#ac17705547b9ba01e1b24ff4a2e8c6ac3">ipfs::Block::fsdata</a></div><div class="ttdeci">unix_fs::Data const  &amp; fsdata() const</div><div class="ttdoc">Accessor for all UnixFS data as a protobuf object.</div><div class="ttdef"><b>Definition:</b> dag_block.h:96</div></div>
-<div class="ttc" id="aclassipfs_1_1Block_html_ac3320a4781777b6bd96f4bf34fc6923b"><div class="ttname"><a href="classipfs_1_1Block.html#ac3320a4781777b6bd96f4bf34fc6923b">ipfs::Block::is_directory</a></div><div class="ttdeci">bool is_directory() const</div><div class="ttdoc">type() == Directory</div><div class="ttdef"><b>Definition:</b> dag_block.cc:121</div></div>
-<div class="ttc" id="aclassipfs_1_1Block_html_ad822fbd69b65bd3e958c8f33ad346599"><div class="ttname"><a href="classipfs_1_1Block.html#ad822fbd69b65bd3e958c8f33ad346599">ipfs::Block::file_size</a></div><div class="ttdeci">std::uint64_t file_size() const</div><div class="ttdoc">Get file size from the UnixFS node data.</div><div class="ttdef"><b>Definition:</b> dag_block.cc:126</div></div>
-<div class="ttc" id="aclassipfs_1_1Block_html_ae94522280efa01d4d0f6d7f802c80a15"><div class="ttname"><a href="classipfs_1_1Block.html#ae94522280efa01d4d0f6d7f802c80a15">ipfs::Block::mime_type</a></div><div class="ttdeci">void mime_type(std::string_view)</div><div class="ttdoc">mime type setter - not managed</div></div>
+<div class="ttc" id="aclassipfs_1_1Block_html_ab8252491c2d9c805fd074267d34891e7"><div class="ttname"><a href="classipfs_1_1Block.html#ab8252491c2d9c805fd074267d34891e7">ipfs::Block::valid</a></div><div class="ttdeci">bool valid() const</div><div class="ttdoc">Check if the block appears valid.</div><div class="ttdef"><b>Definition:</b> dag_block.cc:84</div></div>
+<div class="ttc" id="aclassipfs_1_1Block_html_abf18bac471e5245dd782ad9388c9c0a2"><div class="ttname"><a href="classipfs_1_1Block.html#abf18bac471e5245dd782ad9388c9c0a2">ipfs::Block::cid_matches_data</a></div><div class="ttdeci">bool cid_matches_data() const</div><div class="ttdoc">Basic validation.</div><div class="ttdef"><b>Definition:</b> dag_block.cc:142</div></div>
+<div class="ttc" id="aclassipfs_1_1Block_html_ac17705547b9ba01e1b24ff4a2e8c6ac3"><div class="ttname"><a href="classipfs_1_1Block.html#ac17705547b9ba01e1b24ff4a2e8c6ac3">ipfs::Block::fsdata</a></div><div class="ttdeci">unix_fs::Data const  &amp; fsdata() const</div><div class="ttdoc">Accessor for all UnixFS data as a protobuf object.</div><div class="ttdef"><b>Definition:</b> dag_block.h:86</div></div>
 <div class="ttc" id="aclassipfs_1_1pb__dag_1_1PBNode_html"><div class="ttname"><a href="classipfs_1_1pb__dag_1_1PBNode.html">ipfs::pb_dag::PBNode</a></div><div class="ttdef"><b>Definition:</b> pb_dag.pb.h:243</div></div>
 <div class="ttc" id="aclassipfs_1_1unix__fs_1_1Data_html"><div class="ttname"><a href="classipfs_1_1unix__fs_1_1Data.html">ipfs::unix_fs::Data</a></div><div class="ttdef"><b>Definition:</b> unix_fs.pb.h:92</div></div>
 </div><!-- fragment --></div><!-- contents -->

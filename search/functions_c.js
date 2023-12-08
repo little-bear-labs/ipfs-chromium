@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['previouslyfailed_264',['PreviouslyFailed',['../classipfs_1_1Gateway.html#a977edc6a5919f0a1a30e15e7c3d28aa5',1,'ipfs::Gateway']]],
-  ['promote_265',['promote',['../classipfs_1_1Gateways.html#adab386521eef3497215c666ad770ce26',1,'ipfs::Gateways']]]
+  ['requestbycid_239',['RequestByCid',['../classipfs_1_1BlockRequestor.html#a925ee8cd1e6de64de3f40f3f90fe969e',1,'ipfs::BlockRequestor']]]
 ];

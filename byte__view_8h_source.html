@@ -85,9 +85,14 @@ $(function() {
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">inline</span> span&lt;std::uint8_t const&gt; as_octets(ByteView bytes) {</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keywordflow">return</span> {<span class="keyword">reinterpret_cast&lt;</span>std::uint8_t const*<span class="keyword">&gt;</span>(bytes.data()), bytes.size()};</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;}</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// CHROMIUM_IPFS_BYTE_VIEW_H</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">class</span> ContiguousBytes&gt;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">inline</span> ByteView as_bytes(ContiguousBytes <span class="keyword">const</span>&amp; b) {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keyword">auto</span> p = <span class="keyword">reinterpret_cast&lt;</span>ipfs::Byte const*<span class="keyword">&gt;</span>(b.data());</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keywordflow">return</span> ByteView{p, b.size()};</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;}</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// CHROMIUM_IPFS_BYTE_VIEW_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

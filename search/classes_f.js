@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['tablestruct_5fipfs_5f5fclient_5f2fipns_5f5frecord_5f2eproto_219',['TableStruct_ipfs_5fclient_2fipns_5frecord_2eproto',['../structTableStruct__ipfs__5fclient__2fipns__5frecord__2eproto.html',1,'']]],
-  ['tablestruct_5fipfs_5f5fclient_5f2fkeys_5f2eproto_220',['TableStruct_ipfs_5fclient_2fkeys_2eproto',['../structTableStruct__ipfs__5fclient__2fkeys__2eproto.html',1,'']]],
-  ['tablestruct_5fipfs_5f5fclient_5f2fpb_5f5fdag_5f2eproto_221',['TableStruct_ipfs_5fclient_2fpb_5fdag_2eproto',['../structTableStruct__ipfs__5fclient__2fpb__5fdag__2eproto.html',1,'']]],
-  ['tablestruct_5fipfs_5f5fclient_5f2funix_5f5ffs_5f2eproto_222',['TableStruct_ipfs_5fclient_2funix_5ffs_2eproto',['../structTableStruct__ipfs__5fclient__2funix__5ffs__2eproto.html',1,'']]],
-  ['terminatingrequestor_223',['TerminatingRequestor',['../classipfs_1_1gw_1_1TerminatingRequestor.html',1,'ipfs::gw']]]
+  ['unixfsfile_206',['UnixfsFile',['../classipfs_1_1ipld_1_1UnixfsFile.html',1,'ipfs::ipld']]],
+  ['unixtime_207',['UnixTime',['../classipfs_1_1unix__fs_1_1UnixTime.html',1,'ipfs::unix_fs']]],
+  ['unixtimedefaulttypeinternal_208',['UnixTimeDefaultTypeInternal',['../structipfs_1_1unix__fs_1_1UnixTimeDefaultTypeInternal.html',1,'ipfs::unix_fs']]],
+  ['urlloader_209',['URLLoader',['../classnetwork_1_1mojom_1_1URLLoader.html',1,'network::mojom']]],
+  ['urlspec_210',['UrlSpec',['../structipfs_1_1UrlSpec.html',1,'ipfs']]]
 ];
