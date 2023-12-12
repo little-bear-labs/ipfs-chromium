@@ -1,8 +1,9 @@
 #ifndef IPFS_DAG_JSON_VALUE_H_
 #define IPFS_DAG_JSON_VALUE_H_
 
-#include <libp2p/multi/content_identifier.hpp>
+#include <ipfs_client/cid.h>
 
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -18,7 +19,6 @@ class DagJsonValue {
   virtual bool iterate_list(std::function<void(DagJsonValue const&)>) const = 0;
   virtual ~DagJsonValue() noexcept;
 
-  using Cid = libp2p::multi::ContentIdentifier;
   std::optional<Cid> get_if_link() const;
 };
 }  // namespace ipfs

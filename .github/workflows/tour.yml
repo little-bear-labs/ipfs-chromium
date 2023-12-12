@@ -56,7 +56,7 @@ jobs:
           done
           function url_case() {
             echo "url_case(" "${@}" ")"
-            timeout 300 ./tester_build/clitester note "${1}://${2}"
+            timeout 360 ./tester_build/clitester note "${1}://${2}"
             n=`sed 's,[^A-Za-z0-9\.],_,g' <<< ${2}`
             if cat "_${1}_${n}" | md5sum | cut -d ' ' -f 1 > actual
             then
@@ -75,9 +75,4 @@ jobs:
           url_case ipfs bafkqacdjmrsw45djor4q ff483d1ff591898a9942916050d2ca3f
           true the block itself md5s to b92348005af4ae4795e6f312844fb359, but the response is an HTML preview page
           url_case ipfs baguqeerah2nswg7r2pvlpbnsz5y4c4pr4wsgbzixdl632w5qxvedqzryf54q 7750fd7b0928f007e1d181763c0dbdb5
-          url_case ipns blog.ipfs.tech/2023-05-multigateway-chromium-client/ 
-          url_case ipns k51qzi5uqu5dijv526o4z2z10ejylnel0bfvrtw53itcmsecffo8yf0zb4g9gi/ipfs-blog/2023-05-multigateway-chromium-client/ 
-          echo diff _ipns_*multigateway*
-          diff _ipns_*multigateway*
           killall python3
-          

@@ -1,0 +1,28 @@
+diff --git a/url/url_canon.h b/url/url_canon.h
+index d3a7fabf09fa8..06db17242248f 100644
+--- a/url/url_canon.h
++++ b/url/url_canon.h
+@@ -697,6 +697,23 @@ bool CanonicalizeMailtoURL(const char16_t* spec,
+                            CanonOutput* output,
+                            Parsed* new_parsed);
+ 
++COMPONENT_EXPORT(URL)
++bool CanonicalizeIpfsURL(const char* spec,
++                             int spec_len,
++                             const Parsed& parsed,
++                             SchemeType scheme_type,
++                             CharsetConverter* query_converter,
++                             CanonOutput* output,
++                             Parsed* new_parsed);
++COMPONENT_EXPORT(URL)
++bool CanonicalizeIpfsURL(const char16_t* spec,
++                             int spec_len,
++                             const Parsed& parsed,
++                             SchemeType scheme_type,
++                             CharsetConverter* query_converter,
++                             CanonOutput* output,
++                             Parsed* new_parsed);
++
+ // Part replacer --------------------------------------------------------------
+ 
+ // Internal structure used for storing separate strings for each component.

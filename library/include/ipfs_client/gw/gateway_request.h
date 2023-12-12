@@ -1,9 +1,8 @@
 #ifndef IPFS_TRUSTLESS_REQUEST_H_
 #define IPFS_TRUSTLESS_REQUEST_H_
 
+#include <ipfs_client/cid.h>
 #include <ipfs_client/context_api.h>
-
-#include <libp2p/multi/content_identifier.hpp>
 
 #include <vocab/slash_delimited.h>
 
@@ -47,7 +46,7 @@ class GatewayRequest {
   std::string main_param;  ///< CID, IPNS name, hostname
   std::string path;        ///< For CAR requests
   std::shared_ptr<IpfsRequest> dependent;
-  std::optional<libp2p::multi::ContentIdentifier> cid;
+  std::optional<Cid> cid;
   short parallel = 0;
   std::string affinity;
 

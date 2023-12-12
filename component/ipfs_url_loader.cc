@@ -17,8 +17,6 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/url_loader_factory.h"
 
-#include <libp2p/multi/content_identifier_codec.hpp>
-
 #include <fstream>
 
 ipfs::IpfsUrlLoader::IpfsUrlLoader(

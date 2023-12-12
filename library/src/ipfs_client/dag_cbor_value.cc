@@ -1,9 +1,10 @@
 #include <ipfs_client/dag_cbor_value.h>
 
 #include <vocab/html_escape.h>
-#include <libp2p/multi/content_identifier_codec.hpp>
 
 #include "log_macros.h"
+
+#include <sstream>
 
 using Self = ipfs::DagCborValue;
 
@@ -21,10 +22,10 @@ void Self::html(std::ostream& str) const {
     }
     str << "<em>&quot;</em></p>\n";
   } else if (auto cid = as_link()) {
-    auto cs = libp2p::multi::ContentIdentifierCodec::toString(*cid);
-    if (cs.has_value()) {
-      str << "<a class='cbor_link' href='ipfs://" << cs.value() << "'>"
-          << cs.value() << "</a>\n";
+    auto cs = cid.value().to_string();
+    if (cs.size()) {
+      str << "<a class='cbor_link' href='ipfs://" << cs << "'>" << cs
+          << "</a>\n";
     } else {
       str << "<h3 class='cbor_broken_link'>Unhandled CID in Link</h3>\n";
     }

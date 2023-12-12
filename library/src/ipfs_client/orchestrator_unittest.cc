@@ -8,7 +8,6 @@
 #include <ipfs_client/ipns_record.h>
 #include <ipfs_client/ipns_record.pb.h>
 #include <ipfs_client/logger.h>
-#include <libp2p/multi/content_identifier_codec.hpp>
 
 #include "ipld/ipns_name.h"
 
@@ -20,7 +19,6 @@ namespace ii = i::ipld;
 namespace ig = i::gw;
 using namespace std::literals;
 using Success = i::Response;
-using Codec = libp2p::multi::ContentIdentifierCodec;
 
 namespace {
 struct MockApi final : public ipfs::ContextApi {
@@ -187,6 +185,7 @@ struct OrchestratingRealData : public ::testing::Test {
 }  // namespace
 
 TEST_F(OrchestratingRealData, one_html_present) {
+  ipfs::log::SetLevel(ipfs::log::Level::TRACE);
   dorequest(abs_path("/one.html"));
   EXPECT_EQ(resp_.status_, 200);
   EXPECT_EQ(resp_.body_, "my one\n");

@@ -23,8 +23,7 @@ struct MockCbor final : public i::DagCborValue {
   }
   std::optional<std::uint64_t> as_unsigned() const { return uval; }
   std::optional<std::string> as_string() const { return sval; }
-  std::optional<Cid> as_link() const {
-    return {};
+  std::optional<i::Cid> as_link() const { return {};
   }
   std::optional<bool> as_bool() const { return {}; }
   std::optional<std::int64_t> as_signed() const { return {}; }

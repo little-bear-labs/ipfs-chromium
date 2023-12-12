@@ -1,9 +1,8 @@
 #include <ipfs_client/dag_json_value.h>
 
-#include <libp2p/multi/content_identifier_codec.hpp>
+#include <ipfs_client/cid.h>
 
 using Self = ipfs::DagJsonValue;
-using CidCodec = libp2p::multi::ContentIdentifierCodec;
 
 Self::~DagJsonValue() noexcept {}
 auto Self::get_if_link() const -> std::optional<Cid> {
@@ -15,9 +14,9 @@ auto Self::get_if_link() const -> std::optional<Cid> {
   if (!str) {
     return std::nullopt;
   }
-  auto cid = CidCodec::fromString(*str);
-  if (cid.has_value()) {
-    return cid.value();
+  auto cid = Cid(*str);
+  if (cid.valid()) {
+    return cid;
   }
   return std::nullopt;
 }

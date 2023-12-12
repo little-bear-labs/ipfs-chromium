@@ -1,9 +1,11 @@
 #ifndef IPFS_CONTEXT_API_H_
 #define IPFS_CONTEXT_API_H_
 
+#include "crypto/hasher.h"
 #include "dag_cbor_value.h"
 #include "http_request_description.h"
 #include "ipns_cbor_entry.h"
+#include "multi_hash.h"
 #include "signing_key_type.h"
 
 #include <vocab/byte_view.h>
@@ -12,6 +14,7 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <unordered_map>
 
 namespace ipfs {
 class IpfsRequest;
@@ -25,6 +28,7 @@ class DagJsonValue;
  */
 class ContextApi : public std::enable_shared_from_this<ContextApi> {
  public:
+  ContextApi();
   virtual ~ContextApi() noexcept {}
 
   using HttpRequestDescription = ::ipfs::HttpRequestDescription;
@@ -71,6 +75,10 @@ class ContextApi : public std::enable_shared_from_this<ContextApi> {
                                     ByteView data,
                                     ByteView key_bytes) const = 0;
 
+  std::optional<std::vector<Byte>> Hash(HashType, ByteView data);
+
+ protected:
+  std::unordered_map<HashType, std::unique_ptr<crypto::Hasher>> hashers_;
 };
 
 }  // namespace ipfs

@@ -1,16 +1,12 @@
 #include "ipfs_client/dag_block.h"
 
-#include <libp2p/crypto/hasher.hpp>
-#include <libp2p/multi/content_identifier_codec.hpp>
-#include <libp2p/multi/multihash.hpp>
+#include <ipfs_client/context_api.h>
 
 #include "log_macros.h"
 
 #include <algorithm>
 
 #include <algorithm>
-
-using MC = libp2p::multi::MulticodecType;
 
 namespace {
 std::string get_bytes(std::string const& s) {
@@ -29,43 +25,46 @@ bool parse(ipfs::pb_dag::PBNode& n, std::string const& s) {
   return n.ParseFromString(s);
 }
 
-using Multicodec = libp2p::multi::MulticodecType::Code;
-
 template <class From>
-std::pair<bool, bool> InitBlock(Multicodec c,
+std::pair<bool, bool> InitBlock(ipfs::MultiCodec c,
                                 From& from,
                                 ipfs::pb_dag::PBNode& n,
                                 ipfs::unix_fs::Data& d) {
+  using Cdc = ipfs::MultiCodec;
   switch (c) {
-    case Multicodec::DAG_PB:
+    case Cdc::DAG_PB:
       if (parse(n, from)) {
         return {true, d.ParseFromString(n.data())};
       }
       break;
-    case Multicodec::RAW:
-    case Multicodec::IDENTITY:
+    case Cdc::RAW:
+    case Cdc::IDENTITY:
       d.set_type(ipfs::unix_fs::Data_DataType_File);
       d.set_data(get_bytes(from));
       d.set_filesize(d.data().size());
       n.set_data(d.SerializeAsString());
       return {true, true};
+    case Cdc::INVALID:
+    case Cdc::DAG_CBOR:
+    case Cdc::LIBP2P_KEY:
+    case Cdc::DAG_JSON:
     default:
       LOG(FATAL) << "Block-initialization unsupported for multicodec: "
-                 << static_cast<unsigned>(c) << '('
-                 << std::string{MC::getName(c)} << ')';
+                 << static_cast<unsigned>(c) << '(' << std::string{GetName(c)}
+                 << ')';
   }
   return {false, false};
 }
 }  // namespace
 
 ipfs::Block::Block(Cid const& c, std::istream& s) : cid_(c) {
-  std::tie(valid_, fs_node_) = InitBlock(c.content_type, s, node_, fsdata_);
+  std::tie(valid_, fs_node_) = InitBlock(c.codec(), s, node_, fsdata_);
 }
 
 ipfs::Block::Block(Cid const& c, std::string_view s)
     : cid_(c), original_bytes_(s) {
   std::tie(valid_, fs_node_) =
-      InitBlock(c.content_type, original_bytes_, node_, fsdata_);
+      InitBlock(c.codec(), original_bytes_, node_, fsdata_);
 }
 
 ipfs::Block::Block(Block const& rhs)
@@ -123,23 +122,20 @@ auto ipfs::Block::cid() const -> Cid const& {
 }
 
 std::string ipfs::Block::LinkCid(ipfs::ByteView binary_link_hash) const {
-  using Codec = libp2p::multi::ContentIdentifierCodec;
-  auto result = Codec::decode(binary_link_hash);
-  if (!result.has_value()) {
+  Cid result(binary_link_hash);
+  if (!result.valid()) {
     LOG(FATAL) << "Failed to decode link CID as binary ( link from "
-               << Codec::toString(cid()).value()
-               << "): " << Stringify(result.error());
+               << cid().to_string() << ")";
   }
-  auto str_res = Codec::toString(result.value());
-  if (!str_res.has_value()) {
+  auto str_res = result.to_string();
+  if (str_res.empty()) {
     LOG(FATAL) << "Failed to decode binary link CID as string (link from "
-               << Codec::toString(cid()).value()
-               << "): " << Stringify(result.error());
+               << cid().to_string() << ")";
   }
-  return str_res.value();
+  return str_res;
 }
 
-bool ipfs::Block::cid_matches_data() const {
+bool ipfs::Block::cid_matches_data(ContextApi& api) const {
   if (!cid_) {
     // TODO - probably remove those constructors and make cid_ not optional
     return true;
@@ -148,30 +144,27 @@ bool ipfs::Block::cid_matches_data() const {
     LOG(ERROR) << "CID can't match data on an invalid block.";
     return false;
   }
-  auto cid_hash = cid_->content_address.getHash();
-  auto hash_type = cid_->content_address.getType();
-  if (hash_type == libp2p::multi::HashType::identity) {
+  auto cid_hash = cid_->hash();
+  auto hash_type = cid_->hash_type();
+  if (hash_type == HashType::IDENTITY) {
     return true;
   }
-  auto hashed = this->binary_hash(hash_type);
+  auto hashed = this->binary_hash(api, hash_type);
   return std::equal(cid_hash.begin(), cid_hash.end(), hashed.begin(),
                     hashed.end());
 }
 
-std::vector<ipfs::Byte> ipfs::Block::binary_hash(
-    libp2p::multi::HashType algo) const {
-  ipfs::ByteView bytes{reinterpret_cast<Byte const*>(original_bytes_.data()),
-                       original_bytes_.size()};
-  auto hasher = libp2p::crypto::CreateHasher(algo);
-  std::vector<ipfs::Byte> result(hasher->digestSize(), Byte{});
-  if (hasher->write(bytes).value()) {
-    if (!hasher->digestOut({result.data(), result.size()}).has_value()) {
-      LOG(ERROR) << "Error getting digest.";
-    }
-  } else {
-    LOG(ERROR) << "Attempt to hash bytes returned false";
+std::vector<ipfs::Byte> ipfs::Block::binary_hash(ContextApi& api,
+                                                 HashType algo) const {
+  if (algo == HashType::INVALID) {
+    algo = cid().hash_type();
   }
-  return result;
+  auto result = api.Hash(algo, as_bytes(original_bytes_));
+  if (result.has_value()) {
+    return result.value();
+  } else {
+    return {};
+  }
 }
 
 std::ostream& operator<<(std::ostream& s, ipfs::Block::Type t) {

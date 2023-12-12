@@ -1,6 +1,7 @@
 #ifndef IPFS_GATEWAY_HTTP_REQUESTOR_H_
 #define IPFS_GATEWAY_HTTP_REQUESTOR_H_
 
+#include <ipfs_client/cid.h>
 #include <ipfs_client/gw/requestor.h>
 #include <ipfs_client/ipld/dag_node.h>
 
@@ -20,7 +21,6 @@ class GatewayHttpRequestor final : public Requestor {
 
   HandleOutcome handle(RequestPtr) override;
   std::string_view name() const override;
-  using Cid = libp2p::multi::ContentIdentifier;
   ipfs::ipld::NodePtr node_from_type(std::optional<Cid> const& cid,
                                      ipfs::gw::Type,
                                      std::string_view body) const;

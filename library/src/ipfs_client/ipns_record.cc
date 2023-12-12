@@ -1,10 +1,10 @@
 #include <ipfs_client/ipns_record.h>
 
-#include <ipfs_client/dag_cbor_value.h>
+#include <ipfs_client/cid.h>
 #include <ipfs_client/context_api.h>
+#include <ipfs_client/dag_cbor_value.h>
 
 #include <libp2p/crypto/hasher.hpp>
-#include <libp2p/multi/content_identifier.hpp>
 #include <libp2p/peer/peer_id.hpp>
 
 #include "log_macros.h"
@@ -18,36 +18,27 @@
 #endif
 
 namespace {
-bool matches(libp2p::multi::Multihash const& hash,
-             ipfs::ByteView pubkey_bytes) {
-  auto hasher = libp2p::crypto::CreateHasher(hash.getType());
-  std::vector<ipfs::Byte> result(hasher->digestSize(), ipfs::Byte{});
-  if (hasher->write(pubkey_bytes).value()) {
-    if (!hasher->digestOut({result.data(), result.size()}).has_value()) {
-      LOG(ERROR) << "Error getting digest.";
-    }
-  } else {
-    LOG(ERROR) << "Attempt to hash bytes returned false";
+bool matches(ipfs::MultiHash const& hash,
+             ipfs::ByteView pubkey_bytes,
+             ipfs::ContextApi& api) {
+  auto result = api.Hash(hash.type(), pubkey_bytes);
+  if (!result.has_value()) {
+    return false;
   }
-  return std::equal(result.begin(), result.end(), hash.getHash().begin(),
-                    hash.getHash().end());
+  /*  std::vector<ipfs::Byte> result(hasher->digestSize(), ipfs::Byte{});
+    if (hasher->write(pubkey_bytes).value()) {
+      if (!hasher->digestOut({result.data(), result.size()}).has_value()) {
+        LOG(ERROR) << "Error getting digest.";
+      }
+    } else {
+      LOG(ERROR) << "Attempt to hash bytes returned false";
+    }
+    */
+  return std::equal(result->begin(), result->end(), hash.digest().begin(),
+                    hash.digest().end());
 }
 }  // namespace
 
-auto ipfs::ValidateIpnsRecord(ipfs::ByteView top_level_bytes,
-                              libp2p::multi::ContentIdentifier const& name,
-                              ContextApi& api) -> std::optional<IpnsCborEntry> {
-  DCHECK_EQ(name.content_type, libp2p::multi::MulticodecType::Code::LIBP2P_KEY);
-  if (name.content_type != libp2p::multi::MulticodecType::Code::LIBP2P_KEY) {
-    return {};
-  }
-  auto as_peer = libp2p::peer::PeerId::fromHash(name.content_address);
-  if (as_peer.has_value()) {
-    return ValidateIpnsRecord(top_level_bytes, as_peer.value(), api);
-  } else {
-    return {};
-  }
-}
 namespace {
 void assign(std::string& out,
             ipfs::DagCborValue& top,
@@ -87,9 +78,14 @@ void assign(std::uint64_t& out,
   }
 }
 }  // namespace
-auto ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
-                              libp2p::peer::PeerId const& name,
+
+auto ipfs::ValidateIpnsRecord(ipfs::ByteView top_level_bytes,
+                              Cid const& name,
                               ContextApi& api) -> std::optional<IpnsCborEntry> {
+  DCHECK_EQ(name.codec(), MultiCodec::LIBP2P_KEY);
+  if (name.codec() != MultiCodec::LIBP2P_KEY) {
+    return {};
+  }
   // https://github.com/ipfs/specs/blob/main/ipns/IPNS.md#record-verification
 
   // Before parsing the protobuf, confirm that the serialized IpnsEntry bytes
@@ -140,17 +136,16 @@ auto ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
     public_key = ipfs::ByteView{
         reinterpret_cast<ipfs::Byte const*>(entry.pubkey().data()),
         entry.pubkey().size()};
-    if (!matches(name.toMultihash(), public_key)) {
+    if (!matches(name.multi_hash(), public_key, api)) {
       LOG(ERROR) << "Given IPNS record contains a pubkey that does not match "
                     "the hash from the IPNS name that fetched it!";
       return {};
     }
-  } else if (name.toMultihash().getType() ==
-             libp2p::multi::HashType::identity) {
-    public_key = name.toMultihash().getHash();
+  } else if (name.hash_type() == HashType::IDENTITY) {
+    public_key = name.hash();
   } else {
     LOG(ERROR) << "IPNS record contains no public key, and the IPNS name "
-               << name.toBase58()
+               << name.to_string()
                << " is a true hash, not identity. Validation impossible.";
     return {};
   }
@@ -167,8 +162,8 @@ auto ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
                      signature_str.size()};
   // https://specs.ipfs.tech/ipns/ipns-record/#record-verification
   //  Create bytes for signature verification by concatenating
-  //  ipto_hex(ns-signature://  prefix (bytes in hex: 69706e732d7369676e61747572653a) with raw CBOR bytes
-  //  from IpnsEntry.data
+  //  ipto_hex(ns-signature://  prefix (bytes in hex:
+  //  69706e732d7369676e61747572653a) with raw CBOR bytes from IpnsEntry.data
   auto bytes_str = entry.data();
   bytes_str.insert(
       0, "\x69\x70\x6e\x73\x2d\x73\x69\x67\x6e\x61\x74\x75\x72\x65\x3a");
@@ -183,13 +178,13 @@ auto ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
   }
   // TODO check expiration date
   if (entry.has_value() && entry.value() != result.value) {
-    LOG(ERROR) << "IPNS " << name.toBase58() << " has different values for V1("
+    LOG(ERROR) << "IPNS " << name.to_string() << " has different values for V1("
                << entry.value() << ") and V2(" << result.value << ')';
     return {};
   }
   assign(result.validity, *parsed, "Validity");
   if (entry.has_validity() && entry.validity() != result.validity) {
-    LOG(ERROR) << "IPNS " << name.toBase58()
+    LOG(ERROR) << "IPNS " << name.to_string()
                << " has different validity for V1(" << entry.validity()
                << ") and V2(" << result.validity << ')';
     return {};
@@ -197,7 +192,7 @@ auto ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
   assign(result.validityType, *parsed, "ValidityType");
   if (entry.has_validitytype() &&
       entry.validitytype() != static_cast<int>(result.validityType)) {
-    LOG(ERROR) << "IPNS " << name.toBase58()
+    LOG(ERROR) << "IPNS " << name.to_string()
                << " has different validity types for V1("
                << entry.validitytype() << ") and V2(" << result.validityType
                << ')';
@@ -205,19 +200,19 @@ auto ipfs::ValidateIpnsRecord(ByteView top_level_bytes,
   }
   assign(result.sequence, *parsed, "Sequence");
   if (entry.has_sequence() && entry.sequence() != result.sequence) {
-    LOG(ERROR) << "IPNS " << name.toBase58()
+    LOG(ERROR) << "IPNS " << name.to_string()
                << " has different validity types for V1(" << entry.sequence()
                << ") and V2(" << result.sequence << ')';
     return {};
   }
   assign(result.ttl, *parsed, "TTL");
   if (entry.has_ttl() && entry.ttl() != result.ttl) {
-    LOG(ERROR) << "IPNS " << name.toBase58()
+    LOG(ERROR) << "IPNS " << name.to_string()
                << " has different validity types for V1(" << entry.ttl()
                << ") and V2(" << result.ttl << ')';
     return {};
   }
-  LOG(INFO) << "IPNS record verification passes for " << name.toBase58()
+  LOG(INFO) << "IPNS record verification passes for " << name.to_string()
             << " sequence: " << result.sequence << " points at "
             << result.value;
   return result;

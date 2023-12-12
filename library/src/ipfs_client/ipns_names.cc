@@ -1,6 +1,7 @@
 #include <ipfs_client/ipns_names.h>
 
-#include <libp2p/multi/content_identifier_codec.hpp>
+#include <ipfs_client/cid.h>
+
 #include "log_macros.h"
 
 using Self = ipfs::IpnsNames;
@@ -17,22 +18,10 @@ void Self::AssignName(std::string const& name, ValidatedIpns entry) {
   using namespace libp2p::multi;
   auto cid_str = res.substr(5, endofcid);
   LOG(INFO) << "IPNS points to CID " << cid_str;
-  auto dec_res = ContentIdentifierCodec::fromString(cid_str);
-  if (dec_res.has_value()) {
-    auto cid = dec_res.value();
-    if (dec_res.value().version == ContentIdentifier::Version::V0) {
-      // TODO - implement ipns properly. A peer ID could actually fail this
-      // check, I believe.
-      DCHECK_EQ(res.substr(0, 5), "ipfs/");
-      cid =
-          ContentIdentifier(ContentIdentifier::Version::V1,
-                            MulticodecType::Code::DAG_PB, cid.content_address);
-    }
-    auto enc_res = ContentIdentifierCodec::toStringOfBase(
-        cid, MultibaseCodec::Encoding::BASE32_LOWER);
-    DCHECK(enc_res.has_value());
+  auto cid = Cid(cid_str);
+  if (cid.valid()) {
     auto desensitized = res.substr(0, 5);
-    desensitized.append(enc_res.value());
+    desensitized.append(cid_str);
     if (endofcid < res.size()) {
       auto extra = res.substr(endofcid);
       LOG(INFO) << name << " resolution contains oddity '" << extra;

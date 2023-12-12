@@ -1,7 +1,5 @@
 #include "symlink.h"
 
-#include <libp2p/multi/content_identifier_codec.hpp>
-
 #include "log_macros.h"
 
 using Self = ipfs::ipld::Symlink;
@@ -61,8 +59,8 @@ auto Self::from_target(std::string const& target) -> Style {
   }
   auto root = t.pop();
   using namespace libp2p::multi;
-  auto cid = ContentIdentifierCodec::fromString(root);
-  if (!cid.has_value()) {
+  auto cid = Cid(root);
+  if (!cid.valid()) {
     if (ns == "ipns") {
       LOG(WARNING) << "Symlink to DNSLink is highly irregular.";
       return Style::Absolute;
@@ -72,7 +70,7 @@ auto Self::from_target(std::string const& target) -> Style {
       return Style::FromRoot;
     }
   }
-  if (cid.value().content_type == MulticodecType::Code::LIBP2P_KEY) {
+  if (cid.codec() == MultiCodec::LIBP2P_KEY) {
     return ns == "ipns" ? Style::Absolute : Style::FromRoot;
   } else {
     return ns == "ipfs" ? Style::Absolute : Style::FromRoot;

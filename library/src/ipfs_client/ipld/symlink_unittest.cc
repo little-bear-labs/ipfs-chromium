@@ -4,19 +4,16 @@
 
 #include <ipfs_client/dag_block.h>
 #include <ipfs_client/ipld/dag_node.h>
-#include <libp2p/multi/content_identifier_codec.hpp>
 
-using CidC = libp2p::multi::ContentIdentifierCodec;
 using namespace std::literals;
 namespace i = ipfs;
 namespace ii = i::ipld;
 
 TEST(SymlinkTest, fromBlock) {
-  auto cid = CidC ::fromString(
-      "bafybeia4wauf6z6lnnnszia6upqr5jsq7nack5nnrubf333lfg2vlabtd4");
-  EXPECT_TRUE(cid.has_value());
+  i::Cid cid("bafybeia4wauf6z6lnnnszia6upqr5jsq7nack5nnrubf333lfg2vlabtd4");
+  EXPECT_TRUE(cid.valid());
   // The target is the last byte, \x61 aka 'a'
-  i::Block b{cid.value(), "\x0a\x05\x08\x04\x12\x01\x61"};
+  i::Block b{cid, "\x0a\x05\x08\x04\x12\x01\x61"};
   EXPECT_TRUE(b.type() == i::Block::Type::Symlink);
   auto node = ii::DagNode::fromBlock(b);
   EXPECT_TRUE(node);

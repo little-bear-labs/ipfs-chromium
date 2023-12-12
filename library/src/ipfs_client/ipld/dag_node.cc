@@ -13,44 +13,40 @@
 #include <ipfs_client/context_api.h>
 #include <ipfs_client/dag_block.h>
 #include <ipfs_client/ipns_record.h>
-#include <libp2p/multi/content_identifier_codec.hpp>
 
 #include "log_macros.h"
+
+#include <sstream>
 
 using Node = ipfs::ipld::DagNode;
 
 std::shared_ptr<Node> Node::fromBytes(std::shared_ptr<ContextApi> const& api,
                                       Cid const& cid,
                                       std::string_view bytes) {
-  using Codec = libp2p::multi::MulticodecType::Code;
   std::shared_ptr<Node> result = nullptr;
 
-  switch (cid.content_type) {
-    case Codec::DAG_CBOR: {
+  switch (cid.codec()) {
+    case MultiCodec::DAG_CBOR: {
       auto p = reinterpret_cast<Byte const*>(bytes.data());
       auto cbor = api->ParseCbor({p, bytes.size()});
       if (cbor) {
         result = std::make_shared<DagCborNode>(std::move(cbor));
       } else {
-        LOG(ERROR)
-            << "CBOR node "
-            << libp2p::multi::ContentIdentifierCodec::toString(cid).value()
-            << " does not parse as CBOR.";
+        LOG(ERROR) << "CBOR node " << cid.to_string()
+                   << " does not parse as CBOR.";
       }
     } break;
-    case Codec::DAG_JSON: {
+    case MultiCodec::DAG_JSON: {
       auto json = api->ParseJson(bytes);
       if (json) {
         result = std::make_shared<DagJsonNode>(std::move(json));
       } else {
-        LOG(ERROR)
-            << "JSON node "
-            << libp2p::multi::ContentIdentifierCodec::toString(cid).value()
-            << " does not parse as JSON.";
+        LOG(ERROR) << "JSON node " << cid.to_string()
+                   << " does not parse as JSON.";
       }
     } break;
-    case Codec::RAW:
-    case Codec::DAG_PB: {
+    case MultiCodec::RAW:
+    case MultiCodec::DAG_PB: {
       ipfs::Block b{cid, bytes};
       if (b.valid()) {
         result = fromBlock(b);
@@ -62,13 +58,16 @@ std::shared_ptr<Node> Node::fromBytes(std::shared_ptr<ContextApi> const& api,
         }
         LOG(ERROR)
             << "Have a response that did not parse as a valid block, cid: "
-            << libp2p::multi::ContentIdentifierCodec::toString(cid).value()
-            << " contents: " << bytes.size() << " bytes = " << hex.str();
+            << cid.to_string() << " contents: " << bytes.size()
+            << " bytes = " << hex.str();
       }
     } break;
+    case MultiCodec::INVALID:
+    case MultiCodec::IDENTITY:
+    case MultiCodec::LIBP2P_KEY:
     default:
       LOG(ERROR) << "Response for unhandled CID Codec: "
-                 << libp2p::multi::MulticodecType::getName(cid.content_type);
+                 << GetName(cid.codec());
   }
   if (result) {
     result->set_api(api);
@@ -88,6 +87,7 @@ std::shared_ptr<Node> Node::fromBlock(ipfs::Block const& block) {
       result = std::make_shared<SmallDirectory>();
       break;
     case Block::Type::File:
+    case Block::Type::Raw:
       result = std::make_shared<UnixfsFile>();
       break;
     case Block::Type::HAMTShard:
@@ -97,6 +97,9 @@ std::shared_ptr<Node> Node::fromBlock(ipfs::Block const& block) {
         result = std::make_shared<DirShard>();
       }
       break;
+    case Block::Type::Metadata:
+      LOG(ERROR) << "Metadata blocks unhandled.";
+      return result;
     case Block::Type::Invalid:
       LOG(ERROR) << "Invalid block.";
       return result;

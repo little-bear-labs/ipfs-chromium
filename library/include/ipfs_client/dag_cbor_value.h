@@ -1,8 +1,10 @@
 #ifndef IPFS_DAG_CBOR_VALUE_H_
 #define IPFS_DAG_CBOR_VALUE_H_
 
-#include <libp2p/multi/content_identifier.hpp>
+#include <ipfs_client/cid.h>
 
+#include <functional>
+#include <memory>
 #include <optional>
 #include <string_view>
 #include <vector>
@@ -17,7 +19,6 @@ class DagCborValue {
   virtual std::optional<std::string> as_string() const = 0;
   virtual std::optional<std::vector<std::uint8_t>> as_bytes() const = 0;
   virtual std::optional<bool> as_bool() const = 0;
-  using Cid = libp2p::multi::ContentIdentifier;
   virtual std::optional<Cid> as_link() const = 0;
   virtual bool is_map() const = 0;
   virtual bool is_array() const = 0;

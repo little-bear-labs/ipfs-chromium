@@ -8,13 +8,10 @@
 #include <ipfs_client/ipns_record.h>
 #include <ipfs_client/orchestrator.h>
 
-#include <libp2p/multi/content_identifier_codec.hpp>
-
 #include "log_macros.h"
 
 using Self = ipfs::gw::GatewayHttpRequestor;
 using ReqTyp = ipfs::gw::Type;
-using CidCodec = libp2p::multi::ContentIdentifierCodec;
 
 std::string_view Self::name() const {
   return "simplistic HTTP requestor";
@@ -130,7 +127,7 @@ ipfs::ipld::NodePtr Self::node_from_type(std::optional<Cid> const& cid,
     case ReqTyp::Block: {
       if (cid.has_value()) {
         ipfs::Block blk{cid.value(), std::string{body}};
-        if (blk.cid_matches_data()) {
+        if (blk.cid_matches_data(*api_)) {
           return ipfs::ipld::DagNode::fromBlock(blk);
         }
       } else {

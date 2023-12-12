@@ -1,17 +1,19 @@
 #include <ipfs_client/ipns_record.h>
 
+#include <mock_api.h>
 #include <mock_cbor.h>
 
+#include <ipfs_client/cid.h>
 #include <ipfs_client/dag_json_value.h>
 #include <ipfs_client/logger.h>
-#include <libp2p/multi/content_identifier_codec.hpp>
-#include <libp2p/peer/peer_id.hpp>
 
 #include <list>
 
+namespace i = ipfs;
+
 namespace {
-struct Api final : public ipfs::ContextApi {
-  void SendHttpRequest(ipfs::HttpRequestDescription,
+struct Api final : public i::ContextApi {
+  void SendHttpRequest(i::HttpRequestDescription,
                        HttpCompleteCallback cb) const {
     throw 1;
   }
@@ -114,18 +116,8 @@ TEST(IpnsRecordTest, AKnownKuboRecord) {
       0x79, 0x70, 0x65, 0x00};
   ipfs::ByteView known_record{reinterpret_cast<ipfs::Byte const*>(xxd.data()),
                               xxd.size()};
-  auto c = libp2p::multi::ContentIdentifierCodec::fromString(
-      "bafzaajaiaejcaxykhmgsz2mhscluhm6bkliibattya2l2lld7scqr64c4ine2u7c");
-  EXPECT_TRUE(c.has_value());
-  auto& ci = c.value();
-  EXPECT_TRUE(ci.version == libp2p::multi::ContentIdentifier::Version::V1);
-  EXPECT_TRUE(ci.content_type ==
-              libp2p::multi::MulticodecType::Code::LIBP2P_KEY);
-  EXPECT_EQ(ci.content_address.getType(), libp2p::multi::HashType::identity);
-  auto hash = ci.content_address.getHash();
-  auto my_name_res = libp2p::peer::PeerId::fromHash(ci.content_address);
-  ASSERT_TRUE(my_name_res.has_value());
-  auto& my_name = my_name_res.value();
+  ipfs::Cid ci{
+      "bafzaajaiaejcaxykhmgsz2mhscluhm6bkliibattya2l2lld7scqr64c4ine2u7c"};
   auto cbor = std::make_unique<MockCbor>();
   cbor->set(
       "Value",
@@ -135,7 +127,7 @@ TEST(IpnsRecordTest, AKnownKuboRecord) {
   cbor->set("Sequence", 384UL);
   cbor->set("TTL", 60000000000UL);
   api.cbors.emplace_back(std::move(cbor));
-  auto result = ipfs::ValidateIpnsRecord(known_record, my_name, api);
+  auto result = ipfs::ValidateIpnsRecord(known_record, ci, api);
   std::string_view expected{
       "/ipfs/bafybeig57t2dp435aupttilimd6767kppfebaa3gnunmqden66dgkhugwi"};
   EXPECT_EQ(result.has_value(), true);
@@ -164,10 +156,12 @@ TEST(IpnsRecordTest, SerializeValidatedIpns) {
 }
 TEST(IpnsRecordTest, TooBig) {
   ipfs::Byte* p;
-  auto peer = libp2p::peer::PeerId::fromBase58(
-      "12D3KooWGDMwwqrpcYKpKCgxuKT2NfqPqa94QnkoBBpqvCaiCzWd");
+  ipfs::Cid cid(
+      "k51qzi5uqu5dm4tm0wt8srkg9h9suud4wuiwjimndrkydqm81cqtlb5ak6p7ku"sv);
+  EXPECT_TRUE(cid.hash_type() == i::HashType::IDENTITY);
+  EXPECT_TRUE(cid.valid());
   Api api;
-  auto actual = ipfs::ValidateIpnsRecord({p, 12345}, peer.value(), api);
+  auto actual = ipfs::ValidateIpnsRecord({p, 12345}, cid, api);
   EXPECT_FALSE(actual.has_value());
 }
 TEST(IpnsRecordTest, copyctorcopiesfields) {
@@ -224,10 +218,9 @@ TEST(IpnsRecordTest, V2_Only_Lean) {
       0x69, 0x74, 0x79, 0x54, 0x79, 0x70, 0x65, 0x00};
   auto* p = reinterpret_cast<std::byte const*>(from_spec.data());
   ipfs::ByteView as_seen_in_spec{p, from_spec.size()};
-  // k51qzi5uqu5dm4tm0wt8srkg9h9suud4wuiwjimndrkydqm81cqtlb5ak6p7ku
-  auto peer = libp2p::peer::PeerId::fromBase58(
-      "12D3KooWRtQ4MBxXXzioRZHs7NeGuyNHzJiN8X15wxydH4cnGDYZ");
-  ASSERT_TRUE(peer.has_value());
+  ipfs::Cid cid(
+      "k51qzi5uqu5dm4tm0wt8srkg9h9suud4wuiwjimndrkydqm81cqtlb5ak6p7ku"sv);
+  EXPECT_TRUE(cid.valid());
   Api api{[](ipfs::ByteView c) {
     auto v = j::from_cbor(c);
     //        std::cout << std::setw(2) << v << std::endl;
@@ -240,7 +233,8 @@ TEST(IpnsRecordTest, V2_Only_Lean) {
   auto cbor = std::make_unique<MockCbor>();
 
   api.cbors.push_back(std::move(cbor));
-  auto actual = ipfs::ValidateIpnsRecord(as_seen_in_spec, peer.value(), api);
+  MockApi api2;
+  auto actual = ipfs::ValidateIpnsRecord(as_seen_in_spec, cid, api2);
   EXPECT_TRUE(actual);
 }
 TEST(IpnsRecordTest, has_pubkey_field) {
@@ -338,9 +332,11 @@ TEST(IpnsRecordTest, has_pubkey_field) {
   };
   auto* p = reinterpret_cast<std::byte const*>(dump_from_cli.data());
   ipfs::ByteView as_seen_in_spec{p, dump_from_cli.size()};
-  auto c = libp2p::multi::ContentIdentifierCodec::fromString(
-      "k2k4r8p8axjle4tulaj8f6423nuwnyjswl3iq7ppmqci5efgn7vg6ah4");
-  ASSERT_TRUE(c.has_value());
+  auto c =
+      ipfs::Cid{"k2k4r8p8axjle4tulaj8f6423nuwnyjswl3iq7ppmqci5efgn7vg6ah4"};
+  EXPECT_EQ(c.codec(), ipfs::MultiCodec::LIBP2P_KEY);
+  EXPECT_EQ(c.hash_type(), ipfs::HashType::SHA2_256);
+  EXPECT_TRUE(c.valid());
   Api api{[](ipfs::ByteView c) {
     auto v = j::from_cbor(c);
     //        std::cout << std::setw(2) << v << std::endl;
@@ -361,7 +357,7 @@ TEST(IpnsRecordTest, has_pubkey_field) {
   cbor.set("Sequence", 0UL);
   cbor.set("ValidityType", 0UL);
   api.cbors.push_back(std::make_unique<MockCbor>(cbor));
-  auto actual = ipfs::ValidateIpnsRecord(as_seen_in_spec, c.value(), api);
+  auto actual = ipfs::ValidateIpnsRecord(as_seen_in_spec, c, api);
   EXPECT_TRUE(actual);
 }
 #endif
