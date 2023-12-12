@@ -15,7 +15,7 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
   } else if (r->parallel) {
     return HandleOutcome::PENDING;
   } else {
-    VLOG(1) << "Out of options, giving up on gateway request "
+    VLOG(2) << "Out of options, giving up on gateway request "
             << r->debug_string();
     definitive_failure(r);
     return HandleOutcome::DONE;

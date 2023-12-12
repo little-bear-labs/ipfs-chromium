@@ -1,19 +1,19 @@
 #include "dag_json_node.h"
 
 #include <vocab/html_escape.h>
-#include <libp2p/multi/content_identifier_codec.hpp>
+
+#include <sstream>
 
 using Self = ipfs::ipld::DagJsonNode;
-using CidCodec = libp2p::multi::ContentIdentifierCodec;
 
 Self::DagJsonNode(std::unique_ptr<DagJsonValue> j) : data_(std::move(j)) {
   auto cid = data_->get_if_link();
   if (!cid) {
     return;
   }
-  auto cid_str = CidCodec::toString(cid.value());
-  if (cid_str.has_value()) {
-    links_.emplace_back("", Link(cid_str.value()));
+  auto cid_str = cid->to_string();
+  if (cid_str.size()) {
+    links_.emplace_back("", Link(cid_str));
   }
 }
 Self::~DagJsonNode() noexcept {}
@@ -63,13 +63,8 @@ auto Self::is_link() -> Link* {
 namespace {
 void write_body(std::ostream& str, ipfs::DagJsonValue const& val) {
   if (auto link = val.get_if_link()) {
-    auto cid_str = CidCodec::toString(link.value());
-    if (cid_str.has_value()) {
-      str << "<a href='ipfs://" << cid_str.value() << "'>" << cid_str.value()
-          << "</a>\n";
-    } else {
-      str << "<strong><em>Broken link</em></strong>\n";
-    }
+    auto cid_str = link.value().to_string();
+    str << "<a href='ipfs://" << cid_str << "'>" << cid_str << "</a>\n";
   } else if (auto keys = val.object_keys()) {
     str << "{<table>\n";
     for (auto& key : keys.value()) {

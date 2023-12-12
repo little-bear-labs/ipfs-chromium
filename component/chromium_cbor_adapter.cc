@@ -1,11 +1,8 @@
 #include "chromium_cbor_adapter.h"
 
-#include <libp2p/multi/content_identifier_codec.hpp>
-
 #include <base/logging.h>
 
 using Self = ipfs::ChromiumCborAdapter;
-using CidCodec = libp2p::multi::ContentIdentifierCodec;
 
 bool Self::is_map() const {
   return cbor_.is_map();
@@ -59,9 +56,9 @@ auto Self::as_link() const -> std::optional<Cid> {
   }
   auto& bytes = cbor_.GetBytestring();
   auto* byte_ptr = reinterpret_cast<Byte const*>(bytes.data()) + 1;
-  auto result = CidCodec::decode({byte_ptr, bytes.size() - 1UL});
-  if (result.has_value()) {
-    return result.value();
+  auto result = Cid(ByteView{byte_ptr, bytes.size() - 1UL});
+  if (result.valid()) {
+    return result;
   } else {
     LOG(ERROR) << "Unable to decode bytes from DAG-CBOR Link as CID.";
     return std::nullopt;

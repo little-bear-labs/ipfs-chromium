@@ -1,15 +1,12 @@
 #include "dag_cbor_node.h"
 
-#include <libp2p/multi/content_identifier_codec.hpp>
-
 #include "log_macros.h"
 
 using Self = ipfs::ipld::DagCborNode;
-using CidCodec = libp2p::multi::ContentIdentifierCodec;
 
 auto Self::resolve(SlashDelimited path, BlockLookup blu, std::string& to_here) -> ResolveResult {
   if (auto cid = doc_->as_link()) {
-    auto cid_str = CidCodec::toString(*cid).value();
+    auto cid_str = cid.value().to_string();
     LOG(INFO) << to_here << " I am a DAG-CBOR link to " << cid_str;
     if (links_.empty()) {
       Link l{cid_str, blu(cid_str)};

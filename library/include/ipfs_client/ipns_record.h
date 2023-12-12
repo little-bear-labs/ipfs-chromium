@@ -23,18 +23,14 @@ struct ContentIdentifier;
 
 namespace ipfs {
 
+class Cid;
 class ContextApi;
 
 constexpr static std::size_t MAX_IPNS_PB_SERIALIZED_SIZE = 10 * 1024;
 
-std::optional<IpnsCborEntry> ValidateIpnsRecord(
-    ByteView top_level_bytes,
-    libp2p::multi::ContentIdentifier const& name,
-    ContextApi&);
-std::optional<IpnsCborEntry> ValidateIpnsRecord(
-    ByteView top_level_bytes,
-    libp2p::peer::PeerId const& name,
-    ContextApi&);
+std::optional<IpnsCborEntry> ValidateIpnsRecord(ByteView top_level_bytes,
+                                                Cid const& name,
+                                                ContextApi&);
 
 /*!
  * \brief Data from IPNS record modulo the verification parts

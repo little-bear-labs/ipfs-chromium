@@ -12,20 +12,20 @@
 
 #include "log_macros.h"
 
-#include <libp2p/multi/content_identifier_codec.hpp>
+#include <array>
+#include <sstream>
 
 using namespace std::literals;
 
 using Self = ipfs::gw::GatewayRequest;
-using CidCodec = libp2p::multi::ContentIdentifierCodec;
 
 std::shared_ptr<Self> Self::fromIpfsPath(ipfs::SlashDelimited p) {
   auto name_space = p.pop();
   auto r = std::make_shared<Self>();
   r->main_param = p.pop();
-  auto maybe_cid = CidCodec::fromString(r->main_param);
-  if (maybe_cid.has_value()) {
-    r->cid = maybe_cid.value();
+  Cid cid(r->main_param);
+  if (cid.valid()) {
+    r->cid = std::move(cid);
   } else {
     r->cid = std::nullopt;
   }
@@ -35,8 +35,7 @@ std::shared_ptr<Self> Self::fromIpfsPath(ipfs::SlashDelimited p) {
                  << r->main_param;
       return {};
     }
-    if (r->cid.value().content_address.getType() ==
-        libp2p::multi::HashType::identity) {
+    if (r->cid.value().hash_type() == HashType::IDENTITY) {
       r->type = Type::Identity;
     } else {
       r->path = p.pop_all();
@@ -44,7 +43,7 @@ std::shared_ptr<Self> Self::fromIpfsPath(ipfs::SlashDelimited p) {
     }
   } else if (name_space == "ipns") {
     r->path = p.pop_all();
-    if (CidCodec::fromString(r->main_param).has_value()) {
+    if (Cid(r->main_param).valid()) {
       r->type = Type::Ipns;
     } else {
       r->type = Type::DnsLink;
@@ -128,7 +127,7 @@ auto Self::identity_data() const -> std::string_view {
   if (type != Type::Identity) {
     return "";
   }
-  auto hash = cid.value().content_address.getHash();
+  auto hash = cid.value().hash();
   auto d = reinterpret_cast<char const*>(hash.data());
   return std::string_view{d, hash.size()};
 }
@@ -250,8 +249,14 @@ bool Self::RespondSuccessfully(std::string_view bytes,
         LOG(FATAL) << "I have no orchestrator!!";
       }
       break;
+    case Type::Zombie:
+      LOG(ERROR) << "Responding to a zombie is ill-advised.";
+      break;
     case Type::Car:
       LOG(WARNING) << "TODO - handle responses to CAR requests.";
+      break;
+    case Type::Providers:
+      LOG(WARNING) << "TODO - handle responses to providers requests.";
       break;
     default:
       LOG(ERROR) << "TODO " << static_cast<int>(type);

@@ -6,6 +6,10 @@
 #include <ipfs_client/context_api.h>
 #include <ipfs_client/json_cbor_adapter.h>
 
+namespace ipfs::gw {
+class GatewayRequest;
+};
+
 namespace i = ipfs;
 namespace ig = i::gw;
 

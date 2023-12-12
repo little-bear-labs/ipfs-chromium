@@ -1,16 +1,14 @@
 #include <ipfs_client/dag_block.h>
 
-#include <gtest/gtest.h>
+#include <mock_api.h>
 
 #include <vocab/stringify.h>
-#include <libp2p/multi/content_identifier_codec.hpp>
 #include "log_macros.h"
 
 #include <filesystem>
 #include <fstream>
 
-using Cid = libp2p::multi::ContentIdentifier;
-using Codec = libp2p::multi::ContentIdentifierCodec;
+using Cid = ipfs::Cid;
 
 TEST(BlockTest, RealBlockValidates) {
   // The actual content in this block is the "a\n" in the middle
@@ -22,13 +20,13 @@ TEST(BlockTest, RealBlockValidates) {
       10UL);
   EXPECT_EQ(block_bytes.size(), 10UL);
   EXPECT_EQ(block_bytes.at(6), 'a');
-  auto cid = Codec::fromString(
-                 "bafybeigj4sef5qdwdxisatzjdoetjcfdyfqvzuhmstrj5o2ibkbix6vs5i")
-                 .value();
+  auto cid = Cid{"bafybeigj4sef5qdwdxisatzjdoetjcfdyfqvzuhmstrj5o2ibkbix6vs5i"};
+  EXPECT_TRUE(cid.valid());
   ipfs::Block block{cid, block_bytes};
   EXPECT_TRUE(block.valid());
   EXPECT_TRUE(block.is_file());
-  EXPECT_TRUE(block.cid_matches_data());
+  MockApi api;
+  EXPECT_TRUE(block.cid_matches_data(api));
 }
 TEST(BlockTest, IdentityBlockValidates) {
   std::string block_bytes(
@@ -38,27 +36,29 @@ TEST(BlockTest, IdentityBlockValidates) {
       10UL);
   EXPECT_EQ(block_bytes.size(), 10UL);
   EXPECT_EQ(block_bytes.at(6), 'a');
-  auto cid = Codec::fromString("bafkqac2jobzxk3janrxxezln").value();
+  auto cid = Cid{"bafkqac2jobzxk3janrxxezln"};
   ipfs::Block block{cid, block_bytes};
   EXPECT_TRUE(block.valid());
   EXPECT_TRUE(block.is_file());
-
+  MockApi api;
   // TODO: if this fails, awesome. Change the block_bytes to "Ipsum lorem"
-  EXPECT_TRUE(block.cid_matches_data());
+  EXPECT_TRUE(block.cid_matches_data(api));
 }
 TEST(BlockTest, DirectoryCopiedIsStillDirectory) {
   std::string block_bytes("\x0a\x02\x08\x01");
   EXPECT_EQ(block_bytes.size(), 4U);
-  auto cid = Codec::fromString("bafyaabakaieac").value();
+  auto cid = Cid{"bafyaabakaieac"};
+  EXPECT_TRUE(cid.valid());
   ipfs::Block block{cid, block_bytes};
   EXPECT_TRUE(block.valid());
   EXPECT_FALSE(block.is_file());
-  EXPECT_TRUE(block.cid_matches_data());
+  MockApi api;
+  EXPECT_TRUE(block.cid_matches_data(api));
   EXPECT_EQ(ipfs::Stringify(block.type()), "Directory");
   auto copy = block;
   EXPECT_TRUE(copy.valid());
   EXPECT_FALSE(copy.is_file());
-  EXPECT_TRUE(copy.cid_matches_data());
+  EXPECT_TRUE(copy.cid_matches_data(api));
   EXPECT_EQ(ipfs::Stringify(copy.type()), "Directory");
 }
 
@@ -67,12 +67,14 @@ TEST(BlockTest, AdHoc) {
   std::for_each(directory_iterator("."), directory_iterator(), [](auto e) {
     if (is_regular_file(e) && e.path().extension() == ".block") {
       LOG(INFO) << e.path();
-      auto cid = Codec::fromString(e.path().stem().string()).value();
+      auto cid = Cid(e.path().stem().string());
+      EXPECT_TRUE(cid.valid());
       std::ifstream f{e.path()};
       std::stringstream buffer;
       buffer << f.rdbuf();
       ipfs::Block block{cid, buffer.str()};
-      EXPECT_TRUE(block.cid_matches_data()) << e.path();
+      MockApi api;
+      EXPECT_TRUE(block.cid_matches_data(api)) << e.path();
       L_VAR(static_cast<long>(block.type()));
       block.List([](auto& name, auto cid) {
         L_VAR(name);

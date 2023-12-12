@@ -31,7 +31,7 @@ UVarint::UVarint(ipfs::ByteView varint_bytes, size_t varint_size)
 
 std::optional<UVarint> UVarint::create(ipfs::ByteView varint_bytes) {
   size_t size = calculateSize(varint_bytes);
-  if (size > 0) {
+  if (size > 0 && size <= varint_bytes.size()) {
     return UVarint{varint_bytes, size};
   }
   return {};

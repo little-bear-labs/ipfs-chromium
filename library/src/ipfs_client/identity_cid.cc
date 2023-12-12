@@ -11,13 +11,12 @@ auto Self::forText(std::string_view txt) -> Cid {
   txt = txt.substr(0UL, m::Multihash::kMaxHashLength);
   auto p = reinterpret_cast<Byte const*>(txt.data());
   auto b = ByteView{p, txt.size()};
-  auto mh = m::Multihash::create(m::HashType::identity, b);
-  if (mh.has_value()) {
-    return Cid{Cid::Version::V1, m::MulticodecType::Code::RAW, mh.value()};
+  MultiHash mh(HashType::IDENTITY, b);
+  if (mh.valid()) {
+    return Cid{MultiCodec::RAW, mh};
   } else {
     LOG(FATAL)
-        << "We really shouldn't be able to fail to 'hash' using identity "
-        << static_cast<int>(mh.error());
+        << "We really shouldn't be able to fail to 'hash' using identity.";
     return forText("Unreachable");
   }
 }

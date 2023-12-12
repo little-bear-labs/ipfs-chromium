@@ -3,7 +3,6 @@
 
 #include <ipfs_client/dag_cbor_value.h>
 #include <ipfs_client/dag_json_value.h>
-#include <libp2p/multi/content_identifier_codec.hpp>
 
 #include <iomanip>
 #include <sstream>
@@ -16,11 +15,10 @@
 namespace ipfs {
 // LCOV_EXCL_START
 class JsonCborAdapter final : public DagCborValue, public DagJsonValue {
-  using CidCodec = libp2p::multi::ContentIdentifierCodec;
   nlohmann::json data_;
 
  public:
-  using Cid = DagCborValue::Cid;
+  using Cid = ipfs::Cid;
   JsonCborAdapter(nlohmann::json data) : data_{data} {
     if (data_.is_array() && data_.size() == 1UL) {
       data_ = data_[0];
@@ -96,9 +94,9 @@ class JsonCborAdapter final : public DagCborValue, public DagJsonValue {
       return std::nullopt;
     }
     auto p = reinterpret_cast<std::byte const*>(bin.data()) + 1UL;
-    auto result = CidCodec::decode({p, bin.size()-1UL});
-    if (result.has_value()) {
-      return result.value();
+    Cid from_binary(ByteView{p, bin.size() - 1UL});
+    if (from_binary.valid()) {
+      return from_binary;
     } else {
       return std::nullopt;
     }

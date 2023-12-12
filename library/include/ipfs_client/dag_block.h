@@ -9,8 +9,8 @@
 #include "ipfs_client/unix_fs.pb.h"
 #endif
 
-#include <libp2p/multi/content_identifier.hpp>
-#include <libp2p/multi/hash_type.hpp>
+#include "cid.h"
+
 #include <libp2p/multi/multicodec_type.hpp>
 
 #include <vocab/byte_view.h>
@@ -20,7 +20,7 @@
 
 namespace ipfs {
 
-using Cid = libp2p::multi::ContentIdentifier;
+class ContextApi;
 
 /*!
  * \brief Something to which a CID may refer directly.
@@ -87,9 +87,11 @@ class Block {
 
   Cid const& cid() const;  ///< Getter for Content IDentifier
 
-  bool cid_matches_data() const;  ///< Basic validation
+  bool cid_matches_data(ContextApi&) const;  ///< Basic validation
 
-  std::vector<Byte> binary_hash(libp2p::multi::HashType) const;
+  /// Pass INVALID to mean cid().hash_type()
+  std::vector<Byte> binary_hash(ContextApi&,
+                                HashType = HashType::INVALID) const;
 
   /*!
    * \brief Iterate through the links of this UnixFS node

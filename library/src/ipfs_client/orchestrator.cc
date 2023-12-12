@@ -91,10 +91,14 @@ bool Self::gw_request(std::shared_ptr<IpfsRequest> ir,
                       std::string const& aff) {
   LOG(INFO) << "Seeking " << path.to_string();
   auto req = gw::GatewayRequest::fromIpfsPath(path);
-  req->dependent = ir;
-  req->orchestrator(shared_from_this());
-  req->affinity = aff;
-  requestor_->request(req);
+  if (req) {
+    req->dependent = ir;
+    req->orchestrator(shared_from_this());
+    req->affinity = aff;
+    requestor_->request(req);
+  } else {
+    LOG(ERROR) << "Failed to create a request for " << path.to_string();
+  }
   return false;
 }
 

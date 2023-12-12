@@ -1,0 +1,44 @@
+diff --git a/components/cbor/reader.cc b/components/cbor/reader.cc
+index 306ba52fa4944..6b13b3a679a65 100644
+--- a/components/cbor/reader.cc
++++ b/components/cbor/reader.cc
+@@ -22,7 +22,7 @@
+ namespace cbor {
+ 
+ namespace constants {
+-const char kUnsupportedMajorType[] = "Unsupported major type.";
++const char kUnsupportedMajorType[] = "Unsupported major type operation.";
+ }
+ 
+ namespace {
+@@ -156,7 +156,11 @@ absl::optional<Value> Reader::DecodeCompleteDataItem(const Config& config,
+     case Value::Type::FLOAT_VALUE:
+       // Floating point values also go here since they are also type 7.
+       return DecodeToSimpleValueOrFloat(*header, config);
+-    case Value::Type::TAG:  // We explicitly don't support TAG.
++    case Value::Type::TAG:
++      if (config.parse_tags) {
++        return ReadTagContent(*header, config, max_nesting_level);
++      }
++      break;
+     case Value::Type::NONE:
+     case Value::Type::INVALID_UTF8:
+       break;
+@@ -347,6 +351,17 @@ absl::optional<Value> Reader::ReadByteStringContent(
+   return Value(std::move(cbor_byte_string));
+ }
+ 
++absl::optional<Value> Reader::ReadTagContent(
++    const Reader::DataItemHeader& header,
++    const Config& config,
++    int max_nesting_level) {
++  auto tagged_content = DecodeCompleteDataItem(config, max_nesting_level);
++  if (tagged_content.has_value()) {
++    tagged_content.value().SetTag(header.value);
++  }
++  return tagged_content;
++}
++
+ absl::optional<Value> Reader::ReadArrayContent(
+     const Reader::DataItemHeader& header,
+     const Config& config,

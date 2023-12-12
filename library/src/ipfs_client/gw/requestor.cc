@@ -8,13 +8,10 @@
 #include <ipfs_client/orchestrator.h>
 #include <ipfs_client/response.h>
 
-#include <libp2p/multi/content_identifier_codec.hpp>
-
 #include "log_macros.h"
 
 using Self = ipfs::gw::Requestor;
 using ReqPtr = std::shared_ptr<ipfs::gw::GatewayRequest>;
-using CidCodec = libp2p::multi::ContentIdentifierCodec;
 
 Self& Self::or_else(std::shared_ptr<Self> p) {
   if (next_) {
@@ -84,11 +81,11 @@ void Self::iterate_nodes(
   if (res.body_.empty()) {
     return;
   }
-  auto cid = CidCodec::fromString(req.main_param);
-  if (!cid.has_value()) {
+  Cid cid(req.main_param);
+  if (!cid.valid()) {
     return;
   }
-  Block b{cid.value(), res.body_};
+  Block b{std::move(cid), res.body_};
   if (!b.valid()) {
     return;
   }

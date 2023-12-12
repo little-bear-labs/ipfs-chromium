@@ -1,0 +1,18 @@
+diff --git a/net/dns/dns_config_service_linux.cc b/net/dns/dns_config_service_linux.cc
+index 5273da5190277..12b28b86a4c00 100644
+--- a/net/dns/dns_config_service_linux.cc
++++ b/net/dns/dns_config_service_linux.cc
+@@ -272,11 +272,11 @@ bool IsNsswitchConfigCompatible(
+         // Ignore any entries after `kDns` because Chrome will fallback to the
+         // system resolver if a result was not found in DNS.
+         return true;
+-
++      case NsswitchReader::Service::kResolve:
++        break;
+       case NsswitchReader::Service::kMdns:
+       case NsswitchReader::Service::kMdns4:
+       case NsswitchReader::Service::kMdns6:
+-      case NsswitchReader::Service::kResolve:
+       case NsswitchReader::Service::kNis:
+         RecordIncompatibleNsswitchReason(
+             IncompatibleNsswitchReason::kIncompatibleService,

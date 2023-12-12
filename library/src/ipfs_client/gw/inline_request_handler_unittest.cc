@@ -5,15 +5,13 @@
 #include <ipfs_client/gw/gateway_request.h>
 #include <ipfs_client/gw/terminating_requestor.h>
 #include <ipfs_client/orchestrator.h>
-#include <libp2p/multi/content_identifier.hpp>
 
 namespace i = ipfs;
 namespace ig = i::gw;
 namespace pm = libp2p::multi;
 using namespace std::literals;
 using T = ig::InlineRequestHandler;
-using Cid = pm::ContentIdentifier;
-using Hash = pm::Multihash;
+using ipfs::Cid;
 
 TEST(InlineRequestHanlder, bluesky) {
   T t;
@@ -23,9 +21,8 @@ TEST(InlineRequestHanlder, bluesky) {
   auto r = std::make_shared<ig::GatewayRequest>();
   r->type = ig::Type::Identity;
   r->orchestrator(orc);
-  auto h =
-      Hash::create(pm::HashType::identity, ipfs::as_bytes("abc"sv)).value();
-  r->cid = Cid(Cid::Version::V1, pm::MulticodecType::Code::RAW, h);
+  i::MultiHash h(i::HashType::IDENTITY, i::as_bytes("abc"sv));
+  r->cid = Cid(i::MultiCodec::RAW, h);
   auto res = t.handle(r);
   EXPECT_EQ(static_cast<char>(res), 'D');
 }
