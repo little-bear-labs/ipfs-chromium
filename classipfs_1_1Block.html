@@ -100,10 +100,10 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aaae97cdd642eea9386b680e9442f25ca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#aaae97cdd642eea9386b680e9442f25ca">Block</a> (Cid const &amp;<a class="el" href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">cid</a>, std::istream &amp;stream)</td></tr>
+<tr class="memitem:aaae97cdd642eea9386b680e9442f25ca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#aaae97cdd642eea9386b680e9442f25ca">Block</a> (<a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;<a class="el" href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">cid</a>, std::istream &amp;stream)</td></tr>
 <tr class="memdesc:aaae97cdd642eea9386b680e9442f25ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize from stream.  <a href="classipfs_1_1Block.html#aaae97cdd642eea9386b680e9442f25ca">More...</a><br /></td></tr>
 <tr class="separator:aaae97cdd642eea9386b680e9442f25ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a611509857b5b9cc9fdd0c5cbf97ae24d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#a611509857b5b9cc9fdd0c5cbf97ae24d">Block</a> (Cid const &amp;<a class="el" href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">cid</a>, std::string_view bytes)</td></tr>
+<tr class="memitem:a611509857b5b9cc9fdd0c5cbf97ae24d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#a611509857b5b9cc9fdd0c5cbf97ae24d">Block</a> (<a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;<a class="el" href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">cid</a>, std::string_view bytes)</td></tr>
 <tr class="memdesc:a611509857b5b9cc9fdd0c5cbf97ae24d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize from block of bytes.  <a href="classipfs_1_1Block.html#a611509857b5b9cc9fdd0c5cbf97ae24d">More...</a><br /></td></tr>
 <tr class="separator:a611509857b5b9cc9fdd0c5cbf97ae24d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4113feb7450a9f1a8f4026af84b8af0e"><td class="memItemLeft" align="right" valign="top"><a id="a4113feb7450a9f1a8f4026af84b8af0e"></a>
@@ -140,16 +140,17 @@ std::string const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a c
 <tr class="memdesc:ac17705547b9ba01e1b24ff4a2e8c6ac3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Accessor for all UnixFS data as a protobuf object.  <a href="classipfs_1_1Block.html#ac17705547b9ba01e1b24ff4a2e8c6ac3">More...</a><br /></td></tr>
 <tr class="separator:ac17705547b9ba01e1b24ff4a2e8c6ac3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a47f697035e81089ff38d44324bce6aba"><td class="memItemLeft" align="right" valign="top"><a id="a47f697035e81089ff38d44324bce6aba"></a>
-Cid const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">cid</a> () const</td></tr>
+<a class="el" href="classipfs_1_1Cid.html">Cid</a> const  &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba">cid</a> () const</td></tr>
 <tr class="memdesc:a47f697035e81089ff38d44324bce6aba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Getter for Content IDentifier. <br /></td></tr>
 <tr class="separator:a47f697035e81089ff38d44324bce6aba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abf18bac471e5245dd782ad9388c9c0a2"><td class="memItemLeft" align="right" valign="top"><a id="abf18bac471e5245dd782ad9388c9c0a2"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#abf18bac471e5245dd782ad9388c9c0a2">cid_matches_data</a> () const</td></tr>
-<tr class="memdesc:abf18bac471e5245dd782ad9388c9c0a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Basic validation. <br /></td></tr>
-<tr class="separator:abf18bac471e5245dd782ad9388c9c0a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a834d2a7ae0bf44dd2cad96efd6e057e0"><td class="memItemLeft" align="right" valign="top"><a id="a834d2a7ae0bf44dd2cad96efd6e057e0"></a>
-std::vector&lt; Byte &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>binary_hash</b> (libp2p::multi::HashType) const</td></tr>
-<tr class="separator:a834d2a7ae0bf44dd2cad96efd6e057e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedc80be918995d8d72ac928346e47a3e"><td class="memItemLeft" align="right" valign="top"><a id="aedc80be918995d8d72ac928346e47a3e"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#aedc80be918995d8d72ac928346e47a3e">cid_matches_data</a> (<a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &amp;) const</td></tr>
+<tr class="memdesc:aedc80be918995d8d72ac928346e47a3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Basic validation. <br /></td></tr>
+<tr class="separator:aedc80be918995d8d72ac928346e47a3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeebea6eec1d41eb08a324fbb115d13d7"><td class="memItemLeft" align="right" valign="top"><a id="aeebea6eec1d41eb08a324fbb115d13d7"></a>
+std::vector&lt; Byte &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#aeebea6eec1d41eb08a324fbb115d13d7">binary_hash</a> (<a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &amp;, HashType=HashType::INVALID) const</td></tr>
+<tr class="memdesc:aeebea6eec1d41eb08a324fbb115d13d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pass INVALID to mean <a class="el" href="classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba" title="Getter for Content IDentifier.">cid()</a>.hash_type() <br /></td></tr>
+<tr class="separator:aeebea6eec1d41eb08a324fbb115d13d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8344f0e15846950ccb8804086c7fd4db"><td class="memTemplParams" colspan="2">template&lt;class Functor &gt; </td></tr>
 <tr class="memitem:a8344f0e15846950ccb8804086c7fd4db"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="classipfs_1_1Block.html#a8344f0e15846950ccb8804086c7fd4db">List</a> (Functor foo) const</td></tr>
 <tr class="memdesc:a8344f0e15846950ccb8804086c7fd4db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Iterate through the links of this UnixFS node.  <a href="classipfs_1_1Block.html#a8344f0e15846950ccb8804086c7fd4db">More...</a><br /></td></tr>
@@ -168,7 +169,7 @@ std::vector&lt; Byte &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>
         <tr>
           <td class="memname">ipfs::Block::Block </td>
           <td>(</td>
-          <td class="paramtype">Cid const &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;&#160;</td>
           <td class="paramname"><em>cid</em>, </td>
         </tr>
         <tr>
@@ -205,7 +206,7 @@ std::vector&lt; Byte &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>
         <tr>
           <td class="memname">ipfs::Block::Block </td>
           <td>(</td>
-          <td class="paramtype">Cid const &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;&#160;</td>
           <td class="paramname"><em>cid</em>, </td>
         </tr>
         <tr>

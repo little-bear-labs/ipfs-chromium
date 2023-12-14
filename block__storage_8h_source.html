@@ -98,7 +98,7 @@ $(function() {
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  ~<a class="code" href="classipfs_1_1BlockStorage.html">BlockStorage</a>() noexcept;</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
 <div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5">   43</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5">Store</a>(std::string cid_str,</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;             Cid <span class="keyword">const</span>&amp; cid,</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;             <a class="code" href="classipfs_1_1Cid.html">Cid</a> <span class="keyword">const</span>&amp; cid,</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;             std::string headers,</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;             std::string <span class="keyword">const</span>&amp; body,</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;             <a class="code" href="classipfs_1_1Block.html">Block</a>&amp;&amp; block);</div>
@@ -106,10 +106,10 @@ $(function() {
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5">Store</a>(std::string headers, std::string <span class="keyword">const</span>&amp; body, <a class="code" href="classipfs_1_1Block.html">Block</a>&amp;&amp; block);</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5">Store</a>(std::string <span class="keyword">const</span>&amp; cid, std::string headers, std::string body);</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5">Store</a>(std::string cid_str,</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;             Cid <span class="keyword">const</span>&amp; cid,</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;             <a class="code" href="classipfs_1_1Cid.html">Cid</a> <span class="keyword">const</span>&amp; cid,</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;             std::string headers,</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;             std::string body);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5">Store</a>(Cid <span class="keyword">const</span>&amp; cid,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5">Store</a>(<a class="code" href="classipfs_1_1Cid.html">Cid</a> <span class="keyword">const</span>&amp; cid,</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;             std::string headers,</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;             std::string <span class="keyword">const</span>&amp; body,</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;             <a class="code" href="classipfs_1_1Block.html">Block</a>&amp;&amp;);</div>
@@ -163,6 +163,7 @@ $(function() {
 <div class="ttc" id="aclassipfs_1_1BlockStorage_html_ae4a4b1798f6c0c15a5e081ab3520cad5"><div class="ttname"><a href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5">ipfs::BlockStorage::Store</a></div><div class="ttdeci">bool Store(std::string cid_str, Cid const &amp;cid, std::string headers, std::string const &amp;body, Block &amp;&amp;block)</div><div class="ttdoc">Store a Block for later access.</div></div>
 <div class="ttc" id="aclassipfs_1_1BlockStorage_html_aedca96e0978a421fc5d117d967eba22a"><div class="ttname"><a href="classipfs_1_1BlockStorage.html#aedca96e0978a421fc5d117d967eba22a">ipfs::BlockStorage::StopListening</a></div><div class="ttdeci">void StopListening(UnixFsPathResolver *)</div><div class="ttdoc">Indicate that a particular path resolver is no longer waiting.</div></div>
 <div class="ttc" id="aclassipfs_1_1Block_html"><div class="ttname"><a href="classipfs_1_1Block.html">ipfs::Block</a></div><div class="ttdoc">Something to which a CID may refer directly.</div><div class="ttdef"><b>Definition:</b> dag_block.h:32</div></div>
+<div class="ttc" id="aclassipfs_1_1Cid_html"><div class="ttname"><a href="classipfs_1_1Cid.html">ipfs::Cid</a></div><div class="ttdef"><b>Definition:</b> cid.h:13</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -1,9 +1,10 @@
 var searchData=
 [
-  ['cacherequestor_141',['CacheRequestor',['../classipfs_1_1CacheRequestor.html',1,'ipfs']]],
-  ['chromiumcboradapter_142',['ChromiumCborAdapter',['../classipfs_1_1ChromiumCborAdapter.html',1,'ipfs']]],
-  ['chromiumipfscontext_143',['ChromiumIpfsContext',['../classipfs_1_1ChromiumIpfsContext.html',1,'ipfs']]],
-  ['chromiumjsonadapter_144',['ChromiumJsonAdapter',['../classipfs_1_1ChromiumJsonAdapter.html',1,'ipfs']]],
-  ['chunk_145',['Chunk',['../classipfs_1_1ipld_1_1Chunk.html',1,'ipfs::ipld']]],
-  ['contextapi_146',['ContextApi',['../classipfs_1_1ContextApi.html',1,'ipfs']]]
+  ['basic_5falgorithm_161',['basic_algorithm',['../classmultibase_1_1basic__algorithm.html',1,'multibase']]],
+  ['block_162',['Block',['../classipfs_1_1Block.html',1,'ipfs']]],
+  ['block_5ftag_163',['block_tag',['../classmultibase_1_1algorithm_1_1block__tag.html',1,'multibase::algorithm']]],
+  ['blockhttprequest_164',['BlockHttpRequest',['../classipfs_1_1BlockHttpRequest.html',1,'ipfs']]],
+  ['blockrequestor_165',['BlockRequestor',['../classipfs_1_1BlockRequestor.html',1,'ipfs']]],
+  ['blockrequestsplitter_166',['BlockRequestSplitter',['../classipfs_1_1gw_1_1BlockRequestSplitter.html',1,'ipfs::gw']]],
+  ['blockstorage_167',['BlockStorage',['../classipfs_1_1BlockStorage.html',1,'ipfs']]]
 ];

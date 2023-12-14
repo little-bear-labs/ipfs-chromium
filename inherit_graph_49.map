@@ -1,3 +1,6 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$structTableStruct__ipfs__5fclient__2fpb__5fdag__2eproto.html" title=" " alt="" coords="5,5,187,47"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,78,117,105"/>
+<area shape="rect" id="node2" href="$structis__proto__enum_3_01_1_1ipfs_1_1ipns_1_1IpnsEntry__ValidityType_01_4.html" title=" " alt="" coords="165,5,392,47"/>
+<area shape="rect" id="node3" href="$structis__proto__enum_3_01_1_1ipfs_1_1ipns_1_1KeyType_01_4.html" title=" " alt="" coords="196,71,361,112"/>
+<area shape="rect" id="node4" href="$structis__proto__enum_3_01_1_1ipfs_1_1unix__fs_1_1Data__DataType_01_4.html" title=" " alt="" coords="179,136,378,177"/>
 </map>

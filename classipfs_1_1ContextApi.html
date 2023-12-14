@@ -68,6 +68,7 @@ $(function() {
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classipfs_1_1ContextApi-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">ipfs::ContextApi Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
@@ -93,8 +94,9 @@ Collaboration diagram for ipfs::ContextApi:</div>
 <div class="dyncontent">
 <div class="center"><img src="classipfs_1_1ContextApi__coll__graph.png" border="0" usemap="#aipfs_1_1ContextApi_coll__map" alt="Collaboration graph"/></div>
 <map name="aipfs_1_1ContextApi_coll__map" id="aipfs_1_1ContextApi_coll__map">
-<area shape="rect" title="Interface that provides functionality from whatever environment you&#39;re using this library in." alt="" coords="39,95,165,121"/>
-<area shape="rect" title=" " alt="" coords="5,5,199,47"/>
+<area shape="rect" title="Interface that provides functionality from whatever environment you&#39;re using this library in." alt="" coords="323,50,449,77"/>
+<area shape="rect" title=" " alt="" coords="12,5,205,47"/>
+<area shape="rect" title=" " alt="" coords="5,71,212,127"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -148,6 +150,15 @@ virtual std::unique_ptr&lt; <a class="el" href="classipfs_1_1DagJsonValue.html">
 <tr class="memitem:abb9f38dd8973e6ccdca0013a70c36a10"><td class="memItemLeft" align="right" valign="top"><a id="abb9f38dd8973e6ccdca0013a70c36a10"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>verify_key_signature</b> (SigningKeyType, ByteView signature, ByteView data, ByteView key_bytes) const =0</td></tr>
 <tr class="separator:abb9f38dd8973e6ccdca0013a70c36a10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9ab685e6fce38e98b6e54c0a42ef0575"><td class="memItemLeft" align="right" valign="top"><a id="a9ab685e6fce38e98b6e54c0a42ef0575"></a>
+std::optional&lt; std::vector&lt; Byte &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Hash</b> (HashType, ByteView data)</td></tr>
+<tr class="separator:a9ab685e6fce38e98b6e54c0a42ef0575"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a1b925840cffd15feaa1fbda066c1d7ba"><td class="memItemLeft" align="right" valign="top"><a id="a1b925840cffd15feaa1fbda066c1d7ba"></a>
+std::unordered_map&lt; HashType, std::unique_ptr&lt; <a class="el" href="classipfs_1_1crypto_1_1Hasher.html">crypto::Hasher</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>hashers_</b></td></tr>
+<tr class="separator:a1b925840cffd15feaa1fbda066c1d7ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface that provides functionality from whatever environment you're using this library in. </p>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['httprequestdescription_164',['HttpRequestDescription',['../structipfs_1_1HttpRequestDescription.html',1,'ipfs']]]
+  ['file_189',['File',['../classipfs_1_1redirects_1_1File.html',1,'ipfs::redirects']]]
 ];

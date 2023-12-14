@@ -85,9 +85,6 @@ Inheritance diagram for ipfs::DagCborValue:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ad4feb511cc7fe2df6601701a482e4e69"><td class="memItemLeft" align="right" valign="top"><a id="ad4feb511cc7fe2df6601701a482e4e69"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>Cid</b> = libp2p::multi::ContentIdentifier</td></tr>
-<tr class="separator:ad4feb511cc7fe2df6601701a482e4e69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a986e1b40dd52717a2f538a2018d5d584"><td class="memItemLeft" align="right" valign="top"><a id="a986e1b40dd52717a2f538a2018d5d584"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>MapElementCallback</b> = std::function&lt; void(std::string_view, <a class="el" href="classipfs_1_1DagCborValue.html">DagCborValue</a> const  &amp;)&gt;</td></tr>
 <tr class="separator:a986e1b40dd52717a2f538a2018d5d584"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -119,7 +116,7 @@ virtual std::optional&lt; std::vector&lt; std::uint8_t &gt; &gt;&#160;</td><td c
 virtual std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>as_bool</b> () const =0</td></tr>
 <tr class="separator:a576f00be1937e6f3785b99f7dc11e0d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab43217b7991488153c082a044b95c1f5"><td class="memItemLeft" align="right" valign="top"><a id="ab43217b7991488153c082a044b95c1f5"></a>
-virtual std::optional&lt; Cid &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>as_link</b> () const =0</td></tr>
+virtual std::optional&lt; <a class="el" href="classipfs_1_1Cid.html">Cid</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>as_link</b> () const =0</td></tr>
 <tr class="separator:ab43217b7991488153c082a044b95c1f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5528f262553865ca206c0147825855bb"><td class="memItemLeft" align="right" valign="top"><a id="a5528f262553865ca206c0147825855bb"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_map</b> () const =0</td></tr>

@@ -115,9 +115,6 @@ Public Types</h2></td></tr>
 <tr class="memitem:a2965ff25a884e2cd387dce0199815ccb"><td class="memItemLeft" align="right" valign="top"><a id="a2965ff25a884e2cd387dce0199815ccb"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>BlockLookup</b> = std::function&lt; NodePtr(std::string const  &amp;)&gt;</td></tr>
 <tr class="separator:a2965ff25a884e2cd387dce0199815ccb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7321173bfaf37ca43ae171b92fd128ca"><td class="memItemLeft" align="right" valign="top"><a id="a7321173bfaf37ca43ae171b92fd128ca"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>Cid</b> = libp2p::multi::ContentIdentifier</td></tr>
-<tr class="separator:a7321173bfaf37ca43ae171b92fd128ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -140,7 +137,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_api</b> (std::sha
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:abf912606645d9de6d3cb0eaaabe7e7e2"><td class="memItemLeft" align="right" valign="top"><a id="abf912606645d9de6d3cb0eaaabe7e7e2"></a>
-static NodePtr&#160;</td><td class="memItemRight" valign="bottom"><b>fromBytes</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &gt; const &amp;api, Cid const &amp;, std::string_view bytes)</td></tr>
+static NodePtr&#160;</td><td class="memItemRight" valign="bottom"><b>fromBytes</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &gt; const &amp;api, <a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;, std::string_view bytes)</td></tr>
 <tr class="separator:abf912606645d9de6d3cb0eaaabe7e7e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2303bc018279eaa0bf0a13568e17d8c8"><td class="memItemLeft" align="right" valign="top"><a id="a2303bc018279eaa0bf0a13568e17d8c8"></a>
 static NodePtr&#160;</td><td class="memItemRight" valign="bottom"><b>fromBlock</b> (<a class="el" href="classipfs_1_1Block.html">Block</a> const &amp;)</td></tr>

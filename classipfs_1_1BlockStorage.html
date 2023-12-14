@@ -91,7 +91,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:adfa90c05290c9ae4f646ed3a3141b4b4"><td class="memItemLeft" align="right" valign="top"><a id="adfa90c05290c9ae4f646ed3a3141b4b4"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>BlockStorage</b> (<a class="el" href="classipfs_1_1BlockStorage.html">BlockStorage</a> const &amp;)=delete</td></tr>
 <tr class="separator:adfa90c05290c9ae4f646ed3a3141b4b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4a4b1798f6c0c15a5e081ab3520cad5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5">Store</a> (std::string cid_str, Cid const &amp;cid, std::string headers, std::string const &amp;body, <a class="el" href="classipfs_1_1Block.html">Block</a> &amp;&amp;block)</td></tr>
+<tr class="memitem:ae4a4b1798f6c0c15a5e081ab3520cad5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5">Store</a> (std::string cid_str, <a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;cid, std::string headers, std::string const &amp;body, <a class="el" href="classipfs_1_1Block.html">Block</a> &amp;&amp;block)</td></tr>
 <tr class="memdesc:ae4a4b1798f6c0c15a5e081ab3520cad5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store a <a class="el" href="classipfs_1_1Block.html" title="Something to which a CID may refer directly.">Block</a> for later access.  <a href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5">More...</a><br /></td></tr>
 <tr class="separator:ae4a4b1798f6c0c15a5e081ab3520cad5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a08e857b2b5528dbad6236fcf190ea73f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classipfs_1_1Block.html">Block</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1BlockStorage.html#a08e857b2b5528dbad6236fcf190ea73f">Get</a> (std::string const &amp;cid)</td></tr>
@@ -116,7 +116,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memdesc:a35f051a01eb18bf489bd6e6f12b5d480"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register a callback that will be called when any new block goes into storage. <br /></td></tr>
 <tr class="separator:a35f051a01eb18bf489bd6e6f12b5d480"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Store (Convenience)</div></td></tr>
-<tr><td colspan="2"><div class="groupText"><p>Convenience functions for <a class="el" href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5" title="Store a Block for later access.">ipfs::BlockStorage::Store</a>(std::string,Cid const&amp;,std::string,std::string const&amp;,<a class="el" href="classipfs_1_1Block.html" title="Something to which a CID may refer directly.">Block</a>&amp;&amp;) </p>
+<tr><td colspan="2"><div class="groupText"><p>Convenience functions for <a class="el" href="classipfs_1_1BlockStorage.html#ae4a4b1798f6c0c15a5e081ab3520cad5" title="Store a Block for later access.">ipfs::BlockStorage::Store</a>(std::string,<a class="el" href="classipfs_1_1Cid.html">Cid</a> const&amp;,std::string,std::string const&amp;,<a class="el" href="classipfs_1_1Block.html" title="Something to which a CID may refer directly.">Block</a>&amp;&amp;) </p>
 </div></td></tr>
 <tr class="memitem:a78bff7e4c8cc2aa93d2ed1596244f970"><td class="memItemLeft" align="right" valign="top"><a id="a78bff7e4c8cc2aa93d2ed1596244f970"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>Store</b> (std::string headers, std::string const &amp;body, <a class="el" href="classipfs_1_1Block.html">Block</a> &amp;&amp;block)</td></tr>
@@ -125,10 +125,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>Store</b> (std::strin
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>Store</b> (std::string const &amp;cid, std::string headers, std::string body)</td></tr>
 <tr class="separator:aa4cab5b7e9e7ea47ce7f8bba0be991df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7ee661347a81d7b14d4df85f232d5fe"><td class="memItemLeft" align="right" valign="top"><a id="ab7ee661347a81d7b14d4df85f232d5fe"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>Store</b> (std::string cid_str, Cid const &amp;cid, std::string headers, std::string body)</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>Store</b> (std::string cid_str, <a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;cid, std::string headers, std::string body)</td></tr>
 <tr class="separator:ab7ee661347a81d7b14d4df85f232d5fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affc6db321392c307085b956ceed7f5da"><td class="memItemLeft" align="right" valign="top"><a id="affc6db321392c307085b956ceed7f5da"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>Store</b> (Cid const &amp;cid, std::string headers, std::string const &amp;body, <a class="el" href="classipfs_1_1Block.html">Block</a> &amp;&amp;)</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>Store</b> (<a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;cid, std::string headers, std::string const &amp;body, <a class="el" href="classipfs_1_1Block.html">Block</a> &amp;&amp;)</td></tr>
 <tr class="separator:affc6db321392c307085b956ceed7f5da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -246,7 +246,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>Store</b> (Cid const 
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Cid const &amp;&#160;</td>
+          <td class="paramtype"><a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;&#160;</td>
           <td class="paramname"><em>cid</em>, </td>
         </tr>
         <tr>

@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['unixfsfile_206',['UnixfsFile',['../classipfs_1_1ipld_1_1UnixfsFile.html',1,'ipfs::ipld']]],
-  ['unixtime_207',['UnixTime',['../classipfs_1_1unix__fs_1_1UnixTime.html',1,'ipfs::unix_fs']]],
-  ['unixtimedefaulttypeinternal_208',['UnixTimeDefaultTypeInternal',['../structipfs_1_1unix__fs_1_1UnixTimeDefaultTypeInternal.html',1,'ipfs::unix_fs']]],
-  ['urlloader_209',['URLLoader',['../classnetwork_1_1mojom_1_1URLLoader.html',1,'network::mojom']]],
-  ['urlspec_210',['UrlSpec',['../structipfs_1_1UrlSpec.html',1,'ipfs']]]
+  ['slashdelimited_232',['SlashDelimited',['../structipfs_1_1SlashDelimited.html',1,'ipfs']]],
+  ['smalldirectory_233',['SmallDirectory',['../classipfs_1_1ipld_1_1SmallDirectory.html',1,'ipfs::ipld']]],
+  ['stream_5ftag_234',['stream_tag',['../classmultibase_1_1algorithm_1_1stream__tag.html',1,'multibase::algorithm']]],
+  ['symlink_235',['Symlink',['../classipfs_1_1ipld_1_1Symlink.html',1,'ipfs::ipld']]]
 ];

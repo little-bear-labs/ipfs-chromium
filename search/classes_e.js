@@ -1,8 +1,10 @@
 var searchData=
 [
-  ['tablestruct_5fipfs_5f5fclient_5f2fipns_5f5frecord_5f2eproto_201',['TableStruct_ipfs_5fclient_2fipns_5frecord_2eproto',['../structTableStruct__ipfs__5fclient__2fipns__5frecord__2eproto.html',1,'']]],
-  ['tablestruct_5fipfs_5f5fclient_5f2fkeys_5f2eproto_202',['TableStruct_ipfs_5fclient_2fkeys_2eproto',['../structTableStruct__ipfs__5fclient__2fkeys__2eproto.html',1,'']]],
-  ['tablestruct_5fipfs_5f5fclient_5f2fpb_5f5fdag_5f2eproto_203',['TableStruct_ipfs_5fclient_2fpb_5fdag_2eproto',['../structTableStruct__ipfs__5fclient__2fpb__5fdag__2eproto.html',1,'']]],
-  ['tablestruct_5fipfs_5f5fclient_5f2funix_5f5ffs_5f2eproto_204',['TableStruct_ipfs_5fclient_2funix_5ffs_2eproto',['../structTableStruct__ipfs__5fclient__2funix__5ffs__2eproto.html',1,'']]],
-  ['terminatingrequestor_205',['TerminatingRequestor',['../classipfs_1_1gw_1_1TerminatingRequestor.html',1,'ipfs::gw']]]
+  ['raw_5fptr_225',['raw_ptr',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
+  ['raw_5fptr_3c_20network_3a_3amojom_3a_3anetworkcontext_20_3e_226',['raw_ptr&lt; network::mojom::NetworkContext &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
+  ['raw_5fptr_3c_20network_3a_3amojom_3a_3aurlloaderfactory_20_3e_227',['raw_ptr&lt; network::mojom::URLLoaderFactory &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
+  ['requestor_228',['Requestor',['../classipfs_1_1gw_1_1Requestor.html',1,'ipfs::gw']]],
+  ['requestorpool_229',['RequestorPool',['../classipfs_1_1gw_1_1RequestorPool.html',1,'ipfs::gw']]],
+  ['response_230',['Response',['../structipfs_1_1Response.html',1,'ipfs']]],
+  ['root_231',['Root',['../classipfs_1_1ipld_1_1Root.html',1,'ipfs::ipld']]]
 ];

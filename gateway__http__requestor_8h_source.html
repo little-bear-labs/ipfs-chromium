@@ -72,26 +72,26 @@ $(function() {
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef IPFS_GATEWAY_HTTP_REQUESTOR_H_</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor">#define IPFS_GATEWAY_HTTP_REQUESTOR_H_</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;ipfs_client/gw/requestor.h&gt;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;ipfs_client/ipld/dag_node.h&gt;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;set&gt;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>ipfs::gw {</div>
-<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="classipfs_1_1gw_1_1GatewayHttpRequestor.html">   12</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1gw_1_1GatewayHttpRequestor.html">GatewayHttpRequestor</a> final : <span class="keyword">public</span> <a class="code" href="classipfs_1_1gw_1_1Requestor.html">Requestor</a> {</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  std::string prefix_;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keywordtype">int</span> strength_;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  std::unordered_map&lt;std::string, int&gt; seen_;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  std::set&lt;std::string&gt; aff_good_, aff_bad_;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  std::set&lt;Type&gt; typ_good_, typ_bad_;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="keywordtype">int</span> pending_ = 0;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keywordtype">int</span> extra_seconds_ = 0;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  HandleOutcome handle(RequestPtr) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  std::string_view name() <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keyword">using</span> Cid = libp2p::multi::ContentIdentifier;</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;ipfs_client/cid.h&gt;</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;ipfs_client/gw/requestor.h&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;ipfs_client/ipld/dag_node.h&gt;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;set&gt;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>ipfs::gw {</div>
+<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="classipfs_1_1gw_1_1GatewayHttpRequestor.html">   13</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1gw_1_1GatewayHttpRequestor.html">GatewayHttpRequestor</a> final : <span class="keyword">public</span> <a class="code" href="classipfs_1_1gw_1_1Requestor.html">Requestor</a> {</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  std::string prefix_;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keywordtype">int</span> strength_;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  std::unordered_map&lt;std::string, int&gt; seen_;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  std::set&lt;std::string&gt; aff_good_, aff_bad_;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  std::set&lt;Type&gt; typ_good_, typ_bad_;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keywordtype">int</span> pending_ = 0;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keywordtype">int</span> extra_seconds_ = 0;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  HandleOutcome handle(RequestPtr) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  std::string_view name() <span class="keyword">const override</span>;</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  ipfs::ipld::NodePtr node_from_type(std::optional&lt;Cid&gt; <span class="keyword">const</span>&amp; cid,</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                                     ipfs::gw::Type,</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                                     std::string_view body) <span class="keyword">const</span>;</div>
@@ -106,8 +106,8 @@ $(function() {
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}  <span class="comment">// namespace ipfs::gw</span></div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_GATEWAY_HTTP_REQUESTOR_H_</span></div>
-<div class="ttc" id="aclassipfs_1_1gw_1_1GatewayHttpRequestor_html"><div class="ttname"><a href="classipfs_1_1gw_1_1GatewayHttpRequestor.html">ipfs::gw::GatewayHttpRequestor</a></div><div class="ttdef"><b>Definition:</b> gateway_http_requestor.h:12</div></div>
-<div class="ttc" id="aclassipfs_1_1gw_1_1GatewayRequest_html"><div class="ttname"><a href="classipfs_1_1gw_1_1GatewayRequest.html">ipfs::gw::GatewayRequest</a></div><div class="ttdef"><b>Definition:</b> gateway_request.h:39</div></div>
+<div class="ttc" id="aclassipfs_1_1gw_1_1GatewayHttpRequestor_html"><div class="ttname"><a href="classipfs_1_1gw_1_1GatewayHttpRequestor.html">ipfs::gw::GatewayHttpRequestor</a></div><div class="ttdef"><b>Definition:</b> gateway_http_requestor.h:13</div></div>
+<div class="ttc" id="aclassipfs_1_1gw_1_1GatewayRequest_html"><div class="ttname"><a href="classipfs_1_1gw_1_1GatewayRequest.html">ipfs::gw::GatewayRequest</a></div><div class="ttdef"><b>Definition:</b> gateway_request.h:38</div></div>
 <div class="ttc" id="aclassipfs_1_1gw_1_1Requestor_html"><div class="ttname"><a href="classipfs_1_1gw_1_1Requestor.html">ipfs::gw::Requestor</a></div><div class="ttdef"><b>Definition:</b> requestor.h:21</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
