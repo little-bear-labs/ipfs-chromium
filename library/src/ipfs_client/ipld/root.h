@@ -10,9 +10,7 @@ namespace ipfs::ipld {
 class Root : public DagNode {
   std::optional<redirects::File> redirects_;
 
-  ResolveResult resolve(SlashDelimited path,
-                        BlockLookup,
-                        std::string&) override;
+  ResolveResult resolve(ResolutionState& params) override;
   std::shared_ptr<DagNode> rooted() override;
   std::shared_ptr<DagNode> deroot() override;
 

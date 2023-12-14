@@ -6,12 +6,10 @@ using namespace std::literals;
 
 using Self = ipfs::ipld::UnixfsFile;
 
-auto Self::resolve(ipfs::SlashDelimited path,
-                   ipfs::ipld::DagNode::BlockLookup blu,
-                   std::string& to_here) -> ResolveResult {
-  if (path) {
-    LOG(ERROR) << "Can't path through a file, (at " << to_here
-               << ") but given the path " << path.to_string();
+auto Self::resolve(ResolutionState& params) -> ResolveResult {
+  if (!params.IsFinalComponent()) {
+    LOG(ERROR) << "Can't path through a file, (at " << params.MyPath()
+               << ") but given the path " << params.PathToResolve();
     return ProvenAbsent{};
   }
   std::vector<std::string> missing;
@@ -19,10 +17,10 @@ auto Self::resolve(ipfs::SlashDelimited path,
   for (auto& child : links_) {
     auto& link = child.second;
     if (!link.node) {
-      link.node = blu(link.cid);
+      link.node = params.GetBlock(link.cid);
     }
     if (link.node) {
-      auto recurse = link.node->resolve(""sv, blu, to_here);
+      auto recurse = link.node->resolve(params);
       auto mdn = std::get_if<MoreDataNeeded>(&recurse);
       if (mdn) {
         missing.insert(missing.end(), mdn->ipfs_abs_paths_.begin(),
@@ -33,8 +31,6 @@ auto Self::resolve(ipfs::SlashDelimited path,
         body.append(std::get<Response>(recurse).body_);
       }
     } else {
-      VLOG(2) << "In order to resolve the file at path " << to_here
-              << " I need CID " << link.cid;
       missing.push_back("/ipfs/" + link.cid);
     }
   }
@@ -43,10 +39,12 @@ auto Self::resolve(ipfs::SlashDelimited path,
         "",
         200,
         body,
-        ""s,
+        params.MyPath().to_string(),
     };
   }
-  return MoreDataNeeded{missing};
+  auto result = MoreDataNeeded{missing};
+  result.insist_on_car = true;
+  return result;
 }
 
 Self::~UnixfsFile() {}

@@ -4,9 +4,9 @@
 #include <ipfs_client/ipld/dag_node.h>
 
 #include <ipfs_client/context_api.h>
-#include <ipfs_client/dag_block.h>
 #include <ipfs_client/ipns_record.h>
 #include <ipfs_client/orchestrator.h>
+#include <ipfs_client/pb_dag.h>
 
 #include "log_macros.h"
 
@@ -126,7 +126,7 @@ ipfs::ipld::NodePtr Self::node_from_type(std::optional<Cid> const& cid,
   switch (t) {
     case ReqTyp::Block: {
       if (cid.has_value()) {
-        ipfs::Block blk{cid.value(), std::string{body}};
+        ipfs::PbDag blk{cid.value(), as_bytes(body)};
         if (blk.cid_matches_data(*api_)) {
           return ipfs::ipld::DagNode::fromBlock(blk);
         }

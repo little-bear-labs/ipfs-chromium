@@ -3,50 +3,14 @@ on:
   pull_request:
   release:
       types: [created]
-permissions:
-  contents: write
 jobs:
   test:
-    name: Run Tests & Publish Coverage Report
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes cmake ninja-build lcov binutils doxygen graphviz libc6{,-dev} valgrind
-          npm install -g @marp-team/marp-cli
-      - name: Configure
-        shell: bash
-        run: |
-          mkdir build
-          cmake \
-            -G Ninja \
-            -S . \
-            -B build \
-            -D CMAKE_BUILD_TYPE=Debug
-      - name: Run Tests
-        shell: bash
-        run: cmake --build build --config Debug --target run_tests
-      - name: Generate Coverage Report
-        shell: bash
-        run: cmake --build build --config Debug --target cov
-      - name: Upload coverage reports to Codecov.com
-        uses: codecov/codecov-action@v3
-        with:
-          files: build/library/cov.info
-      - name: Run Doxygen
-        run: |
-          cmake --build build --config Debug --target doc
-          ls -lrth build/doc/html
-      - name: UpDoc
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: build/doc/html
+    uses: little-bear-labs/ipfs-chromium/.github/workflows/ut.yml@car
+  tour:
+    uses: little-bear-labs/ipfs-chromium/.github/workflows/tour.yml@car
   build:
     name: ${{ matrix.config.name }}
-    needs: test
+    needs: [test, tour]
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: true

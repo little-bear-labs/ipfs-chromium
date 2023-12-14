@@ -114,8 +114,8 @@ class AllInclusiveContext final : public ContextApi {
                       << " bytes of JSON string and got " << oss.str();
     return std::make_unique<ipfs::JsonCborAdapter>(data);
   }
-  bool verify_key_signature(SigningKeyType,
-                            ByteView,
+  bool VerifyKeySignature(SigningKeyType,
+                          ByteView,
                             ByteView,
                             ByteView) const override {
     GOOGLE_LOG(ERROR) << "TODO\n";

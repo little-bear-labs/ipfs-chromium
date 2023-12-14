@@ -9,7 +9,7 @@ The term can mean a few different things. There are essentially 3 layers of what
 1. Immediate object storage
    * These are in-memory collections of parsed, conveniently-laid-out objects written for-purpose
    * There are 2:
-     1. `BlockStorage` contains the most recently-accessed blocks (as `ipfs::Block`), and a mapping of CID string representation[^1] to them.
+     1. `BlockStorage` contains the most recently-accessed blocks (as `ipfs::PbDag`), and a mapping of CID string representation[^1] to them.
        - When a new entry is being saved, it may overwrite an existing entry if that one hasn't been accessed for 5 minutes.
        - If there's no stale entry convenient, it may instead expand memory usage and create an entirely new entry.
      2. `IpnsNames`

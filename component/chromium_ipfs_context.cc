@@ -84,8 +84,8 @@ void Self::SendHttpRequest(HttpRequestDescription req_inf,
   auto ptr = std::make_shared<BlockHttpRequest>(req_inf, cb);
   ptr->send(loader_factory_);
 }
-bool Self::verify_key_signature(SigningKeyType t,
-                                ByteView signature,
+bool Self::VerifyKeySignature(SigningKeyType t,
+                              ByteView signature,
                                 ByteView data,
                                 ByteView key_bytes) const {
   return crypto_api::VerifySignature(static_cast<ipns::KeyType>(t), signature,

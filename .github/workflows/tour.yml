@@ -1,5 +1,7 @@
 name: Tour de IPFS
-on: push
+on:
+  push:
+  workflow_call:
 jobs:
   tour:
     name: Build clitester and exercize various ipfs_client features

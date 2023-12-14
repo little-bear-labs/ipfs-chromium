@@ -5,7 +5,7 @@
 
 namespace ipfs::ipld {
 class UnixfsFile : public DagNode {
-  ResolveResult resolve(SlashDelimited, BlockLookup, std::string&) override;
+  ResolveResult resolve(ResolutionState&) override;
 
  public:
   virtual ~UnixfsFile() noexcept;

@@ -7,7 +7,7 @@ namespace ipfs::ipld {
 class DirShard : public DagNode {
   std::uint64_t const fanout_;
 
-  ResolveResult resolve(SlashDelimited, BlockLookup, std::string&) override;
+  ResolveResult resolve(ResolutionState&) override;
   DirShard* as_hamt() override;
 
   std::vector<std::string> hexhash(std::string_view path_element) const;
@@ -15,9 +15,7 @@ class DirShard : public DagNode {
   ResolveResult resolve_internal(HashIter,
                                  HashIter,
                                  std::string_view,
-                                 SlashDelimited,
-                                 BlockLookup,
-                                 std::string&);
+                                 ResolutionState&);
 
  public:
   explicit DirShard(std::uint64_t fanout = 256UL);

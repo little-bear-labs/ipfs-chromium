@@ -12,46 +12,49 @@ Self::Cid(ipfs::MultiCodec cdc, ipfs::MultiHash hsh)
     : codec_{cdc}, hash_{hsh} {}
 
 Self::Cid(ipfs::ByteView bytes) {
-  assign(bytes);
+  ReadStart(bytes);
 }
 
 Self::Cid(std::string_view s) {
   if (s.size() == 46 && s[0] == 'Q' && s[1] == 'm') {
     auto bytes = mb::Codec::Get(mb::Code::BASE58_BTC)->decode(s);
-    assign(bytes);
+    auto view = ByteView{bytes};
+    ReadStart(view);
   } else if (auto bytes = mb::decode(s)) {
     if (bytes->size() > 4) {
-      assign(bytes.value());
+      auto view = ByteView{bytes.value()};
+      ReadStart(view);
     }
   } else {
     LOG(WARNING) << "Failed to decode the multibase for a CID: " << s;
   }
 }
 
-void Self::assign(ipfs::ByteView bytes) {
-  if (bytes.size() == 34 && bytes[0] == ipfs::Byte{0x12} &&
+bool Self::ReadStart(ByteView& bytes) {
+  if (bytes.size() >= 34 && bytes[0] == ipfs::Byte{0x12} &&
       bytes[1] == ipfs::Byte{0x20}) {
     hash_ = MultiHash{bytes};
     codec_ = hash_.valid() ? MultiCodec::DAG_PB : MultiCodec::INVALID;
-    return;
+    bytes = bytes.subspan(34);
+    return true;
   }
   auto version = VarInt::create(bytes);
   if (!version) {
-    return;
+    return false;
   }
   if (version->toUInt64() != 1U) {
     LOG(ERROR) << "CID version " << version->toUInt64() << " not supported.";
-    return;
+    return false;
   }
   bytes = bytes.subspan(version->size());
   auto codec = VarInt::create(bytes);
   if (!codec) {
-    return;
+    return false;
   }
   auto cdc = static_cast<MultiCodec>(codec->toUInt64());
   codec_ = Validate(cdc);
   bytes = bytes.subspan(codec->size());
-  hash_ = MultiHash{bytes};
+  return hash_.ReadPrefix(bytes);
 }
 
 bool Self::valid() const {

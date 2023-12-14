@@ -1,9 +1,11 @@
 #include "symlink.h"
 
-#include <gtest/gtest.h>
+#include "small_directory.h"
 
-#include <ipfs_client/dag_block.h>
+#include <mock_api.h>
+
 #include <ipfs_client/ipld/dag_node.h>
+#include <ipfs_client/pb_dag.h>
 
 using namespace std::literals;
 namespace i = ipfs;
@@ -13,34 +15,34 @@ TEST(SymlinkTest, fromBlock) {
   i::Cid cid("bafybeia4wauf6z6lnnnszia6upqr5jsq7nack5nnrubf333lfg2vlabtd4");
   EXPECT_TRUE(cid.valid());
   // The target is the last byte, \x61 aka 'a'
-  i::Block b{cid, "\x0a\x05\x08\x04\x12\x01\x61"};
-  EXPECT_TRUE(b.type() == i::Block::Type::Symlink);
+  i::PbDag b{cid, "\x0a\x05\x08\x04\x12\x01\x61"};
+  EXPECT_TRUE(b.type() == i::PbDag::Type::Symlink);
   auto node = ii::DagNode::fromBlock(b);
   EXPECT_TRUE(node);
-  std::string t =
-      "/ipfs/bafybeia4wauf6z6lnnnszia6upqr5jsq7nack5nnrubf333lfg2vlabtd4/c";
   auto blu = [](std::string const&) { return ii::NodePtr{}; };
-  auto result = node->resolve("d/e"sv, blu, t);
+  auto result = node->resolve(i::SlashDelimited{"d/e"}, blu);
   auto actual = std::get<ii::PathChange>(result);
-  auto expect =
-      "/ipfs/bafybeia4wauf6z6lnnnszia6upqr5jsq7nack5nnrubf333lfg2vlabtd4/"
-      "a/d/e";
+  auto expect = "/a/d/e";
   EXPECT_EQ(actual.new_path, expect);
 }
 TEST(SymlinkTest, rooted) {
-  ii::Symlink sub{"/another/path.txt"};
-  ii::DagNode& t = sub;
-  auto blu = [](std::string const&) -> ii::NodePtr {
-    throw std::runtime_error{"Block lookup not expected."};
+  auto target = "/b";
+  auto sub = std::make_shared<ii::Symlink>(target);
+  // This dir actually contains an inlined symlink which points to /b/c, but
+  // it's the Symlink ctor arg that counts
+  std::string dirbytes =
+      "\x12\x15\x0a\x0e\x01\x70\x00\x0a\x0a\x08\x08\x04\x12\x04\x2f\x62\x2f\x63"
+      "\x12\x01\x61\x18\x0a\x0a\x02\x08\x01";
+  auto api = std::make_shared<MockApi>();
+  auto dir = ii::DagNode::fromBytes(
+      api, i::Cid("bafyaagiscmfayalqaaeaubqiaqjael3cciawcgaibibaqai"),
+      dirbytes);
+  ii::DagNode& t = *sub;
+  auto blu = [sub](std::string const& block_key) -> ii::NodePtr {
+    EXPECT_EQ("bafyaacakayeaieqcf5ra", block_key);
+    return sub;
   };
-  std::string observed_path_to_link{"/ipns/"};
-  observed_path_to_link
-      .append("k51qzi5uqu5dkq4jxcqvujfm2woh4p9y6inrojofxflzdnfht168zf8ynfzuu1")
-      .append("/symlinks/rooted.txt");
-  auto res = t.resolve(""sv, blu, observed_path_to_link);
+  auto res = t.resolve(i::SlashDelimited{}, blu);
   EXPECT_TRUE(std::holds_alternative<ii::PathChange>(res));
-  EXPECT_EQ(
-      std::get<ii::PathChange>(res).new_path,
-      "/ipns/k51qzi5uqu5dkq4jxcqvujfm2woh4p9y6inrojofxflzdnfht168zf8ynfzuu1/"
-      "another/path.txt");
+  EXPECT_EQ(std::get<ii::PathChange>(res).new_path, target);
 }

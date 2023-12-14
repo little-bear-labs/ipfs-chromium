@@ -27,8 +27,8 @@ struct Api final : public i::ContextApi {
                        std::string const& url) const {
     throw 1;
   }
-  bool verify_key_signature(SigningKeyType,
-                            ByteView signature,
+  bool VerifyKeySignature(SigningKeyType,
+                          ByteView signature,
                             ByteView data,
                             ByteView key_bytes) const {
     return true;

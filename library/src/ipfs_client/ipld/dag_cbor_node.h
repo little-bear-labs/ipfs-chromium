@@ -7,8 +7,7 @@
 
 namespace ipfs::ipld {
 class DagCborNode final : public DagNode {
-  ResolveResult resolve(SlashDelimited,BlockLookup,
-                        std::string&) override;
+  ResolveResult resolve(ResolutionState&) override;
 
  public:
   using Data = DagCborValue;

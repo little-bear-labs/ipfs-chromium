@@ -4,12 +4,10 @@
 #include <ipfs_client/context_api.h>
 #include <ipfs_client/dag_cbor_value.h>
 
-#include <libp2p/crypto/hasher.hpp>
-#include <libp2p/peer/peer_id.hpp>
-
 #include "log_macros.h"
 
-#include <time.h>
+#include <ctime>
+#include <sstream>
 
 #if __has_include(<third_party/ipfs_client/ipns_record.pb.h>)
 #include <third_party/ipfs_client/ipns_record.pb.h>
@@ -25,15 +23,6 @@ bool matches(ipfs::MultiHash const& hash,
   if (!result.has_value()) {
     return false;
   }
-  /*  std::vector<ipfs::Byte> result(hasher->digestSize(), ipfs::Byte{});
-    if (hasher->write(pubkey_bytes).value()) {
-      if (!hasher->digestOut({result.data(), result.size()}).has_value()) {
-        LOG(ERROR) << "Error getting digest.";
-      }
-    } else {
-      LOG(ERROR) << "Attempt to hash bytes returned false";
-    }
-    */
   return std::equal(result->begin(), result->end(), hash.digest().begin(),
                     hash.digest().end());
 }
@@ -171,8 +160,8 @@ auto ipfs::ValidateIpnsRecord(ipfs::ByteView top_level_bytes,
                  bytes_str.size()};
   ByteView key_bytes{reinterpret_cast<ipfs::Byte const*>(pk.data().data()),
                      pk.data().size()};
-  if (!api.verify_key_signature(static_cast<SigningKeyType>(pk.type()),
-                                signature, bytes, key_bytes)) {
+  if (!api.VerifyKeySignature(static_cast<SigningKeyType>(pk.type()), signature,
+                              bytes, key_bytes)) {
     LOG(ERROR) << "Verification failed!!";
     return {};
   }

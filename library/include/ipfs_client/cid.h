@@ -14,12 +14,12 @@ class Cid {
   MultiCodec codec_ = MultiCodec::INVALID;
   MultiHash hash_;
 
-  void assign(ByteView);
-
  public:
+  Cid() = default;
   Cid(MultiCodec, MultiHash);
   explicit Cid(std::string_view);
   explicit Cid(ByteView);
+  bool ReadStart(ByteView&);
 
   bool valid() const;
   MultiCodec codec() const { return codec_; }
@@ -28,6 +28,10 @@ class Cid {
   HashType hash_type() const;
 
   std::string to_string() const;
+
+  constexpr static std::size_t MinSerializedLength =
+      1 /*cid version*/ + 1 /*codec*/ + 1 /*hash type*/ +
+      1 /*hash len, could be zero*/;
 };
 }  // namespace ipfs
 

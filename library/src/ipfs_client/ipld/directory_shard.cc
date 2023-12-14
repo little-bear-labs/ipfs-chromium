@@ -15,46 +15,44 @@ using namespace std::literals;
 
 using Self = ipfs::ipld::DirShard;
 
-auto Self::resolve(ipfs::SlashDelimited relpath,
-                   ipfs::ipld::DagNode::BlockLookup blu,
-                   std::string& to_here) -> ResolveResult {
-  if (!relpath) {
-    // TODO check if index.html is present and if not implement indexing
-    auto result = resolve("index.html"sv, blu, to_here);
+auto Self::resolve(ResolutionState& parms) -> ResolveResult {
+  if (parms.IsFinalComponent()) {
+    auto index_parm = parms.WithPath("index.html"sv);
+    auto result = resolve(index_parm);
+    // TODO generate index.html if not present
     auto resp = std::get_if<Response>(&result);
     if (resp) {
       resp->mime_ = "text/html";
     }
     return result;
   }
-  auto name = api_->UnescapeUrlComponent(relpath.pop());
+  std::string name{parms.NextComponent(api_.get())};
   auto hash = hexhash(name);
-  return resolve_internal(hash.begin(), hash.end(), name, relpath, blu,
-                          to_here);
+  return resolve_internal(hash.begin(), hash.end(), name, parms);
 }
 auto Self::resolve_internal(ipfs::ipld::DirShard::HashIter hash_b,
                             ipfs::ipld::DirShard::HashIter hash_e,
-                            std::string_view element_name,
-                            ipfs::SlashDelimited path_after_dir,
-                            ipfs::ipld::DagNode::BlockLookup blu,
-                            std::string& path_to_dir) -> ResolveResult {
+                            std::string_view human_name,
+                            ResolutionState& parms) -> ResolveResult {
   auto hash_chunk = hash_b == hash_e ? std::string{} : *hash_b;
   for (auto& [name, link] : links_) {
     if (!starts_with(name, hash_chunk)) {
       continue;
     }
-    if (!link.node) {
-      link.node = blu(link.cid);
-    }
-    if (!link.node) {
-      return MoreDataNeeded{std::vector{"/ipfs/" + link.cid}};
-    }
-    if (ends_with(name, element_name)) {
-      VLOG(2) << "Found " << element_name << ", leaving HAMT sharded directory "
+    if (ends_with(name, human_name)) {
+      VLOG(2) << "Found " << human_name << ", leaving HAMT sharded directory "
               << name << "->" << link.cid;
-      return link.node->resolve(path_after_dir, blu, path_to_dir);
+      return CallChild(parms, name);
     }
-    auto downcast = link.node->as_hamt();
+    auto node = parms.GetBlock(link.cid);
+    if (!node) {
+      // Unfortunately we can't really append more path and do a full Car
+      // request
+      //  The gateway would hash whatever we gave it and compare it to a
+      //  partially-consumed hash
+      return MoreDataNeeded{{"/ipfs/" + link.cid}};
+    }
+    auto downcast = node->as_hamt();
     if (downcast) {
       if (hash_b == hash_e) {
         LOG(ERROR) << "Ran out of hash bits.";
@@ -63,8 +61,8 @@ auto Self::resolve_internal(ipfs::ipld::DirShard::HashIter hash_b,
       VLOG(2) << "Found hash chunk, continuing to next level of HAMT sharded "
                  "directory "
                 << name << "->" << link.cid;
-      return downcast->resolve_internal(std::next(hash_b), hash_e, element_name,
-                                        path_after_dir, blu, path_to_dir);
+      return downcast->resolve_internal(std::next(hash_b), hash_e, human_name,
+                                        parms);
     } else {
       return ProvenAbsent{};
     }

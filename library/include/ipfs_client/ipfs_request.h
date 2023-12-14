@@ -20,7 +20,7 @@ class IpfsRequest {
 
  public:
   IpfsRequest(std::string path, Finisher);
-  SlashDelimited path() const { return std::string_view{path_}; }
+  SlashDelimited path() const { return SlashDelimited{path_}; }
   void finish(Response& r);
   void till_next(std::size_t);
   bool ready_after();

@@ -33,8 +33,7 @@ TEST(BlockRequestSplitterTest, not_yet_implemented) {
   req->path = "path";
   req->parallel = 123;
   tested.request(req);
-  //  EXPECT_EQ(rec->requests_received.size(), 3U);
-  EXPECT_EQ(rec->requests_received.size(), 1U);
+  EXPECT_EQ(rec->requests_received.size(), 2U);
   EXPECT_TRUE(rec->requests_received.at(0)->type == g::Type::Block) <<
 static_cast<int>(rec->requests_received.at(0)->type);
   //  EXPECT_TRUE(rec->requests_received.at(1)->type == g::Type::Providers) <<
@@ -45,9 +44,8 @@ static_cast<int>(rec->requests_received.at(0)->type);
   //  EXPECT_EQ(rec->requests_received.at(1)->main_param, "cid");
   //  EXPECT_EQ(rec->requests_received.at(2)->main_param, "cid");
   //  EXPECT_EQ(rec->requests_received.at(0)->path, "");
-  EXPECT_EQ(rec->requests_received.at(0)->path, "path");
-  //  EXPECT_EQ(rec->requests_received.at(1)->path, "");
-  //  EXPECT_EQ(rec->requests_received.at(2)->path, "path");
+  EXPECT_EQ(rec->requests_received.at(0)->path, "");
+  EXPECT_EQ(rec->requests_received.at(1)->path, "path");
   EXPECT_EQ(rec->requests_received.at(0)->parallel, 123);
   //  EXPECT_EQ(rec->requests_received.at(1)->parallel, 123);
   //  EXPECT_EQ(rec->requests_received.at(2)->parallel, 123);

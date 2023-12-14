@@ -5,10 +5,7 @@
 
 #include <libp2p/multi/uvarint.hpp>
 
-#include <libp2p/common/hexutil.hpp>
-
 namespace libp2p::multi {
-using common::hex_upper;
 
 UVarint::UVarint(UVarint const& rhs) : bytes_(rhs.bytes_) {}
 UVarint::UVarint(uint64_t number) {
@@ -22,9 +19,12 @@ UVarint::UVarint(uint64_t number) {
   } while (number != 0);
 }
 
-UVarint::UVarint(ipfs::ByteView varint_bytes)
-    : bytes_(varint_bytes.begin(),
-             varint_bytes.begin() + calculateSize(varint_bytes)) {}
+UVarint::UVarint(ipfs::ByteView varint_bytes) {
+  auto size = calculateSize(varint_bytes);
+  if (size <= varint_bytes.size()) {
+    bytes_.assign(varint_bytes.begin(), varint_bytes.begin() + size);
+  }
+}
 
 UVarint::UVarint(ipfs::ByteView varint_bytes, size_t varint_size)
     : bytes_(varint_bytes.begin(), varint_bytes.begin() + varint_size) {}
