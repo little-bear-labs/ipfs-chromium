@@ -2,12 +2,12 @@
 
 #include <mock_cbor.h>
 
-#include <ipfs_client/dag_block.h>
 #include <ipfs_client/dag_json_value.h>
 #include <ipfs_client/ipfs_request.h>
 #include <ipfs_client/ipns_record.h>
 #include <ipfs_client/ipns_record.pb.h>
 #include <ipfs_client/logger.h>
+#include <ipfs_client/pb_dag.h>
 
 #include "ipld/ipns_name.h"
 
@@ -23,10 +23,10 @@ using Success = i::Response;
 namespace {
 struct MockApi final : public ipfs::ContextApi {
   MockApi() { i::log::SetLevel(i::log::Level::OFF); }
-  bool verify_key_signature(ipfs::SigningKeyType,
-                            ipfs::ByteView signature,
-                            ipfs::ByteView data,
-                            ipfs::ByteView key_bytes) const {
+  bool VerifyKeySignature(SigningKeyType,
+                          ByteView signature,
+                          ByteView data,
+                          ByteView key_bytes) const {
     return true;
   }
   std::string MimeType(std::string e,
@@ -74,6 +74,7 @@ struct MockApi final : public ipfs::ContextApi {
   }
 };
 struct TestRequestor final : public ig::Requestor {
+  TestRequestor() { api_ = std::make_shared<MockApi>(); }
   std::string_view name() const { return "return test requestor"; }
   HandleOutcome handle(ig::RequestPtr r) {
     auto cid = r->main_param;
@@ -185,7 +186,7 @@ struct OrchestratingRealData : public ::testing::Test {
 }  // namespace
 
 TEST_F(OrchestratingRealData, one_html_present) {
-  ipfs::log::SetLevel(ipfs::log::Level::TRACE);
+  ipfs::log::SetLevel(ipfs::log::Level::OFF);
   dorequest(abs_path("/one.html"));
   EXPECT_EQ(resp_.status_, 200);
   EXPECT_EQ(resp_.body_, "my one\n");
@@ -220,7 +221,6 @@ TEST_F(OrchestratingRealData, multinodefile_hit) {
       "/ipfs/bafybeif5shuqnuh2psa3syipw62scqokgbta43vv6xtfdjl6qirahmcxeq/bdir/"
       "cdir/multinodefile.txt");
   EXPECT_EQ(resp_.status_, 200);
-  EXPECT_EQ(resp_.status_, 200);
   auto i = 0ul;
   for (auto a = 'A'; a <= 'Z'; ++a) {
     for (auto b = 'a'; a <= 'z'; ++a) {
@@ -253,10 +253,11 @@ TEST_F(OrchestratingRealData, multinodefile_pbdagleaves) {
   }
 }
 TEST_F(OrchestratingRealData, examples_has_index_html) {
+  i::log::SetLevel(i::log::Level::INFO);
   dorequest("/ipfs/QmQyqMY5vUBSbSxyitJqthgwZunCQjDVtNd8ggVCxzuPQ4/examples");
   EXPECT_EQ(resp_.status_, 200);
-  EXPECT_EQ(resp_.mime_, "text/html");
   EXPECT_EQ(resp_.body_, "my index\n");
+  EXPECT_EQ(resp_.mime_, "text/html");
 }
 TEST_F(OrchestratingRealData, examples_articles_generates_list) {
   dorequest(

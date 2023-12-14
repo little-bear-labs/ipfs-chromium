@@ -6,7 +6,7 @@ from verbose import verbose
 
 from glob import glob
 from os import environ, makedirs, remove
-from os.path import dirname, getmtime, isdir, isfile, join, pathsep, relpath, splitext
+from os.path import basename, dirname, getmtime, isdir, isfile, join, pathsep, relpath, splitext
 from shutil import copyfile, which
 from sys import argv, executable, stderr
 
@@ -156,7 +156,7 @@ def copy_missing_and_changed_files(source, target):
             if not isdir(t):
                 makedirs(t)
             continue
-        if s.endswith('_unittest.cc') or 'inclusive' in s:
+        if s.endswith('_unittest.cc') or basename(s).startswith('test_'):
             continue
         ext = splitext(s)[-1]
         if ext in ignore_exts:

@@ -1,9 +1,11 @@
 #ifndef IPFS_RESPONSE_H_
 #define IPFS_RESPONSE_H_
 
-#include <cstdint>
+#include <vocab/byte.h>
 
+#include <cstdint>
 #include <string>
+#include <vector>
 
 namespace ipfs {
 

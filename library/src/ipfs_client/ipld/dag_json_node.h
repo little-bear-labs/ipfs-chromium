@@ -8,14 +8,8 @@ namespace ipfs::ipld {
 class DagJsonNode final : public DagNode {
   std::unique_ptr<DagJsonValue> data_;
   std::string html_;
-  ResolveResult resolve(SlashDelimited path,
-                        BlockLookup,
-                        std::string& up_to_here) override;
+  ResolveResult resolve(ResolutionState& params) override;
   Link* is_link();
-  ResolveResult child_resolve(SlashDelimited path,
-                              BlockLookup,
-                              std::string& up_to_here,
-                              Link& l);
   std::string const& html();
 
  public:

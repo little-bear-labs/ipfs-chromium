@@ -62,4 +62,6 @@ void Self::set_network_context(raw_ptr<network::mojom::NetworkContext> val) {
   network_context_ = val;
 }
 Self::InterRequestState(base::FilePath p) : disk_path_{p} {}
-Self::~InterRequestState() noexcept {}
+Self::~InterRequestState() noexcept {
+  network_context_ = nullptr;
+}

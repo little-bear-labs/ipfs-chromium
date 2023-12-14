@@ -18,41 +18,23 @@ Self::DagJsonNode(std::unique_ptr<DagJsonValue> j) : data_(std::move(j)) {
 }
 Self::~DagJsonNode() noexcept {}
 
-auto Self::resolve(SlashDelimited path,
-                   BlockLookup blu,
-                   std::string& up_to_here) -> ResolveResult {
-  if (auto link = is_link()) {
-    return child_resolve(path, blu, up_to_here, *link);
+auto Self::resolve(ResolutionState& params) -> ResolveResult {
+  auto respond_as_link = CallChild(params, "");
+  if (!std::get_if<ProvenAbsent>(&respond_as_link)) {
+    return respond_as_link;
   }
-  if (!path) {
-    return Response{"text/html", 200, html(), up_to_here};
+  if (params.IsFinalComponent()) {
+    return Response{"text/html", 200, html(), params.MyPath().to_string()};
   }
-  auto nxt = path.pop();
-  for (auto& [k, l] : links_) {
-    if (k == nxt) {
-      return child_resolve(path, blu, up_to_here, l);
+  return CallChild(params, [this](std::string_view name) -> NodePtr {
+    auto child_data = (*data_)[name];
+    if (child_data) {
+      return std::make_shared<DagJsonNode>(std::move(child_data));
     }
-  }
-  auto child_data = (*data_)[nxt];
-  if (child_data) {
-    links_.emplace_back(
-        nxt, Link("", std::make_shared<DagJsonNode>(std::move(child_data))));
-    return child_resolve(path, blu, up_to_here, links_.back().second);
-  }
-  return ProvenAbsent{};
+    return {};
+  });
 }
-auto Self::child_resolve(SlashDelimited path,
-                         BlockLookup blu,
-                         std::string& up_to_here,
-                         Link& l) -> ResolveResult {
-  if (!l.node) {
-    l.node = blu(l.cid);
-  }
-  if (!l.node) {
-    return MoreDataNeeded{{"/ipfs/" + l.cid}};
-  }
-  return l.node->resolve(path, blu, up_to_here);
-}
+
 auto Self::is_link() -> Link* {
   if (links_.size() == 1UL && links_.front().first.empty()) {
     return &links_.front().second;

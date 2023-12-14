@@ -12,7 +12,7 @@ struct RequestorPoolTest : public ::testing::Test {
   std::shared_ptr<ig::RequestorPool> tested =
       std::make_shared<ig::RequestorPool>();
   std::shared_ptr<ig::GatewayRequest> req =
-      ig::GatewayRequest::fromIpfsPath("/ipns/ipfs.io"sv);
+      ig::GatewayRequest::fromIpfsPath(i::SlashDelimited{"/ipns/ipfs.io"});
   void add() {
     auto p = std::make_shared<MockRequestor>();
     members.push_back(p);

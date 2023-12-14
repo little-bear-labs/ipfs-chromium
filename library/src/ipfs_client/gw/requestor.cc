@@ -3,9 +3,9 @@
 #include <ipfs_client/gw/gateway_request.h>
 #include <ipfs_client/ipld/dag_node.h>
 
-#include <ipfs_client/dag_block.h>
 #include <ipfs_client/ipfs_request.h>
 #include <ipfs_client/orchestrator.h>
+#include <ipfs_client/pb_dag.h>
 #include <ipfs_client/response.h>
 
 #include "log_macros.h"
@@ -54,55 +54,12 @@ void Self::request(ReqPtr req) {
       break;
   }
 }
-void Self::failure(ipfs::gw::RequestPtr r) const {
-  if (next_) {
-    LOG(WARNING) << name() << " failed on " << r->debug_string()
-                 << " ... passing along to " << next_->name();
-    next_->request(r);
-  } else {
-    definitive_failure(r);
-  }
-}
 void Self::definitive_failure(ipfs::gw::RequestPtr r) const {
   DCHECK(r);
   DCHECK(r->dependent);
   r->dependent->finish(Response::PLAIN_NOT_FOUND);
 }
-void Self::success(ipfs::gw::RequestPtr req, std::string_view body) const {
-  Response res;
-  res.status_ = 200;
-  res.body_.assign(body);
-  receive_response(req, res);
-}
-void Self::iterate_nodes(
-    GatewayRequest const& req,
-    Response const& res,
-    std::function<void(std::string, ipld::NodePtr)> cb) const {
-  if (res.body_.empty()) {
-    return;
-  }
-  Cid cid(req.main_param);
-  if (!cid.valid()) {
-    return;
-  }
-  Block b{std::move(cid), res.body_};
-  if (!b.valid()) {
-    return;
-  }
-  auto n = ipld::DagNode::fromBlock(b);
-  if (n) {
-    cb(req.main_param, n);
-  }
-}
-void Self::receive_response(ipfs::gw::RequestPtr req,
-                            ipfs::Response const& res) const {
-  if (res.status_ / 100 == 2) {
-    req->RespondSuccessfully(res.body_, api_);
-  } else if (req->parallel == 0) {
-    LOG(ERROR) << "Finally failing on " << req->debug_string();
-    definitive_failure(req);
-  }
-}
+
 void Self::forward(ipfs::gw::RequestPtr req) const {
   if (next_) {
     next_->request(req);

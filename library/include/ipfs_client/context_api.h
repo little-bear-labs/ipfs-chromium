@@ -70,8 +70,8 @@ class ContextApi : public std::enable_shared_from_this<ContextApi> {
 
   using SigningKeyType = ::ipfs::SigningKeyType;
   using ByteView = ::ipfs::ByteView;
-  virtual bool verify_key_signature(SigningKeyType,
-                                    ByteView signature,
+  virtual bool VerifyKeySignature(SigningKeyType,
+                                  ByteView signature,
                                     ByteView data,
                                     ByteView key_bytes) const = 0;
 
