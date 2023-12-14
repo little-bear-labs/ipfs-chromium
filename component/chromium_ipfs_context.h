@@ -40,8 +40,8 @@ class ChromiumIpfsContext final : public ContextApi {
                           DnsTextCompleteCallback) override;
   void SendHttpRequest(HttpRequestDescription req_inf,
                        HttpCompleteCallback cb) const override;
-  bool verify_key_signature(SigningKeyType,
-                            ByteView signature,
+  bool VerifyKeySignature(SigningKeyType,
+                          ByteView signature,
                             ByteView data,
                             ByteView key_bytes) const override;
 

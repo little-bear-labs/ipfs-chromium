@@ -7,9 +7,7 @@ namespace ipfs::ipld {
 class Symlink : public DagNode {
   std::string const target_;
 
-  ResolveResult resolve(SlashDelimited path,
-                        BlockLookup,
-                        std::string& up_to_here) override;
+  ResolveResult resolve(ResolutionState& params) override;
 
   bool is_absolute() const;
 

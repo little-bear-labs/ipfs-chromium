@@ -15,7 +15,6 @@ struct Response;
 
 namespace ipfs::gw {
 class GatewayRequest;
-class RequestPool;
 using RequestPtr = std::shared_ptr<GatewayRequest>;
 
 class Requestor : public std::enable_shared_from_this<Requestor> {
@@ -31,14 +30,7 @@ class Requestor : public std::enable_shared_from_this<Requestor> {
     MAYBE_LATER = 'M'
   };
   virtual HandleOutcome handle(RequestPtr) = 0;
-  virtual void iterate_nodes(
-      GatewayRequest const& req,
-      Response const& res,
-      std::function<void(std::string, std::shared_ptr<ipld::DagNode>)>) const;
 
-  void receive_response(RequestPtr, ipfs::Response const&) const;
-  void success(RequestPtr, std::string_view body) const;
-  void failure(RequestPtr) const;
   void definitive_failure(RequestPtr) const;
   void forward(RequestPtr) const;
 

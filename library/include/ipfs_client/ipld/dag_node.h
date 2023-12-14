@@ -2,6 +2,7 @@
 #define IPFS_DAG_NODE_H_
 
 #include "link.h"
+#include "resolution_state.h"
 
 #include <ipfs_client/cid.h>
 #include <ipfs_client/gw/gateway_request.h>
@@ -18,7 +19,7 @@
 #include <vector>
 
 namespace ipfs {
-class Block;
+class PbDag;
 class ContextApi;
 struct ValidatedIpns;
 }  // namespace ipfs
@@ -27,12 +28,16 @@ struct ContentIdentifier;
 }
 namespace ipfs::ipld {
 
-class DagNode;
 using NodePtr = std::shared_ptr<DagNode>;
 class DirShard;
 
 struct MoreDataNeeded {
+  MoreDataNeeded(std::string one) : ipfs_abs_paths_{{one}} {}
+  template <class Range>
+  MoreDataNeeded(Range const& many)
+      : ipfs_abs_paths_(many.begin(), many.end()) {}
   std::vector<std::string> ipfs_abs_paths_;
+  bool insist_on_car = false;
 };
 enum class ProvenAbsent {};
 struct PathChange {
@@ -45,20 +50,41 @@ using ResolveResult =
  * @brief A block, an IPNS record, etc.
  */
 class DagNode : public std::enable_shared_from_this<DagNode> {
+  Link* FindChild(std::string_view);
+  static void Descend(ResolutionState&);
+
  protected:
   std::vector<std::pair<std::string, Link>> links_;
   std::shared_ptr<ContextApi> api_;
 
+  ///< When the next path element is what's needed, and it should already be a
+  ///< link known about...
+  ResolveResult CallChild(ResolutionState&);
+
+  ///< As before, but it might be possible to create on the fly if not known
+  ResolveResult CallChild(ResolutionState&,
+                          std::function<NodePtr(std::string_view)> gen_child);
+
+  ///< When the child's name is not the next element in the path, but it must be
+  ///< known about. e.g. index.html for a path ending in a directory
+  ResolveResult CallChild(ResolutionState&, std::string_view link_key);
+
+  ///< Add the link if not present, then CallChild(ResolutionState)
+  ResolveResult CallChild(ResolutionState&,
+                          std::string_view link_key,
+                          std::string_view block_key);
+
  public:
-  using BlockLookup = std::function<NodePtr(std::string const&)>;
-  virtual ResolveResult resolve(SlashDelimited path,
-                                BlockLookup,
-                                std::string& up_to_here) = 0;
+  virtual ResolveResult resolve(ResolutionState& params) = 0;
+  ResolveResult resolve(SlashDelimited initial_path, BlockLookup);
 
   static NodePtr fromBytes(std::shared_ptr<ContextApi> const& api,
                            Cid const&,
+                           ByteView bytes);
+  static NodePtr fromBytes(std::shared_ptr<ContextApi> const& api,
+                           Cid const&,
                            std::string_view bytes);
-  static NodePtr fromBlock(Block const&);
+  static NodePtr fromBlock(PbDag const&);
   static NodePtr fromIpnsRecord(ValidatedIpns const&);
 
   virtual ~DagNode() noexcept {}

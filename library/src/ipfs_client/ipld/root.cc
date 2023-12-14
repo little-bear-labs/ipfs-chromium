@@ -19,16 +19,20 @@ Ptr Self::rooted() {
   return shared_from_this();
 }
 
-auto Self::resolve(SlashDelimited path, BlockLookup blu, std::string& to_here)
-    -> ResolveResult {
-  auto result = deroot()->resolve(path, blu, to_here);
-  if (std::get_if<ProvenAbsent>(&result)) {
-    auto missing_path = path.to_string();
-    if (path.pop() == "_redirects") {
+auto Self::resolve(ResolutionState& params) -> ResolveResult {
+  auto location = params.PathToResolve().to_string();
+  auto result = deroot()->resolve(params);
+  if (auto pc = std::get_if<PathChange>(&result)) {
+    auto lower = params.WithPath(pc->new_path);
+    result = resolve(lower);
+    location.assign(lower.MyPath().to_view());
+  } else if (std::get_if<ProvenAbsent>(&result)) {
+    if (params.NextComponent(api_.get()) == "_redirects") {
       return result;
     }
     if (!redirects_.has_value()) {
-      result = deroot()->resolve("_redirects"sv, blu, to_here);
+      auto redirects_path = params.WithPath("_redirects");
+      result = resolve(redirects_path);
       auto redirect_resp = std::get_if<Response>(&result);
       if (redirect_resp && redirect_resp->status_ == 200) {
         redirects_ = redirects::File(redirect_resp->body_);
@@ -41,42 +45,46 @@ auto Self::resolve(SlashDelimited path, BlockLookup blu, std::string& to_here)
     }
     if (redirects_.has_value() && redirects_.value().valid()) {
       Response* resp = nullptr;
-      auto status = redirects_.value().rewrite(missing_path);
-      if (missing_path.find("://") < missing_path.size()) {
+      auto status = redirects_.value().rewrite(location);
+      if (location.find("://") < location.size()) {
         LOG(INFO) << "_redirects file sent us to a whole URL, scheme-and-all: "
-                  << missing_path << " status=" << status;
-        return Response{"", status, "", missing_path};
+                  << location << " status=" << status;
+        return Response{"", status, "", location};
       }
+      auto lower_parm = params.WithPath(location).RestartResolvedPath();
       switch (status / 100) {
         case 0:  // no rewrites available
-          return result;
+          break;
         case 2:
-          return resolve(std::string_view{missing_path}, blu, to_here);
+          result = deroot()->resolve(lower_parm);
+          location.assign(lower_parm.MyPath().to_view());
+          break;
         case 3:
           // Let the redirect happen
-          return Response{"", status, "", missing_path};
-        case 4:
-          result =
-              deroot()->resolve(std::string_view{missing_path}, blu, to_here);
+          return Response{"", status, "", location};
+        case 4: {
+          result = deroot()->resolve(lower_parm);
+          location.assign(lower_parm.MyPath().to_view());
           if (std::get_if<ProvenAbsent>(&result)) {
-            return Response{"", 500, "", missing_path};
+            return Response{"", 500, "", location};
           }
           resp = std::get_if<Response>(&result);
           if (resp) {
             resp->status_ = status;
             return *resp;
           }
-          return result;  // MoreDataNeeded to fetch e.g. custom 404 page
+          break;  // MoreDataNeeded to fetch e.g. custom 404 page
+        }
         default:
           LOG(ERROR) << "Unsupported status came back from _redirects file: "
                      << status;
+          return ProvenAbsent{};
       }
     }
-    return ProvenAbsent{};
   }
   auto resp = std::get_if<Response>(&result);
   if (resp && resp->location_.empty()) {
-    resp->location_ = path.to_string();
+    resp->location_ = location;
   }
   return result;
 }

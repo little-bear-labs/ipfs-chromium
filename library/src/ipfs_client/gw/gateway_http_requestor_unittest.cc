@@ -32,8 +32,8 @@ struct GatewayHttpRequestorTest : public ::testing::Test {
     t->or_else(chain);
     auto noop = [](auto) {};
     auto noop2 = [](auto, auto) {};
-    auto req = R::fromIpfsPath(
-        "/ipfs/bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"sv);
+    auto req = R::fromIpfsPath(i::SlashDelimited{
+        "/ipfs/bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku"});
     req->orchestrator(orc = std::make_shared<ipfs::Orchestrator>(t, api));
     req->dependent = std::make_shared<ipfs::IpfsRequest>(
         "/ipfs/bafkreihdwdcefgh4dqkjv67uzcmw7ojee6xedzdetojuzjevtenxquvyku",

@@ -34,7 +34,7 @@ class raw_ptr {
  public:
   // Chromium's raw_ptr has a default ctor whose semantics depend on build
   // config. For components/ipfs purposes, there is no reason to ever default
-  // construct. Set it to nullptr. We have time needed to assign a word.
+  // construct. Set it to nullptr. We have time needed to read_start a word.
   raw_ptr() = delete;
 
   raw_ptr(T* p) : ptr_{p} {}

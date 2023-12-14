@@ -7,7 +7,7 @@ namespace ipfs::ipld {
 class Chunk : public DagNode {
   std::string const data_;
 
-  ResolveResult resolve(SlashDelimited, BlockLookup, std::string&) override;
+  ResolveResult resolve(ResolutionState&) override;
 
  public:
   explicit Chunk(std::string);

@@ -7,7 +7,7 @@
 
 namespace ipfs::ipld {
 class SmallDirectory : public DagNode {
-  ResolveResult resolve(SlashDelimited, BlockLookup, std::string&) override;
+  ResolveResult resolve(ResolutionState&) override;
 
  public:
   virtual ~SmallDirectory() noexcept;

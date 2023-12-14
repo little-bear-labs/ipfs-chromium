@@ -1,7 +1,7 @@
 #ifndef IPFS_BLOCKS_H_
 #define IPFS_BLOCKS_H_
 
-#include "dag_block.h"
+#include "pb_dag.h"
 #include "vocab/flat_mapset.h"
 
 #include <list>
@@ -44,7 +44,7 @@ class BlockStorage {
              Cid const& cid,
              std::string headers,
              std::string const& body,
-             Block&& block);
+             PbDag&& block);
 
   /*!
    * \name Store (Convenience)
@@ -53,7 +53,7 @@ class BlockStorage {
    * const&,Block&&)
    */
   ///@{
-  bool Store(std::string headers, std::string const& body, Block&& block);
+  bool Store(std::string headers, std::string const& body, PbDag&& block);
   bool Store(std::string const& cid, std::string headers, std::string body);
   bool Store(std::string cid_str,
              Cid const& cid,
@@ -62,7 +62,7 @@ class BlockStorage {
   bool Store(Cid const& cid,
              std::string headers,
              std::string const& body,
-             Block&&);
+             PbDag&&);
   ///@}
 
   /*!
@@ -73,7 +73,7 @@ class BlockStorage {
    * \return Non-owning pointer if found, nullptr
    * otherwise
    */
-  Block const* Get(std::string const& cid);
+  PbDag const* Get(std::string const& cid);
 
   /*!
    * \brief Get HTTP headers associated with the block
@@ -124,7 +124,7 @@ class BlockStorage {
     ~Record() noexcept;
     std::time_t last_access = 0L;
     std::string cid_str = {};
-    Block block = {};
+    PbDag block = {};
     std::string headers = {};
   };
   std::list<Record> records_ = std::list<Record>(0xFFUL);

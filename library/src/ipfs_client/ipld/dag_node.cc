@@ -11,11 +11,12 @@
 #include "unixfs_file.h"
 
 #include <ipfs_client/context_api.h>
-#include <ipfs_client/dag_block.h>
 #include <ipfs_client/ipns_record.h>
+#include <ipfs_client/pb_dag.h>
 
 #include "log_macros.h"
 
+#include <algorithm>
 #include <sstream>
 
 using Node = ipfs::ipld::DagNode;
@@ -23,8 +24,35 @@ using Node = ipfs::ipld::DagNode;
 std::shared_ptr<Node> Node::fromBytes(std::shared_ptr<ContextApi> const& api,
                                       Cid const& cid,
                                       std::string_view bytes) {
+  return fromBytes(api, cid, as_bytes(bytes));
+}
+auto Node::fromBytes(std::shared_ptr<ContextApi> const& api,
+                     ipfs::Cid const& cid,
+                     ipfs::ByteView bytes) -> NodePtr {
   std::shared_ptr<Node> result = nullptr;
-
+  auto hash = api->Hash(cid.hash_type(), bytes);
+  if (!hash.has_value()) {
+    LOG(ERROR) << "Could not hash response for " << cid.to_string();
+    return {};
+  }
+  if (hash.value().size() != cid.hash().size()) {
+    return {};
+  }
+  for (auto i = 0U; i < hash.value().size(); ++i) {
+    auto e = cid.hash()[i];
+    auto a = hash.value().at(i);
+    if (e != a) {
+      return {};
+    }
+  }
+  auto required = cid.hash();
+  auto calculated = hash.value();
+  if (!std::equal(required.begin(), required.end(), calculated.begin(),
+                  calculated.end())) {
+    LOG(ERROR) << "Hash of response did not match the one in the CID "
+               << cid.to_string();
+    return {};
+  }
   switch (cid.codec()) {
     case MultiCodec::DAG_CBOR: {
       auto p = reinterpret_cast<Byte const*>(bytes.data());
@@ -37,7 +65,8 @@ std::shared_ptr<Node> Node::fromBytes(std::shared_ptr<ContextApi> const& api,
       }
     } break;
     case MultiCodec::DAG_JSON: {
-      auto json = api->ParseJson(bytes);
+      auto p = reinterpret_cast<char const*>(bytes.data());
+      auto json = api->ParseJson({p, bytes.size()});
       if (json) {
         result = std::make_shared<DagJsonNode>(std::move(json));
       } else {
@@ -47,7 +76,7 @@ std::shared_ptr<Node> Node::fromBytes(std::shared_ptr<ContextApi> const& api,
     } break;
     case MultiCodec::RAW:
     case MultiCodec::DAG_PB: {
-      ipfs::Block b{cid, bytes};
+      ipfs::PbDag b{cid, bytes};
       if (b.valid()) {
         result = fromBlock(b);
       } else {
@@ -74,33 +103,33 @@ std::shared_ptr<Node> Node::fromBytes(std::shared_ptr<ContextApi> const& api,
   }
   return result;
 }
-std::shared_ptr<Node> Node::fromBlock(ipfs::Block const& block) {
+std::shared_ptr<Node> Node::fromBlock(ipfs::PbDag const& block) {
   std::shared_ptr<Node> result;
   switch (block.type()) {
-    case Block::Type::FileChunk:
+    case PbDag::Type::FileChunk:
       return std::make_shared<Chunk>(block.chunk_data());
-    case Block::Type::NonFs:
+    case PbDag::Type::NonFs:
       return std::make_shared<Chunk>(block.unparsed());
-    case Block::Type::Symlink:
+    case PbDag::Type::Symlink:
       return std::make_shared<Symlink>(block.chunk_data());
-    case Block::Type::Directory:
+    case PbDag::Type::Directory:
       result = std::make_shared<SmallDirectory>();
       break;
-    case Block::Type::File:
-    case Block::Type::Raw:
+    case PbDag::Type::File:
+    case PbDag::Type::Raw:
       result = std::make_shared<UnixfsFile>();
       break;
-    case Block::Type::HAMTShard:
+    case PbDag::Type::HAMTShard:
       if (block.fsdata().has_fanout()) {
         result = std::make_shared<DirShard>(block.fsdata().fanout());
       } else {
         result = std::make_shared<DirShard>();
       }
       break;
-    case Block::Type::Metadata:
+    case PbDag::Type::Metadata:
       LOG(ERROR) << "Metadata blocks unhandled.";
       return result;
-    case Block::Type::Invalid:
+    case PbDag::Type::Invalid:
       LOG(ERROR) << "Invalid block.";
       return result;
     default:
@@ -129,6 +158,89 @@ auto Node::as_hamt() -> DirShard* {
 }
 void Node::set_api(std::shared_ptr<ContextApi> api) {
   api_ = api;
+}
+auto Node::resolve(SlashDelimited initial_path, BlockLookup blu)
+    -> ResolveResult {
+  ResolutionState state;
+  state.resolved_path_components = "";
+  state.unresolved_path = initial_path;
+  state.get_available_block = blu;
+  return resolve(state);
+}
+auto Node::CallChild(ipfs::ipld::ResolutionState& state) -> ResolveResult {
+  return CallChild(state, state.NextComponent(api_.get()));
+}
+auto Node::CallChild(ipfs::ipld::ResolutionState& state,
+                     std::string_view link_key,
+                     std::string_view block_key) -> ResolveResult {
+  auto child = FindChild(link_key);
+  if (!child) {
+    links_.emplace_back(link_key, Link{std::string{block_key}, {}});
+  }
+  return CallChild(state, link_key);
+}
+auto Node::CallChild(ResolutionState& state, std::string_view link_key)
+    -> ResolveResult {
+  auto* child = FindChild(link_key);
+  if (!child) {
+    return ProvenAbsent{};
+  }
+  auto& node = child->node;
+  if (!node) {
+    node = state.GetBlock(child->cid);
+  }
+  if (node) {
+    Descend(state);
+    return node->resolve(state);
+  } else {
+    std::string needed{"/ipfs/"};
+    needed.append(child->cid);
+    auto more = state.unresolved_path.to_view();
+    if (more.size()) {
+      if (more.front() != '/') {
+        needed.push_back('/');
+      }
+      needed.append(more);
+    }
+    return MoreDataNeeded{needed};
+  }
+}
+auto Node::CallChild(ResolutionState& state,
+                     std::function<NodePtr(std::string_view)> gen_child)
+    -> ResolveResult {
+  auto link_key = state.NextComponent(api_.get());
+  auto child = FindChild(link_key);
+  if (!child) {
+    links_.emplace_back(link_key, Link{{}, {}});
+    child = &links_.back().second;
+  }
+  auto& node = child->node;
+  if (!node) {
+    node = gen_child(link_key);
+    if (!node) {
+      return ProvenAbsent{};
+    }
+  }
+  Descend(state);
+  return node->resolve(state);
+}
+auto Node::FindChild(std::string_view link_key) -> Link* {
+  for (auto& [name, link] : links_) {
+    if (name == link_key) {
+      return &link;
+    }
+  }
+  return nullptr;
+}
+void Node::Descend(ResolutionState& state) {
+  auto next = state.unresolved_path.pop();
+  if (next.empty()) {
+    return;
+  }
+  if (!state.resolved_path_components.ends_with('/')) {
+    state.resolved_path_components.push_back('/');
+  }
+  state.resolved_path_components.append(next);
 }
 
 std::ostream& operator<<(std::ostream& s, ipfs::ipld::PathChange const& c) {

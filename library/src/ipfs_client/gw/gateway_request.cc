@@ -4,10 +4,11 @@
 #include <ipfs_client/ipld/dag_node.h>
 #include <ipfs_client/ipld/ipns_name.h>
 
-#include <ipfs_client/dag_block.h>
+#include <ipfs_client/car.h>
 #include <ipfs_client/ipfs_request.h>
 #include <ipfs_client/ipns_record.h>
 #include <ipfs_client/orchestrator.h>
+#include <ipfs_client/pb_dag.h>
 #include <ipfs_client/response.h>
 
 #include "log_macros.h"
@@ -153,10 +154,13 @@ std::optional<std::size_t> Self::max_response_size() const {
     case Type::Block:
       return BLOCK_RESPONSE_BUFFER_SIZE;
     case Type::Car: {
-      auto n = std::count(path.begin(), path.end(), '/');
-      // now n >= number of path components, but there is also a block for root
-      n++;
-      return n * BLOCK_RESPONSE_BUFFER_SIZE;
+      // There could be an unlimited number of blocks in the CAR
+      //  The _floor_ is the number of path components.
+      //  But one path component could be a HAMT sharded directory that we may
+      //    need to pass through several layers on.
+      //  And the final path component could be a UnixFS file with an unlimited
+      //    number of blocks in it.
+      return std::nullopt;
     }
     case Type::Zombie:
       return 0;
@@ -215,9 +219,10 @@ bool Self::RespondSuccessfully(std::string_view bytes,
     case Type::Block: {
       DCHECK(cid.has_value());
       if (!cid.has_value()) {
-        LOG(ERROR) << "Your CID doesn't even hae a value!";
+        LOG(ERROR) << "Your CID doesn't even have a value!";
         return false;
       }
+      DCHECK(api);
       auto node = DagNode::fromBytes(api, cid.value(), bytes);
       success = orchestrator_->add_node(main_param, node);
     } break;
@@ -249,14 +254,30 @@ bool Self::RespondSuccessfully(std::string_view bytes,
         LOG(FATAL) << "I have no orchestrator!!";
       }
       break;
-    case Type::Zombie:
-      LOG(ERROR) << "Responding to a zombie is ill-advised.";
+    case Type::Car: {
+      DCHECK(api);
+      Car car(as_bytes(bytes), *api);
+      auto added = 0;
+      while (auto block = car.NextBlock()) {
+        auto cid_s = block->cid.to_string();
+        auto n = DagNode::fromBytes(api, block->cid, block->bytes);
+        if (!n) {
+          LOG(ERROR) << "Unable to handle block from CAR: " << cid_s;
+        } else if (orchestrator_->add_node(cid_s, n)) {
+          ++added;
+        } else {
+          LOG(INFO) << "Did not add node from CAR: " << cid_s;
+        }
+      }
+      LOG(INFO) << "Added " << added << " nodes from a CAR.";
+      success = added > 0;
       break;
-    case Type::Car:
-      LOG(WARNING) << "TODO - handle responses to CAR requests.";
-      break;
+    }
     case Type::Providers:
       LOG(WARNING) << "TODO - handle responses to providers requests.";
+      break;
+    case Type::Zombie:
+      LOG(WARNING) << "Responding to a zombie is ill-advised.";
       break;
     default:
       LOG(ERROR) << "TODO " << static_cast<int>(type);
@@ -275,4 +296,10 @@ void Self::Hook(std::function<void(std::string_view)> f) {
 }
 void Self::orchestrator(std::shared_ptr<Orchestrator> const& orc) {
   orchestrator_ = orc;
+}
+bool Self::PartiallyRedundant() const {
+  if (!orchestrator_) {
+    return false;
+  }
+  return orchestrator_->has_key(main_param);
 }

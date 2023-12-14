@@ -17,7 +17,7 @@ namespace n = nlohmann;
 
 namespace {
 struct DagJsonNodeTest : public ::testing::Test {
-  Super::BlockLookup noop_blu() const {
+  auto noop_blu() const {
     return [](auto&) { return ii::NodePtr{}; };
   }
   std::unique_ptr<Tested> tested_;
@@ -68,7 +68,7 @@ struct DagJsonNodeTest : public ::testing::Test {
 
 TEST_F(DagJsonNodeTest, preview) {
   std::string p;
-  auto result = super().resolve(""sv, noop_blu(), p);
+  auto result = super().resolve(i::SlashDelimited{""}, noop_blu());
   auto& resp = std::get<i::Response>(result);
   EXPECT_EQ(resp.status_, 200);
   EXPECT_EQ(resp.mime_, "text/html");

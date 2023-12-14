@@ -1,5 +1,7 @@
 name: Tour de IPFS
-on: push
+on:
+  push:
+  workflow_call:
 jobs:
   tour:
     name: Build clitester and exercize various ipfs_client features
@@ -73,6 +75,10 @@ jobs:
             fi
           }
           url_case ipfs bafkqacdjmrsw45djor4q ff483d1ff591898a9942916050d2ca3f
+          
           true the block itself md5s to b92348005af4ae4795e6f312844fb359, but the response is an HTML preview page
           url_case ipfs baguqeerah2nswg7r2pvlpbnsz5y4c4pr4wsgbzixdl632w5qxvedqzryf54q 7750fd7b0928f007e1d181763c0dbdb5
-          killall python3
+    
+          url_case ipns en.wikipedia-on-ipfs.org/I/HFE_Too_Slow_1.JPG.webp 8238a73ddb12e56f8f3879cc91d2739e          
+          url_case ipfs bafybeieb33pqideyl5ncd33kho622thym5rqv6sujrmelcuhkjlf2hdpu4/Big%20Buck%20Bunny.webm 06d51286e56badb4455594ebed6daba2
+          killall python3 2>/dev/null || true

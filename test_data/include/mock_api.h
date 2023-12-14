@@ -48,8 +48,8 @@ struct MockApi final : public i::ContextApi {
     return "";
   }
   IpnsCborEntry deserialize_cbor(ByteView) const { return {}; }
-  bool verify_key_signature(SigningKeyType,
-                            ByteView signature,
+  bool VerifyKeySignature(SigningKeyType,
+                          ByteView signature,
                             ByteView data,
                             ByteView key_bytes) const {
     return true;
@@ -58,7 +58,8 @@ struct MockApi final : public i::ContextApi {
   void Discover(std::function<void(std::vector<std::string>)> cb) {}
 #if HAS_JSON_CBOR_ADAPTER
   std::unique_ptr<ipfs::DagCborValue> ParseCbor(ByteView bv) const {
-    return std::make_unique<ipfs::JsonCborAdapter>(nlohmann::json::from_cbor(bv));
+    return std::make_unique<ipfs::JsonCborAdapter>(nlohmann::json::from_cbor(
+        bv, false, true, nlohmann::detail::cbor_tag_handler_t::store));
   }
 #else
   std::unique_ptr<ipfs::DagCborValue> ParseCbor(ByteView bv) const { return {}; }

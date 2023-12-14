@@ -13,7 +13,7 @@ struct DnslinkRequestorTest : public testing::Test {
   std::shared_ptr<MockApi> api = std::make_shared<MockApi>();
   std::shared_ptr<T> t_ = std::make_shared<T>(api);
   std::shared_ptr<ig::GatewayRequest> r_ =
-      ig::GatewayRequest::fromIpfsPath("/ipns/not_a_cid"sv);
+      ig::GatewayRequest::fromIpfsPath(i::SlashDelimited{"/ipns/not_a_cid"});
   ig::Requestor& t() { return *t_; }
   std::shared_ptr<i::Orchestrator> orc_ = std::make_shared<i::Orchestrator>(
       std::make_shared<ig::TerminatingRequestor>());

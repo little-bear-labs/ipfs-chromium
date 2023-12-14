@@ -34,4 +34,10 @@ namespace {
 }
 }  // namespace
 
+namespace ipfs {
+inline bool operator==(Byte a, Byte b) {
+  return to_integer(a) == to_integer(b);
+}
+}  // namespace ipfs
+
 #endif  // IPFS_BYTE_H_

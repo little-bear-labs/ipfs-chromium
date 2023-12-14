@@ -51,7 +51,7 @@ TEST_F(DagCborTest,ObjectWithLink) {
       return ipfs::ipld::NodePtr{};
     };
   std::string to_here{"/ipfs/bafyreifrkkhbwkf3fibwhbzcmpqnmh3b4t5t4ig7qdtymkdoatcycwe6n4"};
-  auto result = tested().resolve(""sv, blu, to_here);
+  auto result = tested().resolve(i::SlashDelimited{""}, blu);
   auto& response = std::get<ipfs::Response>(result);
   EXPECT_EQ(response.mime_,"text/html");
   EXPECT_EQ(response.body_, R"HTML(<html><title>DAG-CBOR Preview</title><body>
@@ -74,7 +74,7 @@ TEST_F(DagCborTest,ObjectWithLink) {
 </table>
 </body></html>)HTML"
             );
-  result = tested().resolve("metadata.json"sv, blu, to_here);
+  result = tested().resolve(i::SlashDelimited{"metadata.json"}, blu);
   auto resp = std::get<ipfs::Response>(result);
   EXPECT_EQ(resp.status_,200);
   EXPECT_EQ(resp.body_,metadata_json);

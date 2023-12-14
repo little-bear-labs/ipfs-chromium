@@ -16,6 +16,9 @@ class MultiHash {
   MultiHash() = default;
   explicit MultiHash(ByteView);
   explicit MultiHash(HashType, ByteView digest);
+  
+  bool ReadPrefix(ByteView&);
+
   bool valid() const;
   HashType type() const { return type_; }
   ByteView digest() const { return hash_; }
