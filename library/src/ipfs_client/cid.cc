@@ -24,7 +24,7 @@ Self::Cid(std::string_view s) {
       assign(bytes.value());
     }
   } else {
-    LOG(ERROR) << "Failed to decode the multibase for a CID: " << s;
+    LOG(WARNING) << "Failed to decode the multibase for a CID: " << s;
   }
 }
 
