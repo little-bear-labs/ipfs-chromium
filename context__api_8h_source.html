@@ -85,58 +85,59 @@ $(function() {
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;functional&gt;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;optional&gt;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>ipfs {</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">class </span>IpfsRequest;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">class </span>DagJsonValue;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="classipfs_1_1ContextApi.html">   28</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1ContextApi.html">ContextApi</a> : <span class="keyword">public</span> std::enable_shared_from_this&lt;ContextApi&gt; {</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <a class="code" href="classipfs_1_1ContextApi.html">ContextApi</a>();</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classipfs_1_1ContextApi.html">ContextApi</a>() noexcept {}</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keyword">using</span> <a class="code" href="structipfs_1_1HttpRequestDescription.html">HttpRequestDescription</a> = <a class="code" href="structipfs_1_1HttpRequestDescription.html">::ipfs::HttpRequestDescription</a>;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keyword">using</span> HeaderAccess = std::function&lt;std::string(std::string_view)&gt;;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keyword">using</span> HttpCompleteCallback =</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      std::function&lt;void(std::int16_t, std::string_view, HeaderAccess)&gt;;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> SendHttpRequest(<a class="code" href="structipfs_1_1HttpRequestDescription.html">HttpRequestDescription</a>,</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                               HttpCompleteCallback cb) <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keyword">using</span> DnsTextResultsCallback =</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;      std::function&lt;void(std::vector&lt;std::string&gt; <span class="keyword">const</span>&amp;)&gt;;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keyword">using</span> DnsTextCompleteCallback = std::function&lt;void(<span class="keywordtype">void</span>)&gt;;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> SendDnsTextRequest(std::string hostname,</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                                  DnsTextResultsCallback,</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                                  DnsTextCompleteCallback) = 0;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
-<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="classipfs_1_1ContextApi.html#a67c029b3a659deeda252fbc0229e7cc4">   53</a></span>&#160;  <span class="keyword">virtual</span> std::string <a class="code" href="classipfs_1_1ContextApi.html#a67c029b3a659deeda252fbc0229e7cc4">MimeType</a>(std::string extension,</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                               std::string_view content,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                               std::string <span class="keyword">const</span>&amp; url) <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; </div>
-<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="classipfs_1_1ContextApi.html#a5bafd20d2efe1e61dab0bda78ff53988">   63</a></span>&#160;  <span class="keyword">virtual</span> std::string <a class="code" href="classipfs_1_1ContextApi.html#a5bafd20d2efe1e61dab0bda78ff53988">UnescapeUrlComponent</a>(std::string_view url_comp) <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; </div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keyword">virtual</span> std::unique_ptr&lt;DagCborValue&gt; ParseCbor(ByteView) <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keyword">virtual</span> std::unique_ptr&lt;DagJsonValue&gt; ParseJson(std::string_view) <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keyword">using</span> <a class="code" href="structipfs_1_1IpnsCborEntry.html">IpnsCborEntry</a> = <a class="code" href="structipfs_1_1IpnsCborEntry.html">::ipfs::IpnsCborEntry</a>;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keyword">using</span> SigningKeyType = ::ipfs::SigningKeyType;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keyword">using</span> ByteView = ::ipfs::ByteView;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> verify_key_signature(SigningKeyType,</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                                    ByteView signature,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                                    ByteView data,</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                                    ByteView key_bytes) <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160; </div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  std::optional&lt;std::vector&lt;Byte&gt;&gt; Hash(HashType, ByteView data);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  std::unordered_map&lt;HashType, std::unique_ptr&lt;crypto::Hasher&gt;&gt; hashers_;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;};</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclassipfs_1_1ContextApi_html"><div class="ttname"><a href="classipfs_1_1ContextApi.html">ipfs::ContextApi</a></div><div class="ttdoc">Interface that provides functionality from whatever environment you're using this library in.</div><div class="ttdef"><b>Definition:</b> context_api.h:28</div></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>ipfs {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">class </span>IpfsRequest;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">class </span>DagJsonValue;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
+<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="classipfs_1_1ContextApi.html">   29</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1ContextApi.html">ContextApi</a> : <span class="keyword">public</span> std::enable_shared_from_this&lt;ContextApi&gt; {</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <a class="code" href="classipfs_1_1ContextApi.html">ContextApi</a>();</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classipfs_1_1ContextApi.html">ContextApi</a>() noexcept {}</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160; </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keyword">using</span> <a class="code" href="structipfs_1_1HttpRequestDescription.html">HttpRequestDescription</a> = <a class="code" href="structipfs_1_1HttpRequestDescription.html">::ipfs::HttpRequestDescription</a>;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keyword">using</span> HeaderAccess = std::function&lt;std::string(std::string_view)&gt;;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keyword">using</span> HttpCompleteCallback =</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      std::function&lt;void(std::int16_t, std::string_view, HeaderAccess)&gt;;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> SendHttpRequest(<a class="code" href="structipfs_1_1HttpRequestDescription.html">HttpRequestDescription</a>,</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                               HttpCompleteCallback cb) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keyword">using</span> DnsTextResultsCallback =</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      std::function&lt;void(std::vector&lt;std::string&gt; <span class="keyword">const</span>&amp;)&gt;;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keyword">using</span> DnsTextCompleteCallback = std::function&lt;void(<span class="keywordtype">void</span>)&gt;;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> SendDnsTextRequest(std::string hostname,</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                                  DnsTextResultsCallback,</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;                                  DnsTextCompleteCallback) = 0;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
+<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="classipfs_1_1ContextApi.html#a67c029b3a659deeda252fbc0229e7cc4">   54</a></span>&#160;  <span class="keyword">virtual</span> std::string <a class="code" href="classipfs_1_1ContextApi.html#a67c029b3a659deeda252fbc0229e7cc4">MimeType</a>(std::string extension,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                               std::string_view content,</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                               std::string <span class="keyword">const</span>&amp; url) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="classipfs_1_1ContextApi.html#a5bafd20d2efe1e61dab0bda78ff53988">   64</a></span>&#160;  <span class="keyword">virtual</span> std::string <a class="code" href="classipfs_1_1ContextApi.html#a5bafd20d2efe1e61dab0bda78ff53988">UnescapeUrlComponent</a>(std::string_view url_comp) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keyword">virtual</span> std::unique_ptr&lt;DagCborValue&gt; ParseCbor(ByteView) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keyword">virtual</span> std::unique_ptr&lt;DagJsonValue&gt; ParseJson(std::string_view) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keyword">using</span> <a class="code" href="structipfs_1_1IpnsCborEntry.html">IpnsCborEntry</a> = <a class="code" href="structipfs_1_1IpnsCborEntry.html">::ipfs::IpnsCborEntry</a>;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keyword">using</span> SigningKeyType = ::ipfs::SigningKeyType;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keyword">using</span> ByteView = ::ipfs::ByteView;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> verify_key_signature(SigningKeyType,</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                                    ByteView signature,</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                                    ByteView data,</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                                    ByteView key_bytes) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  std::optional&lt;std::vector&lt;Byte&gt;&gt; Hash(HashType, ByteView data);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  std::unordered_map&lt;HashType, std::unique_ptr&lt;crypto::Hasher&gt;&gt; hashers_;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;};</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; </div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160; </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aclassipfs_1_1ContextApi_html"><div class="ttname"><a href="classipfs_1_1ContextApi.html">ipfs::ContextApi</a></div><div class="ttdoc">Interface that provides functionality from whatever environment you're using this library in.</div><div class="ttdef"><b>Definition:</b> context_api.h:29</div></div>
 <div class="ttc" id="aclassipfs_1_1ContextApi_html_a5bafd20d2efe1e61dab0bda78ff53988"><div class="ttname"><a href="classipfs_1_1ContextApi.html#a5bafd20d2efe1e61dab0bda78ff53988">ipfs::ContextApi::UnescapeUrlComponent</a></div><div class="ttdeci">virtual std::string UnescapeUrlComponent(std::string_view url_comp) const =0</div><div class="ttdoc">Remove URL escaping, e.g. %20.</div></div>
 <div class="ttc" id="aclassipfs_1_1ContextApi_html_a67c029b3a659deeda252fbc0229e7cc4"><div class="ttname"><a href="classipfs_1_1ContextApi.html#a67c029b3a659deeda252fbc0229e7cc4">ipfs::ContextApi::MimeType</a></div><div class="ttdeci">virtual std::string MimeType(std::string extension, std::string_view content, std::string const &amp;url) const =0</div><div class="ttdoc">Determine a mime type for a given file.</div></div>
 <div class="ttc" id="astructipfs_1_1HttpRequestDescription_html"><div class="ttname"><a href="structipfs_1_1HttpRequestDescription.html">ipfs::HttpRequestDescription</a></div><div class="ttdef"><b>Definition:</b> http_request_description.h:10</div></div>
