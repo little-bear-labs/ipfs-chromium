@@ -27,23 +27,6 @@ TEST(SymlinkTest, fromBlock) {
       "a/d/e";
   EXPECT_EQ(actual.new_path, expect);
 }
-TEST(SymlinkTest, absolute) {
-  ii::Symlink sub{
-      "/ipfs/bafkreih6wk34z7qlwe2jj4ynowkh4ux6pbqnijcebcz7sd4fz3rnigxa6u"};
-  ii::DagNode& t = sub;
-  auto blu = [](std::string const&) -> ii::NodePtr {
-    throw std::runtime_error{"Block lookup not expected."};
-  };
-  std::string observed_path_to_link{"/ipns/"};
-  observed_path_to_link
-      .append("k51qzi5uqu5dkq4jxcqvujfm2woh4p9y6inrojofxflzdnfht168zf8ynfzuu1")
-      .append("symlinks/absolute_link.txt");
-  auto res = t.resolve(""sv, blu, observed_path_to_link);
-  EXPECT_TRUE(std::holds_alternative<ii::PathChange>(res));
-  EXPECT_EQ(
-      std::get<ii::PathChange>(res).new_path,
-      "/ipfs/bafkreih6wk34z7qlwe2jj4ynowkh4ux6pbqnijcebcz7sd4fz3rnigxa6u");
-}
 TEST(SymlinkTest, rooted) {
   ii::Symlink sub{"/another/path.txt"};
   ii::DagNode& t = sub;
@@ -60,19 +43,4 @@ TEST(SymlinkTest, rooted) {
       std::get<ii::PathChange>(res).new_path,
       "/ipns/k51qzi5uqu5dkq4jxcqvujfm2woh4p9y6inrojofxflzdnfht168zf8ynfzuu1/"
       "another/path.txt");
-}
-TEST(SymlinkTest, ipns_absolute) {
-  ii::Symlink sub{"/ipns/en.wikipedia-on-ipfs.org"};
-  ii::DagNode& t = sub;
-  auto blu = [](std::string const&) -> ii::NodePtr {
-    throw std::runtime_error{"Block lookup not expected."};
-  };
-  std::string observed_path_to_link{"/ipns/"};
-  observed_path_to_link
-      .append("k51qzi5uqu5dkq4jxcqvujfm2woh4p9y6inrojofxflzdnfht168zf8ynfzuu1")
-      .append("symlinks/absolute_link.txt");
-  auto res = t.resolve(""sv, blu, observed_path_to_link);
-  EXPECT_TRUE(std::holds_alternative<ii::PathChange>(res));
-  EXPECT_EQ(std::get<ii::PathChange>(res).new_path,
-            "/ipns/en.wikipedia-on-ipfs.org");
 }

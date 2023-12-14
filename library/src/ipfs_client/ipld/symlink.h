@@ -5,18 +5,13 @@
 
 namespace ipfs::ipld {
 class Symlink : public DagNode {
-  enum class Style {
-    Relative,
-    Absolute,
-    FromRoot,
-  };
-  Style const style_;
   std::string const target_;
 
-  Style from_target(std::string const&);
   ResolveResult resolve(SlashDelimited path,
                         BlockLookup,
                         std::string& up_to_here) override;
+
+  bool is_absolute() const;
 
  public:
   Symlink(std::string target);

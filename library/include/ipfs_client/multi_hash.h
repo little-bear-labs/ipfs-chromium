@@ -7,6 +7,8 @@
 
 namespace ipfs {
 enum class HashType { INVALID = -1, IDENTITY = 0, SHA2_256 = 0X12 };
+constexpr std::uint16_t MaximumHashLength = 127;
+
 HashType Validate(HashType);
 std::string_view GetName(HashType);
 class MultiHash {
