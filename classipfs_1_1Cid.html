@@ -67,11 +67,21 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-attribs">Static Public Attributes</a> &#124;
 <a href="classipfs_1_1Cid-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">ipfs::Cid Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+<div class="dynheader">
+Collaboration diagram for ipfs::Cid:</div>
+<div class="dyncontent">
+<div class="center"><img src="classipfs_1_1Cid__coll__graph.png" border="0" usemap="#aipfs_1_1Cid_coll__map" alt="Collaboration graph"/></div>
+<map name="aipfs_1_1Cid_coll__map" id="aipfs_1_1Cid_coll__map">
+<area shape="rect" title=" " alt="" coords="5,95,80,121"/>
+<area shape="rect" title=" " alt="" coords="13,5,73,32"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -84,6 +94,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac16541af8520f17a71a05be586aaa333"><td class="memItemLeft" align="right" valign="top"><a id="ac16541af8520f17a71a05be586aaa333"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Cid</b> (ByteView)</td></tr>
 <tr class="separator:ac16541af8520f17a71a05be586aaa333"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2dd8a9333e10ed226613bc8697c0ff18"><td class="memItemLeft" align="right" valign="top"><a id="a2dd8a9333e10ed226613bc8697c0ff18"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>ReadStart</b> (ByteView &amp;)</td></tr>
+<tr class="separator:a2dd8a9333e10ed226613bc8697c0ff18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aea13580efe52442962cac3224cd83a71"><td class="memItemLeft" align="right" valign="top"><a id="aea13580efe52442962cac3224cd83a71"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>valid</b> () const</td></tr>
 <tr class="separator:aea13580efe52442962cac3224cd83a71"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -102,7 +115,38 @@ HashType&#160;</td><td class="memItemRight" valign="bottom"><b>hash_type</b> () 
 <tr class="memitem:a4b8811a00567a87feae94a70a9243a8e"><td class="memItemLeft" align="right" valign="top"><a id="a4b8811a00567a87feae94a70a9243a8e"></a>
 std::string&#160;</td><td class="memItemRight" valign="bottom"><b>to_string</b> () const</td></tr>
 <tr class="separator:a4b8811a00567a87feae94a70a9243a8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
+Static Public Attributes</h2></td></tr>
+<tr class="memitem:af8ee640eb00028ae9be1385360e978cb"><td class="memItemLeft" align="right" valign="top">constexpr static std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>MinSerializedLength</b></td></tr>
+<tr class="separator:af8ee640eb00028ae9be1385360e978cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="af8ee640eb00028ae9be1385360e978cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af8ee640eb00028ae9be1385360e978cb">&#9670;&nbsp;</a></span>MinSerializedLength</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr static std::size_t ipfs::Cid::MinSerializedLength</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<b>Initial value:</b><div class="fragment"><div class="line">=</div>
+<div class="line">      1  + 1  + 1  +</div>
+<div class="line">      1</div>
+</div><!-- fragment -->
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/<a class="el" href="cid_8h_source.html">cid.h</a></li>
 </ul>
