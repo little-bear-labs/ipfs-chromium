@@ -78,7 +78,7 @@ $(function() {
 <div class="line"><a name="l00007"></a><span class="lineno"><a class="line" href="classipfs_1_1ipld_1_1DirShard.html">    7</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1ipld_1_1DirShard.html">DirShard</a> : <span class="keyword">public</span> <a class="code" href="classipfs_1_1ipld_1_1DagNode.html">DagNode</a> {</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;  std::uint64_t <span class="keyword">const</span> fanout_;</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  ResolveResult resolve(<a class="code" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp;) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  ResolveResult resolve(<a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a>, BlockLookup, std::string&amp;) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;  <a class="code" href="classipfs_1_1ipld_1_1DirShard.html">DirShard</a>* as_hamt() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  std::vector&lt;std::string&gt; hexhash(std::string_view path_element) <span class="keyword">const</span>;</div>
@@ -86,18 +86,20 @@ $(function() {
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  ResolveResult resolve_internal(HashIter,</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;                                 HashIter,</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;                                 std::string_view,</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                                 <a class="code" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp;);</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classipfs_1_1ipld_1_1DirShard.html">DirShard</a>(std::uint64_t fanout = 256UL);</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classipfs_1_1ipld_1_1DirShard.html">DirShard</a>() noexcept;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;};</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;}  <span class="comment">// namespace ipfs::ipld</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_DIRECTORY_SHARD_H_</span></div>
-<div class="ttc" id="aclassipfs_1_1ipld_1_1DagNode_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DagNode.html">ipfs::ipld::DagNode</a></div><div class="ttdoc">A block, an IPNS record, etc.</div><div class="ttdef"><b>Definition:</b> dag_node.h:52</div></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                                 <a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a>,</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;                                 BlockLookup,</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;                                 std::string&amp;);</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classipfs_1_1ipld_1_1DirShard.html">DirShard</a>(std::uint64_t fanout = 256UL);</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classipfs_1_1ipld_1_1DirShard.html">DirShard</a>() noexcept;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;};</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;}  <span class="comment">// namespace ipfs::ipld</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_DIRECTORY_SHARD_H_</span></div>
+<div class="ttc" id="aclassipfs_1_1ipld_1_1DagNode_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DagNode.html">ipfs::ipld::DagNode</a></div><div class="ttdoc">A block, an IPNS record, etc.</div><div class="ttdef"><b>Definition:</b> dag_node.h:47</div></div>
 <div class="ttc" id="aclassipfs_1_1ipld_1_1DirShard_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DirShard.html">ipfs::ipld::DirShard</a></div><div class="ttdef"><b>Definition:</b> directory_shard.h:7</div></div>
-<div class="ttc" id="aclassipfs_1_1ipld_1_1ResolutionState_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1ResolutionState.html">ipfs::ipld::ResolutionState</a></div><div class="ttdef"><b>Definition:</b> resolution_state.h:18</div></div>
+<div class="ttc" id="astructipfs_1_1SlashDelimited_html"><div class="ttname"><a href="structipfs_1_1SlashDelimited.html">ipfs::SlashDelimited</a></div><div class="ttdef"><b>Definition:</b> slash_delimited.h:8</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

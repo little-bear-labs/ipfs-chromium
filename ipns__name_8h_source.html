@@ -77,19 +77,22 @@ $(function() {
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="keyword">namespace </span>ipfs::ipld {</div>
 <div class="line"><a name="l00007"></a><span class="lineno"><a class="line" href="classipfs_1_1ipld_1_1IpnsName.html">    7</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1ipld_1_1IpnsName.html">IpnsName</a> : <span class="keyword">public</span> <a class="code" href="classipfs_1_1ipld_1_1DagNode.html">DagNode</a> {</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;  std::string <span class="keyword">const</span> target_path_;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; </div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  ResolveResult resolve(<a class="code" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp; params) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <a class="code" href="classipfs_1_1ipld_1_1IpnsName.html">IpnsName</a>(std::string_view target_abs_path);</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classipfs_1_1ipld_1_1IpnsName.html">IpnsName</a>() noexcept {}</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;};</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;}  <span class="comment">// namespace ipfs::ipld</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_IPLD_IPNS_NAME_H_</span></div>
-<div class="ttc" id="aclassipfs_1_1ipld_1_1DagNode_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DagNode.html">ipfs::ipld::DagNode</a></div><div class="ttdoc">A block, an IPNS record, etc.</div><div class="ttdef"><b>Definition:</b> dag_node.h:52</div></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;  NodePtr target_;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; </div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;  ResolveResult resolve(<a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> path,</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;                        BlockLookup,</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;                        std::string&amp; up_to_here) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <a class="code" href="classipfs_1_1ipld_1_1IpnsName.html">IpnsName</a>(std::string_view target_abs_path);</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classipfs_1_1ipld_1_1IpnsName.html">IpnsName</a>() noexcept {}</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;};</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;}  <span class="comment">// namespace ipfs::ipld</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_IPLD_IPNS_NAME_H_</span></div>
+<div class="ttc" id="aclassipfs_1_1ipld_1_1DagNode_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DagNode.html">ipfs::ipld::DagNode</a></div><div class="ttdoc">A block, an IPNS record, etc.</div><div class="ttdef"><b>Definition:</b> dag_node.h:47</div></div>
 <div class="ttc" id="aclassipfs_1_1ipld_1_1IpnsName_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1IpnsName.html">ipfs::ipld::IpnsName</a></div><div class="ttdef"><b>Definition:</b> ipns_name.h:7</div></div>
-<div class="ttc" id="aclassipfs_1_1ipld_1_1ResolutionState_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1ResolutionState.html">ipfs::ipld::ResolutionState</a></div><div class="ttdef"><b>Definition:</b> resolution_state.h:18</div></div>
+<div class="ttc" id="astructipfs_1_1SlashDelimited_html"><div class="ttname"><a href="structipfs_1_1SlashDelimited.html">ipfs::SlashDelimited</a></div><div class="ttdef"><b>Definition:</b> slash_delimited.h:8</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
