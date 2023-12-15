@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['encoder_190',['encoder',['../classmultibase_1_1basic__algorithm_1_1encoder.html',1,'multibase::basic_algorithm']]]
+  ['encoder_193',['encoder',['../classmultibase_1_1basic__algorithm_1_1encoder.html',1,'multibase::basic_algorithm']]]
 ];

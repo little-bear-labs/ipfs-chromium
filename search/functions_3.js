@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['defaultgateways_271',['DefaultGateways',['../classipfs_1_1Gateways.html#a772d414a51fdc8413ec234fa5fb338f0',1,'ipfs::Gateways']]],
-  ['demote_272',['demote',['../classipfs_1_1Gateways.html#a936c7d1639a33de2623e18ccf85210b9',1,'ipfs::Gateways']]],
-  ['deserialize_273',['Deserialize',['../structipfs_1_1ValidatedIpns.html#aabdd2defa62bbc9d1463fd4bef53ec23',1,'ipfs::ValidatedIpns']]]
+  ['defaultgateways_276',['DefaultGateways',['../classipfs_1_1Gateways.html#a772d414a51fdc8413ec234fa5fb338f0',1,'ipfs::Gateways']]],
+  ['demote_277',['demote',['../classipfs_1_1Gateways.html#a936c7d1639a33de2623e18ccf85210b9',1,'ipfs::Gateways']]],
+  ['deserialize_278',['Deserialize',['../structipfs_1_1ValidatedIpns.html#aabdd2defa62bbc9d1463fd4bef53ec23',1,'ipfs::ValidatedIpns']]]
 ];
