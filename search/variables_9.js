@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['use_5funtil_305',['use_until',['../structipfs_1_1ValidatedIpns.html#a7005820591f6108965891bf0bd9e1abb',1,'ipfs::ValidatedIpns']]]
+  ['ttl_314',['ttl',['../structipfs_1_1IpnsCborEntry.html#a9ed80270b760af94c80aaff2ed3c7525',1,'ipfs::IpnsCborEntry']]]
 ];

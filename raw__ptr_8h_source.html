@@ -102,7 +102,7 @@ $(function() {
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="comment">// Chromium&#39;s raw_ptr has a default ctor whose semantics depend on build</span></div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="comment">// config. For components/ipfs purposes, there is no reason to ever default</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="comment">// construct. Set it to nullptr. We have time needed to assign a word.</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="comment">// construct. Set it to nullptr. We have time needed to read_start a word.</span></div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr</a>() = <span class="keyword">delete</span>;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr</a>(T* p) : ptr_{p} {}</div>
