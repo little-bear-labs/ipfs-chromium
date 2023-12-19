@@ -74,7 +74,7 @@ Classes involved</h2>
 <li>Immediate object storage<ul>
 <li>These are in-memory collections of parsed, conveniently-laid-out objects written for-purpose</li>
 <li>There are 2:<ol type="a">
-<li><code>BlockStorage</code> contains the most recently-accessed blocks (as <code><a class="el" href="classipfs_1_1PbDag.html" title="Something to which a CID may refer directly.">ipfs::PbDag</a></code>), and a mapping of CID string representation[^1] to them.<ul>
+<li><code>BlockStorage</code> contains the most recently-accessed blocks (as <code><a class="el" href="classipfs_1_1Block.html" title="Something to which a CID may refer directly.">ipfs::Block</a></code>), and a mapping of CID string representation[^1] to them.<ul>
 <li>When a new entry is being saved, it may overwrite an existing entry if that one hasn't been accessed for 5 minutes.</li>
 <li>If there's no stale entry convenient, it may instead expand memory usage and create an entirely new entry.</li>
 </ul>

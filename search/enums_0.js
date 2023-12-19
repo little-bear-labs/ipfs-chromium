@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['type_320',['Type',['../classipfs_1_1PbDag.html#a401a2cf804668c81e23beeaef9534865',1,'ipfs::PbDag']]]
+  ['type_310',['Type',['../classipfs_1_1Block.html#a046d9b979b4f67ea605b918d0e98b41e',1,'ipfs::Block']]]
 ];

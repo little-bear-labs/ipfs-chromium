@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['api_5f_305',['api_',['../classipfs_1_1ipld_1_1DagNode.html#a8579895819863fb41655d8da73d2689e',1,'ipfs::ipld::DagNode']]]
+  ['cache_5funtil_296',['cache_until',['../structipfs_1_1ValidatedIpns.html#a41a4f4c7cf8f347cf2cd160227e07f98',1,'ipfs::ValidatedIpns']]]
 ];
