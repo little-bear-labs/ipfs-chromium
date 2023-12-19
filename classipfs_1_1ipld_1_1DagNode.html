@@ -66,9 +66,9 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
-<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classipfs_1_1ipld_1_1DagNode-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -110,17 +110,14 @@ Collaboration diagram for ipfs::ipld::DagNode:</div>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
-Public Types</h2></td></tr>
-<tr class="memitem:a2965ff25a884e2cd387dce0199815ccb"><td class="memItemLeft" align="right" valign="top"><a id="a2965ff25a884e2cd387dce0199815ccb"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>BlockLookup</b> = std::function&lt; NodePtr(std::string const  &amp;)&gt;</td></tr>
-<tr class="separator:a2965ff25a884e2cd387dce0199815ccb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a1c691a0bf13a8cfce262b2738ed651b1"><td class="memItemLeft" align="right" valign="top"><a id="a1c691a0bf13a8cfce262b2738ed651b1"></a>
-virtual ResolveResult&#160;</td><td class="memItemRight" valign="bottom"><b>resolve</b> (<a class="el" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> path, BlockLookup, std::string &amp;up_to_here)=0</td></tr>
-<tr class="separator:a1c691a0bf13a8cfce262b2738ed651b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a576c5dcd937fbec95ae441c5fd25075d"><td class="memItemLeft" align="right" valign="top"><a id="a576c5dcd937fbec95ae441c5fd25075d"></a>
+virtual ResolveResult&#160;</td><td class="memItemRight" valign="bottom"><b>resolve</b> (<a class="el" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a> &amp;params)=0</td></tr>
+<tr class="separator:a576c5dcd937fbec95ae441c5fd25075d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d7fb3f332c39a2a72404580d728694e"><td class="memItemLeft" align="right" valign="top"><a id="a2d7fb3f332c39a2a72404580d728694e"></a>
+ResolveResult&#160;</td><td class="memItemRight" valign="bottom"><b>resolve</b> (<a class="el" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> initial_path, BlockLookup)</td></tr>
+<tr class="separator:a2d7fb3f332c39a2a72404580d728694e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8ebf47a8b85ad35e82bc03ddca34b64"><td class="memItemLeft" align="right" valign="top"><a id="ac8ebf47a8b85ad35e82bc03ddca34b64"></a>
 virtual NodePtr&#160;</td><td class="memItemRight" valign="bottom"><b>rooted</b> ()</td></tr>
 <tr class="separator:ac8ebf47a8b85ad35e82bc03ddca34b64"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -136,28 +133,108 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_api</b> (std::sha
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
+<tr class="memitem:aa194900752195b92e469eec021aafde3"><td class="memItemLeft" align="right" valign="top"><a id="aa194900752195b92e469eec021aafde3"></a>
+static NodePtr&#160;</td><td class="memItemRight" valign="bottom"><b>fromBytes</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &gt; const &amp;api, <a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;, ByteView bytes)</td></tr>
+<tr class="separator:aa194900752195b92e469eec021aafde3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abf912606645d9de6d3cb0eaaabe7e7e2"><td class="memItemLeft" align="right" valign="top"><a id="abf912606645d9de6d3cb0eaaabe7e7e2"></a>
 static NodePtr&#160;</td><td class="memItemRight" valign="bottom"><b>fromBytes</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &gt; const &amp;api, <a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;, std::string_view bytes)</td></tr>
 <tr class="separator:abf912606645d9de6d3cb0eaaabe7e7e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2303bc018279eaa0bf0a13568e17d8c8"><td class="memItemLeft" align="right" valign="top"><a id="a2303bc018279eaa0bf0a13568e17d8c8"></a>
-static NodePtr&#160;</td><td class="memItemRight" valign="bottom"><b>fromBlock</b> (<a class="el" href="classipfs_1_1Block.html">Block</a> const &amp;)</td></tr>
-<tr class="separator:a2303bc018279eaa0bf0a13568e17d8c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae72205ce48c0df958209bb605ffc1ed6"><td class="memItemLeft" align="right" valign="top"><a id="ae72205ce48c0df958209bb605ffc1ed6"></a>
+static NodePtr&#160;</td><td class="memItemRight" valign="bottom"><b>fromBlock</b> (<a class="el" href="classipfs_1_1PbDag.html">PbDag</a> const &amp;)</td></tr>
+<tr class="separator:ae72205ce48c0df958209bb605ffc1ed6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abff2507a0a789b4ef6931435c0a06bec"><td class="memItemLeft" align="right" valign="top"><a id="abff2507a0a789b4ef6931435c0a06bec"></a>
 static NodePtr&#160;</td><td class="memItemRight" valign="bottom"><b>fromIpnsRecord</b> (<a class="el" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> const &amp;)</td></tr>
 <tr class="separator:abff2507a0a789b4ef6931435c0a06bec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:ad5f9cb31ef4b6d043276202525fd9fb3"><td class="memItemLeft" align="right" valign="top"><a id="ad5f9cb31ef4b6d043276202525fd9fb3"></a>
+ResolveResult&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ipld_1_1DagNode.html#ad5f9cb31ef4b6d043276202525fd9fb3">CallChild</a> (<a class="el" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a> &amp;)</td></tr>
+<tr class="memdesc:ad5f9cb31ef4b6d043276202525fd9fb3"><td class="mdescLeft">&#160;</td><td class="mdescRight">As before, but it might be possible to create on the fly if not known. <br /></td></tr>
+<tr class="separator:ad5f9cb31ef4b6d043276202525fd9fb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28a67bb9a0172de308d17362adfa6c7b"><td class="memItemLeft" align="right" valign="top">ResolveResult&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ipld_1_1DagNode.html#a28a67bb9a0172de308d17362adfa6c7b">CallChild</a> (<a class="el" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a> &amp;, std::function&lt; NodePtr(std::string_view)&gt; gen_child)</td></tr>
+<tr class="separator:a28a67bb9a0172de308d17362adfa6c7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ec76ce53695d2ed7e55cdc5238ba769"><td class="memItemLeft" align="right" valign="top"><a id="a3ec76ce53695d2ed7e55cdc5238ba769"></a>
+ResolveResult&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ipld_1_1DagNode.html#a3ec76ce53695d2ed7e55cdc5238ba769">CallChild</a> (<a class="el" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a> &amp;, std::string_view link_key)</td></tr>
+<tr class="memdesc:a3ec76ce53695d2ed7e55cdc5238ba769"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add the link if not present, then CallChild(ResolutionState) <br /></td></tr>
+<tr class="separator:a3ec76ce53695d2ed7e55cdc5238ba769"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a611203dde2cc7bf03ace8f5005ecc587"><td class="memItemLeft" align="right" valign="top"><a id="a611203dde2cc7bf03ace8f5005ecc587"></a>
+ResolveResult&#160;</td><td class="memItemRight" valign="bottom"><b>CallChild</b> (<a class="el" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a> &amp;, std::string_view link_key, std::string_view block_key)</td></tr>
+<tr class="separator:a611203dde2cc7bf03ace8f5005ecc587"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a8c1682d8462bdf607e43dd5b0d34006d"><td class="memItemLeft" align="right" valign="top"><a id="a8c1682d8462bdf607e43dd5b0d34006d"></a>
 std::vector&lt; std::pair&lt; std::string, <a class="el" href="classipfs_1_1ipld_1_1Link.html">Link</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>links_</b></td></tr>
 <tr class="separator:a8c1682d8462bdf607e43dd5b0d34006d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8579895819863fb41655d8da73d2689e"><td class="memItemLeft" align="right" valign="top"><a id="a8579895819863fb41655d8da73d2689e"></a>
-std::shared_ptr&lt; <a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>api_</b></td></tr>
+<tr class="memitem:a8579895819863fb41655d8da73d2689e"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ipld_1_1DagNode.html#a8579895819863fb41655d8da73d2689e">api_</a></td></tr>
 <tr class="separator:a8579895819863fb41655d8da73d2689e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A block, an IPNS record, etc. </p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a28a67bb9a0172de308d17362adfa6c7b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28a67bb9a0172de308d17362adfa6c7b">&#9670;&nbsp;</a></span>CallChild()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto Node::CallChild </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::function&lt; NodePtr(std::string_view)&gt;&#160;</td>
+          <td class="paramname"><em>gen_child</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>When the child's name is not the next element in the path, but it must be known about. e.g. index.html for a path ending in a directory </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a8579895819863fb41655d8da73d2689e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8579895819863fb41655d8da73d2689e">&#9670;&nbsp;</a></span>api_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;<a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a>&gt; ipfs::ipld::DagNode::api_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>When the next path element is what's needed, and it should already be a link known about... </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>library/include/ipfs_client/ipld/<a class="el" href="dag__node_8h_source.html">dag_node.h</a></li>
 <li>library/src/ipfs_client/ipld/dag_node.cc</li>
 </ul>
