@@ -65,7 +65,8 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
       if (ct.empty()) {
         LOG(ERROR) << "No content-type header?";
       }
-      if (ct.size() && desc->accept.size() && ct != desc->accept) {
+      if (ct.size() && desc->accept.size() &&
+          ct.find(desc->accept) == std::string::npos) {
         LOG(WARNING) << "Requested with Accept: " << desc->accept
                      << " but received response with content-type: " << ct;
         LOG(INFO) << "Demote(" << prefix_ << ')';

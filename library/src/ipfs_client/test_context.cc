@@ -1,138 +1,111 @@
-#ifndef IPFS_ALL_INCLUSIVE_CONTEXT_H_
-#define IPFS_ALL_INCLUSIVE_CONTEXT_H_
+#include <ipfs_client/test_context.h>
 
-#ifdef _MSC_VER
-// #warning "AllInclusiveContext has not been ported to Windows."
-#else
+#if HAS_ALL_INCLUSIVE
 
-#include "gw/default_requestor.h"
+#if __has_include(<arpa/nameser.h>)
+#include <arpa/nameser.h>
+#endif
 
-#include "context_api.h"
-#include "dag_cbor_value.h"
-#include "gateways.h"
-#include "json_cbor_adapter.h"
-#include "orchestrator.h"
+#include <ares_nameser.h>
 
-#include <vocab/slash_delimited.h>
+#include "log_macros.h"
 
-#include <google/protobuf/stubs/logging.h>
+using Self = ipfs::AllInclusiveContext;
 
-#include <cassert>
-
-#if ! __has_include(<boost/asio/strand.hpp>)
-#warning "One needs access to Boost to use this header"
-#elif !__has_include(<ares.h>)
-#warning "One needs c-ares available to use this header."
-#elif !HAS_JSON_CBOR_ADAPTER
-#warning "One needs access to nlohmann/json to use this header"
-#else
-
-#define HAS_ALL_INCLUSIVE 1
-
-#include <ares.h>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/asio/ip/tcp.hpp>
-#include <boost/asio/strand.hpp>
-#include <boost/beast/core.hpp>
-#include <boost/beast/core/tcp_stream.hpp>
-#include <boost/beast/http.hpp>
-#include <boost/beast/ssl.hpp>
-
-namespace google::protobuf {
-constexpr LogLevel LOGLEVEL_DEBUG = static_cast<LogLevel>(-1);
-constexpr LogLevel LOGLEVEL_TRACE = static_cast<LogLevel>(-2);
-}  // namespace google::protobuf
-
-namespace ipfs {
-
-class HttpSession;
-
-// LCOV_EXCL_START
-
-class AllInclusiveContext final : public ContextApi {
-  void SendHttpRequest(HttpRequestDescription,
-                       HttpCompleteCallback) const override;
-  struct DnsCbs {
-    DnsTextResultsCallback r;
-    DnsTextCompleteCallback c;
-  };
-  std::map<std::string, std::vector<DnsCbs>> pending_dns_;
-  void SendDnsTextRequest(std::string,
-                          DnsTextResultsCallback,
-                          DnsTextCompleteCallback) override;
-  std::string MimeType(std::string extension,
-                       std::string_view,
-                       std::string const&) const override {
-    // TODO implement real mime type detection
-    return "text/" + extension;
-  }
-  std::string UnescapeUrlComponent(std::string_view url_comp) const override {
-    std::string rv{url_comp};
-    auto xval = [](char c) {
-      if (c <= '9') {
-        return c - '0';
-      }
-      if (c <= 'Z') {
-        return c - 'A';
-      }
-      return c - 'a';
-    };
-    for (auto i = 0UL; i + 1UL < rv.size(); ++i) {
-      if (rv[i] != '%') {
-        continue;
-      }
-      auto a = rv[i + 1UL];
-      if (rv[i + 1UL] == '%') {
-        rv.erase(i, 1UL);
-        continue;
-      }
-      if (i + 2UL >= rv.size()) {
-        break;
-      }
-      if (!std::isxdigit(a)) {
-        continue;
-      }
-      auto b = rv[i + 2UL];
-      if (std::isxdigit(b)) {
-        rv[i] = xval(a) * 16 + xval(b);
-        rv.erase(i + 1UL, 2);
-      }
-    }
-    return rv;
-  }
-  std::unique_ptr<DagCborValue> ParseCbor(ByteView bytes) const override {
-    auto data = nlohmann::json::from_cbor(
-        bytes, false, true, nlohmann::detail::cbor_tag_handler_t::store);
-    return std::make_unique<ipfs::JsonCborAdapter>(data);
-  }
-  std::unique_ptr<DagJsonValue> ParseJson(
-      std::string_view j_str) const override {
-    auto data = nlohmann::json::parse(j_str);
-    std::ostringstream oss;
-    oss << std::setw(2) << data;
-    GOOGLE_LOG(DEBUG) << "Parsed " << j_str.size()
-                      << " bytes of JSON string and got " << oss.str();
-    return std::make_unique<ipfs::JsonCborAdapter>(data);
-  }
-  bool VerifyKeySignature(SigningKeyType,
-                          ByteView,
-                            ByteView,
-                            ByteView) const override {
-    GOOGLE_LOG(ERROR) << "TODO\n";
-    return true;
-  }
-  boost::asio::io_context& io_;
-  boost::asio::ssl::context mutable ssl_ctx_ =
-      boost::asio::ssl::context{boost::asio::ssl::context::tls_client};
-  //      boost::asio::ssl::context{boost::asio::ssl::context::tlsv13_client};
-  ares_channel_t* ares_channel_ = nullptr;
-  void CAresProcess();
-
- public:
-  AllInclusiveContext(boost::asio::io_context& io);
-  ~AllInclusiveContext() noexcept override;
-  void DnsResults(std::string&, ares_txt_reply&);
+namespace {
+struct CallbackCallback {
+  Self* me;
+  std::shared_ptr<ipfs::ContextApi> alsome;
+  std::string host;
 };
+}  // namespace
+extern "C" {
+static void c_ares_c_callback(void* vp,
+                              int status,
+                              int /*timeouts*/,
+                              unsigned char* abuf,
+                              int alen) {
+  auto cbcb = reinterpret_cast<CallbackCallback*>(vp);
+  struct ares_txt_reply* txt_out = nullptr;
+  LOG(INFO) << "Buffer contains " << alen << " bytes.";
+  if (abuf && alen && !ares_parse_txt_reply(abuf, alen, &txt_out) && txt_out) {
+    cbcb->me->DnsResults(cbcb->host, *txt_out);
+    ares_free_data(txt_out);
+  } else {
+    LOG(ERROR) << "c_ares status=" << status;
+  }
+  delete cbcb;
+}
+}
+
+Self::AllInclusiveContext(boost::asio::io_context& io) : io_{io} {
+  if (ares_library_init(ARES_LIB_INIT_ALL)) {
+    throw std::runtime_error("Failed to initialize c-ares library.");
+  }
+  if (ares_init(&ares_channel_)) {
+    throw std::runtime_error("Failed to initialize c-ares channel.");
+  }
+}
+Self::~AllInclusiveContext() {
+  pending_dns_.clear();
+  ares_destroy(ares_channel_);
+  ares_library_cleanup();
+}
+void Self::SendDnsTextRequest(std::string host,
+                              DnsTextResultsCallback rcb,
+                              DnsTextCompleteCallback ccb) {
+  auto p = pending_dns_.emplace(host, std::vector<DnsCbs>{});
+  auto it = p.first;
+  auto is_first = p.second;
+  it->second.emplace_back(DnsCbs{rcb, ccb});
+  LOG(INFO) << __PRETTY_FUNCTION__ << ' ' << host << ' ' << is_first;
+  if (is_first) {
+    auto cbcb = new CallbackCallback;
+    cbcb->me = this;
+    cbcb->alsome = shared_from_this();
+    cbcb->host = host;
+    ares_query(ares_channel_, it->first.c_str(), ns_c_in, ns_t_txt,
+               &c_ares_c_callback, cbcb);
+    io_.post([this]() { CAresProcess(); });
+  }
+}
+void Self::DnsResults(std::string& host, ares_txt_reply& result) {
+  LOG(INFO) << __PRETTY_FUNCTION__ << ' ' << host;
+  auto i = pending_dns_.find(host);
+  if (pending_dns_.end() == i) {
+    return;
+  }
+  std::vector<std::string> v{std::string{}};
+  for (auto r = &result; r; r = r->next) {
+    auto p = reinterpret_cast<char const*>(r->txt);
+    v[0].assign(p, r->length);
+    for (auto& cbs : i->second) {
+      cbs.r(v);
+    }
+  }
+  for (auto& cbs : i->second) {
+    cbs.c();
+  }
+  pending_dns_.erase(i);
+}
+void Self::CAresProcess() {
+  LOG(INFO) << __PRETTY_FUNCTION__ << ' ' << pending_dns_.size();
+  fd_set readers, writers;
+  struct timeval tv, *tvp;
+  FD_ZERO(&readers);
+  FD_ZERO(&writers);
+  auto nfds = ares_fds(ares_channel_, &readers, &writers);
+  if (nfds) {
+    tvp = ares_timeout(ares_channel_, NULL, &tv);
+    auto count = select(nfds, &readers, &writers, NULL, tvp);
+    ares_process(ares_channel_, &readers, &writers);
+    nfds += count;
+  }
+  if (nfds || pending_dns_.size()) {
+    io_.post([this]() { CAresProcess(); });
+  }
+}
+
 class HttpSession : public std::enable_shared_from_this<HttpSession> {
   using tcp = boost::asio::ip::tcp;
   tcp::resolver resolver_;
@@ -140,13 +113,16 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
   boost::beast::ssl_stream<boost::beast::tcp_stream> stream_;
   boost::beast::flat_buffer buffer_;  // (Must persist between reads)
   boost::beast::http::request<boost::beast::http::empty_body> req_;
-  boost::beast::http::response<boost::beast::http::string_body> res_;
   ipfs::ContextApi::HttpCompleteCallback cb_;
   int expiry_seconds_ = 91;
   std::string host_, port_, target_;
   ipfs::HttpRequestDescription desc_;
   tcp::resolver::results_type resolution_;
   std::string parsed_host_;
+  boost::beast::http::response_parser<boost::beast::http::string_body>
+      response_parser_;
+  std::optional<boost::beast::http::response<boost::beast::http::string_body>>
+      res_;
 
   void fail(boost::beast::error_code ec, char const* what) {
     GOOGLE_LOG(ERROR) << what << ": " << ec.value() << ' ' << ec.message()
@@ -186,7 +162,13 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
         ssl_ctx_(ssc),
         stream_(boost::asio::make_strand(ioc), ssc),
         cb_{cb},
-        desc_{desc} {}
+        desc_{desc} {
+    if (auto sz = desc_.max_response_size) {
+      response_parser_.body_limit(*sz * 2);
+    } else {
+      response_parser_.body_limit(boost::none);
+    }
+  }
 
   // Start the asynchronous operation
   void run() {
@@ -279,12 +261,12 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     extend_time();
     if (use_ssl()) {
       boost::beast::http::async_read(
-          stream_, buffer_, res_,
+          stream_, buffer_, response_parser_,
           boost::beast::bind_front_handler(&HttpSession::on_read,
                                            shared_from_this()));
     } else {
       boost::beast::http::async_read(
-          boost::beast::get_lowest_layer(stream_), buffer_, res_,
+          boost::beast::get_lowest_layer(stream_), buffer_, response_parser_,
           boost::beast::bind_front_handler(&HttpSession::on_read,
                                            shared_from_this()));
     }
@@ -293,27 +275,29 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
   void on_read(boost::beast::error_code ec, std::size_t bytes_transferred) {
     if (ec)
       return fail(ec, "read");
+    res_ = response_parser_.release();
     ipfs::ContextApi::HeaderAccess get_hdr =
         [this](std::string_view k) -> std::string {
-      std::string rv{res_[k]};
+      std::string rv{(*res_)[k]};
       return rv;
     };
-    GOOGLE_LOG(INFO) << "HTTP read (" << desc_.url << ";host=" << host_ << '(' << host_.size()
-                     << ");port=" << port_ << ";target=" << target_
-                     << ": status=" << res_.result_int() << ", body is "
+    GOOGLE_LOG(INFO) << "HTTP read (" << desc_.url << ";host=" << host_ << '('
+                     << host_.size() << ");port=" << port_
+                     << ";target=" << target_
+                     << ": status=" << res_->result_int() << ", body is "
                      << bytes_transferred << "B, headers... ";
-    if (res_.result_int() == 400) {
-      GOOGLE_LOG(WARNING) << "Got that annoying 400 status: " << res_.body();
+    if (res_->result_int() == 400) {
+      GOOGLE_LOG(WARNING) << "Got that annoying 400 status: " << res_->body();
     }
-    for (auto& h : res_) {
+    for (auto& h : *res_) {
       auto& n = h.name_string();
       if (n.substr(0, 6) != "Access") {
         GOOGLE_LOG(DEBUG) << "\t Header=" << h.name_string() << ": "
                           << h.value();
       }
     }
-    if (res_.result_int() / 100 == 3) {
-      auto loc = res_[boost::beast::http::field::location];
+    if (res_->result_int() / 100 == 3) {
+      auto loc = (*res_)[boost::beast::http::field::location];
       if (loc.size()) {
         desc_.url = loc;
         GOOGLE_LOG(WARNING) << "Redirecting to " << loc << " aka " << desc_.url;
@@ -324,10 +308,10 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
         return;
       }
     }
-    auto content_type = res_[boost::beast::http::field::content_type];
+    auto content_type = (*res_)[boost::beast::http::field::content_type];
     if (content_type.empty() ||
         boost::algorithm::icontains(content_type, desc_.accept)) {
-      cb_(res_.result_int(), res_.body(), get_hdr);
+      cb_(res_->result_int(), res_->body(), get_hdr);
     } else {
       GOOGLE_LOG(INFO) << desc_.url
                        << " response incorrect content type: " << content_type
@@ -355,18 +339,10 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
   }
 };
 
-inline std::shared_ptr<Orchestrator> start_default(
-    boost::asio::io_context& io) {
-  auto api = std::make_shared<AllInclusiveContext>(io);
-  auto gl = Gateways::DefaultGateways();
-  auto rtor = gw::default_requestor(gl, {}, api);
-  auto orc = std::make_shared<Orchestrator>(rtor, api);
-  return orc;
+void Self::SendHttpRequest(HttpRequestDescription desc,
+                           HttpCompleteCallback cb) const {
+  auto sess = std::make_shared<HttpSession>(io_, ssl_ctx_, desc, cb);
+  sess->run();
 }
 
-}  // namespace ipfs
-
-#endif  // boost
-
-#endif  //_MSC_VER
-#endif  // IPFS_ALL_INCLUSIVE_CONTEXT_H_
+#endif

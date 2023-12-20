@@ -11,10 +11,6 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
   if (r->type != Type::Car) {
     return HandleOutcome::NOT_HANDLED;
   }
-  if (r->path.empty()) {
-    r->type = Type::Block;
-    return HandleOutcome::NOT_HANDLED;
-  }
   {
     auto br = std::make_shared<gw::GatewayRequest>(*r);
     br->type = Type::Block;

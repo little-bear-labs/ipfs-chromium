@@ -254,9 +254,6 @@ bool Self::RespondSuccessfully(std::string_view bytes,
         LOG(FATAL) << "I have no orchestrator!!";
       }
       break;
-    case Type::Zombie:
-      LOG(WARNING) << "Responding to a zombie is ill-advised.";
-      break;
     case Type::Car: {
       DCHECK(api);
       Car car(as_bytes(bytes), *api);
@@ -279,6 +276,9 @@ bool Self::RespondSuccessfully(std::string_view bytes,
     case Type::Providers:
       LOG(WARNING) << "TODO - handle responses to providers requests.";
       break;
+    case Type::Zombie:
+      LOG(WARNING) << "Responding to a zombie is ill-advised.";
+      break;
     default:
       LOG(ERROR) << "TODO " << static_cast<int>(type);
   }
@@ -296,4 +296,10 @@ void Self::Hook(std::function<void(std::string_view)> f) {
 }
 void Self::orchestrator(std::shared_ptr<Orchestrator> const& orc) {
   orchestrator_ = orc;
+}
+bool Self::PartiallyRedundant() const {
+  if (!orchestrator_) {
+    return false;
+  }
+  return orchestrator_->has_key(main_param);
 }

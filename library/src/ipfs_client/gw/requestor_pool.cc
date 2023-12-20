@@ -33,6 +33,9 @@ auto Self::check(Waiting w) -> HandleOutcome {
   using O = HandleOutcome;
   auto next_retry = pool_.size();
   auto req = w.req;
+  if (req->PartiallyRedundant()) {
+    return O::DONE;
+  }
   for (auto i = w.at_idx; i < pool_.size(); ++i) {
     if (req->type == Type::Zombie) {
       return O::DONE;

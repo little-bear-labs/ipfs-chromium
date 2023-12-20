@@ -46,8 +46,12 @@ void Self::send(raw_ptr<network::mojom::URLLoaderFactory> loader_factory) {
   auto bound = base::BindOnce(&Self::OnResponse, base::Unretained(this),
                               shared_from_this());
   DCHECK(loader_factory);
-  loader_->DownloadToString(loader_factory, std::move(bound),
-                            gw::BLOCK_RESPONSE_BUFFER_SIZE);
+  if (auto sz = inf_.max_response_size) {
+    loader_->DownloadToString(loader_factory, std::move(bound), sz.value());
+  } else {
+    loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(loader_factory,
+                                                             std::move(bound));
+  }
 }
 void Self::OnResponse(std::shared_ptr<Self>,
                       std::unique_ptr<std::string> body) {

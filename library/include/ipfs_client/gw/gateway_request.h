@@ -59,9 +59,11 @@ class GatewayRequest {
   std::optional<HttpRequestDescription> describe_http() const;
   std::string debug_string() const;
   void orchestrator(std::shared_ptr<Orchestrator> const&);
+
   bool RespondSuccessfully(std::string_view,
                            std::shared_ptr<ContextApi> const& api);
   void Hook(std::function<void(std::string_view)>);
+  bool PartiallyRedundant() const;
 
   static std::shared_ptr<GatewayRequest> fromIpfsPath(SlashDelimited);
 };
