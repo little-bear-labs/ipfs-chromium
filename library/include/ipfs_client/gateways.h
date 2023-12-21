@@ -1,6 +1,7 @@
 #ifndef CHROMIUM_IPFS_GATEWAYS_H_
 #define CHROMIUM_IPFS_GATEWAYS_H_
 
+#include "gateway_spec.h"
 #include "vocab/flat_mapset.h"
 
 #include <ctime>
@@ -11,16 +12,6 @@
 #include <vector>
 
 namespace ipfs {
-struct GatewaySpec {
-  std::string prefix;
-  unsigned strength;
-  bool operator<(GatewaySpec const& r) const {
-    if (strength == r.strength) {
-      return prefix < r.prefix;
-    }
-    return strength > r.strength;
-  }
-};
 using GatewayList = std::vector<GatewaySpec>;
 class ContextApi;
 

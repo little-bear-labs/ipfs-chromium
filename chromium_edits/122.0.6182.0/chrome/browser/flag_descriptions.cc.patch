@@ -1,5 +1,5 @@
 diff --git a/chrome/browser/flag_descriptions.cc b/chrome/browser/flag_descriptions.cc
-index d6073d3514930..f80f1330f9865 100644
+index b2992e30f9811..f92d8a322b634 100644
 --- a/chrome/browser/flag_descriptions.cc
 +++ b/chrome/browser/flag_descriptions.cc
 @@ -288,6 +288,11 @@ const char kEnableBenchmarkingDescription[] =

@@ -49,6 +49,9 @@ struct MockApi final : public ipfs::ContextApi {
   std::unique_ptr<ipfs::DagJsonValue> ParseJson(std::string_view) const {
     return {};
   }
+  auto GetGateway(std::size_t index) const -> std::optional<i::GatewaySpec> {
+    return std::nullopt;
+  }
   void Discover(std::function<void(std::vector<std::string>)> cb) {}
   struct DnsInvocation {
     std::string host;

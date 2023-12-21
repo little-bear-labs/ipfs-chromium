@@ -4,13 +4,24 @@ on:
   release:
       types: [created]
 jobs:
-  test:
-    uses: little-bear-labs/ipfs-chromium/.github/workflows/ut.yml@flows
-  tour:
-    uses: little-bear-labs/ipfs-chromium/.github/workflows/tour.yml@flows
+  prechecks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout ipfs_chromium
+        uses: actions/checkout@v4
+        with:
+          path: 'ipfs_chromium'
+      - name: Run Unit Tests
+        run: ./ipfs_chromium/.github/ut.sh
+      - name: Tour de IPFS
+        run: ./ipfs_chromium/.github/tour.sh
+      - name: Upload coverage reports to Codecov.com
+        uses: codecov/codecov-action@v3
+        with:
+          files: build/library/cov.info
   build:
     name: ${{ matrix.config.name }}
-    needs: [test, tour]
+    needs: [prechecks]
     runs-on: ${{ matrix.config.os }}
     strategy:
       fail-fast: true
@@ -18,7 +29,7 @@ jobs:
         config:
           - {
               name: "macOS",
-              os: macos-12,
+              os: macos-latest,
               build_type: "Release",
               cc: "clang",
               cxx: "clang++",

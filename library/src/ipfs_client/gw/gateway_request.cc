@@ -106,15 +106,15 @@ std::string_view Self::accept() const {
 short Self::timeout_seconds() const {
   switch (type) {
     case Type::DnsLink:
-      return 16;
+      return 32;
     case Type::Block:
-      return 39;
-    case Type::Providers:
       return 64;
-    case Type::Car:
+    case Type::Providers:
       return 128;
-    case Type::Ipns:
+    case Type::Car:
       return 256;
+    case Type::Ipns:
+      return 512;
     case Type::Identity:
     case Type::Zombie:
       return 0;
@@ -134,14 +134,33 @@ auto Self::identity_data() const -> std::string_view {
 }
 
 bool Self::is_http() const {
-  return type != Type::DnsLink && type != Type::Identity;
+  switch (type) {
+    case Type::Ipns:
+    case Type::Car:
+    case Type::Block:
+    case Type::Providers:
+      return true;
+    case Type::Identity:
+    case Type::DnsLink:
+    case Type::Zombie:
+      return false;
+  }
+  return true;
 }
-auto Self::describe_http() const -> std::optional<HttpRequestDescription> {
+auto Self::describe_http(std::string_view prefix) const
+    -> std::optional<HttpRequestDescription> {
   if (!is_http()) {
     return {};
   }
-  return HttpRequestDescription{url_suffix(), timeout_seconds(),
-                                std::string{accept()}, max_response_size()};
+  DCHECK(!prefix.empty());
+  auto url = url_suffix();
+  if (url.front() == '/' && prefix.back() == '/') {
+    prefix.remove_suffix(1UL);
+  } else if (url.front() != '/' && prefix.back() != '/') {
+    url.insert(0UL, 1UL, '/');
+  }
+  url.insert(0UL, prefix);
+  return HttpRequestDescription{url, timeout_seconds(), std::string{accept()}, max_response_size()};
 }
 std::optional<std::size_t> Self::max_response_size() const {
   switch (type) {
@@ -269,7 +288,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
           LOG(INFO) << "Did not add node from CAR: " << cid_s;
         }
       }
-      LOG(INFO) << "Added " << added << " nodes from a CAR.";
+      VLOG(1) << "Added " << added << " nodes from a CAR.";
       success = added > 0;
       break;
     }
@@ -289,6 +308,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
     bytes_received_hooks.clear();
     orchestrator_->build_response(dependent);
   }
+  type = Type::Zombie;
   return success;
 }
 void Self::Hook(std::function<void(std::string_view)> f) {

@@ -73,6 +73,10 @@ struct Api final : public i::ContextApi {
       };
     }
   }
+  std::optional<i::GatewaySpec> GetGateway(std::size_t) const {
+    return std::nullopt;
+  }
+
   virtual ~Api() noexcept {}
 };
 }  // namespace

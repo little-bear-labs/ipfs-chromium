@@ -161,10 +161,7 @@ void Node::set_api(std::shared_ptr<ContextApi> api) {
 }
 auto Node::resolve(SlashDelimited initial_path, BlockLookup blu)
     -> ResolveResult {
-  ResolutionState state;
-  state.resolved_path_components = "";
-  state.unresolved_path = initial_path;
-  state.get_available_block = blu;
+  ResolutionState state{initial_path, blu};
   return resolve(state);
 }
 auto Node::CallChild(ipfs::ipld::ResolutionState& state) -> ResolveResult {
@@ -190,12 +187,12 @@ auto Node::CallChild(ResolutionState& state, std::string_view link_key)
     node = state.GetBlock(child->cid);
   }
   if (node) {
-    Descend(state);
+    state.Descend();
     return node->resolve(state);
   } else {
     std::string needed{"/ipfs/"};
     needed.append(child->cid);
-    auto more = state.unresolved_path.to_view();
+    auto more = state.PathToResolve().to_view();
     if (more.size()) {
       if (more.front() != '/') {
         needed.push_back('/');
@@ -221,7 +218,7 @@ auto Node::CallChild(ResolutionState& state,
       return ProvenAbsent{};
     }
   }
-  Descend(state);
+  state.Descend();
   return node->resolve(state);
 }
 auto Node::FindChild(std::string_view link_key) -> Link* {
@@ -231,16 +228,6 @@ auto Node::FindChild(std::string_view link_key) -> Link* {
     }
   }
   return nullptr;
-}
-void Node::Descend(ResolutionState& state) {
-  auto next = state.unresolved_path.pop();
-  if (next.empty()) {
-    return;
-  }
-  if (!state.resolved_path_components.ends_with('/')) {
-    state.resolved_path_components.push_back('/');
-  }
-  state.resolved_path_components.append(next);
 }
 
 std::ostream& operator<<(std::ostream& s, ipfs::ipld::PathChange const& c) {

@@ -67,6 +67,9 @@ struct MockApi final : public i::ContextApi {
   std::unique_ptr<ipfs::DagJsonValue> ParseJson(std::string_view) const {
     return {};
   }
+  std::optional<i::GatewaySpec> GetGateway(std::size_t) const {
+    return std::nullopt;
+  }
 };
 }  // namespace
 

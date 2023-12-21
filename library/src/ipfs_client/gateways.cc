@@ -95,27 +95,27 @@ auto ipfs::Gateways::DefaultGateways() -> GatewayList {
     auto N = static_cast<int>(result.size());
     for (auto i = 0; i < N; ++i) {
       auto& r = result[i];
-      r.strength = N - i;
-      LOG(INFO) << "User-specified gateway: " << r.prefix << '=' << r.strength;
+      r.rate = N - i;
+      LOG(INFO) << "User-specified gateway: " << r.prefix << '=' << r.rate;
     }
     return result;
   }
-  return {{"http://localhost:8080/"s, 932},
-          {"https://jcsl.hopto.org/"s, 920},
-          {"https://human.mypinata.cloud/"s, 883},
-          {"https://ipfs.io/"s, 847},
-          {"https://gateway.ipfs.io/"s, 741},
-          {"https://dweb.link/"s, 619},
-          {"https://gateway.pinata.cloud/"s, 497},
-          {"https://ipfs.joaoleitao.org/"s, 438},
-          {"https://ipfs.runfission.com/"s, 376},
-          {"https://nftstorage.link/"s, 311},
-          {"https://w3s.link/"s, 246},
-          {"https://ipfs.fleek.co/"s, 207},
-          {"https://ipfs.jpu.jp/"s, 173},
-          {"https://permaweb.eu.org/"s, 126},
-          {"https://jorropo.net/"s, 79},
-          {"https://hardbin.com/"s, 41},
+  return {{"http://localhost:8080/"s, 885},
+          {"https://jcsl.hopto.org/"s, 833},
+          {"https://human.mypinata.cloud/"s, 737},
+          {"https://ipfs.io/"s, 731},
+          {"https://gateway.ipfs.io/"s, 628},
+          {"https://dweb.link/"s, 512},
+          {"https://gateway.pinata.cloud/"s, 455},
+          {"https://ipfs.joaoleitao.org/"s, 355},
+          {"https://ipfs.runfission.com/"s, 341},
+          {"https://nftstorage.link/"s, 239},
+          {"https://w3s.link/"s, 166},
+          {"https://ipfs.fleek.co/"s, 133},
+          {"https://permaweb.eu.org/"s, 96},
+          {"https://hardbin.com/"s, 4},
+          {"https://jorropo.net/"s, 3},
+          {"https://ipfs.jpu.jp/"s, 2},
           {"https://ipfs.soul-network.com/"s, 1},
           {"https://storry.tv/"s, 0}};
 }

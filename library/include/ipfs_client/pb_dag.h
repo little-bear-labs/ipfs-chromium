@@ -11,8 +11,6 @@
 
 #include "cid.h"
 
-#include <libp2p/multi/multicodec_type.hpp>
-
 #include <vocab/byte_view.h>
 
 #include <iosfwd>

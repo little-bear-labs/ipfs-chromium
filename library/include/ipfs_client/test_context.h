@@ -49,7 +49,7 @@ namespace ipfs {
 
 // LCOV_EXCL_START
 
-class AllInclusiveContext final : public ContextApi {
+class TestContext final : public ContextApi {
   void SendHttpRequest(HttpRequestDescription,
                        HttpCompleteCallback) const override;
   struct DnsCbs {
@@ -121,6 +121,9 @@ class AllInclusiveContext final : public ContextApi {
     GOOGLE_LOG(ERROR) << "TODO\n";
     return true;
   }
+  std::optional<ipfs::GatewaySpec> GetGateway(std::size_t) const;
+
+  std::vector<GatewaySpec> gateways_;
   boost::asio::io_context& io_;
   boost::asio::ssl::context mutable ssl_ctx_ =
       boost::asio::ssl::context{boost::asio::ssl::context::tls_client};
@@ -129,13 +132,13 @@ class AllInclusiveContext final : public ContextApi {
   void CAresProcess();
 
  public:
-  AllInclusiveContext(boost::asio::io_context& io);
-  ~AllInclusiveContext() noexcept override;
+  TestContext(boost::asio::io_context& io);
+  ~TestContext() noexcept override;
   void DnsResults(std::string&, ares_txt_reply&);
 };
 inline std::shared_ptr<Orchestrator> start_default(
     boost::asio::io_context& io) {
-  auto api = std::make_shared<AllInclusiveContext>(io);
+  auto api = std::make_shared<TestContext>(io);
   auto gl = Gateways::DefaultGateways();
   auto rtor = gw::default_requestor(gl, {}, api);
   auto orc = std::make_shared<Orchestrator>(rtor, api);

@@ -139,7 +139,6 @@ std::string ipfs::PbDag::LinkCid(ipfs::ByteView binary_link_hash) const {
 
 bool ipfs::PbDag::cid_matches_data(ContextApi& api) const {
   if (!cid_) {
-    // TODO - probably remove those constructors and make cid_ not optional
     return true;
   }
   if (type() == Type::Invalid) {

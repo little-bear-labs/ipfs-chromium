@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 import sys
+from enum import auto, Enum
+from glob import glob
 from os import listdir, makedirs, remove
-from os.path import exists, dirname, isdir, join, realpath, splitext
+from os.path import exists, dirname, isdir, isfile, join, realpath, relpath, splitext
 from shutil import copyfile, rmtree
-from subprocess import check_call, check_output
+from subprocess import call, check_call, check_output
 from sys import argv, executable, platform, stderr
 from time import ctime
 from verbose import verbose
@@ -34,6 +36,19 @@ def as_int(v):
     return result
 
 
+def content_differs(ap,bp):
+    if not isfile(ap) or not isfile(bp):
+        return True
+    with open(ap) as a:
+        with open(bp) as b:
+            return a.read() != b.read()
+
+class Result(Enum):
+    Output = auto()
+    RawOutput = auto()
+    OrDie = auto()
+    ExitCode = auto()
+    StrippedOutput = Output
 
 class Patcher:
     def __init__(self, chromium_source_dir, git_bin, build_type):
@@ -46,12 +61,17 @@ class Patcher:
 
     def create_patch_file(self):
         tag = self.tag_name()
-        write_dir = join(self.edir, tag)
+        name = tag
+        write_dir = join(self.edir, name)
         if exists(write_dir):
             rmtree(write_dir)
-        for lin in self.git(['status', '--porcelain'], and_strip=False).splitlines():
-            stat = lin[0:2]
-            path = lin[3:]
+        paths = self.git(['diff', tag, '--name-only'], Result.RawOutput).splitlines()
+        for lin in self.git(['status', '--porcelain'], Result.RawOutput).splitlines():
+            if lin[0:3] != '?? ':
+                continue
+            verbose('Unversioned', lin[3:])
+            paths.append( lin[3:] )
+        for path in paths:
             from_path = join(self.csrc, path)
             to_path = join(write_dir, path)
             to_dir = dirname(to_path)
@@ -59,31 +79,35 @@ class Patcher:
                 verbose('Not putting component into edit tree')
             elif 'third_party/ipfs_client' in path:
                 verbose('Not putting library into edit tree')
-            elif stat == ' M':
-                diff_out = self.git(['diff', '--patch', tag, path], and_strip=False)
+            elif not self.file_in_branch(tag, path):
+                print('Copy', from_path, '->', to_path)
+                makedirs(to_dir, exist_ok=True)
+                copyfile(from_path, to_path)
+            elif not self.file_in_branch('HEAD', path):
+                to_path += '.rm'
+                print('Remembering the removal of', from_path, 'with', to_path)
+                makedirs(to_dir, exist_ok=True)
+                with open(to_path, 'w') as rm_f:
+                    rm_f.write('//Remember to remove the corresponding file from the Chromium source tree')
+            else:
+                diff_out = self.git(['diff', '--patch', tag, path], Result.RawOutput)
                 if diff_out:
                     makedirs(to_dir, exist_ok=True)
                     to_path += '.patch'
                     with open(to_path, 'w') as to_f:
                         to_f.write(diff_out)
                         print(to_path)
-            elif stat == '??':
-                print('Copy', from_path, '->', to_path)
-                makedirs(to_dir, exist_ok=True)
-                copyfile(from_path, to_path)
-            else:
-                print('Unhandled git status', stat, 'for', path)
-                exit(32)
-        self.git(['add', 'url/url_canon_ipfs.cc'])
-        diff = self.git(['diff', '--patch', tag])
-        name = tag
-        if self.curr_hash() != self.hash_of(tag):
-            print('NOT ON A TAG. Patching for hash instead')
-            name = self.curr_hash()
+        self.git(['add', 'url/url_canon_ipfs.cc'], Result.OrDie)
+        diff = self.git(['diff', '--patch', tag], Result.RawOutput)
         file_name = join(self.pdir, name+'.patch')
-        print('Patch file:', file_name)
+        print('Old patch file:', file_name)
         with open(file_name, 'w') as patch_file:
             patch_file.write(diff+"\n")
+
+    def file_in_branch(self, ref: str, path: str):
+        out = self.git(['ls-tree', '--name-only', ref, path], Result.Output)
+        verbose('ls-tree gave me', out)
+        return out == path
 
     def apply(self):
         win = ''
@@ -94,29 +118,75 @@ class Patcher:
             if d < win_dist or (d == win_dist and len(ref) < len(win)):
                 win_dist = d
                 win = ref
-        print('Best patch file is', win, file=stderr)
-        patch_path = join(self.pdir, win+'.patch')
-        self.git(['apply', '--verbose', patch_path], out=False)
-
-    def git(self, args: list[str], out: bool = True, and_strip: bool = True) -> str:
-        if out:
-            result = check_output([self.gbin, '-C', self.csrc] + args, text=True)
-            if and_strip:
-                return result.strip()
+        edits_dir = join(self.edir, win)
+        edit_glob = f'{edits_dir}/**/*'
+        print('Best edits version is', win, 'look for edits by', edit_glob, file=stderr)
+        for edit in glob(edit_glob, recursive=True):
+            if not isfile(edit):
+                continue
+            verbose('Have edit:', edit)
+            ext = splitext(edit)[1]
+            rel = relpath(edit, edits_dir)
+            to_path = join(self.csrc, rel)
+            if ext == '.patch':
+                self.check_patch(edit, rel, to_path)
+            elif ext == '.rm':
+                if isfile(to_path):
+                    print("Remove", to_path, 'due to', edit)
+                    remove(to_path)
+                else:
+                    verbose(f"{to_path} already removed")
+            elif not isfile(to_path):
+                print('Copy', edit, '->', to_path)
+                copyfile(edit, to_path)
+            elif content_differs(edit, to_path):
+                print('Warning:', to_path, 'exists, is different from ', edit, ' and is not being overwritten.')
             else:
-                return result
+                verbose(f"{to_path} already copied")
+        verbose('Done patching')
+
+
+    def check_patch(self, patch_path: str, relative: str, target_path: str):
+        if 0 == self.git(['apply', '--check', '--reverse', '--verbose', patch_path], Result.ExitCode):
+            verbose(patch_path, 'already applied.')
+            return
+        src = splitext(relative)[0]
+        ec = self.git(['apply', '--verbose', patch_path], Result.ExitCode)
+        verbose('Applying patch', patch_path, 'gave exit code', ec)
+        if ec == 0:
+            print('Patched', src, 'with', patch_path)
         else:
-            check_call([self.gbin, '-C', self.csrc] + args, text=True)
-            return ''
+            with open(join(self.csrc,src)) as target_file:
+                text = target_file.read()
+                if 'ipfs' in text:
+                    verbose("Patch file", patch_path, 'may have already been applied.')
+                else:
+                    print("Failed to patch", src, '( at', join(self.csrc,src), ') with', patch_path)
+                    exit(8)
+
+    def git(self, args: list[str], result: Result) -> str:
+        a = [self.gbin, '-C', self.csrc] + args
+        verbose('Running', a)
+        match result:
+            case Result.RawOutput:
+                return check_output(a, text=True)
+            case Result.StrippedOutput:
+                return check_output(a, text=True).strip()
+            case Result.OrDie:
+                check_call(a)
+            case Result.ExitCode:
+                return call(a)
+            case _:
+                raise RuntimeError('result type not handled')
 
     def tag_name(self) -> str:
-        return self.git(['describe', '--tags', '--abbrev=0'])
+        return self.git(['describe', '--tags', '--abbrev=0'], Result.Output)
 
     def curr_hash(self) -> str:
         return self.hash_of('HEAD')
 
     def hash_of(self, ref) -> str:
-        return self.git(['rev-parse', ref])
+        return self.git(['rev-parse', ref], Result.Output)
 
     def distance(self, ref) -> int:
         a, b = self.distances('HEAD', ref)
@@ -146,8 +216,8 @@ class Patcher:
         return map(lambda p: splitext(p)[0], listdir(self.pdir))
 
     def distances(self, frm, ref):
-        a = int(self.git(['rev-list', '--count', frm+'..'+ref]))
-        b = int(self.git(['rev-list', '--count', ref+'..'+frm]))
+        a = int(self.git(['rev-list', '--count', frm+'..'+ref], Result.Output))
+        b = int(self.git(['rev-list', '--count', ref+'..'+frm], Result.Output))
         return (a, b)
 
     def maybe_newer(self, x, y):
@@ -185,7 +255,7 @@ class Patcher:
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
-        fudge = 59888
+        fudge = 59891
         def check(version, version_set, s):
             i = as_int(version)
             by = (fudge,0)
@@ -224,6 +294,9 @@ class Patcher:
         with open(file_path) as f:
             lines = f.readlines()
             if not Patcher.has_file_line(lines, 'chrome/browser/flag-metadata.json', '+    "name": "enable-ipfs",'):
+                print(p, 'does not have enable-ipfs in flag-metadata.json', file_path, file=sys.stderr)
+                return True
+            if not Patcher.has_file_line(lines, 'chrome/browser/chrome_content_browser_client.cc', '+    main_parts->AddParts(std::make_unique<IpfsExtraParts>());'):
                 print(p, 'does not have enable-ipfs in flag-metadata.json', file_path, file=sys.stderr)
                 return True
         return False
@@ -288,7 +361,7 @@ if __name__ == '__main__':
         pr = Patcher(realpath(join(dirname(__file__), '..')), 'git', 'Debug')
         pre = '?? component/patches/'
         suf = 'patch'
-        for line in pr.git(['status','--porcelain']).splitlines():
+        for line in pr.git(['status','--porcelain'], Result.RawOutput).splitlines():
             if line.startswith(pre) and line.endswith(suf):
                 end = len(line) - len(suf) - 1
                 pch = line[len(pre):end]

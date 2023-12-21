@@ -68,9 +68,10 @@ class IpfsChromium(ConanFile):
     def package_info(self):
         self.cpp_info.libs = ["ipfs_client"]
 
-    def build_requirements(self):
-        if not which("doxygen"):
-            self.tool_requires("doxygen/1.9.4")
+    # def build_requirements(self):
+    #     if not which("doxygen"):
+    #         self.tool_requires("doxygen/1.9.4")
+
     def layout(self):
         cmake_layout(self)
 

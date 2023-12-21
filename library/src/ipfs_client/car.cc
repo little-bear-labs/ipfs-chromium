@@ -26,7 +26,7 @@ Self::Car(ByteView bytes, ContextApi const& api) {
       LOG(ERROR) << "Problem parsing CAR header.";
       break;
     case 1:
-      LOG(INFO) << "Reading CARv1";
+      VLOG(1) << "Reading CARv1";
       data_ = after_header;
       break;
     case 2: {
@@ -59,7 +59,6 @@ auto Self::NextBlock() -> std::optional<Block> {
   rv.bytes = data_.subspan(0U, len->toUInt64());
   data_ = data_.subspan(len->toUInt64());
   if (rv.cid.ReadStart(rv.bytes)) {
-    // TODO : check hash
     return rv;
   }
   return std::nullopt;

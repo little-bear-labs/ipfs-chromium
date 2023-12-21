@@ -10,6 +10,8 @@
 #include "base/supports_user_data.h"
 #include "services/network/network_context.h"
 
+class PrefService;
+
 namespace content {
 class BrowserContext;
 }
@@ -17,10 +19,10 @@ class BrowserContext;
 namespace ipfs {
 class Scheduler;
 class ChromiumIpfsContext;
-class InterRequestState : public base::SupportsUserData::Data {
-  Gateways gws_;
+class COMPONENT_EXPORT(IPFS) InterRequestState
+    : public base::SupportsUserData::Data {
   IpnsNames names_;
-  std::weak_ptr<ChromiumIpfsContext> api_;
+  std::shared_ptr<ChromiumIpfsContext> api_;
   std::time_t last_discovery_ = 0;
   std::shared_ptr<CacheRequestor> cache_;
   base::FilePath const disk_path_;
@@ -30,17 +32,18 @@ class InterRequestState : public base::SupportsUserData::Data {
   std::shared_ptr<CacheRequestor>& cache();
 
  public:
-  InterRequestState(base::FilePath);
+  InterRequestState(base::FilePath, PrefService*);
   ~InterRequestState() noexcept override;
 
-  Gateways& gateways() { return gws_; }
   IpnsNames& names() { return names_; }
   Scheduler& scheduler();
   std::shared_ptr<ChromiumIpfsContext> api();
   std::array<std::shared_ptr<CacheRequestor>,2> serialized_caches();
   Orchestrator& orchestrator();
-  void set_network_context(raw_ptr<network::mojom::NetworkContext>);
+  void network_context(network::mojom::NetworkContext*);
+  network::mojom::NetworkContext* network_context() const;
 
+  static void CreateForBrowserContext(content::BrowserContext*, PrefService*);
   static InterRequestState& FromBrowserContext(content::BrowserContext*);
 };
 }  // namespace ipfs

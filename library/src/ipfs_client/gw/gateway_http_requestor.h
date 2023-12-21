@@ -21,9 +21,6 @@ class GatewayHttpRequestor final : public Requestor {
 
   HandleOutcome handle(RequestPtr) override;
   std::string_view name() const override;
-  ipfs::ipld::NodePtr node_from_type(std::optional<Cid> const& cid,
-                                     ipfs::gw::Type,
-                                     std::string_view body) const;
   int target(GatewayRequest const&) const;
 
  public:

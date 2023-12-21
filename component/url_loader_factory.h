@@ -6,6 +6,7 @@
 
 #include <string>
 
+class PrefService;
 namespace content {
 class BrowserContext;
 }
@@ -26,14 +27,16 @@ class COMPONENT_EXPORT(IPFS) IpfsURLLoaderFactory
   static void Create(NonNetworkURLLoaderFactoryMap* in_out,
                      content::BrowserContext*,
                      URLLoaderFactory*,
-                     network::mojom::NetworkContext*);
+                     network::mojom::NetworkContext*,
+                     PrefService*);
 
  private:
   IpfsURLLoaderFactory(std::string,
                        mojo::PendingReceiver<network::mojom::URLLoaderFactory>,
                        content::BrowserContext*,
                        network::mojom::URLLoaderFactory*,
-                       network::mojom::NetworkContext*);
+                       network::mojom::NetworkContext*,
+                       PrefService*);
   ~IpfsURLLoaderFactory() noexcept override;
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
@@ -48,6 +51,7 @@ class COMPONENT_EXPORT(IPFS) IpfsURLLoaderFactory
   raw_ptr<content::BrowserContext> context_;
   raw_ptr<network::mojom::URLLoaderFactory> default_factory_;
   raw_ptr<network::mojom::NetworkContext> network_context_;
+  raw_ptr<PrefService> pref_svc_;
 };
 }  // namespace ipfs
 

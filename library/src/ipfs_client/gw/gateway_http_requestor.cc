@@ -6,7 +6,6 @@
 #include <ipfs_client/context_api.h>
 #include <ipfs_client/ipns_record.h>
 #include <ipfs_client/orchestrator.h>
-#include <ipfs_client/pb_dag.h>
 
 #include "log_macros.h"
 
@@ -31,17 +30,12 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
   if (target(*r) <= r->parallel + pending_ + seen_[req_key]) {
     return HandleOutcome::MAYBE_LATER;
   }
-  auto desc = r->describe_http();
+  auto desc = r->describe_http(prefix_);
   if (!desc.has_value() || desc.value().url.empty()) {
     LOG(ERROR)
         << r->debug_string()
         << " is HTTP but can't describe the HTTP request that would happen?";
     return HandleOutcome::NOT_HANDLED;
-  }
-  if (prefix_.back() == '/' && desc.value().url[0] == '/') {
-    desc.value().url.insert(0, prefix_, 0UL, prefix_.size() - 1UL);
-  } else {
-    desc.value().url.insert(0, prefix_);
   }
   desc.value().timeout_seconds += extra_seconds_;
   auto cb = [this, r, desc, req_key](std::int16_t status, std::string_view body,
@@ -121,54 +115,6 @@ Self::GatewayHttpRequestor(std::string gateway_prefix,
 }
 Self::~GatewayHttpRequestor() {}
 
-ipfs::ipld::NodePtr Self::node_from_type(std::optional<Cid> const& cid,
-                                         ReqTyp t,
-                                         std::string_view body) const {
-  switch (t) {
-    case ReqTyp::Block: {
-      if (cid.has_value()) {
-        ipfs::PbDag blk{cid.value(), as_bytes(body)};
-        if (blk.cid_matches_data(*api_)) {
-          return ipfs::ipld::DagNode::fromBlock(blk);
-        }
-      } else {
-        LOG(ERROR) << "Block request on an invalid CID.";
-      }
-      return {};
-    }
-    case ReqTyp::Ipns: {
-      if (cid.has_value()) {
-        auto byte_ptr = reinterpret_cast<ipfs::Byte const*>(body.data());
-        auto rec = ipfs::ValidateIpnsRecord({byte_ptr, body.size()},
-                                            cid.value(), *api_);
-        if (rec.has_value()) {
-          return ipfs::ipld::DagNode::fromIpnsRecord(rec.value());
-        } else {
-          LOG(ERROR) << "IPNS record failed to validate!";
-        }
-      }
-      return {};
-    }
-    case ReqTyp::Identity:
-      LOG(ERROR) << "An HTTP response from a gateway received for an identity "
-                    "(inlined) CID";
-      return {};
-    case ReqTyp::DnsLink:
-      LOG(WARNING) << "HTTP responses to DnsLink requests not yet implemented, "
-                      "and it's not clear they will be.";
-      return {};
-    case ReqTyp::Car:
-      LOG(INFO) << "TODO responses to Car requests not yet implemented.";
-      return {};
-    case ReqTyp::Providers:
-      LOG(INFO) << "TODO responses to Car requests not yet implemented: "
-                << body;
-      return {};
-    case ReqTyp::Zombie:
-      return {};
-  }
-  return {};  // TODO
-}
 int Self::target(GatewayRequest const& r) const {
   int result = (strength_ - pending_) / 2;
   if (!pending_) {
