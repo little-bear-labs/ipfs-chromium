@@ -27,6 +27,7 @@ struct RequestorTest : public ::testing::Test {
   std::shared_ptr<TestRequestor> b = std::make_shared<TestRequestor>();
   std::shared_ptr<g::GatewayRequest> req_ =
       std::make_shared<g::GatewayRequest>();
+  RequestorTest() { req_->type = g::Type::Block; }
 };
 }  // namespace
 

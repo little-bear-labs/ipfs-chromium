@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from cache_vars import build_dir, vars, verbose
+from verbose import verbose
+from cache_vars import build_dir, vars
 
 from glob import glob
 import os
@@ -35,6 +36,7 @@ def makedirs(p):
 #     makedirs(join(inc_link,'google'))
 #     symlink(join(chromium_src,'third_party','protobuf','src','google','protobuf'), join(inc_link,'google','protobuf'))
 if not exists(join(inc_link,'absl')):
+    makedirs(inc_link)
     symlink(join(chromium_src,'third_party','abseil-cpp','absl'),join(inc_link,'absl'))
 
 def quoted(inc):

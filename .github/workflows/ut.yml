@@ -11,26 +11,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install --yes cmake ninja-build lcov binutils doxygen graphviz libc6{,-dev} valgrind
-          npm install -g @marp-team/marp-cli
-      - name: Configure
+        with:
+          path: 'ipfs_chromium'
+      - name: Run versioned script
         shell: bash
-        run: |
-          mkdir build
-          cmake \
-            -G Ninja \
-            -S . \
-            -B build \
-            -D CMAKE_BUILD_TYPE=Debug
-      - name: Run Tests
-        shell: bash
-        run: cmake --build build --config Debug --target run_tests
-      - name: Generate Coverage Report
-        shell: bash
-        run: cmake --build build --config Debug --target cov
+        run: ./ipfs_chromium/.github/ut.sh
       - name: Upload coverage reports to Codecov.com
         uses: codecov/codecov-action@v3
         with:

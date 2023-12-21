@@ -19,7 +19,8 @@ void Interceptor::MaybeCreateLoader(network::ResourceRequest const& req,
                                     content::BrowserContext* context,
                                     LoaderCallback loader_callback) {
   auto& state = InterRequestState::FromBrowserContext(context);
-  state.set_network_context(network_context_);
+  state.network_context(network_context_);
+  LOG(INFO) << "MaybeCreateLoader " << req.url.spec();
   if (req.url.SchemeIs("ipfs") || req.url.SchemeIs("ipns")) {
     auto hdr_str = req.headers.ToString();
     std::replace(hdr_str.begin(), hdr_str.end(), '\r', ' ');

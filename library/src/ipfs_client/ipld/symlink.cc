@@ -12,7 +12,6 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
   std::string result;
   if (!is_absolute()) {
     auto left_path = params.MyPath();
-    left_path.pop_n(2);    // Returning a path relative to content root.
     left_path.pop_back();  // Because the final component refers to this
                            // symlink, which is getting replaced with target
     result.assign(left_path.to_view());

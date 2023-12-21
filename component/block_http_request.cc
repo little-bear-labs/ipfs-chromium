@@ -67,7 +67,8 @@ void Self::OnResponse(std::shared_ptr<Self>,
       status = 408;
       break;
     default:
-      VLOG(2) << "NetErr " << loader_->NetError() << " for " << inf_.url;
+      //      VLOG(2) << "NetErr " << loader_->NetError() << " for " <<
+      //      inf_.url;
       status = 500;
   }
   //  auto sz = body ? body->size() : 0UL;
@@ -77,10 +78,7 @@ void Self::OnResponse(std::shared_ptr<Self>,
   }
   auto sp = status_line_.find(' ');
   if (sp < status_line_.size()) {
-    VLOG(2) << "HTTP response status='" << status_line_ << "'.";
     status = std::atoi(status_line_.c_str() + sp + 1);
-  } else {
-    VLOG(2) << "Status line malformed/missing : '" << status_line_ << "'";
   }
   if (body) {
     callback_(status, *body, header_accessor_);

@@ -1,13 +1,9 @@
 #include "url_canon_internal.h"
 
-#include <libp2p/multi/content_identifier_codec.hpp>
+#include <ipfs_client/cid.h>
 #include <ipfs_client/identity_cid.h>
 
 #include <sstream>
-
-namespace m = libp2p::multi;
-using Cid      = m::ContentIdentifier;
-using CidCodec = m::ContentIdentifierCodec;
 
 bool url::CanonicalizeIpfsURL(const char* spec,
                              int spec_len,
@@ -22,30 +18,17 @@ bool url::CanonicalizeIpfsURL(const char* spec,
   if ( parsed.host.len < 1 ) {
     return false;
   }
-  std::string cid_str{ spec + parsed.host.begin, static_cast<std::size_t>(parsed.host.len) };
-  auto maybe_cid = CidCodec::fromString(cid_str);
-  if ( !maybe_cid.has_value() ) {
-    auto e = libp2p::multi::Stringify(maybe_cid.error());
-    std::ostringstream err;
-    err << e << ' '
-      << std::string_view{spec,static_cast<std::size_t>(spec_len)};
-    maybe_cid = ipfs::id_cid::forText( err.str() );
+  std::string_view cid_str{ spec + parsed.host.begin, static_cast<std::size_t>(parsed.host.len) };
+  auto cid = ipfs::Cid(cid_str);
+  if ( !cid.valid() ) {
+    cid = ipfs::id_cid::forText( std::string{cid_str} + " is not a valid CID." );
   }
-  auto cid = maybe_cid.value();
-  if ( cid.version == Cid::Version::V0 ) {
-    //TODO dcheck content_type == DAG_PB && content_address.getType() == sha256
-    cid = Cid{
-        Cid::Version::V1,
-        cid.content_type,
-        cid.content_address
-      };
-  }
-  auto as_str = CidCodec::toString(cid);
-  if ( !as_str.has_value() ) {
+  auto as_str = cid.to_string();
+  if ( as_str.empty() ) {
     return false;
   }
   std::string stdurl{ spec, static_cast<std::size_t>(parsed.host.begin) };
-  stdurl.append( as_str.value() );
+  stdurl.append( as_str );
   stdurl.append( spec + parsed.host.end(), spec_len - parsed.host.end() );
   spec = stdurl.data();
   spec_len = static_cast<int>(stdurl.size());

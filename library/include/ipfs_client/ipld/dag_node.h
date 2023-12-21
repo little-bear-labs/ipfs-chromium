@@ -51,7 +51,6 @@ using ResolveResult =
  */
 class DagNode : public std::enable_shared_from_this<DagNode> {
   Link* FindChild(std::string_view);
-  static void Descend(ResolutionState&);
 
  protected:
   std::vector<std::pair<std::string, Link>> links_;

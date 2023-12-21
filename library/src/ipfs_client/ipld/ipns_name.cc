@@ -4,22 +4,31 @@
 
 using Self = ipfs::ipld::IpnsName;
 
-Self::IpnsName(std::string_view target_abs_path)
-    : target_path_{target_abs_path} {}
+Self::IpnsName(std::string_view target_abs_path) {
+  SlashDelimited target{target_abs_path};
+  target_namespace_ = target.pop();
+  target_root_ = target.pop();
+  links_.emplace_back("", Link{target_root_, nullptr});
+  target_path_.assign(target.to_string());
+}
 
 auto Self::resolve(ResolutionState& params) -> ResolveResult {
-  // Can't use PathChange, as the target is truly absolute (rootless)
-  SlashDelimited t{target_path_};
-  t.pop();  // Discard namespace, though realistically it's going to be ipfs
-            // basically all the time
-  auto name = t.pop();
-  if (t) {
-    LOG(WARNING) << "Odd case: name points at /ns/root/MORE/PATH ("
-                 << target_path_ << "): " << params.MyPath();
-    auto path = t.to_string() + "/" + params.PathToResolve().to_string();
-    auto altered = params.WithPath(path);
-    return CallChild(altered, "", name);
-  } else {
-    return CallChild(params, "", name);
+  auto& node = links_.at(0).second.node;
+  if (!node) {
+    node = params.GetBlock(target_root_);
   }
+  if (!node) {
+    return MoreDataNeeded(target_namespace_ + "/" + target_root_);
+  }
+  if (target_path_.empty()) {
+    return node->resolve(params);
+  }
+  auto path = target_path_;
+  path.append("/").append(params.PathToResolve().to_view());
+  auto altered = params.WithPath(path);
+  LOG(WARNING) << "Odd case: name points at /ns/root/MORE/PATH ("
+               << target_namespace_ << '/' << target_root_ << '/'
+               << target_path_ << "): " << params.MyPath()
+               << " will be resolved as " << path;
+  return node->resolve(params);
 }

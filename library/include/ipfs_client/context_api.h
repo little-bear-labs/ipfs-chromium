@@ -3,6 +3,7 @@
 
 #include "crypto/hasher.h"
 #include "dag_cbor_value.h"
+#include "gateway_spec.h"
 #include "http_request_description.h"
 #include "ipns_cbor_entry.h"
 #include "multi_hash.h"
@@ -76,6 +77,10 @@ class ContextApi : public std::enable_shared_from_this<ContextApi> {
                                     ByteView key_bytes) const = 0;
 
   std::optional<std::vector<Byte>> Hash(HashType, ByteView data);
+
+  virtual std::optional<GatewaySpec> GetGateway(std::size_t index) const = 0;
+  virtual unsigned GetGatewayRate(std::string_view);
+  virtual void SetGatewayRate(std::string_view, unsigned);
 
  protected:
   std::unordered_map<HashType, std::unique_ptr<crypto::Hasher>> hashers_;

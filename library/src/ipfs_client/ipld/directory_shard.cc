@@ -40,8 +40,6 @@ auto Self::resolve_internal(ipfs::ipld::DirShard::HashIter hash_b,
       continue;
     }
     if (ends_with(name, human_name)) {
-      VLOG(2) << "Found " << human_name << ", leaving HAMT sharded directory "
-              << name << "->" << link.cid;
       return CallChild(parms, name);
     }
     auto node = parms.GetBlock(link.cid);
@@ -60,7 +58,7 @@ auto Self::resolve_internal(ipfs::ipld::DirShard::HashIter hash_b,
       }
       VLOG(2) << "Found hash chunk, continuing to next level of HAMT sharded "
                  "directory "
-                << name << "->" << link.cid;
+              << name << "->" << link.cid;
       return downcast->resolve_internal(std::next(hash_b), hash_e, human_name,
                                         parms);
     } else {

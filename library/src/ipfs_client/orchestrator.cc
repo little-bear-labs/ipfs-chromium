@@ -23,7 +23,7 @@ void Self::build_response(std::shared_ptr<IpfsRequest> req) {
     return;
   }
   auto req_path = req->path();
-  VLOG(2) << "build_response(" << req_path.to_string() << ')';
+  VLOG(1) << "build_response(" << req_path.to_string() << ')';
   req_path.pop();  // namespace
   std::string affinity{req_path.pop()};
   auto it = dags_.find(affinity);
@@ -32,7 +32,7 @@ void Self::build_response(std::shared_ptr<IpfsRequest> req) {
       build_response(req);
     }
   } else {
-    VLOG(2) << "Requesting root " << affinity << " resolve path "
+    VLOG(1) << "Requesting root " << affinity << " resolve path "
             << req_path.to_string();
     auto root = it->second->rooted();
     if (root != it->second) {
@@ -54,10 +54,11 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
   auto result = root->resolve(relative_path, block_look_up);
   auto response = std::get_if<Response>(&result);
   if (response) {
-    VLOG(1) << "Tree gave us a response: status=" << response->status_
-            << " mime=" << response->mime_
-            << " location=" << response->location_ << " body is "
-            << response->body_.size() << " bytes.";
+    VLOG(1) << "Tree gave us a response to '" << req->path()
+            << "' : status=" << response->status_
+              << " mime=" << response->mime_
+              << " location=" << response->location_ << " body is "
+              << response->body_.size() << " bytes.";
     if (response->mime_.empty() && !response->body_.empty()) {
       if (response->location_.empty()) {
         LOG(INFO) << "Request for " << req->path()
@@ -72,26 +73,30 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
           hit_path.push_back('/');
         }
         hit_path.append(response->location_);
-        LOG(INFO) << "Request for " << req->path() << " returned a location of "
-                  << response->location_ << " and a body of "
+        VLOG(1) << "Request for " << req->path() << " returned a location of "
+                << response->location_ << " and a body of "
                   << response->body_.size() << " bytes, sniffing mime from "
                   << hit_path;
         response->mime_ = sniff(SlashDelimited{hit_path}, response->body_);
       }
     }
+    if (response->status_ / 100 != 3) {
+      response->location_.clear();
+    }
     req->finish(*response);
-  } else if (std::holds_alternative<ipld::PathChange>(result)) {
-    auto& np = std::get<ipld::PathChange>(result);
-    LOG(INFO) << "Symlink converts request to " << req->path().to_string()
-              << " into " << np.new_path
-              << ". TODO - check for infinite loops.";
-    req->new_path(np.new_path);
-    build_response(req);
+  } else if (auto* pc = std::get_if<ipld::PathChange>(&result)) {
+    LOG(ERROR) << "Should not be getting a PathChange in orchestrator - "
+                  "should've been handled in the root, but got "
+               << pc->new_path << " for " << req->path();
   } else if (std::get_if<ipld::ProvenAbsent>(&result)) {
     req->finish(Response::IMMUTABLY_GONE);
   } else {
     auto& mps = std::get<ipld::MoreDataNeeded>(result).ipfs_abs_paths_;
     req->till_next(mps.size());
+    for (auto& mp : mps) {
+      VLOG(1) << "Attempt to resolve " << relative_path << " for "
+              << req->path() << " leads to request for " << mp;
+    }
     if (std::any_of(mps.begin(), mps.end(), [this, &req, &affinity](auto& p) {
           return gw_request(req, SlashDelimited{p}, affinity);
         })) {
@@ -102,8 +107,8 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
 bool Self::gw_request(std::shared_ptr<IpfsRequest> ir,
                       ipfs::SlashDelimited path,
                       std::string const& aff) {
-  LOG(INFO) << "Seeking " << path.to_string();
   auto req = gw::GatewayRequest::fromIpfsPath(path);
+  VLOG(1) << "Seeking " << path.to_string() << " -> " << req->debug_string();
   if (req) {
     req->dependent = ir;
     req->orchestrator(shared_from_this());
@@ -136,8 +141,8 @@ std::string Self::sniff(ipfs::SlashDelimited p, std::string const& body) const {
     ext.assign(file_name, dot + 1);
   }
   auto result = api_->MimeType(ext, body, fake_url);
-  LOG(INFO) << "Deduced mime from (ext=" << ext << " body of " << body.size()
-            << " bytes, 'url'=" << fake_url << ")=" << result;
+  VLOG(1) << "Deduced mime from (ext=" << ext << " body of " << body.size()
+          << " bytes, 'url'=" << fake_url << ")=" << result;
   return result;
 }
 

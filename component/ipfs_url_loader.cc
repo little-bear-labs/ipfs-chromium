@@ -62,6 +62,7 @@ void ipfs::IpfsUrlLoader::StartRequest(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
   DCHECK(!me->receiver_.is_bound());
   DCHECK(!me->client_.is_bound());
+  VLOG(1) << "StartRequest(" << resource_request.url.spec() << ")";
   me->receiver_.Bind(std::move(receiver));
   me->client_.Bind(std::move(client));
   if (me->original_url_.empty()) {
@@ -134,9 +135,6 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   head->content_length = byte_count;
   head->headers =
       net::HttpResponseHeaders::TryToCreate("access-control-allow-origin: *");
-  if (resp_loc_.size()) {
-    head->headers->AddHeader("Location", resp_loc_);
-  }
   if (!head->headers) {
     LOG(ERROR) << "\n\tFailed to create headers!\n";
     return;
@@ -155,11 +153,18 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
     VLOG(1) << "Appending 'additional' header:" << n << '=' << v << '.';
     head->headers->AddHeader(n, v);
   }
-  VLOG(1) << "Calling PopulateParsedHeaders";
+  if (resp_loc_.size()) {
+    head->headers->AddHeader("Location", resp_loc_);
+    LOG(INFO) << "Sending response for " << original_url_ << " with mime type "
+              << head->mime_type << " and status line '" << status_line
+              << "' @location '" << resp_loc_ << "'";
+  } else {
+    VLOG(1) << "Sending response for " << original_url_ << " with mime type "
+            << head->mime_type << " and status line '" << status_line
+              << "' with no location header.";
+  }
   head->parsed_headers =
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});
-  VLOG(1) << "Sending response for " << original_url_ << " with mime type "
-          << head->mime_type << " and status line " << status_line;
   if (status_ / 100 == 3 && resp_loc_.size()) {
     auto ri = net::RedirectInfo::ComputeRedirectInfo(
         "GET", GURL{original_url_}, net::SiteForCookies{},

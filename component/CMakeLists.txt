@@ -133,6 +133,7 @@ add_custom_command(
 )
 
 add_custom_target(inc_link
+  ALL
   COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/inc_link.py" "${CMAKE_BINARY_DIR}"
   WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
   DEPENDS in_tree_gen

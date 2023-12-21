@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
+from verbose import verbose
 from cache_vars import build_dir, vars
 from patch import Patcher
-from verbose import verbose
 
 from glob import glob
 from os import environ, makedirs, remove
@@ -115,13 +115,7 @@ if isfile(join(build_dir, 'fresh')):
 if not isfile(join(src, '.landmines')):
     run([python, join(depot_tools_dir, 'gclient.py'), 'runhooks', '-j', jobs])
 
-with open(join(src, 'chrome', 'browser', 'BUILD.gn')) as w:
-    content = w.read()
-    if 'components/ipfs' in content:
-        verbose('Chromium seems to be already patched.')
-    else:
-        print('Apply patch file...', file=stderr)
-        patcher.apply()
+patcher.apply()
 
 ipfs_dir = join(src, 'components', 'ipfs')
 

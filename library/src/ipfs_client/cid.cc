@@ -25,8 +25,6 @@ Self::Cid(std::string_view s) {
       auto view = ByteView{bytes.value()};
       ReadStart(view);
     }
-  } else {
-    LOG(WARNING) << "Failed to decode the multibase for a CID: " << s;
   }
 }
 

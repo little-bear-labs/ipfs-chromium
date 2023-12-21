@@ -5,6 +5,7 @@
 #include "chromium_json_adapter.h"
 #include "crypto_api.h"
 #include "inter_request_state.h"
+#include "preferences.h"
 
 #include <components/cbor/reader.h>
 #include <services/network/public/cpp/simple_url_loader.h>
@@ -52,7 +53,7 @@ std::string Self::MimeType(std::string extension,
   }
   if (result.empty() || result == "application/octet-stream") {
     net::SniffMimeTypeFromLocalData({content.data(), head_size}, &result);
-    VLOG(1) << "Falling all the way back to content type " << result;
+    VLOG(2) << "Falling all the way back to content type " << result;
   }
   return result;
 }
@@ -75,8 +76,8 @@ void Self::SendDnsTextRequest(std::string host,
     LOG(INFO) << "Finished resolving " << host << " via DNSLink";
     dns_reqs_.erase(host);
   };
-  dns_reqs_[host] = std::make_unique<DnsTxtRequest>(host, res, don_wrap,
-                                                    network_context_.get());
+  auto* nc = state_->network_context();
+  dns_reqs_[host] = std::make_unique<DnsTxtRequest>(host, res, don_wrap, nc);
 }
 void Self::SendHttpRequest(HttpRequestDescription req_inf,
                            HttpCompleteCallback cb) const {
@@ -88,8 +89,7 @@ bool Self::VerifyKeySignature(SigningKeyType t,
                               ByteView signature,
                                 ByteView data,
                                 ByteView key_bytes) const {
-  return crypto_api::VerifySignature(static_cast<ipns::KeyType>(t), signature,
-                                     data, key_bytes);
+  return crypto_api::VerifySignature(t, signature, data, key_bytes);
 }
 auto Self::ParseCbor(ipfs::ContextApi::ByteView bytes) const
     -> std::unique_ptr<DagCborValue> {
@@ -110,11 +110,22 @@ auto Self::ParseJson(std::string_view j_str) const
   }
   return {};
 }
+unsigned int Self::GetGatewayRate(std::string_view prefix) {
+  return rates_.GetRate(prefix);
+}
+void Self::SetGatewayRate(std::string_view prefix, unsigned int new_rate) {
+  rates_.SetRate(prefix, new_rate);
+}
+auto Self::GetGateway(std::size_t index) const -> std::optional<GatewaySpec> {
+  auto [gw, r] = rates_.at(index);
+  if (gw) {
+    return GatewaySpec{*gw, r};
+  }
+  return std::nullopt;
+}
 
-Self::ChromiumIpfsContext(
-    InterRequestState& state,
-    raw_ptr<network::mojom::NetworkContext> network_context)
-    : network_context_{network_context}, state_{state} {}
+Self::ChromiumIpfsContext(InterRequestState& state, PrefService* prefs)
+    : state_{state}, rates_{prefs} {}
 Self::~ChromiumIpfsContext() noexcept {
   LOG(WARNING) << "API dtor - are all URIs loaded?";
 }

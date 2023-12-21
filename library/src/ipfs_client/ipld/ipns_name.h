@@ -5,7 +5,9 @@
 
 namespace ipfs::ipld {
 class IpnsName : public DagNode {
-  std::string const target_path_;
+  std::string target_namespace_;
+  std::string target_root_;
+  std::string target_path_;
 
   ResolveResult resolve(ResolutionState& params) override;
 

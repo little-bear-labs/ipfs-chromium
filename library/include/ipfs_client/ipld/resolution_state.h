@@ -16,12 +16,14 @@ using NodePtr = std::shared_ptr<DagNode>;
 using BlockLookup = std::function<NodePtr(std::string const&)>;
 
 class ResolutionState {
-  friend class DagNode;
   std::string resolved_path_components;
   SlashDelimited unresolved_path;
   BlockLookup get_available_block;
 
  public:
+  ResolutionState(std::string_view path_to_resolve, BlockLookup);
+  ResolutionState(SlashDelimited path_to_resolve, BlockLookup);
+
   SlashDelimited MyPath() const;
   SlashDelimited PathToResolve() const;
   bool IsFinalComponent() const;
@@ -30,6 +32,8 @@ class ResolutionState {
 
   ResolutionState WithPath(std::string_view) const;
   ResolutionState RestartResolvedPath() const;
+
+  void Descend();
 };
 }  // namespace ipfs::ipld
 

@@ -1,4 +1,5 @@
-from sys import argv
+
+from sys import argv, stderr
 
 if '--verbose' in argv:
     argv.remove('--verbose')

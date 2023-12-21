@@ -34,7 +34,8 @@ TEST(DefaultRequestorTest, name_check) {
   EXPECT_EQ(a.name, "DNSLink requestor");
   EXPECT_TRUE(a.next);
   a.next->TestAccess(&a);
-  EXPECT_EQ(a.name, "requestor pool");
+  EXPECT_EQ(a.name, "multi-gateway requestor");
+  //  EXPECT_EQ(a.name, "requestor pool");
   EXPECT_TRUE(a.next);
   a.next->TestAccess(&a);
   EXPECT_EQ(a.name, "Terminating requestor");

@@ -41,7 +41,7 @@ TEST(BlockTest, IdentityBlockValidates) {
   EXPECT_TRUE(block.valid());
   EXPECT_TRUE(block.is_file());
   MockApi api;
-  // TODO: if this fails, awesome. Change the block_bytes to "Ipsum lorem"
+  // if this fails, awesome. Change the block_bytes to "Ipsum lorem"
   EXPECT_TRUE(block.cid_matches_data(api));
 }
 TEST(BlockTest, DirectoryCopiedIsStillDirectory) {

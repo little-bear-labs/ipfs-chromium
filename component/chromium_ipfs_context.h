@@ -2,6 +2,7 @@
 #define IPFS_CHROMIUM_IPFS_CONTEXT_H_
 
 #include "dns_txt_request.h"
+#include "preferences.h"
 
 #include <ipfs_client/block_storage.h>
 #include <ipfs_client/context_api.h>
@@ -12,6 +13,8 @@
 #include <vocab/raw_ptr.h>
 
 #include <map>
+
+class PrefService;
 
 namespace network {
 class SimpleURLLoader;
@@ -27,9 +30,9 @@ class NetworkRequestor;
 
 class ChromiumIpfsContext final : public ContextApi {
   raw_ptr<network::mojom::URLLoaderFactory> loader_factory_ = nullptr;
-  raw_ptr<network::mojom::NetworkContext> network_context_;
   raw_ref<InterRequestState> state_;
   std::map<std::string, std::unique_ptr<DnsTxtRequest>> dns_reqs_;
+  GatewayRates rates_;
 
   std::string MimeType(std::string extension,
                        std::string_view content,
@@ -48,9 +51,12 @@ class ChromiumIpfsContext final : public ContextApi {
   std::unique_ptr<DagCborValue> ParseCbor(ByteView) const override;
   std::unique_ptr<DagJsonValue> ParseJson(std::string_view) const override;
 
+  std::optional<GatewaySpec> GetGateway(std::size_t index) const override;
+  unsigned int GetGatewayRate(std::string_view) override;
+  void SetGatewayRate(std::string_view, unsigned int) override;
+
  public:
-  ChromiumIpfsContext(InterRequestState&,
-                      raw_ptr<network::mojom::NetworkContext> network_context);
+  ChromiumIpfsContext(InterRequestState&, PrefService* prefs);
   ~ChromiumIpfsContext() noexcept override;
   void SetLoaderFactory(network::mojom::URLLoaderFactory&);
 };

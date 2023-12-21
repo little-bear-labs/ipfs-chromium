@@ -3,6 +3,7 @@
 
 #include "content/public/browser/url_loader_request_interceptor.h"
 
+class PrefService;
 namespace network::mojom {
 class URLLoaderFactory;
 class NetworkContext;
@@ -14,6 +15,7 @@ class COMPONENT_EXPORT(IPFS) Interceptor final
     : public content::URLLoaderRequestInterceptor {
   raw_ptr<network::mojom::URLLoaderFactory> loader_factory_;
   raw_ptr<network::mojom::NetworkContext> network_context_;
+  raw_ptr<PrefService> pref_svc_;
 
   void MaybeCreateLoader(network::ResourceRequest const&,
                          content::BrowserContext*,

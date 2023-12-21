@@ -24,10 +24,10 @@ class Orchestrator : public std::enable_shared_from_this<Orchestrator> {
   void build_response(std::shared_ptr<IpfsRequest>);
   bool add_node(std::string key, ipld::NodePtr);
   bool has_key(std::string const& k) const;
+  std::size_t Stored() const { return dags_.size(); }
 
  private:
   flat_map<std::string, ipld::NodePtr> dags_;
-  //  GatewayAccess gw_requestor_;
   std::shared_ptr<ContextApi> api_;
   std::shared_ptr<gw::Requestor> requestor_;
 

@@ -7,17 +7,17 @@
 #include "third_party/boringssl/src/include/openssl/evp.h"
 
 namespace {
-int ToEvpKeyType(ipfs::ipns::KeyType t) {
-  using ipfs::ipns::KeyType;
+int ToEvpKeyType(ipfs::ContextApi::SigningKeyType t) {
+  using T = ipfs::ContextApi::SigningKeyType;
   switch (t) {
-    case KeyType::ECDSA:
+    case T::ECDSA:
       LOG(ERROR) << "TODO Check on ECDSA key type translation.";
       return EVP_PKEY_EC;
-    case KeyType::Ed25519:
+    case T::Ed25519:
       return EVP_PKEY_ED25519;
-    case KeyType::RSA:
+    case T::RSA:
       return EVP_PKEY_RSA;
-    case KeyType::Secp256k1:
+    case T::Secp256k1:
       LOG(ERROR) << "TODO Check on Secp256k1 key type translation.";
       return EVP_PKEY_DSA;
     default:
@@ -29,7 +29,7 @@ int ToEvpKeyType(ipfs::ipns::KeyType t) {
 
 namespace cpto = ipfs::crypto_api;
 
-bool cpto::VerifySignature(ipfs::ipns::KeyType key_type,
+bool cpto::VerifySignature(ipfs::ContextApi::SigningKeyType key_type,
                            ipfs::ByteView signature,
                            ipfs::ByteView data,
                            ipfs::ByteView key_bytes) {

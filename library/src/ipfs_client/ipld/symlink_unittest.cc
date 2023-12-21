@@ -46,3 +46,14 @@ TEST(SymlinkTest, rooted) {
   EXPECT_TRUE(std::holds_alternative<ii::PathChange>(res));
   EXPECT_EQ(std::get<ii::PathChange>(res).new_path, target);
 }
+TEST(SymlinkTest, relative) {
+  auto sub = std::make_shared<ii::Symlink>("c");
+  ii::DagNode& super = *sub;
+  auto blu = [sub](std::string const& block_key) -> ii::NodePtr { return {}; };
+  ii::ResolutionState state{"/a/b", blu};
+  state.Descend();
+  state.Descend();
+  auto res = super.resolve(state);
+  EXPECT_TRUE(std::holds_alternative<ii::PathChange>(res));
+  EXPECT_EQ(std::get<ii::PathChange>(res).new_path, "/a/c");
+}
