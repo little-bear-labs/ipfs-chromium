@@ -28,8 +28,7 @@ ipfs::IpfsURLLoaderFactory::IpfsURLLoaderFactory(
       scheme_{scheme},
       context_{context},
       default_factory_{default_factory},
-      network_context_{net_ctxt},
-      pref_svc_{pref_svc} {}
+      network_context_{net_ctxt} {}
 
 ipfs::IpfsURLLoaderFactory::~IpfsURLLoaderFactory() noexcept {
   context_ = nullptr;
@@ -45,8 +44,6 @@ void ipfs::IpfsURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     net::MutableNetworkTrafficAnnotationTag const&  // traffic_annotation
 ) {
-  VLOG(2) << "IPFS subresource: case=" << scheme_
-          << " url=" << request.url.spec();
   DCHECK(default_factory_);
   if (scheme_ == "ipfs" || scheme_ == "ipns") {
     auto ptr = std::make_shared<IpfsUrlLoader>(

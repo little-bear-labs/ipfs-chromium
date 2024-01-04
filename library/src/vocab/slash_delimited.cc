@@ -1,7 +1,5 @@
 #include <vocab/slash_delimited.h>
 
-#include "log_macros.h"
-
 #include <iostream>
 
 #if __has_include(<base/strings/string_piece.h>)
@@ -92,6 +90,7 @@ std::ostream& operator<<(std::ostream& str, ipfs::SlashDelimited const& sd) {
   return str << sd.to_view();
 }
 
+#ifndef NACL_TC_REV
 #if __has_include(<google/protobuf/stubs/logging.h>)
 #include <google/protobuf/stubs/logging.h>
 
@@ -114,4 +113,5 @@ LogMessage& operator<<(LogMessage& str, ipfs::SlashDelimited const& sd) {
 }
 #endif
 
+#endif
 #endif

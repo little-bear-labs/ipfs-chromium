@@ -19,7 +19,6 @@ if (enable_ipfs) {
     static_library("ipfs_client") {
       if (is_nacl) {
         sources = cxx_sources - [
-            "src/ipfs_client/dag_block.cc",
             "src/ipfs_client/gw/gateway_request.cc",
             "src/ipfs_client/gw/gateway_http_requestor.cc",
             "src/ipfs_client/gw/requestor.cc",
@@ -27,6 +26,7 @@ if (enable_ipfs) {
             "src/ipfs_client/ipns_names.cc",
             "src/ipfs_client/ipns_record.cc",
             "src/ipfs_client/logger.cc",
+            "src/ipfs_client/pb_dag.cc",
             "src/ipfs_client/signing_key_type.cc",
           ]
       } else {

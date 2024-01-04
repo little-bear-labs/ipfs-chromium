@@ -20,11 +20,10 @@ void Interceptor::MaybeCreateLoader(network::ResourceRequest const& req,
                                     LoaderCallback loader_callback) {
   auto& state = InterRequestState::FromBrowserContext(context);
   state.network_context(network_context_);
-  LOG(INFO) << "MaybeCreateLoader " << req.url.spec();
   if (req.url.SchemeIs("ipfs") || req.url.SchemeIs("ipns")) {
     auto hdr_str = req.headers.ToString();
     std::replace(hdr_str.begin(), hdr_str.end(), '\r', ' ');
-    VLOG(1) << req.url.spec() << " getting intercepted! Headers: \n" << hdr_str;
+    VLOG(2) << req.url.spec() << " getting intercepted! Headers: \n" << hdr_str;
     DCHECK(context);
     auto loader =
         std::make_shared<ipfs::IpfsUrlLoader>(*loader_factory_, state);

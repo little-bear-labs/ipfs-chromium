@@ -20,24 +20,24 @@ Self::CacheRequestor(InterRequestState& state, base::FilePath base)
   Start();
 }
 void Self::Start() {
-  if (pending_) {
+  if (startup_pending_) {
     return;
   }
   auto result = dc::CreateCacheBackend(
       net::CacheType::DISK_CACHE, net::CACHE_BACKEND_DEFAULT, {}, path_, 0,
-      dc::ResetHandling::kNeverReset,
-      //     dc::ResetHandling::kResetOnError,
-      nullptr, base::BindOnce(&Self::Assign, base::Unretained(this)));
+      //      dc::ResetHandling::kNeverReset,
+      dc::ResetHandling::kResetOnError, nullptr,
+      base::BindOnce(&Self::Assign, base::Unretained(this)));
   LOG(INFO) << "Start(" << result.net_error << ')' << result.net_error;
-  pending_ = result.net_error == net::ERR_IO_PENDING;
-  if (!pending_) {
+  startup_pending_ = result.net_error == net::ERR_IO_PENDING;
+  if (!startup_pending_) {
     Assign(std::move(result));
   }
 }
 Self::~CacheRequestor() noexcept = default;
 
 void Self::Assign(dc::BackendResult res) {
-  pending_ = false;
+  startup_pending_ = false;
   if (res.net_error == net::OK) {
     LOG(INFO) << "Initialized disk cache";
     cache_.swap(res.backend);
@@ -47,17 +47,17 @@ void Self::Assign(dc::BackendResult res) {
   }
 }
 auto Self::handle(RequestPtr req) -> HandleOutcome {
-  if (pending_) {
+  if (startup_pending_) {
     return HandleOutcome::NOT_HANDLED;
   }
   Task task;
-  task.key = req->main_param;
+  task.key = req->Key();
   task.request = req;
   StartFetch(task, net::MAXIMUM_PRIORITY);
   return HandleOutcome::PENDING;
 }
 void Self::StartFetch(Task& task, net::RequestPriority priority) {
-  if (pending_) {
+  if (startup_pending_) {
     Start();
     Miss(task);
     return;
@@ -70,10 +70,11 @@ void Self::StartFetch(Task& task, net::RequestPriority priority) {
 }
 void Self::Miss(Task& task) {
   if (task.request) {
-    VLOG(2) << "Cache miss on " << task.request->debug_string();
+    VLOG(1) << "Cache miss on '" << task.request->Key() << "' for "
+            << task.request->debug_string();
     auto req = task.request;
     task.request->Hook([this, req](std::string_view bytes) {
-      Store(req->main_param, "TODO", std::string{bytes});
+      Store(req->Key(), "TODO", std::string{bytes});
     });
     forward(req);
   }
@@ -91,7 +92,6 @@ std::shared_ptr<dc::Entry> GetEntry(dc::EntryResult& result) {
 }  // namespace
 
 void Self::OnOpen(Task task, dc::EntryResult res) {
-  VLOG(2) << "OnOpen(" << res.net_error() << ")";
   if (res.net_error() != net::OK) {
     VLOG(2) << "Failed to find " << task.key << " in " << name();
     Miss(task);
@@ -144,14 +144,14 @@ void Self::OnBodyRead(Task task, int code) {
     }
   }
 }
-void Self::Store(std::string cid, std::string headers, std::string body) {
-  VLOG(1) << "Store(" << name() << ',' << cid << ',' << headers.size() << ','
-          << body.size() << ')';
+void Self::Store(std::string key, std::string headers, std::string body) {
+  LOG(INFO) << "Store(" << name() << ',' << key << ',' << headers.size() << ','
+            << body.size() << ')';
   auto bound = base::BindOnce(&Self::OnEntryCreated, base::Unretained(this),
-                              cid, headers, body);
-  auto res = cache_->OpenOrCreateEntry(cid, net::LOW, std::move(bound));
+                              key, headers, body);
+  auto res = cache_->OpenOrCreateEntry(key, net::LOW, std::move(bound));
   if (res.net_error() != net::ERR_IO_PENDING) {
-    OnEntryCreated(cid, headers, body, std::move(res));
+    OnEntryCreated(key, headers, body, std::move(res));
   }
 }
 void Self::OnEntryCreated(std::string cid,
@@ -196,20 +196,11 @@ void Self::OnHeaderWritten(scoped_refptr<net::StringIOBuffer> buf,
 
 void Self::Task::SetHeaders(std::string_view source) {
   auto heads = base::MakeRefCounted<net::HttpResponseHeaders>(header);
-  DCHECK(heads);
-  std::string value{"blockcache-"};
-  value.append(key);
-  value.append(";desc=\"Load from local browser block cache\";dur=");
-  auto dur = base::TimeTicks::Now() - start;
-  value.append(std::to_string(dur.InMillisecondsRoundedUp()));
-  heads->SetHeader("Server-Timing", value);
-  VLOG(2) << "From cache: Server-Timing: " << value << "; Block-Cache-" << key
-          << ": " << source;
-  heads->SetHeader("Block-Cache-" + key, {source.data(), source.size()});
+  // TODO
   header = heads->raw_headers();
 }
 void Self::Expire(std::string const& key) {
-  if (cache_ && !pending_) {
+  if (cache_ && !startup_pending_) {
     cache_->DoomEntry(key, net::RequestPriority::LOWEST, base::DoNothing());
   }
 }

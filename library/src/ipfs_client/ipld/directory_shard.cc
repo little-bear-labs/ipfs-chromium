@@ -56,9 +56,6 @@ auto Self::resolve_internal(ipfs::ipld::DirShard::HashIter hash_b,
         LOG(ERROR) << "Ran out of hash bits.";
         return ProvenAbsent{};
       }
-      VLOG(2) << "Found hash chunk, continuing to next level of HAMT sharded "
-                 "directory "
-              << name << "->" << link.cid;
       return downcast->resolve_internal(std::next(hash_b), hash_e, human_name,
                                         parms);
     } else {

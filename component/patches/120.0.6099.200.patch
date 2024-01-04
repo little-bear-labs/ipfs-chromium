@@ -1,0 +1,908 @@
+diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
+index 44d3b5e543101..35bbe5da7daf8 100644
+--- a/chrome/browser/BUILD.gn
++++ b/chrome/browser/BUILD.gn
+@@ -40,6 +40,7 @@ import("//rlz/buildflags/buildflags.gni")
+ import("//sandbox/features.gni")
+ import("//testing/libfuzzer/fuzzer_test.gni")
+ import("//third_party/blink/public/public_features.gni")
++import("//third_party/ipfs_client/args.gni")
+ import("//third_party/protobuf/proto_library.gni")
+ import("//third_party/webrtc/webrtc.gni")
+ import("//third_party/widevine/cdm/widevine.gni")
+@@ -2660,6 +2661,14 @@ static_library("browser") {
+       ]
+     }
+ 
++    if (enable_ipfs) {
++      sources += [
++        "ipfs_extra_parts.cc",
++        "ipfs_extra_parts.h",
++      ]
++      deps += [ "//components/ipfs" ]
++    }
++
+     if (is_chromeos_ash) {
+       deps += [ "//chrome/browser/screen_ai:screen_ai_dlc_installer" ]
+     }
+diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
+index 8736a91998f6b..da556109dcbb1 100644
+--- a/chrome/browser/about_flags.cc
++++ b/chrome/browser/about_flags.cc
+@@ -213,6 +213,7 @@
+ #include "third_party/blink/public/common/features_generated.h"
+ #include "third_party/blink/public/common/forcedark/forcedark_switches.h"
+ #include "third_party/blink/public/common/switches.h"
++#include "third_party/ipfs_client/ipfs_buildflags.h"
+ #include "ui/accessibility/accessibility_features.h"
+ #include "ui/accessibility/accessibility_switches.h"
+ #include "ui/base/ui_base_features.h"
+@@ -314,6 +315,10 @@
+ #include "extensions/common/switches.h"
+ #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+ 
++#if BUILDFLAG(ENABLE_IPFS)
++#include "components/ipfs/ipfs_features.h"
++#endif
++
+ #if BUILDFLAG(ENABLE_PDF)
+ #include "pdf/pdf_features.h"
+ #endif
+@@ -9922,6 +9927,14 @@ const FeatureEntry kFeatureEntries[] = {
+      flag_descriptions::kOmitCorsClientCertDescription, kOsAll,
+      FEATURE_VALUE_TYPE(network::features::kOmitCorsClientCert)},
+ 
++#if BUILDFLAG(ENABLE_IPFS)
++    {"enable-ipfs",
++     flag_descriptions::kEnableIpfsName,
++     flag_descriptions::kEnableIpfsDescription,
++     kOsMac | kOsWin | kOsLinux,//TODO: These are the only variants currently getting built, but that is not likely to remain the case
++     FEATURE_VALUE_TYPE(ipfs::kEnableIpfs)},
++#endif
++
+     {"use-idna2008-non-transitional",
+      flag_descriptions::kUseIDNA2008NonTransitionalName,
+      flag_descriptions::kUseIDNA2008NonTransitionalDescription, kOsAll,
+diff --git a/chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc b/chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc
+index 4c88614c68c25..f8bb12a3b0c2e 100644
+--- a/chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc
++++ b/chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.cc
+@@ -10,6 +10,8 @@
+ #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
+ #include "chrome/browser/external_protocol/external_protocol_handler.h"
+ #include "chrome/browser/profiles/profile.h"
++#include "third_party/ipfs_client/ipfs_buildflags.h"
++
+ #if BUILDFLAG(IS_ANDROID)
+ #include "chrome/browser/profiles/profile_android.h"
+ #endif
+@@ -18,6 +20,9 @@
+ #include "chrome/browser/ui/android/omnibox/jni_headers/ChromeAutocompleteSchemeClassifier_jni.h"
+ #endif
+ #include "components/custom_handlers/protocol_handler_registry.h"
++#if BUILDFLAG(ENABLE_IPFS)
++#include "components/ipfs/ipfs_features.h"
++#endif
+ #include "content/public/common/url_constants.h"
+ #include "url/url_util.h"
+ 
+@@ -55,12 +60,20 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
+   if (scheme.empty()) {
+     return metrics::OmniboxInputType::EMPTY;
+   }
+-  if (base::IsStringASCII(scheme) &&
+-      (ProfileIOData::IsHandledProtocol(scheme) ||
+-       base::EqualsCaseInsensitiveASCII(scheme, content::kViewSourceScheme) ||
+-       base::EqualsCaseInsensitiveASCII(scheme, url::kJavaScriptScheme) ||
+-       base::EqualsCaseInsensitiveASCII(scheme, url::kDataScheme))) {
+-    return metrics::OmniboxInputType::URL;
++  if (base::IsStringASCII(scheme)) {
++      if (ProfileIOData::IsHandledProtocol(scheme) ||
++          base::EqualsCaseInsensitiveASCII(scheme, content::kViewSourceScheme) ||
++          base::EqualsCaseInsensitiveASCII(scheme, url::kJavaScriptScheme) ||
++          base::EqualsCaseInsensitiveASCII(scheme, url::kDataScheme)) {
++        return metrics::OmniboxInputType::URL;
++      }
++#if BUILDFLAG(ENABLE_IPFS)
++      if (base::FeatureList::IsEnabled(ipfs::kEnableIpfs) &&
++         (base::EqualsCaseInsensitiveASCII(scheme, "ipfs") || base::EqualsCaseInsensitiveASCII(scheme, "ipns"))
++          ) {
++        return metrics::OmniboxInputType::URL;
++      }
++#endif
+   }
+ 
+   // Also check for schemes registered via registerProtocolHandler(), which
+diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
+index d9c675c8aca73..8fbea741919d8 100644
+--- a/chrome/browser/chrome_content_browser_client.cc
++++ b/chrome/browser/chrome_content_browser_client.cc
+@@ -364,6 +364,7 @@
+ #include "third_party/blink/public/common/switches.h"
+ #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
+ #include "third_party/blink/public/public_buildflags.h"
++#include "third_party/ipfs_client/ipfs_buildflags.h"
+ #include "third_party/widevine/cdm/buildflags.h"
+ #include "ui/base/clipboard/clipboard_format_type.h"
+ #include "ui/base/l10n/l10n_util.h"
+@@ -487,6 +488,13 @@
+ #include "chrome/browser/fuchsia/chrome_browser_main_parts_fuchsia.h"
+ #endif
+ 
++#if BUILDFLAG(ENABLE_IPFS)
++#include "chrome/browser/ipfs_extra_parts.h"
++#include "components/ipfs/interceptor.h"
++#include "components/ipfs/ipfs_features.h"
++#include "components/ipfs/url_loader_factory.h"
++#endif
++
+ #if BUILDFLAG(IS_CHROMEOS)
+ #include "base/debug/leak_annotations.h"
+ #include "chrome/browser/apps/intent_helper/chromeos_disabled_apps_throttle.h"
+@@ -1816,6 +1824,11 @@ ChromeContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
+   main_parts->AddParts(
+       std::make_unique<ChromeBrowserMainExtraPartsNaclDeprecation>());
+ 
++#if BUILDFLAG(ENABLE_IPFS)
++  if (base::FeatureList::IsEnabled(ipfs::kEnableIpfs)) {
++    main_parts->AddParts(std::make_unique<IpfsExtraParts>());
++  }
++#endif
+   return main_parts;
+ }
+ 
+@@ -6180,12 +6193,25 @@ void ChromeContentBrowserClient::
+         const absl::optional<url::Origin>& request_initiator_origin,
+         NonNetworkURLLoaderFactoryMap* factories) {
+ #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS) || \
+-    !BUILDFLAG(IS_ANDROID)
++    !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_IPFS)
+   content::RenderFrameHost* frame_host =
+       RenderFrameHost::FromID(render_process_id, render_frame_id);
+   WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
+ #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS) || \
+         // !BUILDFLAG(IS_ANDROID)
++#if BUILDFLAG(ENABLE_IPFS)
++  if (base::FeatureList::IsEnabled(ipfs::kEnableIpfs)) {
++    network::mojom::URLLoaderFactory* default_factory = g_browser_process->system_network_context_manager()->GetURLLoaderFactory();
++    auto* context = web_contents->GetBrowserContext();
++    ipfs::IpfsURLLoaderFactory::Create(
++      factories,
++      context,
++      default_factory,
++      GetSystemNetworkContext(),
++      Profile::FromBrowserContext(context)->GetPrefs()
++    );
++  }
++#endif  // BUILDFLAG(ENABLE_IPFS)
+ 
+ #if BUILDFLAG(IS_CHROMEOS_ASH)
+   if (web_contents) {
+@@ -6327,6 +6353,11 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
+     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
+   std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+       interceptors;
++#if BUILDFLAG(ENABLE_IPFS)
++  if (base::FeatureList::IsEnabled(ipfs::kEnableIpfs)) {
++    interceptors.push_back(std::make_unique<ipfs::Interceptor>(g_browser_process->system_network_context_manager()->GetURLLoaderFactory(), GetSystemNetworkContext()));
++  }
++#endif
+ #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+   interceptors.push_back(
+       std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(
+diff --git a/chrome/browser/flag-metadata.json b/chrome/browser/flag-metadata.json
+index 400505f9d64e6..320b730d894c6 100644
+--- a/chrome/browser/flag-metadata.json
++++ b/chrome/browser/flag-metadata.json
+@@ -2868,6 +2868,11 @@
+     "owners": [ "hanxi@chromium.org", "wychen@chromium.org" ],
+     "expiry_milestone": 130
+   },
++  {
++    "name": "enable-ipfs",
++    "owners": [ "//components/ipfs/OWNERS" ],
++    "expiry_milestone": 150
++  },
+   {
+     "name": "enable-isolated-sandboxed-iframes",
+     "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
+diff --git a/chrome/browser/flag_descriptions.cc b/chrome/browser/flag_descriptions.cc
+index f92c5df0fc600..e131baa70cce2 100644
+--- a/chrome/browser/flag_descriptions.cc
++++ b/chrome/browser/flag_descriptions.cc
+@@ -248,6 +248,11 @@ const char kEnableBenchmarkingDescription[] =
+     "after 3 restarts. On the third restart, the flag will appear to be off "
+     "but the effect is still active.";
+ 
++#if BUILDFLAG(ENABLE_IPFS)
++extern const char kEnableIpfsName[] = "Enable IPFS";
++extern const char kEnableIpfsDescription[] = "Enable ipfs:// and ipns:// URLs";
++#endif
++
+ const char kPreloadingOnPerformancePageName[] =
+     "Preloading Settings on Performance Page";
+ const char kPreloadingOnPerformancePageDescription[] =
+diff --git a/chrome/browser/flag_descriptions.h b/chrome/browser/flag_descriptions.h
+index 71eae84724eab..a8e4b29ee3cc5 100644
+--- a/chrome/browser/flag_descriptions.h
++++ b/chrome/browser/flag_descriptions.h
+@@ -22,6 +22,7 @@
+ #include "pdf/buildflags.h"
+ #include "printing/buildflags/buildflags.h"
+ #include "third_party/blink/public/common/buildflags.h"
++#include "third_party/ipfs_client/ipfs_buildflags.h"
+ 
+ // This file declares strings used in chrome://flags. These messages are not
+ // translated, because instead of end-users they target Chromium developers and
+@@ -165,6 +166,11 @@ extern const char kDownloadWarningImprovementsDescription[];
+ extern const char kEnableBenchmarkingName[];
+ extern const char kEnableBenchmarkingDescription[];
+ 
++#if BUILDFLAG(ENABLE_IPFS)
++extern const char kEnableIpfsName[];
++extern const char kEnableIpfsDescription[];
++#endif
++
+ #if BUILDFLAG(USE_FONTATIONS_BACKEND)
+ extern const char kFontationsFontBackendName[];
+ extern const char kFontationsFontBackendDescription[];
+diff --git a/chrome/browser/ipfs_extra_parts.cc b/chrome/browser/ipfs_extra_parts.cc
+new file mode 100644
+index 0000000000000..90d2596fd779a
+--- /dev/null
++++ b/chrome/browser/ipfs_extra_parts.cc
+@@ -0,0 +1,10 @@
++#include "ipfs_extra_parts.h"
++
++#include "profiles/profile.h"
++
++#include <components/ipfs/inter_request_state.h>
++
++void IpfsExtraParts::PostProfileInit(Profile* profile, bool /* is_initial_profile */ ) {
++  DCHECK(profile);
++  ipfs::InterRequestState::CreateForBrowserContext(profile, profile->GetPrefs());
++}
+diff --git a/chrome/browser/ipfs_extra_parts.h b/chrome/browser/ipfs_extra_parts.h
+new file mode 100644
+index 0000000000000..2059c437e23a0
+--- /dev/null
++++ b/chrome/browser/ipfs_extra_parts.h
+@@ -0,0 +1,10 @@
++#ifndef IPFS_EXTRA_PART_H_
++#define IPFS_EXTRA_PART_H_
++
++#include <chrome/browser/chrome_browser_main_extra_parts.h>
++
++class IpfsExtraParts : public ChromeBrowserMainExtraParts {
++  void PostProfileInit(Profile* profile, bool is_initial_profile) override;
++};
++
++#endif  // IPFS_EXTRA_PART_H_
+diff --git a/chrome/browser/prefs/browser_prefs.cc b/chrome/browser/prefs/browser_prefs.cc
+index 0af94fd3059cf..60a20373ed748 100644
+--- a/chrome/browser/prefs/browser_prefs.cc
++++ b/chrome/browser/prefs/browser_prefs.cc
+@@ -184,6 +184,7 @@
+ #include "printing/buildflags/buildflags.h"
+ #include "rlz/buildflags/buildflags.h"
+ #include "third_party/abseil-cpp/absl/types/optional.h"
++#include "third_party/ipfs_client/ipfs_buildflags.h"
+ 
+ #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
+ #include "chrome/browser/background/background_mode_manager.h"
+@@ -234,6 +235,11 @@
+ #include "chrome/browser/pdf/pdf_pref_names.h"
+ #endif  // BUILDFLAG(ENABLE_PDF)
+ 
++#if BUILDFLAG(ENABLE_IPFS)
++#include "components/ipfs/ipfs_features.h"
++#include "components/ipfs/preferences.h"
++#endif
++
+ #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+ #include "chrome/browser/screen_ai/pref_names.h"
+ #endif
+@@ -1662,6 +1668,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
+   IncognitoModePrefs::RegisterProfilePrefs(registry);
+   invalidation::PerUserTopicSubscriptionManager::RegisterProfilePrefs(registry);
+   invalidation::InvalidatorRegistrarWithMemory::RegisterProfilePrefs(registry);
++#if BUILDFLAG(ENABLE_IPFS)
++  if (base::FeatureList::IsEnabled(ipfs::kEnableIpfs)) {
++    ipfs::RegisterPreferences(registry);
++  }
++#endif
+   language::LanguagePrefs::RegisterProfilePrefs(registry);
+   login_detection::prefs::RegisterProfilePrefs(registry);
+   lookalikes::RegisterProfilePrefs(registry);
+diff --git a/chrome/common/chrome_content_client.cc b/chrome/common/chrome_content_client.cc
+index 246ec9c5c911f..5d66d133a7907 100644
+--- a/chrome/common/chrome_content_client.cc
++++ b/chrome/common/chrome_content_client.cc
+@@ -296,6 +296,12 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
+ #if BUILDFLAG(IS_ANDROID)
+   schemes->local_schemes.push_back(url::kContentScheme);
+ #endif
++  for ( const char* ip_s : {"ipfs", "ipns"} ) {
++    schemes->standard_schemes.push_back(ip_s);
++    schemes->cors_enabled_schemes.push_back(ip_s);
++    schemes->secure_schemes.push_back(ip_s);
++    schemes->csp_bypassing_schemes.push_back(ip_s);
++  }
+ }
+ 
+ std::u16string ChromeContentClient::GetLocalizedString(int message_id) {
+diff --git a/components/cbor/reader.cc b/components/cbor/reader.cc
+index 306ba52fa4944..6b13b3a679a65 100644
+--- a/components/cbor/reader.cc
++++ b/components/cbor/reader.cc
+@@ -22,7 +22,7 @@
+ namespace cbor {
+ 
+ namespace constants {
+-const char kUnsupportedMajorType[] = "Unsupported major type.";
++const char kUnsupportedMajorType[] = "Unsupported major type operation.";
+ }
+ 
+ namespace {
+@@ -156,7 +156,11 @@ absl::optional<Value> Reader::DecodeCompleteDataItem(const Config& config,
+     case Value::Type::FLOAT_VALUE:
+       // Floating point values also go here since they are also type 7.
+       return DecodeToSimpleValueOrFloat(*header, config);
+-    case Value::Type::TAG:  // We explicitly don't support TAG.
++    case Value::Type::TAG:
++      if (config.parse_tags) {
++        return ReadTagContent(*header, config, max_nesting_level);
++      }
++      break;
+     case Value::Type::NONE:
+     case Value::Type::INVALID_UTF8:
+       break;
+@@ -347,6 +351,17 @@ absl::optional<Value> Reader::ReadByteStringContent(
+   return Value(std::move(cbor_byte_string));
+ }
+ 
++absl::optional<Value> Reader::ReadTagContent(
++    const Reader::DataItemHeader& header,
++    const Config& config,
++    int max_nesting_level) {
++  auto tagged_content = DecodeCompleteDataItem(config, max_nesting_level);
++  if (tagged_content.has_value()) {
++    tagged_content.value().SetTag(header.value);
++  }
++  return tagged_content;
++}
++
+ absl::optional<Value> Reader::ReadArrayContent(
+     const Reader::DataItemHeader& header,
+     const Config& config,
+diff --git a/components/cbor/reader.h b/components/cbor/reader.h
+index f0b43a5517528..a57e277a1bc66 100644
+--- a/components/cbor/reader.h
++++ b/components/cbor/reader.h
+@@ -130,6 +130,11 @@ class CBOR_EXPORT Reader {
+     // during decoding will set raise the `UNSUPPORTED_FLOATING_POINT_VALUE`
+     // error.
+     bool allow_floating_point = false;
++
++    // If the parser encounters a TAG element, should it be parsed out and
++    // the tag value saved (true), or should the entire node and its content
++    // be discarded (false)
++    bool parse_tags = false;
+   };
+ 
+   Reader(const Reader&) = delete;
+@@ -204,6 +209,9 @@ class CBOR_EXPORT Reader {
+   absl::optional<Value> ReadMapContent(const DataItemHeader& header,
+                                        const Config& config,
+                                        int max_nesting_level);
++  absl::optional<Value> ReadTagContent(const DataItemHeader& header,
++                                       const Config& config,
++                                       int max_nesting_level);
+   absl::optional<uint8_t> ReadByte();
+   absl::optional<base::span<const uint8_t>> ReadBytes(uint64_t num_bytes);
+   bool IsKeyInOrder(const Value& new_key,
+diff --git a/components/cbor/reader_unittest.cc b/components/cbor/reader_unittest.cc
+index 83d44a48d6dfa..a6ec5299b3241 100644
+--- a/components/cbor/reader_unittest.cc
++++ b/components/cbor/reader_unittest.cc
+@@ -1451,5 +1451,42 @@ TEST(CBORReaderTest, AllowInvalidUTF8) {
+   EXPECT_FALSE(cbor);
+   EXPECT_EQ(Reader::DecoderError::INVALID_UTF8, error);
+ }
++TEST(CBORReaderTest, RejectsTagUnderDefaultConfig) {
++  static const uint8_t kTaggedCbor[] = {
++    0xd8, 0x2a, 0x58, 0x25, 0x00, 0x01, 0x71, 0x12, 0x20, 0x69, 0xea, 0x07,
++    0x40, 0xf9, 0x80, 0x7a, 0x28, 0xf4, 0xd9, 0x32, 0xc6, 0x2e, 0x7c, 0x1c,
++    0x83, 0xbe, 0x05, 0x5e, 0x55, 0x07, 0x2c, 0x90, 0x26, 0x6a, 0xb3, 0xe7,
++    0x9d, 0xf6, 0x3a, 0x36, 0x5b
++  };
++  Reader::Config config;
++  absl::optional<Value> cbor = Reader::Read(kTaggedCbor, config);
++  EXPECT_FALSE(cbor.has_value());
++}
++TEST(CBORReaderTest, ReadsTagWhenConfiguredToDoSo) {
++  static const uint8_t kTaggedCbor[] = {
++    0xd8, 0x2a, 0x58, 0x25, 0x00, 0x01, 0x71, 0x12, 0x20, 0x69, 0xea, 0x07,
++    0x40, 0xf9, 0x80, 0x7a, 0x28, 0xf4, 0xd9, 0x32, 0xc6, 0x2e, 0x7c, 0x1c,
++    0x83, 0xbe, 0x05, 0x5e, 0x55, 0x07, 0x2c, 0x90, 0x26, 0x6a, 0xb3, 0xe7,
++    0x9d, 0xf6, 0x3a, 0x36, 0x5b
++  };
++  Reader::Config config;
++  config.parse_tags = true;
++  absl::optional<Value> cbor = Reader::Read(kTaggedCbor, config);
++  EXPECT_TRUE(cbor.has_value());
++  auto& v = cbor.value();
++  EXPECT_TRUE(v.has_tag());
++  EXPECT_EQ(v.GetTag(),42UL);
++  EXPECT_TRUE(v.is_bytestring());
++  EXPECT_EQ(v.type(), Value::Type::BYTE_STRING);
++  auto& bytes = v.GetBytestring();
++  EXPECT_EQ(bytes.size(), 37UL);
++  EXPECT_EQ(bytes.at(0), 0x00);//identity multibase (e.g. not base-encoded, bytes are themselves)
++  EXPECT_EQ(bytes.at(1), 0x01);//CID version 1
++  EXPECT_EQ(bytes.at(2), 0x71);//codec = dag-cbor
++  EXPECT_EQ(bytes.at(3), 0x12);//multihash = 18 = sha2-256
++  EXPECT_EQ(bytes.at(4), 0x20);//hash length = 32 bytes
++  EXPECT_EQ(bytes.at(5), 0x69);//first byte of hash digest
++  EXPECT_EQ(bytes.at(36),0x5b);//last  byte of hash digest
++}
+ 
+ }  // namespace cbor
+diff --git a/components/cbor/values.cc b/components/cbor/values.cc
+index 02498209c820e..34055aef24cfe 100644
+--- a/components/cbor/values.cc
++++ b/components/cbor/values.cc
+@@ -66,32 +66,34 @@ Value::Value(Type type) : type_(type) {
+   NOTREACHED();
+ }
+ 
+-Value::Value(SimpleValue in_simple)
+-    : type_(Type::SIMPLE_VALUE), simple_value_(in_simple) {
++Value::Value(SimpleValue in_simple, uint64_t tag)
++    : type_(Type::SIMPLE_VALUE), simple_value_(in_simple), tag_(tag) {
+   CHECK(static_cast<int>(in_simple) >= 20 && static_cast<int>(in_simple) <= 23);
+ }
+ 
+-Value::Value(bool boolean_value) : type_(Type::SIMPLE_VALUE) {
++Value::Value(bool boolean_value, uint64_t tag) : type_(Type::SIMPLE_VALUE), tag_(tag) {
+   simple_value_ = boolean_value ? Value::SimpleValue::TRUE_VALUE
+                                 : Value::SimpleValue::FALSE_VALUE;
+ }
+ 
+-Value::Value(double float_value)
+-    : type_(Type::FLOAT_VALUE), float_value_(float_value) {}
++Value::Value(double float_value, uint64_t tag)
++    : type_(Type::FLOAT_VALUE), float_value_(float_value), tag_(tag) {}
+ 
+-Value::Value(int integer_value)
+-    : Value(base::checked_cast<int64_t>(integer_value)) {}
++Value::Value(int integer_value, uint64_t tag)
++    : Value(base::checked_cast<int64_t>(integer_value), tag) {}
+ 
+-Value::Value(int64_t integer_value) : integer_value_(integer_value) {
++Value::Value(int64_t integer_value, uint64_t tag) : integer_value_(integer_value), tag_(tag) {
+   type_ = integer_value >= 0 ? Type::UNSIGNED : Type::NEGATIVE;
+ }
+ 
+-Value::Value(base::span<const uint8_t> in_bytes)
++Value::Value(base::span<const uint8_t> in_bytes, uint64_t tag)
+     : type_(Type::BYTE_STRING),
+-      bytestring_value_(in_bytes.begin(), in_bytes.end()) {}
++      bytestring_value_(in_bytes.begin(), in_bytes.end()),
++      tag_(tag)
++      {}
+ 
+-Value::Value(base::span<const uint8_t> in_bytes, Type type)
+-    : type_(type), bytestring_value_(in_bytes.begin(), in_bytes.end()) {
++Value::Value(base::span<const uint8_t> in_bytes, Type type, uint64_t tag)
++    : type_(type), bytestring_value_(in_bytes.begin(), in_bytes.end()), tag_(tag) {
+   DCHECK(type_ == Type::BYTE_STRING || type_ == Type::INVALID_UTF8);
+ }
+ 
+@@ -117,7 +119,8 @@ Value::Value(std::string&& in_string, Type type) noexcept : type_(type) {
+   }
+ }
+ 
+-Value::Value(base::StringPiece in_string, Type type) : type_(type) {
++Value::Value(base::StringPiece in_string, Type type, uint64_t tag)
++: type_(type), tag_(tag) {
+   switch (type_) {
+     case Type::STRING:
+       new (&string_value_) std::string();
+@@ -133,16 +136,18 @@ Value::Value(base::StringPiece in_string, Type type) : type_(type) {
+   }
+ }
+ 
+-Value::Value(const ArrayValue& in_array) : type_(Type::ARRAY), array_value_() {
++Value::Value(const ArrayValue& in_array, uint64_t tag)
++: type_(Type::ARRAY), array_value_(), tag_(tag) {
+   array_value_.reserve(in_array.size());
+   for (const auto& val : in_array)
+     array_value_.emplace_back(val.Clone());
+ }
+ 
+-Value::Value(ArrayValue&& in_array) noexcept
+-    : type_(Type::ARRAY), array_value_(std::move(in_array)) {}
++Value::Value(ArrayValue&& in_array, uint64_t tag) noexcept
++    : type_(Type::ARRAY), array_value_(std::move(in_array)), tag_(tag) {}
+ 
+-Value::Value(const MapValue& in_map) : type_(Type::MAP), map_value_() {
++Value::Value(const MapValue& in_map, uint64_t tag)
++: type_(Type::MAP), map_value_(), tag_(tag) {
+   map_value_.reserve(in_map.size());
+   for (const auto& it : in_map)
+     map_value_.emplace_hint(map_value_.end(), it.first.Clone(),
+@@ -168,31 +173,36 @@ Value Value::Clone() const {
+     case Type::NONE:
+       return Value();
+     case Type::INVALID_UTF8:
+-      return Value(bytestring_value_, Type::INVALID_UTF8);
++      return Value(bytestring_value_, Type::INVALID_UTF8, tag_);
+     case Type::UNSIGNED:
+     case Type::NEGATIVE:
+-      return Value(integer_value_);
++      return Value(integer_value_, tag_);
+     case Type::BYTE_STRING:
+-      return Value(bytestring_value_);
++      return Value(bytestring_value_, tag_);
+     case Type::STRING:
+-      return Value(string_value_);
++      return Value(string_value_, Type::STRING, tag_);
+     case Type::ARRAY:
+-      return Value(array_value_);
++      return Value(array_value_, tag_);
+     case Type::MAP:
+-      return Value(map_value_);
++      return Value(map_value_, tag_);
+     case Type::TAG:
+       NOTREACHED() << constants::kUnsupportedMajorType;
+       return Value();
+     case Type::SIMPLE_VALUE:
+-      return Value(simple_value_);
++      return Value(simple_value_, tag_);
+     case Type::FLOAT_VALUE:
+-      return Value(float_value_);
++      return Value(float_value_, tag_);
+   }
+ 
+   NOTREACHED();
+   return Value();
+ }
+ 
++Value& Value::SetTag(uint64_t tag) noexcept {
++  tag_ = tag;
++  return *this;
++}
++
+ Value::SimpleValue Value::GetSimpleValue() const {
+   CHECK(is_simple());
+   return simple_value_;
+@@ -258,9 +268,14 @@ const Value::BinaryValue& Value::GetInvalidUTF8() const {
+   return bytestring_value_;
+ }
+ 
++uint64_t Value::GetTag() const {
++  CHECK(has_tag());
++  return tag_;
++}
++
+ void Value::InternalMoveConstructFrom(Value&& that) {
+   type_ = that.type_;
+-
++  tag_  = that.tag_;
+   switch (type_) {
+     case Type::UNSIGNED:
+     case Type::NEGATIVE:
+diff --git a/components/cbor/values.h b/components/cbor/values.h
+index d81ef5607c55a..10216a8dcdc57 100644
+--- a/components/cbor/values.h
++++ b/components/cbor/values.h
+@@ -127,28 +127,29 @@ class CBOR_EXPORT Value {
+ 
+   explicit Value(Type type);
+ 
+-  explicit Value(SimpleValue in_simple);
+-  explicit Value(bool boolean_value);
+-  explicit Value(double in_float);
++  explicit Value(SimpleValue in_simple, uint64_t tag = NO_TAG);
++  explicit Value(bool boolean_value, uint64_t tag = NO_TAG);
++  explicit Value(double in_float, uint64_t tag = NO_TAG);
+ 
+-  explicit Value(int integer_value);
+-  explicit Value(int64_t integer_value);
++  explicit Value(int integer_value, uint64_t tag = NO_TAG);
++  explicit Value(int64_t integer_value, uint64_t tag = NO_TAG);
+   explicit Value(uint64_t integer_value) = delete;
+ 
+-  explicit Value(base::span<const uint8_t> in_bytes);
++  explicit Value(base::span<const uint8_t> in_bytes, uint64_t tag = NO_TAG);
+   explicit Value(BinaryValue&& in_bytes) noexcept;
+ 
+   explicit Value(const char* in_string, Type type = Type::STRING);
+   explicit Value(std::string&& in_string, Type type = Type::STRING) noexcept;
+-  explicit Value(base::StringPiece in_string, Type type = Type::STRING);
++  explicit Value(base::StringPiece in_string, Type type = Type::STRING, uint64_t tag = NO_TAG);
+ 
+-  explicit Value(const ArrayValue& in_array);
+-  explicit Value(ArrayValue&& in_array) noexcept;
++  explicit Value(const ArrayValue& in_array, uint64_t tag = NO_TAG);
++  explicit Value(ArrayValue&& in_array, uint64_t tag = NO_TAG) noexcept;
+ 
+-  explicit Value(const MapValue& in_map);
++  explicit Value(const MapValue& in_map, uint64_t tag = NO_TAG);
+   explicit Value(MapValue&& in_map) noexcept;
+ 
+   Value& operator=(Value&& that) noexcept;
++  Value& SetTag(uint64_t) noexcept;
+ 
+   Value(const Value&) = delete;
+   Value& operator=(const Value&) = delete;
+@@ -179,6 +180,7 @@ class CBOR_EXPORT Value {
+   bool is_string() const { return type() == Type::STRING; }
+   bool is_array() const { return type() == Type::ARRAY; }
+   bool is_map() const { return type() == Type::MAP; }
++  bool has_tag() const { return tag_ != NO_TAG; }
+ 
+   // These will all fatally assert if the type doesn't match.
+   SimpleValue GetSimpleValue() const;
+@@ -194,12 +196,13 @@ class CBOR_EXPORT Value {
+   const ArrayValue& GetArray() const;
+   const MapValue& GetMap() const;
+   const BinaryValue& GetInvalidUTF8() const;
++  uint64_t GetTag() const;
+ 
+  private:
+   friend class Reader;
+   // This constructor allows INVALID_UTF8 values to be created, which only
+   // |Reader| and InvalidUTF8StringValueForTesting() may do.
+-  Value(base::span<const uint8_t> in_bytes, Type type);
++  Value(base::span<const uint8_t> in_bytes, Type type, uint64_t tag = NO_TAG);
+ 
+   Type type_;
+ 
+@@ -213,6 +216,11 @@ class CBOR_EXPORT Value {
+     MapValue map_value_;
+   };
+ 
++  //This value specified as Invalid,
++  //  used here to represent absence of TAG
++  constexpr static uint64_t NO_TAG = 0xFFFF;
++  uint64_t tag_ = NO_TAG;
++
+   void InternalMoveConstructFrom(Value&& that);
+   void InternalCleanup();
+ };
+diff --git a/components/cbor/writer.cc b/components/cbor/writer.cc
+index bb22754d36a07..aae4027836377 100644
+--- a/components/cbor/writer.cc
++++ b/components/cbor/writer.cc
+@@ -47,6 +47,9 @@ bool Writer::EncodeCBOR(const Value& node,
+   if (max_nesting_level < 0)
+     return false;
+ 
++  if (node.has_tag()) {
++    StartItem(Value::Type::TAG, node.GetTag());
++  }
+   switch (node.type()) {
+     case Value::Type::NONE: {
+       StartItem(Value::Type::BYTE_STRING, 0);
+diff --git a/components/cbor/writer_unittest.cc b/components/cbor/writer_unittest.cc
+index e3bffe20734bc..0ed569ae164a0 100644
+--- a/components/cbor/writer_unittest.cc
++++ b/components/cbor/writer_unittest.cc
+@@ -522,4 +522,31 @@ TEST(CBORWriterTest, OverlyNestedCBOR) {
+   EXPECT_FALSE(Writer::Write(Value(map), 4).has_value());
+ }
+ 
++TEST(CBORWriterTest, CanWriteTag) {
++  std::array<uint8_t,37> content{
++      0x00, 0x01, 0x71, 0x12, 0x20,
++      0x69, 0xea, 0x07, 0x40, 0xf9,
++      0x80, 0x7a, 0x28, 0xf4, 0xd9,
++      0x32, 0xc6, 0x2e, 0x7c, 0x1c,
++      0x83, 0xbe, 0x05, 0x5e, 0x55,
++      0x07, 0x2c, 0x90, 0x26, 0x6a,
++      0xb3, 0xe7, 0x9d, 0xf6, 0x3a,
++      0x36, 0x5b
++    };
++  Value to_write(content);
++  to_write.SetTag(42);
++  auto result = Writer::Write(to_write);
++  EXPECT_TRUE(result.has_value());
++  auto& bytes = result.value();
++  EXPECT_EQ(bytes.size(), 41UL);
++  EXPECT_EQ(bytes.at(0), 0xd8);
++  EXPECT_EQ(bytes.at(1), 0x2a);
++  EXPECT_EQ(bytes.at(2), 0x58);
++  EXPECT_EQ(bytes.at(3), 0x25);
++  for (auto i = 0UL; i < content.size(); ++i) {
++    ASSERT_LT(i + 4UL, bytes.size());
++    ASSERT_EQ(content.at(i), bytes.at(i+4UL));
++  }
++}
++
+ }  // namespace cbor
+diff --git a/components/open_from_clipboard/clipboard_recent_content_generic.cc b/components/open_from_clipboard/clipboard_recent_content_generic.cc
+index 4dcafecbc66c6..d205209c08162 100644
+--- a/components/open_from_clipboard/clipboard_recent_content_generic.cc
++++ b/components/open_from_clipboard/clipboard_recent_content_generic.cc
+@@ -20,7 +20,7 @@
+ namespace {
+ // Schemes appropriate for suggestion by ClipboardRecentContent.
+ const char* kAuthorizedSchemes[] = {
+-    url::kAboutScheme, url::kDataScheme, url::kHttpScheme, url::kHttpsScheme,
++    url::kAboutScheme, url::kDataScheme, url::kHttpScheme, url::kHttpsScheme, "ipfs", "ipns"
+     // TODO(mpearson): add support for chrome:// URLs.  Right now the scheme
+     // for that lives in content and is accessible via
+     // GetEmbedderRepresentationOfAboutScheme() or content::kChromeUIScheme
+diff --git a/net/dns/dns_config_service_linux.cc b/net/dns/dns_config_service_linux.cc
+index 5273da5190277..12b28b86a4c00 100644
+--- a/net/dns/dns_config_service_linux.cc
++++ b/net/dns/dns_config_service_linux.cc
+@@ -272,11 +272,11 @@ bool IsNsswitchConfigCompatible(
+         // Ignore any entries after `kDns` because Chrome will fallback to the
+         // system resolver if a result was not found in DNS.
+         return true;
+-
++      case NsswitchReader::Service::kResolve:
++        break;
+       case NsswitchReader::Service::kMdns:
+       case NsswitchReader::Service::kMdns4:
+       case NsswitchReader::Service::kMdns6:
+-      case NsswitchReader::Service::kResolve:
+       case NsswitchReader::Service::kNis:
+         RecordIncompatibleNsswitchReason(
+             IncompatibleNsswitchReason::kIncompatibleService,
+diff --git a/third_party/blink/renderer/platform/weborigin/scheme_registry.cc b/third_party/blink/renderer/platform/weborigin/scheme_registry.cc
+index 4eadf46ea0c24..d62fc7fb14e01 100644
+--- a/third_party/blink/renderer/platform/weborigin/scheme_registry.cc
++++ b/third_party/blink/renderer/platform/weborigin/scheme_registry.cc
+@@ -67,7 +67,7 @@ class URLSchemesRegistry final {
+          // is considered secure. Additional checks are performed to ensure that
+          // other http pages are filtered out.
+         service_worker_schemes({"http", "https"}),
+-        fetch_api_schemes({"http", "https"}),
++        fetch_api_schemes({"http", "https", "ipfs", "ipns"}),
+         allowed_in_referrer_schemes({"http", "https"}) {
+     for (auto& scheme : url::GetCorsEnabledSchemes())
+       cors_enabled_schemes.insert(scheme.c_str());
+diff --git a/url/BUILD.gn b/url/BUILD.gn
+index c525c166979d6..ce2b1ae43c0a7 100644
+--- a/url/BUILD.gn
++++ b/url/BUILD.gn
+@@ -5,6 +5,7 @@
+ import("//build/buildflag_header.gni")
+ import("//testing/libfuzzer/fuzzer_test.gni")
+ import("//testing/test.gni")
++import("//third_party/ipfs_client/args.gni")
+ import("features.gni")
+ 
+ import("//build/config/cronet/config.gni")
+@@ -67,6 +68,7 @@ component("url") {
+   public_deps = [
+     "//base",
+     "//build:robolectric_buildflags",
++    "//third_party/ipfs_client:ipfs_buildflags",
+   ]
+ 
+   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+@@ -89,6 +91,11 @@ component("url") {
+     public_configs = [ "//third_party/jdk" ]
+   }
+ 
++  if (enable_ipfs) {
++    sources += [ "url_canon_ipfs.cc" ]
++    deps += [ "//third_party/ipfs_client:ipfs_client" ]
++  }
++
+   if (is_win) {
+     # Don't conflict with Windows' "url.dll".
+     output_name = "url_lib"
+diff --git a/url/url_canon.h b/url/url_canon.h
+index d3a7fabf09fa8..06db17242248f 100644
+--- a/url/url_canon.h
++++ b/url/url_canon.h
+@@ -697,6 +697,23 @@ bool CanonicalizeMailtoURL(const char16_t* spec,
+                            CanonOutput* output,
+                            Parsed* new_parsed);
+ 
++COMPONENT_EXPORT(URL)
++bool CanonicalizeIpfsURL(const char* spec,
++                             int spec_len,
++                             const Parsed& parsed,
++                             SchemeType scheme_type,
++                             CharsetConverter* query_converter,
++                             CanonOutput* output,
++                             Parsed* new_parsed);
++COMPONENT_EXPORT(URL)
++bool CanonicalizeIpfsURL(const char16_t* spec,
++                             int spec_len,
++                             const Parsed& parsed,
++                             SchemeType scheme_type,
++                             CharsetConverter* query_converter,
++                             CanonOutput* output,
++                             Parsed* new_parsed);
++
+ // Part replacer --------------------------------------------------------------
+ 
+ // Internal structure used for storing separate strings for each component.
+diff --git a/url/url_canon_ipfs.cc b/url/url_canon_ipfs.cc
+new file mode 100644
+index 0000000000000..33910614c4527
+--- /dev/null
++++ b/url/url_canon_ipfs.cc
+@@ -0,0 +1,56 @@
++#include "url_canon_internal.h"
++
++#include <ipfs_client/cid.h>
++#include <ipfs_client/identity_cid.h>
++
++#include <sstream>
++
++bool url::CanonicalizeIpfsURL(const char* spec,
++                             int spec_len,
++                             const Parsed& parsed,
++                             SchemeType scheme_type,
++                             CharsetConverter* charset_converter,
++                             CanonOutput* output,
++                             Parsed* output_parsed) {
++  if ( spec_len < 1 || !spec ) {
++    return false;
++  }
++  if ( parsed.host.len < 1 ) {
++    return false;
++  }
++  std::string_view cid_str{ spec + parsed.host.begin, static_cast<std::size_t>(parsed.host.len) };
++  auto cid = ipfs::Cid(cid_str);
++  if ( !cid.valid() ) {
++    cid = ipfs::id_cid::forText( std::string{cid_str} + " is not a valid CID." );
++  }
++  auto as_str = cid.to_string();
++  if ( as_str.empty() ) {
++    return false;
++  }
++  std::string stdurl{ spec, static_cast<std::size_t>(parsed.host.begin) };
++  stdurl.append( as_str );
++  stdurl.append( spec + parsed.host.end(), spec_len - parsed.host.end() );
++  spec = stdurl.data();
++  spec_len = static_cast<int>(stdurl.size());
++  Parsed parsed_input;
++  ParseStandardURL(spec, spec_len, &parsed_input);
++  return CanonicalizeStandardURL(
++      spec,
++      spec_len,
++      parsed_input,
++      scheme_type,
++      charset_converter,
++      output, output_parsed
++    );
++}
++bool url::CanonicalizeIpfsURL(const char16_t* spec,
++                             int spec_len,
++                             const Parsed& parsed,
++                             SchemeType scheme_type,
++                             CharsetConverter* query_converter,
++                             CanonOutput* output,
++                              Parsed* new_parsed) {
++  RawCanonOutput<2048> as8;
++  ConvertUTF16ToUTF8(spec, spec_len, &as8);
++  return CanonicalizeIpfsURL(as8.data(), as8.length(), parsed, scheme_type, query_converter, output, new_parsed);
++}
+diff --git a/url/url_util.cc b/url/url_util.cc
+index 9258cfcfada47..daf10e4c3b741 100644
+--- a/url/url_util.cc
++++ b/url/url_util.cc
+@@ -277,6 +277,12 @@ bool DoCanonicalize(const CHAR* spec,
+                                         charset_converter, output,
+                                         output_parsed);
+ 
++  } else if (DoCompareSchemeComponent(spec, scheme, "ipfs")) {
++    // Switch multibase away from case-sensitive ones before continuing canonicalization.
++    ParseStandardURL(spec, spec_len, &parsed_input);
++    success = CanonicalizeIpfsURL(spec, spec_len, parsed_input, scheme_type,
++                                      charset_converter, output, output_parsed);
++
+   } else if (DoIsStandard(spec, scheme, &scheme_type)) {
+     // All "normal" URLs.
+     ParseStandardURL(spec, spec_len, &parsed_input);
+

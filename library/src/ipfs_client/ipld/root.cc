@@ -21,7 +21,6 @@ Ptr Self::rooted() {
 
 auto Self::resolve(ResolutionState& params) -> ResolveResult {
   auto location = params.PathToResolve().to_string();
-  VLOG(2) << "Root " << params.MyPath() << " resolving " << location;
   auto result = deroot()->resolve(params);
   if (auto pc = std::get_if<PathChange>(&result)) {
     auto lower = params.WithPath(pc->new_path);

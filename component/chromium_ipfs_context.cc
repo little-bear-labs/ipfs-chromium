@@ -36,8 +36,6 @@ std::string Self::MimeType(std::string extension,
                            std::string const& url) const {
   std::string result;
   auto fp_ext = base::FilePath::FromUTF8Unsafe(extension).value();
-  VLOG(2) << "extension=" << extension << "content.size()=" << content.size()
-          << "(as-if) url for mime type:" << url;
   if (extension.empty()) {
     result.clear();
   } else if (net::GetWellKnownMimeTypeFromExtension(fp_ext, &result)) {
@@ -73,7 +71,7 @@ void Self::SendDnsTextRequest(std::string host,
   }
   auto don_wrap = [don, this, host]() {
     don();
-    LOG(INFO) << "Finished resolving " << host << " via DNSLink";
+    VLOG(2) << "Finished resolving " << host << " via DNSLink";
     dns_reqs_.erase(host);
   };
   auto* nc = state_->network_context();

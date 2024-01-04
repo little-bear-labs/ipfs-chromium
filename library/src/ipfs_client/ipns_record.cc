@@ -201,8 +201,8 @@ auto ipfs::ValidateIpnsRecord(ipfs::ByteView top_level_bytes,
                << ") and V2(" << result.ttl << ')';
     return {};
   }
-  LOG(INFO) << "IPNS record verification passes for " << name.to_string()
-            << " sequence: " << result.sequence << " points at "
+  VLOG(1) << "IPNS record verification passes for " << name.to_string()
+          << " sequence: " << result.sequence << " points at "
             << result.value;
   return result;
 }

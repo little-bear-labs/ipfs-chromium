@@ -1,0 +1,36 @@
+diff --git a/chrome/browser/prefs/browser_prefs.cc b/chrome/browser/prefs/browser_prefs.cc
+index 0af94fd3059cf..60a20373ed748 100644
+--- a/chrome/browser/prefs/browser_prefs.cc
++++ b/chrome/browser/prefs/browser_prefs.cc
+@@ -184,6 +184,7 @@
+ #include "printing/buildflags/buildflags.h"
+ #include "rlz/buildflags/buildflags.h"
+ #include "third_party/abseil-cpp/absl/types/optional.h"
++#include "third_party/ipfs_client/ipfs_buildflags.h"
+ 
+ #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
+ #include "chrome/browser/background/background_mode_manager.h"
+@@ -234,6 +235,11 @@
+ #include "chrome/browser/pdf/pdf_pref_names.h"
+ #endif  // BUILDFLAG(ENABLE_PDF)
+ 
++#if BUILDFLAG(ENABLE_IPFS)
++#include "components/ipfs/ipfs_features.h"
++#include "components/ipfs/preferences.h"
++#endif
++
+ #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+ #include "chrome/browser/screen_ai/pref_names.h"
+ #endif
+@@ -1662,6 +1668,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
+   IncognitoModePrefs::RegisterProfilePrefs(registry);
+   invalidation::PerUserTopicSubscriptionManager::RegisterProfilePrefs(registry);
+   invalidation::InvalidatorRegistrarWithMemory::RegisterProfilePrefs(registry);
++#if BUILDFLAG(ENABLE_IPFS)
++  if (base::FeatureList::IsEnabled(ipfs::kEnableIpfs)) {
++    ipfs::RegisterPreferences(registry);
++  }
++#endif
+   language::LanguagePrefs::RegisterProfilePrefs(registry);
+   login_detection::prefs::RegisterProfilePrefs(registry);
+   lookalikes::RegisterProfilePrefs(registry);

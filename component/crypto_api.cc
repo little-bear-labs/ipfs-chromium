@@ -50,13 +50,9 @@ bool cpto::VerifySignature(ipfs::ContextApi::SigningKeyType key_type,
     LOG(ERROR) << "EVP_DigestVerifyInit failed";
     return false;
   }
-  //  auto* prefix = reinterpret_cast<unsigned char const*>(
-  //      "\x69\x70\x6e\x73\x2d\x73\x69\x67\x6e\x61\x74\x75\x72\x65\x3a");
-  //  std::basic_string<unsigned char> to_verify = prefix;
-  //  to_verify.append(data_p, data.size());
   auto result =
       EVP_DigestVerify(ctx.get(), sig_p, signature.size(), data_p, data.size());
   //                                 to_verify.data(), to_verify.size());
-  LOG(INFO) << "EVP_DigestVerify returned " << result;
+  VLOG(1) << "EVP_DigestVerify returned " << result;
   return result == 1;
 }

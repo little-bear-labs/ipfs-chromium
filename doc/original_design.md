@@ -83,13 +83,13 @@ The class maintains:
 
 ```mermaid
 graph TD;
-    start(["URL suffix from above flow"]) --> add[("Add to pending_ requests")]
+    start(["URL suffix from above flow"]) --> add[("Add to startup_pending_ requests")]
     style start fill:#9CF,color:black
-    add --> selreq["Select the pending_ request with the lowest dup count"] --> incdup["Increase its dup count"] 
+    add --> selreq["Select the startup_pending_ request with the lowest dup count"] --> incdup["Increase its dup count"] 
     incdup --> goodfree{"Is there a gateway that is both GOOD and FREE"} 
     goodfree --NO--> badfree{"Are there any FREE that have not already TaskFailed this request?"} 
     badfree --NO--> anybusy{"Are there any BUSY gateways?"} 
-    anybusy --YES--> wait(("Wait for pending_ requests to finish (return flow control)"))
+    anybusy --YES--> wait(("Wait for startup_pending_ requests to finish (return flow control)"))
     badfree --YES--> selbf["Select the one with the fewest TaskFailed requests, initial parallel tiebreaks"] 
     selbf --> mark_busy["Mark the gateway as BUSY"]
     goodfree --YES--> selbf

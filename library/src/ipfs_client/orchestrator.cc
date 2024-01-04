@@ -23,7 +23,6 @@ void Self::build_response(std::shared_ptr<IpfsRequest> req) {
     return;
   }
   auto req_path = req->path();
-  VLOG(1) << "build_response(" << req_path.to_string() << ')';
   req_path.pop();  // namespace
   std::string affinity{req_path.pop()};
   auto it = dags_.find(affinity);
@@ -32,7 +31,7 @@ void Self::build_response(std::shared_ptr<IpfsRequest> req) {
       build_response(req);
     }
   } else {
-    VLOG(1) << "Requesting root " << affinity << " resolve path "
+    VLOG(2) << "Requesting root " << affinity << " resolve path "
             << req_path.to_string();
     auto root = it->second->rooted();
     if (root != it->second) {
@@ -61,10 +60,10 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
               << response->body_.size() << " bytes.";
     if (response->mime_.empty() && !response->body_.empty()) {
       if (response->location_.empty()) {
-        LOG(INFO) << "Request for " << req->path()
-                  << " returned no location, so sniffing from request path and "
-                     "body of "
-                  << response->body_.size() << "B.";
+        VLOG(1) << "Request for " << req->path()
+                << " returned no location, so sniffing from request path and "
+                   "body of "
+                << response->body_.size() << "B.";
         response->mime_ = sniff(req->path(), response->body_);
       } else {
         std::string hit_path{req->path().pop_n(2)};
@@ -94,7 +93,7 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
     auto& mps = std::get<ipld::MoreDataNeeded>(result).ipfs_abs_paths_;
     req->till_next(mps.size());
     for (auto& mp : mps) {
-      VLOG(1) << "Attempt to resolve " << relative_path << " for "
+      VLOG(2) << "Attempt to resolve " << relative_path << " for "
               << req->path() << " leads to request for " << mp;
     }
     if (std::any_of(mps.begin(), mps.end(), [this, &req, &affinity](auto& p) {
@@ -108,7 +107,7 @@ bool Self::gw_request(std::shared_ptr<IpfsRequest> ir,
                       ipfs::SlashDelimited path,
                       std::string const& aff) {
   auto req = gw::GatewayRequest::fromIpfsPath(path);
-  VLOG(1) << "Seeking " << path.to_string() << " -> " << req->debug_string();
+  VLOG(2) << "Seeking " << path.to_string() << " -> " << req->debug_string();
   if (req) {
     req->dependent = ir;
     req->orchestrator(shared_from_this());

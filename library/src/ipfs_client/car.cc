@@ -26,7 +26,6 @@ Self::Car(ByteView bytes, ContextApi const& api) {
       LOG(ERROR) << "Problem parsing CAR header.";
       break;
     case 1:
-      VLOG(1) << "Reading CARv1";
       data_ = after_header;
       break;
     case 2: {

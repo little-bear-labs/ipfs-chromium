@@ -17,11 +17,10 @@ Self& Self::or_else(std::shared_ptr<Self> p) {
   if (next_) {
     next_->or_else(p);
   } else {
-    VLOG(2) << name() << " is followed by " << p->name();
     next_ = p;
   }
   if (api_ && !p->api_) {
-    VLOG(1) << name() << " granting context to " << p->name();
+    VLOG(2) << name() << " granting context to " << p->name();
     p->api_ = api_;
   }
   return *this;

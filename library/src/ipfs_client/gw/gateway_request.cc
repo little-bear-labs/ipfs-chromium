@@ -230,6 +230,11 @@ std::string Self::debug_string() const {
   oss << " plel=" << parallel << '}';
   return oss.str();
 }
+std::string Self::Key() const {
+  auto rv = main_param;
+  rv.append(" ").append(name(type)).append(" ").append(path);
+  return rv;
+}
 bool Self::RespondSuccessfully(std::string_view bytes,
                                std::shared_ptr<ContextApi> const& api) {
   using namespace ipfs::ipld;
@@ -288,7 +293,6 @@ bool Self::RespondSuccessfully(std::string_view bytes,
           LOG(INFO) << "Did not add node from CAR: " << cid_s;
         }
       }
-      VLOG(1) << "Added " << added << " nodes from a CAR.";
       success = added > 0;
       break;
     }

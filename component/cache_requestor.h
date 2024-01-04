@@ -22,7 +22,7 @@ class CacheRequestor : public gw::Requestor {
  public:
   CacheRequestor(InterRequestState&, base::FilePath);
   ~CacheRequestor() noexcept override;
-  void Store(std::string cid, std::string headers, std::string body);
+  void Store(std::string key, std::string headers, std::string body);
   void Expire(std::string const& key);
 
   std::string_view name() const override;
@@ -44,7 +44,7 @@ class CacheRequestor : public gw::Requestor {
   };
   raw_ref<InterRequestState> state_;
   std::unique_ptr<disk_cache::Backend> cache_;
-  bool pending_ = false;
+  bool startup_pending_ = false;
   base::FilePath path_;
 
   void Start();

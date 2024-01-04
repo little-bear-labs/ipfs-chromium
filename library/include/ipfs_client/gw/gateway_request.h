@@ -66,6 +66,7 @@ class GatewayRequest {
                            std::shared_ptr<ContextApi> const& api);
   void Hook(std::function<void(std::string_view)>);
   bool PartiallyRedundant() const;
+  std::string Key() const;
 
   static std::shared_ptr<GatewayRequest> fromIpfsPath(SlashDelimited);
 };
