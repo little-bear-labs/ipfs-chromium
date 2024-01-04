@@ -51,7 +51,6 @@ class COMPONENT_EXPORT(IPFS) IpfsURLLoaderFactory
   raw_ptr<content::BrowserContext> context_;
   raw_ptr<network::mojom::URLLoaderFactory> default_factory_;
   raw_ptr<network::mojom::NetworkContext> network_context_;
-  raw_ptr<PrefService> pref_svc_;
 };
 }  // namespace ipfs
 

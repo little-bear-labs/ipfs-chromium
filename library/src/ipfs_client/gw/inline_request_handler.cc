@@ -13,7 +13,6 @@ std::string_view Self::name() const {
 }
 auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
   if (req->type != gw::Type::Identity) {
-    VLOG(2) << ipfs::gw::name(req->type);
     return HandleOutcome::NOT_HANDLED;
   }
   std::string data{req->identity_data()};

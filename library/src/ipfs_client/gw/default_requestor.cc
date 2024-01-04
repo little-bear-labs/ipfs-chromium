@@ -17,13 +17,8 @@ auto ipfs::gw::default_requestor(ipfs::GatewayList /* gws */,
     result->or_else(early);
     early->api(api);
   }
-  //  auto pool = std::make_shared<gw::RequestorPool>();
   result->or_else(std::make_shared<gw::DnsLinkRequestor>(api))
       .or_else(std::make_shared<MultiGatewayRequestor>())
       .or_else(std::make_shared<gw::TerminatingRequestor>());
-  //  for (auto& gw : gws) {
-  //    auto gwr = std::make_shared<GatewayHttpRequestor>(gw.prefix, gw.rate,
-  //    api); pool->add(gwr);
-  //  }
   return result;
 }

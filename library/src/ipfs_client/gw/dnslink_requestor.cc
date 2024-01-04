@@ -39,8 +39,6 @@ auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
     *success = *success || parse_results(req, results, a);
   };
   auto don = [success, req]() {
-    LOG(INFO) << "DNSLink request completed for " << req->main_param
-              << " success=" << *success;
     if (!*success) {
       req->dependent->finish(ipfs::Response::HOST_NOT_FOUND);
     }

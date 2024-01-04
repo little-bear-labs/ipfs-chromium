@@ -17,9 +17,9 @@ void ipfs::RegisterPreferences(PrefRegistrySimple* service) {
   for (auto& gw : Gateways::DefaultGateways()) {
     vals.Set(gw.prefix, static_cast<int>(gw.rate));
   }
-  LOG(WARNING) << "Registering ipfs.gateways preference with a default value "
-                  "that contains "
-               << vals.size() << " entries.";
+  VLOG(2) << "Registering ipfs.gateways preference with a default value "
+             "that contains "
+          << vals.size() << " entries.";
   for (auto [k, v] : vals) {
     DCHECK(v.is_int());
   }
@@ -33,7 +33,7 @@ Rates::GatewayRates(PrefService* prefs) : prefs_{prefs} {
       auto i = v.GetInt();
       curr_.Set(k, std::max(i, 1));
     }
-    LOG(INFO) << "Initialized with " << curr_.size() << " gateways.";
+    VLOG(1) << "Initialized with " << curr_.size() << " gateways.";
   } else {
     LOG(ERROR)
         << "Reading preferences without a preferences service is not great.";
@@ -62,7 +62,7 @@ void Rates::SetRate(std::string_view k, unsigned val) {
     // TODO - I believe the calls to save here need to be sent to UI thread
     save();
   } else if (++changes > update_thresh) {
-    LOG(INFO) << "Changing rate for gateway " << k << " to " << val;
+    VLOG(2) << "Changing rate for gateway " << k << " to " << val;
     auto d = delta();
     if (d > update_thresh) {
       save();
@@ -80,8 +80,6 @@ std::size_t Rates::delta() const {
   return rv;
 }
 void Rates::save() {
-  LOG(INFO) << "Saving " << changes
-            << " dynamic updates to gateway rates to disk.";
   changes = 0;
   last_ = curr_.Clone();
   update_thresh++;

@@ -15,7 +15,6 @@ std::string_view Self::name() const {
   return "multi-gateway requestor";
 }
 auto Self::handle(RequestPtr r) -> HandleOutcome {
-  VLOG(2) << name() << " handle(" << r->debug_string() << ")";
   if (!r->is_http()) {
     LOG(INFO) << r->debug_string() << " is not an HTTP request.";
     return HandleOutcome::NOT_HANDLED;
@@ -38,7 +37,7 @@ bool Self::Process(RequestPtr const& req) {
   auto bored = 0U;
   while (auto gw = api_->GetGateway(config_idx++)) {
     if (state_iter == state_.end() || state_iter->first > gw->prefix) {
-      VLOG(1) << "A new gateway has entered the chat: " << gw->prefix << '='
+      VLOG(2) << "A new gateway has entered the chat: " << gw->prefix << '='
               << gw->rate;
       // One can insert like this because state_ is std::map w/ stable iterators
       state_iter = state_.insert({gw->prefix, GatewayState{}}).first;
@@ -136,14 +135,18 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
         i->second.hit(*req);
       }
       auto rpm = api_->GetGatewayRate(gw);
-      api_->SetGatewayRate(gw, rpm + 3);
+      if (rpm < 15) {
+        api_->SetGatewayRate(gw, rpm * 2 + 1);
+      } else {
+        api_->SetGatewayRate(gw, rpm + 1);
+      }
       return;
     }
   }
   auto rpm = api_->GetGatewayRate(gw);
   if (status == 408 || status == 504 || status == 429 || status == 110 ||
       timed_out) {
-    LOG(INFO) << gw << " timed out.";
+    VLOG(1) << gw << " timed out.";
     if (rpm > 9) {
       api_->SetGatewayRate(gw, rpm - 4);
     } else if (rpm) {

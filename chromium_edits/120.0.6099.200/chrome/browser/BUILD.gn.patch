@@ -1,0 +1,27 @@
+diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
+index 44d3b5e543101..35bbe5da7daf8 100644
+--- a/chrome/browser/BUILD.gn
++++ b/chrome/browser/BUILD.gn
+@@ -40,6 +40,7 @@ import("//rlz/buildflags/buildflags.gni")
+ import("//sandbox/features.gni")
+ import("//testing/libfuzzer/fuzzer_test.gni")
+ import("//third_party/blink/public/public_features.gni")
++import("//third_party/ipfs_client/args.gni")
+ import("//third_party/protobuf/proto_library.gni")
+ import("//third_party/webrtc/webrtc.gni")
+ import("//third_party/widevine/cdm/widevine.gni")
+@@ -2660,6 +2661,14 @@ static_library("browser") {
+       ]
+     }
+ 
++    if (enable_ipfs) {
++      sources += [
++        "ipfs_extra_parts.cc",
++        "ipfs_extra_parts.h",
++      ]
++      deps += [ "//components/ipfs" ]
++    }
++
+     if (is_chromeos_ash) {
+       deps += [ "//chrome/browser/screen_ai:screen_ai_dlc_installer" ]
+     }

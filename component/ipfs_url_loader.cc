@@ -62,7 +62,6 @@ void ipfs::IpfsUrlLoader::StartRequest(
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
   DCHECK(!me->receiver_.is_bound());
   DCHECK(!me->client_.is_bound());
-  VLOG(1) << "StartRequest(" << resource_request.url.spec() << ")";
   me->receiver_.Bind(std::move(receiver));
   me->client_.Bind(std::move(client));
   if (me->original_url_.empty()) {
@@ -74,11 +73,11 @@ void ipfs::IpfsUrlLoader::StartRequest(
     auto cid_str = resource_request.url.host();
     auto path = resource_request.url.path();
     auto abs_path = "/" + ns + "/" + cid_str + path;
-    VLOG(1) << resource_request.url.spec() << " -> " << abs_path;
+    VLOG(2) << resource_request.url.spec() << " -> " << abs_path;
     me->root_ = cid_str;
     me->api_->SetLoaderFactory(*(me->lower_loader_factory_));
     auto whendone = [me](IpfsRequest const& req, ipfs::Response const& res) {
-      VLOG(1) << "whendone(" << req.path().to_string() << ',' << res.status_
+      VLOG(2) << "whendone(" << req.path().to_string() << ',' << res.status_
               << ',' << res.body_.size() << "B mime=" << res.mime_ << ')';
       if (!res.body_.empty()) {
         me->ReceiveBlockBytes(res.body_);
@@ -131,7 +130,7 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   VLOG(1) << "Calling WriteData(" << byte_count << ")";
   pipe_prod_->WriteData(partial_block_.data(), &byte_count,
                         MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE);
-  VLOG(1) << "Called WriteData(" << byte_count << ")";
+  VLOG(2) << "Called WriteData(" << byte_count << ")";
   head->content_length = byte_count;
   head->headers =
       net::HttpResponseHeaders::TryToCreate("access-control-allow-origin: *");
@@ -159,7 +158,7 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
               << head->mime_type << " and status line '" << status_line
               << "' @location '" << resp_loc_ << "'";
   } else {
-    VLOG(1) << "Sending response for " << original_url_ << " with mime type "
+    VLOG(2) << "Sending response for " << original_url_ << " with mime type "
             << head->mime_type << " and status line '" << status_line
               << "' with no location header.";
   }

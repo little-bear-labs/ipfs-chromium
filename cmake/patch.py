@@ -5,7 +5,7 @@ from glob import glob
 from os import listdir, makedirs, remove
 from os.path import exists, dirname, isdir, isfile, join, realpath, relpath, splitext
 from shutil import copyfile, rmtree
-from subprocess import call, check_call, check_output
+from subprocess import call, check_call, check_output, DEVNULL
 from sys import argv, executable, platform, stderr
 from time import ctime
 from verbose import verbose
@@ -48,6 +48,7 @@ class Result(Enum):
     RawOutput = auto()
     OrDie = auto()
     ExitCode = auto()
+    ExitCodeOnly = auto()
     StrippedOutput = Output
 
 class Patcher:
@@ -147,7 +148,7 @@ class Patcher:
 
 
     def check_patch(self, patch_path: str, relative: str, target_path: str):
-        if 0 == self.git(['apply', '--check', '--reverse', '--verbose', patch_path], Result.ExitCode):
+        if 0 == self.git(['apply', '--check', '--reverse', '--verbose', patch_path], Result.ExitCodeOnly):
             verbose(patch_path, 'already applied.')
             return
         src = splitext(relative)[0]
@@ -159,7 +160,7 @@ class Patcher:
             with open(join(self.csrc,src)) as target_file:
                 text = target_file.read()
                 if 'ipfs' in text:
-                    verbose("Patch file", patch_path, 'may have already been applied.')
+                    print("Patch file", patch_path, 'may have already been applied, or otherwise hand-edited. Ignoring.')
                 else:
                     print("Failed to patch", src, '( at', join(self.csrc,src), ') with', patch_path)
                     exit(8)
@@ -176,6 +177,8 @@ class Patcher:
                 check_call(a)
             case Result.ExitCode:
                 return call(a)
+            case Result.ExitCodeOnly:
+                return call(a, stdout=DEVNULL, stderr=DEVNULL)
             case _:
                 raise RuntimeError('result type not handled')
 
@@ -255,7 +258,7 @@ class Patcher:
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
-        fudge = 59891
+        fudge = 59893
         def check(version, version_set, s):
             i = as_int(version)
             by = (fudge,0)
@@ -294,10 +297,10 @@ class Patcher:
         with open(file_path) as f:
             lines = f.readlines()
             if not Patcher.has_file_line(lines, 'chrome/browser/flag-metadata.json', '+    "name": "enable-ipfs",'):
-                print(p, 'does not have enable-ipfs in flag-metadata.json', file_path, file=sys.stderr)
+                verbose(p, 'does not have enable-ipfs in flag-metadata.json', file_path, file=sys.stderr)
                 return True
             if not Patcher.has_file_line(lines, 'chrome/browser/chrome_content_browser_client.cc', '+    main_parts->AddParts(std::make_unique<IpfsExtraParts>());'):
-                print(p, 'does not have enable-ipfs in flag-metadata.json', file_path, file=sys.stderr)
+                verbose(p, 'does not have enable-ipfs in flag-metadata.json', file_path, file=sys.stderr)
                 return True
         return False
 
@@ -368,6 +371,6 @@ if __name__ == '__main__':
                 if pr.out_of_date(pch):
                     exit(9)
                 else:
-                    pr.git(['add', line[3:]])
+                    pr.git(['add', line[3:]], Result.OrDie)
     else:
         Patcher(*argv[1:]).create_patch_file()

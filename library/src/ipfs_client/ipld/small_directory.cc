@@ -13,10 +13,8 @@ using namespace std::literals;
 using Self = ipfs::ipld::SmallDirectory;
 
 auto Self::resolve(ResolutionState& params) -> ResolveResult {
-  VLOG(1) << "dir(" << params.MyPath() << " // " << params.PathToResolve()
-          << ")";
   if (params.IsFinalComponent()) {
-    LOG(INFO) << "Directory listing requested for " << params.MyPath();
+    VLOG(2) << "Directory listing requested for " << params.MyPath();
     auto result = CallChild(params, "index.html");
     if (auto resp = std::get_if<Response>(&result)) {
       resp->mime_ = "text/html";

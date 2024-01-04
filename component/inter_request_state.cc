@@ -33,7 +33,6 @@ auto Self::FromBrowserContext(content::BrowserContext* context)
   }
   base::SupportsUserData::Data* existing = context->GetUserData(user_data_key);
   if (existing) {
-    VLOG(2) << "Re-using existing IPFS state.";
     return *static_cast<ipfs::InterRequestState*>(existing);
   } else {
     LOG(ERROR) << "Browser context has no IPFS state! It must be set earlier!";
@@ -45,9 +44,9 @@ std::shared_ptr<ipfs::ChromiumIpfsContext> Self::api() {
   return api_;
 }
 auto Self::cache() -> std::shared_ptr<CacheRequestor>& {
-  //  if (!cache_) {
-  //    cache_ = std::make_shared<CacheRequestor>(*this, disk_path_);
-  //  }
+  if (!cache_) {
+    cache_ = std::make_shared<CacheRequestor>(*this, disk_path_);
+  }
   return cache_;
 }
 auto Self::orchestrator() -> Orchestrator& {

@@ -23,7 +23,6 @@ void Self::till_next(std::size_t w) {
   waiting_ = w;
 }
 void Self::finish(ipfs::Response& r) {
-  VLOG(2) << "IpfsRequest::finish(" << waiting_ << ',' << r.status_ << ");";
   if (waiting_) {
     if (--waiting_) {
       return;

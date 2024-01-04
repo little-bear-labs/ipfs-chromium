@@ -78,10 +78,10 @@ It's an unsigned integer in two forms:
         * This helps to ensure you won't always be sending requests to the same gateways in the same order, or in a deterministic way.
 
 When issuing a request to another gateway, it checks the gateways in descending-score order:
-* If the gateway already has a request for that data pending_, or has already failed to return successfully, it's skipped.
-* If the gateways score is less than the number of pending_ requests currently sent to that gateway, it's skipped as it's considered already-too-busy
+* If the gateway already has a request for that data startup_pending_, or has already failed to return successfully, it's skipped.
+* If the gateways score is less than the number of startup_pending_ requests currently sent to that gateway, it's skipped as it's considered already-too-busy
 * The "need" is generally calculated as the target number of gateways desired to be involved (based on request parallel), subtracting the number of gateways currently processing a request for this data.
-* If the "need" is less than half the count of pending_ requests on this gateway, it's skipped as it's simply not urgent enough to justify further overloading this gateway.
+* If the "need" is less than half the count of startup_pending_ requests on this gateway, it's skipped as it's simply not urgent enough to justify further overloading this gateway.
 
 On a side-note, the hard-coded starting points for the scoring effectively encodes known information about those gateways.
 For example: http://localhost:8080/ is scored extremely highly. There's a good chance it has the resource you're looking for, and if it doesn't you may want to send a request that way anyhow so that it will in the future.

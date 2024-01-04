@@ -1,0 +1,13 @@
+diff --git a/components/open_from_clipboard/clipboard_recent_content_generic.cc b/components/open_from_clipboard/clipboard_recent_content_generic.cc
+index 4dcafecbc66c6..d205209c08162 100644
+--- a/components/open_from_clipboard/clipboard_recent_content_generic.cc
++++ b/components/open_from_clipboard/clipboard_recent_content_generic.cc
+@@ -20,7 +20,7 @@
+ namespace {
+ // Schemes appropriate for suggestion by ClipboardRecentContent.
+ const char* kAuthorizedSchemes[] = {
+-    url::kAboutScheme, url::kDataScheme, url::kHttpScheme, url::kHttpsScheme,
++    url::kAboutScheme, url::kDataScheme, url::kHttpScheme, url::kHttpsScheme, "ipfs", "ipns"
+     // TODO(mpearson): add support for chrome:// URLs.  Right now the scheme
+     // for that lives in content and is accessible via
+     // GetEmbedderRepresentationOfAboutScheme() or content::kChromeUIScheme

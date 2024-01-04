@@ -18,7 +18,6 @@ Self::DnsTxtRequest(std::string host,
   params->cache_usage = moj::ResolveHostParameters_CacheUsage::STALE_ALLOWED;
   params->secure_dns_policy = moj::SecureDnsPolicy::ALLOW;
   params->purpose = moj::ResolveHostParameters::Purpose::kUnspecified;
-  LOG(INFO) << "Querying DNS for TXT records on " << host;
   auto hrh = moj::HostResolverHost::NewHostPortPair({host, 0});
   auto nak = net::NetworkAnonymizationKey::CreateTransient();
   network_context->ResolveHost(std::move(hrh), nak, std::move(params),
@@ -34,6 +33,6 @@ void Self::OnComplete(int32_t result,
                       const ::net::ResolveErrorInfo&,
                       const absl::optional<::net::AddressList>&,
                       const absl::optional<Endpoints>&) {
-  LOG(INFO) << "DNS Results done with code: " << result;
+  VLOG(1) << "DNS Results done with code: " << result;
   completion_callback_();
 }
