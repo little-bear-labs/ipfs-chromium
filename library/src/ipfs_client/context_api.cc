@@ -20,7 +20,7 @@ auto Self::Hash(HashType ht, ByteView data)
   return it->second->hash(data);
 }
 
-unsigned int Self::GetGatewayRate(std::string_view) {
-  return 120;
-}
 void Self::SetGatewayRate(std::string_view, unsigned int) {}
+void Self::AddGateway(std::string_view gw) {
+  SetGatewayRate(gw, 60U);
+}

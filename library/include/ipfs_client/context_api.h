@@ -79,8 +79,9 @@ class ContextApi : public std::enable_shared_from_this<ContextApi> {
   std::optional<std::vector<Byte>> Hash(HashType, ByteView data);
 
   virtual std::optional<GatewaySpec> GetGateway(std::size_t index) const = 0;
-  virtual unsigned GetGatewayRate(std::string_view);
+  virtual unsigned GetGatewayRate(std::string_view) = 0;
   virtual void SetGatewayRate(std::string_view, unsigned);
+  virtual void AddGateway(std::string_view) = 0;
 
  protected:
   std::unordered_map<HashType, std::unique_ptr<crypto::Hasher>> hashers_;

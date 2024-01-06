@@ -54,6 +54,7 @@ class ChromiumIpfsContext final : public ContextApi {
   std::optional<GatewaySpec> GetGateway(std::size_t index) const override;
   unsigned int GetGatewayRate(std::string_view) override;
   void SetGatewayRate(std::string_view, unsigned int) override;
+  void AddGateway(std::string_view) override;
 
  public:
   ChromiumIpfsContext(InterRequestState&, PrefService* prefs);

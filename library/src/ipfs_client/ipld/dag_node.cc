@@ -120,8 +120,8 @@ std::shared_ptr<Node> Node::fromBlock(ipfs::PbDag const& block) {
       result = std::make_shared<UnixfsFile>();
       break;
     case PbDag::Type::HAMTShard:
-      if (block.fsdata().has_fanout()) {
-        result = std::make_shared<DirShard>(block.fsdata().fanout());
+      if (auto fanout = block.Fanout()) {
+        result = std::make_shared<DirShard>(fanout.value());
       } else {
         result = std::make_shared<DirShard>();
       }

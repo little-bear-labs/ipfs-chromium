@@ -2,7 +2,6 @@
 
 #include <ipfs_client/gw/block_request_splitter.h>
 #include <ipfs_client/gw/dnslink_requestor.h>
-#include <ipfs_client/gw/gateway_http_requestor.h>
 #include <ipfs_client/gw/inline_request_handler.h>
 #include <ipfs_client/gw/multi_gateway_requestor.h>
 #include <ipfs_client/gw/terminating_requestor.h>

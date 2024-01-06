@@ -18,6 +18,7 @@ class GatewayState {
   std::size_t total_sent = 0UL;
   std::time_t last_hist_update;
   unsigned& current_bucket();
+  long slowness = 0;
 
  public:
   GatewayState();
@@ -28,6 +29,8 @@ class GatewayState {
   void just_sent_one();
   void hit(GatewayRequest const&);
   bool miss(GatewayRequest const&);
+  void timed_out();
+  long extra_ms() { return slowness; }
 };
 }  // namespace ipfs::gw
 

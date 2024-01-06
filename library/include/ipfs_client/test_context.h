@@ -121,7 +121,6 @@ class TestContext final : public ContextApi {
     GOOGLE_LOG(ERROR) << "TODO\n";
     return true;
   }
-  std::optional<ipfs::GatewaySpec> GetGateway(std::size_t) const;
 
   std::vector<GatewaySpec> gateways_;
   boost::asio::io_context& io_;
@@ -135,14 +134,19 @@ class TestContext final : public ContextApi {
   TestContext(boost::asio::io_context& io);
   ~TestContext() noexcept override;
   void DnsResults(std::string&, ares_txt_reply&);
+  std::optional<ipfs::GatewaySpec> GetGateway(std::size_t) const;
+  void AddGateway(std::string_view) override;
+  void SetGatewayRate(std::string_view, unsigned);
+  unsigned int GetGatewayRate(std::string_view) override;
+  std::vector<GatewaySpec>::iterator FindGateway(std::string_view);
 };
-inline std::shared_ptr<Orchestrator> start_default(
-    boost::asio::io_context& io) {
+inline std::pair<std::shared_ptr<TestContext>, std::shared_ptr<Orchestrator>>
+start_default(boost::asio::io_context& io) {
   auto api = std::make_shared<TestContext>(io);
   auto gl = Gateways::DefaultGateways();
   auto rtor = gw::default_requestor(gl, {}, api);
   auto orc = std::make_shared<Orchestrator>(rtor, api);
-  return orc;
+  return {api, orc};
 }
 
 }  // namespace ipfs

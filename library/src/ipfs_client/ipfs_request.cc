@@ -19,23 +19,12 @@ std::shared_ptr<Self> Self::fromUrl(std::string url, ipfs::IpfsRequest::Finisher
   return std::make_shared<Self>(std::move(url), std::move(f));
 }
 
-void Self::till_next(std::size_t w) {
-  waiting_ = w;
-}
 void Self::finish(ipfs::Response& r) {
-  if (waiting_) {
-    if (--waiting_) {
-      return;
-    }
-  }
   callback_(*this, r);
   // TODO - cancel other gw req pointing into this
   callback_ = [](auto& q, auto&) {
     VLOG(2) << "IPFS request " << q.path().pop_all() << " satisfied multiply";
   };
-}
-bool Self::ready_after() {
-  return waiting_ == 0 || 0 == --waiting_;
 }
 void Self::new_path(std::string_view sv) {
   path_.assign(sv);

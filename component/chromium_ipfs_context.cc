@@ -121,6 +121,9 @@ auto Self::GetGateway(std::size_t index) const -> std::optional<GatewaySpec> {
   }
   return std::nullopt;
 }
+void Self ::AddGateway(std::string_view prefix) {
+  rates_.SetRate(prefix, 120U);
+}
 
 Self::ChromiumIpfsContext(InterRequestState& state, PrefService* prefs)
     : state_{state}, rates_{prefs} {}

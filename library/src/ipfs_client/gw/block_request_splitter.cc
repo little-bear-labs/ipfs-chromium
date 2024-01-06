@@ -2,6 +2,8 @@
 
 #include <ipfs_client/gw/gateway_request.h>
 
+#include <algorithm>
+
 using Self = ipfs::gw::BlockRequestSplitter;
 
 std::string_view Self::name() const {
@@ -17,14 +19,17 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
     br->path.clear();
     forward(br);
   }
-  /*
-  {
+  auto it = std::find(recent_provider_requests.begin(),
+                      recent_provider_requests.end(), r->main_param);
+  if (recent_provider_requests.end() == it) {
+    auto i = old_provider_request % recent_provider_requests.size();
+    recent_provider_requests[i] = r->main_param;
+    ++old_provider_request;
     auto pr = std::make_shared<gw::GatewayRequest>(*r);
     pr->type = Type::Providers;
     pr->path.clear();
     pr->affinity.clear();
     forward(pr);
   }
-   */
   return HandleOutcome::NOT_HANDLED;
 }

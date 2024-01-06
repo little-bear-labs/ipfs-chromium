@@ -1,5 +1,6 @@
 #include <ipfs_client/gw/gateway_request.h>
 
+#include <ipfs_client/gw/providers_response.h>
 #include <ipfs_client/ipld/chunk.h>
 #include <ipfs_client/ipld/dag_node.h>
 #include <ipfs_client/ipld/ipns_name.h>
@@ -106,15 +107,15 @@ std::string_view Self::accept() const {
 short Self::timeout_seconds() const {
   switch (type) {
     case Type::DnsLink:
-      return 32;
+      return 16;
     case Type::Block:
-      return 64;
+      return 32;
     case Type::Providers:
-      return 128;
-    case Type::Car:
-      return 256;
+      return 33;
     case Type::Ipns:
-      return 512;
+      return 64;
+    case Type::Car:
+      return 65;
     case Type::Identity:
     case Type::Zombie:
       return 0;
@@ -185,11 +186,11 @@ std::optional<std::size_t> Self::max_response_size() const {
       return 0;
     case Type::Providers:
       // This one's tricky.
-      //   One could easily guess a pracitical limit to the size of a Peer,
-      //   and the spec says it SHOULD be limited to 100 peers.
+      //   One could easily guess a practical limit to the size of a Peer's
+      //    json, and the spec says it SHOULD be limited to 100 peers.
       //   But there's no guaranteed limits. A peer could have an unlimited
       //    number of multiaddrs. And they're allowed to throw in arbitrary
-      //    fields I'm supposed to ignore. So in theory it could be infinitely
+      //    fields I'm supposed to ignore. So in theory it could be arbitrarily
       //    large.
       return std::nullopt;
   }
@@ -297,7 +298,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
       break;
     }
     case Type::Providers:
-      LOG(WARNING) << "TODO - handle responses to providers requests.";
+      providers::ProcessResponse(bytes, *api);
       break;
     case Type::Zombie:
       LOG(WARNING) << "Responding to a zombie is ill-advised.";
@@ -306,13 +307,15 @@ bool Self::RespondSuccessfully(std::string_view bytes,
       LOG(ERROR) << "TODO " << static_cast<int>(type);
   }
   if (success) {
+    LOG(INFO) << "Request " << this->debug_string()
+              << " was successful. Calling hooks and finishing.";
     for (auto& hook : bytes_received_hooks) {
       hook(bytes);
     }
     bytes_received_hooks.clear();
     orchestrator_->build_response(dependent);
+    type = Type::Zombie;
   }
-  type = Type::Zombie;
   return success;
 }
 void Self::Hook(std::function<void(std::string_view)> f) {
@@ -327,3 +330,5 @@ bool Self::PartiallyRedundant() const {
   }
   return orchestrator_->has_key(main_param);
 }
+
+#include <ipfs_client/dag_json_value.h>

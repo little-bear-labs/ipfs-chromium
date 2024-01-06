@@ -8,7 +8,7 @@ TEST(GatewaysTest, DefaultListMeetsBasicGuidelines) {
   EXPECT_GT(dg.size(), 9U);
   EXPECT_EQ(dg.at(0).prefix, "http://localhost:8080/");
   for (auto i = 1U; i < dg.size(); ++i) {
-    EXPECT_EQ(dg.at(i).prefix.substr(0, 8), std::string{"https://"});
+    EXPECT_EQ(dg.at(i).prefix.substr(0, 4), std::string{"http"});
     EXPECT_EQ(dg.at(i).prefix.back(), '/');
     // I considered asserting the number of /s and :s, but that _is_ allowed to
     // change

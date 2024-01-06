@@ -212,11 +212,7 @@ class Patcher:
         raise EnvironmentError(f"Can't find an appropriate tag for {osname()}, anymore!")
 
     def available(self):
-        for f in listdir(self.pdir):
-            if splitext(f)[1] != '.patch':
-                print(f"Warning: {f} does not belong in {self.pdir}. Removing.", file=stderr)
-                remove(join(self.pdir, f))
-        return map(lambda p: splitext(p)[0], listdir(self.pdir))
+        return listdir(self.edir)
 
     def distances(self, frm, ref):
         a = int(self.git(['rev-list', '--count', frm+'..'+ref], Result.Output))
@@ -258,7 +254,7 @@ class Patcher:
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
-        fudge = 59893
+        fudge = 59895
         def check(version, version_set, s):
             i = as_int(version)
             by = (fudge,0)
@@ -348,6 +344,10 @@ if __name__ == '__main__':
                 if len(rels) > 1:
                     print(f'Prev {chan:9}{os:7}', rels[1][1])
         print("Electron's main branch:", p.electron_version())
+    elif argv[1] == 'available':
+        pr = Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug')
+        print(list(pr.available()))
+        print(pr.edir)
     elif argv[1] == 'old':
         pr = Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug')
         if len(argv) > 2:

@@ -6,9 +6,10 @@ using Self = ipfs::crypto::OpensslSha2_256;
 
 #if HAS_OPENSSL_SHA
 
+#include <openssl/evp.h>
 #include <openssl/sha.h>
 
-Self::~OpensslSha2_256() {}
+Self::~OpensslSha2_256() noexcept {}
 auto Self::hash(ipfs::ByteView data) -> std::optional<std::vector<Byte>> {
   SHA256_CTX ctx;
   if (1 != SHA256_Init(&ctx)) {

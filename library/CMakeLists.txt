@@ -145,13 +145,6 @@ add_custom_target(upload_library
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
 
-if(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
-  include(CodeCoverage OPTIONAL RESULT_VARIABLE INCLUDED_COVERAGE)
-  if(INCLUDED_COVERAGE)
-    append_coverage_compiler_flags_to_target(ipfs_client_covered)
-  endif()
-endif()
-
 file(GLOB_RECURSE
     unit_test_sources
     CONFIGURE_DEPENDS
@@ -216,14 +209,34 @@ if(GTest_FOUND AND IN_WORKSPACE)
           COMMAND "${CMAKE_COMMAND}" -E echo "Tests up-to-date"
         )
     endif()
-    if(LCOV_PATH)
-        setup_target_for_coverage_lcov(
-          NAME cov
-          DEPENDENCIES run_tests
-          EXECUTABLE $<TARGET_FILE:unit_test_runner>
-        )
-    else()
-        message(WARNING "Cannot provide coverage report without lcov")
+    if(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+        include(CodeCoverage OPTIONAL RESULT_VARIABLE INCLUDED_COVERAGE)
+        if(INCLUDED_COVERAGE)
+            append_coverage_compiler_flags_to_target(ipfs_client_covered)
+            append_coverage_compiler_flags_to_target(unit_test_runner)
+            if(CMAKE_BUILD_TYPE STREQUAL Debug)
+                target_compile_options(ipfs_client_covered
+                        PRIVATE
+                        ${coverage_debug_flags}
+                )
+            endif()
+            if(CMAKE_BUILD_TYPE STREQUAL Debug)
+                target_compile_options(unit_test_runner
+                        PRIVATE
+                        ${coverage_debug_flags}
+                )
+            endif()
+        endif()
+        if(LCOV_PATH)
+            setup_target_for_coverage_lcov(
+                    NAME cov
+                    DEPENDENCIES run_tests
+                    EXECUTABLE $<TARGET_FILE:unit_test_runner>
+                    EXCLUDE ${unit_test_sources}
+            )
+        else()
+            message(WARNING "Cannot provide coverage report without lcov")
+        endif()
     endif()
 else()
     message(WARNING "Not running tests - no gtest available.")

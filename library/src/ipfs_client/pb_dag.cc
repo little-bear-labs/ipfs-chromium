@@ -6,7 +6,13 @@
 
 #include <algorithm>
 
-#include <algorithm>
+#if __has_include(<third_party/ipfs_client/pb_dag.pb.h>)
+#include <third_party/ipfs_client/pb_dag.pb.h>
+#include <third_party/ipfs_client/unix_fs.pb.h>
+#else
+#include "ipfs_client/pb_dag.pb.h"
+#include "ipfs_client/unix_fs.pb.h"
+#endif
 
 namespace {
 std::string get_bytes(std::string const& s) {
@@ -57,21 +63,28 @@ std::pair<bool, bool> InitBlock(ipfs::MultiCodec c,
 }
 }  // namespace
 
-ipfs::PbDag::PbDag(Cid const& c, std::istream& s) : cid_(c) {
-  std::tie(valid_, fs_node_) = InitBlock(c.codec(), s, node_, fsdata_);
+struct ipfs::PbDag::Data {
+  pb_dag::PBNode node_;
+  unix_fs::Data fsdata_;
+};
+
+ipfs::PbDag::PbDag(Cid const& c, std::istream& s)
+    : pimpl_{std::make_unique<Data>()}, cid_(c) {
+  std::tie(valid_, fs_node_) =
+      InitBlock(c.codec(), s, pimpl_->node_, pimpl_->fsdata_);
 }
 
 ipfs::PbDag::PbDag(Cid const& c, ByteView s)
-    : cid_(c),
+    : pimpl_{std::make_unique<Data>()},
+      cid_(c),
       original_bytes_(reinterpret_cast<char const*>(s.data()), s.size()) {
   std::tie(valid_, fs_node_) =
-      InitBlock(c.codec(), original_bytes_, node_, fsdata_);
+      InitBlock(c.codec(), original_bytes_, pimpl_->node_, pimpl_->fsdata_);
 }
 ipfs::PbDag::PbDag(Cid const& c, std::string_view s) : PbDag(c, as_bytes(s)) {}
 
 ipfs::PbDag::PbDag(PbDag const& rhs)
-    : node_(rhs.node_),
-      fsdata_(rhs.fsdata_),
+    : pimpl_(std::make_unique<Data>(*rhs.pimpl_)),
       valid_(rhs.valid_),
       fs_node_(rhs.fs_node_),
       mime_(rhs.mime_),
@@ -94,28 +107,29 @@ auto ipfs::PbDag::type() const -> Type {
     return Type::NonFs;
   }
   if (is_file()) {
-    if (fsdata_.blocksizes_size() > 0) {
+    if (pimpl_->fsdata_.blocksizes_size() > 0) {
       return Type::File;
     } else {
       return Type::FileChunk;
     }
   }
-  if (fsdata_.type()) {
-    return static_cast<Type>(fsdata_.type());
+  if (pimpl_->fsdata_.type()) {
+    return static_cast<Type>(pimpl_->fsdata_.type());
   }
   return Type::Invalid;
 }
 
 bool ipfs::PbDag::is_file() const {
-  return valid() && fs_node_ && fsdata_.type() == unix_fs::Data_DataType_File;
+  return valid() && fs_node_ &&
+         pimpl_->fsdata_.type() == unix_fs::Data_DataType_File;
 }
 
 std::string const& ipfs::PbDag::chunk_data() const {
-  return fsdata_.data();
+  return pimpl_->fsdata_.data();
 }
 
 std::string const& ipfs::PbDag::unparsed() const {
-  return node_.data();
+  return pimpl_->node_.data();
 }
 
 auto ipfs::PbDag::cid() const -> Cid const& {
@@ -166,6 +180,23 @@ std::vector<ipfs::Byte> ipfs::PbDag::binary_hash(ContextApi& api,
   } else {
     return {};
   }
+}
+
+void ipfs::PbDag::List(
+    std::function<bool(std::string const&, std::string)> foo) const {
+  for (auto& link : pimpl_->node_.links()) {
+    // protobuf uses string for binary data, too
+    auto hash = as_bytes(link.hash());
+    if (!foo(link.name(), LinkCid(hash))) {
+      break;
+    }
+  }
+}
+std::optional<std::uint64_t> ipfs::PbDag::Fanout() const {
+  if (pimpl_ && fs_node_ && pimpl_->fsdata_.has_fanout()) {
+    return pimpl_->fsdata_.fanout();
+  }
+  return std::nullopt;
 }
 
 std::ostream& operator<<(std::ostream& s, ipfs::PbDag::Type t) {

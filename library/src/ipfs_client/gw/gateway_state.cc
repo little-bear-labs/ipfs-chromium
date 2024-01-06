@@ -41,12 +41,14 @@ unsigned int& Self::current_bucket() {
   return sent_counts[last_hist_update % sent_counts.size()];
 }
 void Self::hit(GatewayRequest const& req) {
-  std::clog << "GatewayState::hit " << static_cast<void const*>(this) << ' '
-            << static_cast<void const*>(&req) << std::endl;
   request_type_success.at(static_cast<std::size_t>(req.type))++;
   affinity_success[req.affinity]++;
 }
 bool Self::miss(GatewayRequest const& req) {
   request_type_success.at(static_cast<std::size_t>(req.type))--;
+  slowness++;
   return affinity_success[req.affinity]-- >= 0;
+}
+void Self::timed_out() {
+  slowness += 10;
 }

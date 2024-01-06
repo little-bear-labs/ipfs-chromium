@@ -19,7 +19,8 @@ Self::Orchestrator(std::shared_ptr<gw::Requestor> requestor,
 }
 
 void Self::build_response(std::shared_ptr<IpfsRequest> req) {
-  if (!req || !req->ready_after()) {
+  if (!req) {
+    LOG(ERROR) << "Can't build a response to NULL.";
     return;
   }
   auto req_path = req->path();
@@ -31,8 +32,8 @@ void Self::build_response(std::shared_ptr<IpfsRequest> req) {
       build_response(req);
     }
   } else {
-    VLOG(2) << "Requesting root " << affinity << " resolve path "
-            << req_path.to_string();
+    LOG(INFO) << "Requesting root " << affinity << " resolve path "
+              << req_path.to_string();
     auto root = it->second->rooted();
     if (root != it->second) {
       it->second = root;
@@ -91,7 +92,6 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
     req->finish(Response::IMMUTABLY_GONE);
   } else {
     auto& mps = std::get<ipld::MoreDataNeeded>(result).ipfs_abs_paths_;
-    req->till_next(mps.size());
     for (auto& mp : mps) {
       VLOG(2) << "Attempt to resolve " << relative_path << " for "
               << req->path() << " leads to request for " << mp;

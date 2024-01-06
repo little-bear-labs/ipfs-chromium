@@ -16,14 +16,12 @@ class IpfsRequest {
  private:
   std::string path_;
   Finisher callback_;
-  std::size_t waiting_ = 0UL;
 
  public:
   IpfsRequest(std::string path, Finisher);
   SlashDelimited path() const { return SlashDelimited{path_}; }
   void finish(Response& r);
   void till_next(std::size_t);
-  bool ready_after();
   void new_path(std::string_view);
 
   static std::shared_ptr<IpfsRequest> fromUrl(std::string url, Finisher);

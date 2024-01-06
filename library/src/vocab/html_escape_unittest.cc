@@ -1,6 +1,6 @@
-#include <vocab/html_escape.h>
-
 #include <gtest/gtest.h>
+
+#include <vocab/html_escape.h>
 
 using namespace std::literals;
 

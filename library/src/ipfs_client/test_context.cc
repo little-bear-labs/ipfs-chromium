@@ -110,30 +110,32 @@ void Self::CAresProcess() {
     io_.post([this]() { CAresProcess(); });
   }
 }
-
+namespace http = boost::beast::http;
 class HttpSession : public std::enable_shared_from_this<HttpSession> {
   using tcp = boost::asio::ip::tcp;
+  boost::asio::io_context& ioc_;
+  boost::asio::strand<boost::asio::io_context::executor_type> strand_;
   tcp::resolver resolver_;
   boost::asio::ssl::context& ssl_ctx_;
   boost::beast::ssl_stream<boost::beast::tcp_stream> stream_;
   boost::beast::flat_buffer buffer_;  // (Must persist between reads)
-  boost::beast::http::request<boost::beast::http::empty_body> req_;
+  http::request<http::empty_body> req_;
   ipfs::ContextApi::HttpCompleteCallback cb_;
   int expiry_seconds_ = 91;
   std::string host_, port_, target_;
   ipfs::HttpRequestDescription desc_;
   static std::map<std::string, tcp::resolver::results_type> resolutions_;
   std::string parsed_host_;
-  boost::beast::http::response_parser<boost::beast::http::string_body>
-      response_parser_;
-  std::optional<boost::beast::http::response<boost::beast::http::string_body>>
-      res_;
+  http::response_parser<http::string_body> response_parser_;
+  std::optional<http::response<http::string_body>> res_;
+  std::shared_ptr<HttpSession> prev;
 
   void fail(boost::beast::error_code ec, char const* what) {
-    GOOGLE_LOG(WARNING) << what << ": " << ec.value() << ' ' << ec.message()
-                        << " URL:" << desc_.url << " HOST:" << host_
-                        << " PORT:" << port_ << " TARGET:" << target_;
-    cb_(500, "", [](auto) { return std::string{}; });
+    GOOGLE_LOG(INFO) << what << ": " << ec.value() << ' ' << ec.message()
+                     << " URL:" << desc_.url << " HOST:" << host_
+                     << " PORT:" << port_ << " TARGET:" << target_;
+    auto status = ec.value() == 1 ? 408 : 500;
+    cb_(status, "", [](auto) { return std::string{}; });
   }
   std::string parse_url() {
     ipfs::SlashDelimited ss{desc_.url};
@@ -163,9 +165,11 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
                        boost::asio::ssl::context& ssc,
                        ipfs::HttpRequestDescription& desc,
                        ipfs::ContextApi::HttpCompleteCallback cb)
-      : resolver_(boost::asio::make_strand(ioc)),
+      : ioc_{ioc},
+        strand_{boost::asio::make_strand(ioc)},
+        resolver_(strand_),
         ssl_ctx_(ssc),
-        stream_(boost::asio::make_strand(ioc), ssc),
+        stream_(strand_, ssc),
         cb_{cb},
         desc_{desc} {
     if (auto sz = desc_.max_response_size) {
@@ -192,24 +196,29 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     }
 
     req_.version(11);
-    req_.method(boost::beast::http::verb::get);
+    req_.method(http::verb::get);
     req_.target(target_);
-    req_.set(boost::beast::http::field::host, parsed_host_);
+    req_.set(http::field::host, parsed_host_);
     if (desc_.accept.size()) {
       //      std::clog << "Setting Accept: " << desc_.accept << '\n';
       req_.set("Accept", desc_.accept);
     }
+    extend_time();
+    auto me = shared_from_this();
     if (resolution().empty()) {
       GOOGLE_LOG(DEBUG) << "Starting " << desc_.url
                         << " with a host resolution of " << host_ << ':'
                         << port_;
-      extend_time();
       resolver_.async_resolve(
           host_, port_,
-          boost::beast::bind_front_handler(&HttpSession::on_resolve,
-                                           shared_from_this()));
+          boost::beast::bind_front_handler(&HttpSession::on_resolve, me));
     } else {
-      on_resolve({}, resolution());
+      auto do_connect = [me]() {
+        boost::beast::get_lowest_layer(me->stream_)
+            .async_connect(me->resolution(), boost::beast::bind_front_handler(
+                                                 &HttpSession::on_connect, me));
+      };
+      boost::asio::defer(strand_, do_connect);
     }
   }
   void on_resolve(boost::beast::error_code ec,
@@ -219,10 +228,9 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     resolution() = results;
     for (auto& ep : results) {
       GOOGLE_LOG(DEBUG) << desc_.url << " Resolved " << host_
-                        << ", now connecting to "
-                        << req_[boost::beast::http::field::host] << " aka "
-                        << ep.host_name() << ':' << ep.service_name() << " for "
-                        << target_;
+                        << ", now connecting to " << req_[http::field::host]
+                        << " aka " << ep.host_name() << ':' << ep.service_name()
+                        << " for " << target_;
     }
     extend_time();
     boost::beast::get_lowest_layer(stream_).async_connect(
@@ -244,10 +252,9 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
                                            shared_from_this()));
     } else {
       GOOGLE_LOG(DEBUG) << "Skipping the SSL handshake because port=" << port_;
-      boost::beast::http::async_write(
-          boost::beast::get_lowest_layer(stream_), req_,
-          boost::beast::bind_front_handler(&HttpSession::on_write,
-                                           shared_from_this()));
+      http::async_write(boost::beast::get_lowest_layer(stream_), req_,
+                        boost::beast::bind_front_handler(&HttpSession::on_write,
+                                                         shared_from_this()));
     }
   }
   bool use_ssl() const { return port_ == "443" || port_ == "https"; }
@@ -261,10 +268,9 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     if (ec)
       return fail(ec, "handshake");
     extend_time();
-    boost::beast::http::async_write(
-        stream_, req_,
-        boost::beast::bind_front_handler(&HttpSession::on_write,
-                                         shared_from_this()));
+    http::async_write(stream_, req_,
+                      boost::beast::bind_front_handler(&HttpSession::on_write,
+                                                       shared_from_this()));
   }
 
   void on_write(boost::beast::error_code ec, std::size_t) {
@@ -273,15 +279,14 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     GOOGLE_LOG(TRACE) << desc_.url << " request written.";
     extend_time();
     if (use_ssl()) {
-      boost::beast::http::async_read(
-          stream_, buffer_, response_parser_,
-          boost::beast::bind_front_handler(&HttpSession::on_read,
-                                           shared_from_this()));
+      http::async_read(stream_, buffer_, response_parser_,
+                       boost::beast::bind_front_handler(&HttpSession::on_read,
+                                                        shared_from_this()));
     } else {
-      boost::beast::http::async_read(
-          boost::beast::get_lowest_layer(stream_), buffer_, response_parser_,
-          boost::beast::bind_front_handler(&HttpSession::on_read,
-                                           shared_from_this()));
+      http::async_read(boost::beast::get_lowest_layer(stream_), buffer_,
+                       response_parser_,
+                       boost::beast::bind_front_handler(&HttpSession::on_read,
+                                                        shared_from_this()));
     }
   }
 
@@ -310,28 +315,49 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
       }
     }
     if (res_->result_int() / 100 == 3) {
-      auto loc = (*res_)[boost::beast::http::field::location];
-      if (loc.size()) {
-        desc_.url = loc;
-        close();
+      auto loc = (*res_)[http::field::location];
+      if (loc.empty()) {
+        LOG(ERROR) << "No Location header given for a redirect response.";
+      } else if (redirect_count(loc) >= 0xFF) {
+        LOG(ERROR) << "Too many redirects!! Giving up on " << loc << '\n';
+      } else {
         GOOGLE_LOG(WARNING) << "Redirecting to " << loc << " aka " << desc_.url;
-        res_ = boost::beast::http::response<boost::beast::http::string_body>{};
-        req_.set(boost::beast::http::field::host, parse_url());
-        req_.target(target_);
-        on_resolve({}, resolution());
-        return;
+        auto desc = desc_;
+        desc.url = loc;
+        auto next = std::make_shared<HttpSession>(ioc_, ssl_ctx_, desc, cb_);
+        next->prev = shared_from_this();
+        next->run();
       }
+      close();
+      return;
     }
-    auto content_type = (*res_)[boost::beast::http::field::content_type];
+    auto content_type = (*res_)[http::field::content_type];
+    auto me = shared_from_this();
+    auto respond = [me, get_hdr]() {
+      auto& r = *(me->res_);
+      me->cb_(r.result_int(), r.body(), get_hdr);
+    };
     if (content_type.empty() ||
         boost::algorithm::icontains(content_type, desc_.accept)) {
-      cb_(res_->result_int(), res_->body(), get_hdr);
+      LOG(TRACE) << "Got " << content_type;
     } else {
-      GOOGLE_LOG(INFO) << desc_.url
-                       << " response incorrect content type: " << content_type
-                       << " != " << desc_.accept;
+      LOG(INFO) << desc_.url
+                << " response incorrect content type: " << content_type
+                << " != " << desc_.accept;
+      res_->result(501);
     }
+    boost::asio::defer(strand_, respond);
     close();
+  }
+  int redirect_count(std::string_view comp) {
+    if (comp == desc_.url) {
+      LOG(ERROR) << "Redirect loop on " << comp;
+      return 0xFF;
+    } else if (!prev) {
+      return 1;
+    } else {
+      return 1 + prev->redirect_count(comp);
+    }
   }
   void close() {
     if (use_ssl()) {
@@ -345,11 +371,12 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     namespace E = boost::asio::error;
     switch (ec.value()) {
       case 0:
+      case 1:
       case 2:
       case ENOTCONN:
         return;
       default:
-        return fail(ec, "shutdown");
+        fail(ec, "shutdown");
     }
   }
 };
@@ -368,5 +395,37 @@ std::optional<ipfs::GatewaySpec> Self::GetGateway(std::size_t index) const {
   }
   return std::nullopt;
 }
-
+void Self::AddGateway(std::string_view prefix) {
+  auto it = FindGateway(prefix);
+  if (gateways_.end() != it && it->prefix == prefix) {
+    it->rate++;
+    LOG(INFO) << "Re-found existing gateway. Bumping it: " << prefix << '='
+              << it->rate;
+  } else {
+    LOG(INFO) << "Adding new gateway:" << prefix;
+    gateways_.insert(it, GatewaySpec{std::string{prefix}, 60U});
+    DCHECK(
+        std::is_sorted(gateways_.begin(), gateways_.end(),
+                       [](auto& a, auto& b) { return a.prefix < b.prefix; }));
+  }
+}
+void Self::SetGatewayRate(std::string_view prefix, unsigned int rate) {
+  auto it = FindGateway(prefix);
+  if (gateways_.end() != it && it->prefix == prefix) {
+    LOG(INFO) << "Set gateway rate for " << prefix << " to " << rate;
+    it->rate = rate;
+  } else {
+    LOG(INFO) << "Attempted to set the rate of an unknown gateway " << prefix
+              << " to " << rate;
+  }
+}
+unsigned Self::GetGatewayRate(std::string_view prefix) {
+  auto i = FindGateway(prefix);
+  return gateways_.end() == i ? 60U : i->rate;
+}
+auto Self::FindGateway(std::string_view prefix)
+    -> std::vector<GatewaySpec>::iterator {
+  auto cmp = [](auto& g, std::string_view p) { return g.prefix < p; };
+  return std::lower_bound(gateways_.begin(), gateways_.end(), prefix, cmp);
+}
 #endif

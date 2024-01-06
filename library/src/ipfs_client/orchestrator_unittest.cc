@@ -75,6 +75,8 @@ struct MockApi final : public ipfs::ContextApi {
     cbors.erase(cbors.begin());
     return std::move(r);
   }
+  unsigned GetGatewayRate(std::string_view) { return 120U; }
+  void AddGateway(std::string_view) {}
 };
 struct TestRequestor final : public ig::Requestor {
   TestRequestor() { api_ = std::make_shared<MockApi>(); }

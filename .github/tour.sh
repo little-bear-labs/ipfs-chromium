@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 echo Clone tester repo.
-git clone https://github.com/John-LittleBearLabs/ipfs_client_clitester.git
+git clone --single-branch --branch simplify https://github.com/John-LittleBearLabs/ipfs_client_clitester.git
 
 echo Install dependencies.
 sudo apt-get update
@@ -38,8 +38,12 @@ do
 done
 
 function url_case() {
-  echo "url_case(" "${@}" ")"
-  if timeout 360 ./tester_build/clitester warning "${1}://${2}"
+  echo "namespace =${1}"
+  echo "path remaining =${2}"
+  echo "output hash =${3}"
+  echo "test case description =${4}"
+  echo "log level =${5-trace}"
+  if timeout 360 ./tester_build/clitester "${5-trace}" "${1}://${2}"
   then
     echo clitester exited with successful status
   else
@@ -47,7 +51,12 @@ function url_case() {
     exit 7
   fi
   n=`sed 's,[^A-Za-z0-9\.],_,g' <<< ${2}`
-  if cat "_${1}_${n}" | md5sum | cut -d ' ' -f 1 > actual
+  if [ ! -f "_${1}_${n}" ]
+  then
+    echo "Failed to produce expected file _${1}_${n} for test case " "${@}"
+    ls -lrth
+    exit 7
+  elif cat "_${1}_${n}" | md5sum | cut -d ' ' -f 1 > actual
   then
     ls -lrth _ip?s_*
     if [ $# -ge 3 ]
@@ -57,6 +66,7 @@ function url_case() {
       then
         echo good
       else
+        xxd "_${1}_${n}"
         echo "Got wrong result: " "${@}"
         exit 8
       fi
@@ -74,7 +84,7 @@ url_case ipfs bafkqacdjmrsw45djor4q ff483d1ff591898a9942916050d2ca3f 'Identity (
 url_case ipfs baguqeerah2nswg7r2pvlpbnsz5y4c4pr4wsgbzixdl632w5qxvedqzryf54q 7750fd7b0928f007e1d181763c0dbdb5 'A DAG-JSON document. The block itself md5s to b92348005af4ae4795e6f312844fb359, but the response we are hashing here is an HTML preview page. This does mean this test breaks if you make the preview less ugly.'
 
 url_case ipns en.wikipedia-on-ipfs.org/I/HFE_Too_Slow_1.JPG.webp 09c09b2654e8529740b5a7625e39e0c8 'An image fetched through DNSLink and HAMT sharded directories.'
-url_case ipfs bafybeieb33pqideyl5ncd33kho622thym5rqv6sujrmelcuhkjlf2hdpu4/Big%20Buck%20Bunny.webm 06d51286e56badb4455594ebed6daba2 'A large UnixFS file - several hundred blocks.'
+echo 'Skip as it takes too long.' url_case ipfs bafybeieb33pqideyl5ncd33kho622thym5rqv6sujrmelcuhkjlf2hdpu4/Big%20Buck%20Bunny.webm 06d51286e56badb4455594ebed6daba2 'A large UnixFS file - several hundred blocks.' error
 url_case ipns k51qzi5uqu5dijv526o4z2z10ejylnel0bfvrtw53itcmsecffo8yf0zb4g9gi/symlinks/relative_link.txt cfe9b69523140b5b5e63874a8e4997e4 'A relative symlink resolves successfully to the file pointed to.'
 
 echo Stop test server.

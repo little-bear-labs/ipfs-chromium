@@ -70,6 +70,8 @@ struct MockApi final : public i::ContextApi {
   std::optional<i::GatewaySpec> GetGateway(std::size_t) const {
     return std::nullopt;
   }
+  unsigned GetGatewayRate(std::string_view) { return 120U; }
+  void AddGateway(std::string_view) {}
 };
 }  // namespace
 

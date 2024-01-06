@@ -32,9 +32,11 @@ bool Self::Process(RequestPtr const& req) {
     return false;
   }
   auto state_iter = state_.begin();
-  auto config_idx = 0UL;
-  std::vector<std::tuple<long, std::string, GatewayState*>> candidates;
+  auto config_idx = 0U;
+  using Candidate = std::tuple<long, std::string, GatewayState*>;
+  std::vector<Candidate> candidates;
   auto bored = 0U;
+  Candidate over_rate = {0, {}, nullptr};
   while (auto gw = api_->GetGateway(config_idx++)) {
     if (state_iter == state_.end() || state_iter->first > gw->prefix) {
       VLOG(2) << "A new gateway has entered the chat: " << gw->prefix << '='
@@ -55,9 +57,12 @@ bool Self::Process(RequestPtr const& req) {
       //      VLOG(2) << "Not going to resend " << req->debug_string() << " to "
       //              << gw->prefix << " as it has already failed us.";
     } else if (state_iter->second.over_rate(gw->rate)) {
-      //      VLOG(2) << "Not considering " << gw->prefix
-      //              << " at the moment as it's over its rate limit " <<
-      //              gw->rate;
+      auto score = state_iter->second.score(*req, gw->rate);
+      if (std::get<0>(over_rate) <= score) {
+        VLOG(2) << gw->prefix
+                << " may be over-rate, but keep it as a fallback.";
+        over_rate = std::make_tuple(score, gw->prefix, &(state_iter->second));
+      }
     } else {
       candidates.push_back({state_iter->second.score(*req, gw->rate),
                             gw->prefix, &(state_iter->second)});
@@ -67,13 +72,18 @@ bool Self::Process(RequestPtr const& req) {
     }
     std::advance(state_iter, 1);
   }
+  if (std::get<2>(over_rate)) {
+    if (candidates.empty()) {
+      LOG(INFO) << "Overburdened.";
+    }
+    candidates.push_back(over_rate);
+  }
   if (candidates.empty() && config_idx <= req->failures.size()) {
-    LOG(ERROR) << "Request has failed on every gateway I have:"
-               << req->debug_string();
+    LOG(ERROR) << "Run out of gateways to send this to:" << req->debug_string();
     forward(req);
     return false;
   }
-  auto to_send = std::max(bored / 2, 3U);
+  auto to_send = std::max(bored / 3UL, 2UL);
   std::sort(candidates.begin(), candidates.end(), std::greater{});
   for (auto& [score, prefix, state] : candidates) {
     DoSend(req, prefix, *state);
@@ -91,6 +101,9 @@ void Self::DoSend(RequestPtr req, std::string const& gw, GatewayState& state) {
                   "toward doing an HTTP request: "
                << req->debug_string();
     return;
+  }
+  if (state.extra_ms()) {
+    desc->timeout_seconds += state.extra_ms() / 1000L + 1L;
   }
   auto timeout_threshold =
       ch::system_clock::now() +
@@ -114,6 +127,7 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
                           bool timed_out) {
   if (req->type == Type::Zombie ||
       (req->PartiallyRedundant() && req->type == Type::Block)) {
+    VLOG(1) << "Request has finished:" << req->debug_string();
     return;
   }
   auto i = state_.find(gw);
@@ -124,37 +138,50 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
       LOG(ERROR) << "No content-type header?";
     } else if (desc.accept.size() &&
                ct.find(desc.accept) == std::string::npos) {
-      LOG(WARNING) << "Requested with Accept: " << desc.accept
-                   << " but received response with content-type: " << ct;
-    } else if (!req->RespondSuccessfully(body, api_)) {
-      LOG(ERROR) << "Got an unuseful response from " << gw
-                 << " forwarding request " << req->debug_string()
-                 << " to next requestor.";
+      VLOG(2) << "Requested with Accept: " << desc.accept
+              << " but received response with content-type: " << ct;
+      return;
+    }
+    if (!req->RespondSuccessfully(body, api_)) {
+      LOG(ERROR) << "Got an unuseful response from " << gw << " for request "
+                 << req->debug_string();
     } else {
+      LOG(INFO) << "Response from " << gw << " to " << req->debug_string()
+                << " was successful & useful - progress made.";
       if (state_.end() != i) {
         i->second.hit(*req);
       }
       auto rpm = api_->GetGatewayRate(gw);
+      LOG(INFO) << "Rate for " << gw << " _WAS_ " << rpm
+                << " and is about to go up.";
       if (rpm < 15) {
-        api_->SetGatewayRate(gw, rpm * 2 + 1);
-      } else {
-        api_->SetGatewayRate(gw, rpm + 1);
+        rpm *= 2;
       }
+      rpm += 2;
+      api_->SetGatewayRate(gw, rpm);
       return;
     }
   }
   auto rpm = api_->GetGatewayRate(gw);
   if (status == 408 || status == 504 || status == 429 || status == 110 ||
       timed_out) {
-    VLOG(1) << gw << " timed out.";
-    if (rpm > 9) {
-      api_->SetGatewayRate(gw, rpm - 4);
-    } else if (rpm) {
-      api_->SetGatewayRate(gw, 0U);
+    LOG(ERROR) << gw << " timed out on request " << req->debug_string();
+    if (req->type == Type::Block) {
+      if (state_.end() != i) {
+        i->second.timed_out();
+      }
+      if (rpm > 60U) {
+        api_->SetGatewayRate(gw, rpm - 9);
+      } else if (rpm) {
+        api_->SetGatewayRate(gw, rpm - 1);
+      }
     }
+  } else {
+    VLOG(1) << "Gateway " << gw << " failed request: " << req->debug_string();
+    req->failures.insert(gw);
   }
-  req->failures.insert(gw);
-  if (state_.end() != i && i->second.miss(*req) && rpm) {
+  if (state_.end() != i && i->second.miss(*req) && rpm &&
+      req->type == Type::Block) {
     api_->SetGatewayRate(gw, rpm - 1);
   }
   Process(req);

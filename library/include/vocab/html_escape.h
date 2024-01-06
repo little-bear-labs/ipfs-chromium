@@ -3,7 +3,7 @@
 
 #include <string_view>
 
-constexpr inline std::string_view html_escape(char& c) {
+constexpr std::string_view html_escape(char& c) {
   switch (c) {
     case '"':
       return "&quot;";

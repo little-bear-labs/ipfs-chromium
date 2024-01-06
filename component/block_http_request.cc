@@ -62,8 +62,6 @@ void Self::OnResponse(std::shared_ptr<Self>,
       status = 200;
       break;
     case net::Error::ERR_TIMED_OUT:
-      VLOG(2) << "HTTP request timed out: " << inf_.url << " after "
-              << inf_.timeout_seconds << "s.";
       status = 408;
       break;
     default:
