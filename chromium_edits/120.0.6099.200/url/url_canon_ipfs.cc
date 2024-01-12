@@ -35,8 +35,7 @@ bool url::CanonicalizeIpfsURL(const char* spec,
   Parsed parsed_input;
   ParseStandardURL(spec, spec_len, &parsed_input);
   return CanonicalizeStandardURL(
-      spec,
-      spec_len,
+      spec, spec_len,
       parsed_input,
       scheme_type,
       charset_converter,

@@ -38,17 +38,12 @@ std::string Self::MimeType(std::string extension,
   auto fp_ext = base::FilePath::FromUTF8Unsafe(extension).value();
   if (extension.empty()) {
     result.clear();
-  } else if (net::GetWellKnownMimeTypeFromExtension(fp_ext, &result)) {
-    VLOG(2) << "Got " << result << " from extension " << extension << " for "
-            << url;
-  } else {
+  } else if (!net::GetWellKnownMimeTypeFromExtension(fp_ext, &result)) {
     result.clear();
   }
   auto head_size = std::min(content.size(), 999'999UL);
-  if (net::SniffMimeType({content.data(), head_size}, GURL{url}, result,
-                         net::ForceSniffFileUrlsForHtml::kDisabled, &result)) {
-    VLOG(2) << "Got " << result << " from content of " << url;
-  }
+  net::SniffMimeType({content.data(), head_size}, GURL{url}, result,
+                     net::ForceSniffFileUrlsForHtml::kDisabled, &result);
   if (result.empty() || result == "application/octet-stream") {
     net::SniffMimeTypeFromLocalData({content.data(), head_size}, &result);
     VLOG(2) << "Falling all the way back to content type " << result;
@@ -66,8 +61,8 @@ void Self::SendDnsTextRequest(std::string host,
                               DnsTextResultsCallback res,
                               DnsTextCompleteCallback don) {
   if (dns_reqs_.find(host) != dns_reqs_.end()) {
-    LOG(ERROR) << "Requested resolution of DNSLink host " << host
-               << " multiple times.";
+    LOG(WARNING) << "Requested resolution of DNSLink host " << host
+                 << " multiple times.";
   }
   auto don_wrap = [don, this, host]() {
     don();

@@ -321,7 +321,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
       } else if (redirect_count(loc) >= 0xFF) {
         LOG(ERROR) << "Too many redirects!! Giving up on " << loc << '\n';
       } else {
-        GOOGLE_LOG(WARNING) << "Redirecting to " << loc << " aka " << desc_.url;
+        VLOG(1) << "Redirecting to " << loc << " aka " << desc_.url;
         auto desc = desc_;
         desc.url = loc;
         auto next = std::make_shared<HttpSession>(ioc_, ssl_ctx_, desc, cb_);

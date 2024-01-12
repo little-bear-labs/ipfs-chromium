@@ -27,7 +27,7 @@ Self& Self::or_else(std::shared_ptr<Self> p) {
 }
 
 void Self::request(ReqPtr req) {
-  if (!req || req->type == Type::Zombie) {
+  if (!req || req->Finished()) {
     return;
   }
   switch (handle(req)) {

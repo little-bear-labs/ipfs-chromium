@@ -70,8 +70,6 @@ void Self::StartFetch(Task& task, net::RequestPriority priority) {
 }
 void Self::Miss(Task& task) {
   if (task.request) {
-    VLOG(1) << "Cache miss on '" << task.request->Key() << "' for "
-            << task.request->debug_string();
     auto req = task.request;
     task.request->Hook([this, req](std::string_view bytes) {
       Store(req->Key(), "TODO", std::string{bytes});
@@ -145,8 +143,8 @@ void Self::OnBodyRead(Task task, int code) {
   }
 }
 void Self::Store(std::string key, std::string headers, std::string body) {
-  LOG(INFO) << "Store(" << name() << ',' << key << ',' << headers.size() << ','
-            << body.size() << ')';
+  VLOG(2) << "Store(" << name() << ',' << key << ',' << headers.size() << ','
+          << body.size() << ')';
   auto bound = base::BindOnce(&Self::OnEntryCreated, base::Unretained(this),
                               key, headers, body);
   auto res = cache_->OpenOrCreateEntry(key, net::LOW, std::move(bound));
@@ -188,7 +186,7 @@ void Self::OnHeaderWritten(scoped_refptr<net::StringIOBuffer> buf,
   buf = base::MakeRefCounted<net::StringIOBuffer>(body);
   DCHECK(buf);
   auto f = [](scoped_refptr<net::StringIOBuffer>, int c) {
-    VLOG(1) << "body write " << c;
+    VLOG(2) << "body write " << c;
   };
   auto bound = base::BindOnce(f, buf);
   entry->WriteData(1, 0, buf.get(), buf->size(), std::move(bound), true);

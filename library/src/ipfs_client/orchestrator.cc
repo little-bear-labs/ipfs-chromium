@@ -32,8 +32,6 @@ void Self::build_response(std::shared_ptr<IpfsRequest> req) {
       build_response(req);
     }
   } else {
-    LOG(INFO) << "Requesting root " << affinity << " resolve path "
-              << req_path.to_string();
     auto root = it->second->rooted();
     if (root != it->second) {
       it->second = root;
@@ -54,14 +52,14 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
   auto result = root->resolve(relative_path, block_look_up);
   auto response = std::get_if<Response>(&result);
   if (response) {
-    VLOG(1) << "Tree gave us a response to '" << req->path()
+    VLOG(2) << "Tree gave us a response to '" << req->path()
             << "' : status=" << response->status_
               << " mime=" << response->mime_
               << " location=" << response->location_ << " body is "
               << response->body_.size() << " bytes.";
     if (response->mime_.empty() && !response->body_.empty()) {
       if (response->location_.empty()) {
-        VLOG(1) << "Request for " << req->path()
+        VLOG(2) << "Request for " << req->path()
                 << " returned no location, so sniffing from request path and "
                    "body of "
                 << response->body_.size() << "B.";
@@ -73,7 +71,7 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
           hit_path.push_back('/');
         }
         hit_path.append(response->location_);
-        VLOG(1) << "Request for " << req->path() << " returned a location of "
+        VLOG(2) << "Request for " << req->path() << " returned a location of "
                 << response->location_ << " and a body of "
                   << response->body_.size() << " bytes, sniffing mime from "
                   << hit_path;
@@ -140,7 +138,7 @@ std::string Self::sniff(ipfs::SlashDelimited p, std::string const& body) const {
     ext.assign(file_name, dot + 1);
   }
   auto result = api_->MimeType(ext, body, fake_url);
-  VLOG(1) << "Deduced mime from (ext=" << ext << " body of " << body.size()
+  VLOG(2) << "Deduced mime from (ext=" << ext << " body of " << body.size()
           << " bytes, 'url'=" << fake_url << ")=" << result;
   return result;
 }

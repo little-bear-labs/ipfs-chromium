@@ -44,7 +44,7 @@ void ipfs::IpfsUrlLoader::FollowRedirect(
 
 void ipfs::IpfsUrlLoader::SetPriority(net::RequestPriority priority,
                                       int32_t intra_prio_val) {
-  VLOG(1) << "TODO SetPriority(" << priority << ',' << intra_prio_val << ')';
+  VLOG(2) << "TODO SetPriority(" << priority << ',' << intra_prio_val << ')';
 }
 
 void ipfs::IpfsUrlLoader::PauseReadingBodyFromNet() {
@@ -73,7 +73,6 @@ void ipfs::IpfsUrlLoader::StartRequest(
     auto cid_str = resource_request.url.host();
     auto path = resource_request.url.path();
     auto abs_path = "/" + ns + "/" + cid_str + path;
-    VLOG(2) << resource_request.url.spec() << " -> " << abs_path;
     me->root_ = cid_str;
     me->api_->SetLoaderFactory(*(me->lower_loader_factory_));
     auto whendone = [me](IpfsRequest const& req, ipfs::Response const& res) {
@@ -110,7 +109,7 @@ void ipfs::IpfsUrlLoader::AddHeader(std::string_view a, std::string_view b) {
 }
 
 void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
-  VLOG(1) << "Resolved from unix-fs dag a file of type: " << mime_type
+  VLOG(2) << "Resolved from unix-fs dag a file of type: " << mime_type
           << " will report it as " << original_url_;
   if (complete_) {
     return;
@@ -127,7 +126,7 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
     head->mime_type = mime_type;
   }
   std::uint32_t byte_count = partial_block_.size();
-  VLOG(1) << "Calling WriteData(" << byte_count << ")";
+  VLOG(2) << "Calling WriteData(" << byte_count << ")";
   pipe_prod_->WriteData(partial_block_.data(), &byte_count,
                         MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE);
   VLOG(2) << "Called WriteData(" << byte_count << ")";
@@ -141,7 +140,7 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   auto* reason =
       net::GetHttpReasonPhrase(static_cast<net::HttpStatusCode>(status_));
   auto status_line = base::StringPrintf("HTTP/1.1 %d %s", status_, reason);
-  VLOG(1) << "Returning with status line '" << status_line << "'.\n";
+  VLOG(2) << "Returning with status line '" << status_line << "'.\n";
   head->headers->ReplaceStatusLine(status_line);
   if (mime_type.size()) {
     head->headers->SetHeader("Content-Type", mime_type);

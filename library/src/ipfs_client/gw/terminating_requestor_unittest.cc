@@ -18,6 +18,7 @@ TEST(TerminatingRequestorTest, ZombieIsDone) {
 TEST(TerminatingRequestorTest, BeingHandledInParallel) {
   auto req = std::make_shared<ig::GatewayRequest>();
   req->type = ig::Type::Block;
+  req->dependent = std::make_shared<i::IpfsRequest>("", [](auto&, auto&) {});
   req->parallel = 9;
   T tested;
   EXPECT_TRUE(tested.handle(req) == T::HandleOutcome::PENDING);

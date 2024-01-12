@@ -33,6 +33,6 @@ void Self::OnComplete(int32_t result,
                       const ::net::ResolveErrorInfo&,
                       const absl::optional<::net::AddressList>&,
                       const absl::optional<Endpoints>&) {
-  VLOG(1) << "DNS Results done with code: " << result;
+  VLOG(2) << "DNS Results done with code: " << result;
   completion_callback_();
 }

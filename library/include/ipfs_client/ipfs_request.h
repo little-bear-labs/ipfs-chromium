@@ -21,8 +21,8 @@ class IpfsRequest {
   IpfsRequest(std::string path, Finisher);
   SlashDelimited path() const { return SlashDelimited{path_}; }
   void finish(Response& r);
-  void till_next(std::size_t);
   void new_path(std::string_view);
+  bool done() const;
 
   static std::shared_ptr<IpfsRequest> fromUrl(std::string url, Finisher);
 };

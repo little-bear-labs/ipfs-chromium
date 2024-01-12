@@ -61,17 +61,23 @@ struct MockApi final : public i::ContextApi {
     return std::make_unique<ipfs::JsonCborAdapter>(nlohmann::json::from_cbor(
         bv, false, true, nlohmann::detail::cbor_tag_handler_t::store));
   }
+  std::unique_ptr<ipfs::DagJsonValue> ParseJson(std::string_view jstr) const {
+    return std::make_unique<ipfs::JsonCborAdapter>(nlohmann::json::parse(jstr));
+  }
 #else
-  std::unique_ptr<ipfs::DagCborValue> ParseCbor(ByteView bv) const { return {}; }
-#endif
+  std::unique_ptr<ipfs::DagCborValue> ParseCbor(ByteView bv) const {
+    return {};
+  }
   std::unique_ptr<ipfs::DagJsonValue> ParseJson(std::string_view) const {
     return {};
   }
+#endif
   std::optional<i::GatewaySpec> GetGateway(std::size_t) const {
     return std::nullopt;
   }
   unsigned GetGatewayRate(std::string_view) { return 120U; }
-  void AddGateway(std::string_view) {}
+  std::vector<std::string> gateways_added;
+  void AddGateway(std::string_view g) { gateways_added.emplace_back(g); }
 };
 }  // namespace
 

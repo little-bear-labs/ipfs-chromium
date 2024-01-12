@@ -10,7 +10,7 @@ std::string_view Self::name() const {
   return "Terminating requestor";
 }
 auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
-  if (r->type == Type::Zombie) {
+  if (r->Finished()) {
     return HandleOutcome::DONE;
   } else if (r->parallel) {
     return HandleOutcome::PENDING;

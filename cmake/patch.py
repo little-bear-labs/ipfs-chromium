@@ -101,9 +101,9 @@ class Patcher:
         self.git(['add', 'url/url_canon_ipfs.cc'], Result.OrDie)
         diff = self.git(['diff', '--patch', tag], Result.RawOutput)
         file_name = join(self.pdir, name+'.patch')
-        print('Old patch file:', file_name)
-        with open(file_name, 'w') as patch_file:
-            patch_file.write(diff+"\n")
+        # print('Old patch file:', file_name)
+        # with open(file_name, 'w') as patch_file:
+        #     patch_file.write(diff+"\n")
 
     def file_in_branch(self, ref: str, path: str):
         out = self.git(['ls-tree', '--name-only', ref, path], Result.Output)
@@ -290,6 +290,8 @@ class Patcher:
         if not isdir(dir_path):
             return True
         file_path = f'{self.pdir}/{p}.patch'
+        if not isfile(file_path):
+            return False
         with open(file_path) as f:
             lines = f.readlines()
             if not Patcher.has_file_line(lines, 'chrome/browser/flag-metadata.json', '+    "name": "enable-ipfs",'):

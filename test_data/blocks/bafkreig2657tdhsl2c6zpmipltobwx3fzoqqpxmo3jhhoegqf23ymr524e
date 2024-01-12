@@ -1,0 +1,14 @@
+<html><title>Some Links</title>
+<body>
+<h1>
+<ul>
+<li><a href="ipns://k51qzi5uqu5dkq4jxcqvujfm2woh4p9y6inrojofxflzdnfht168zf8ynfzuu1/blog.html">ipns://k51qzi5uqu5dkq4jxcqvujfm2woh4p9y6inrojofxflzdnfht168zf8ynfzuu1/blog.html</a> - a mutable pointer to the blog post</li>
+<li><a href="ipfs://bafybeigchjo5f3jyzfjwmbavhr27jwdhu6wwhsodxg4qq4x72aasxewp64/blog.html">ipfs://bafybeigchjo5f3jyzfjwmbavhr27jwdhu6wwhsodxg4qq4x72aasxewp64/blog.html</a> - a snapshot of the blog post</li>
+<li><a href="ipns://docs.ipfs.tech">ipns://docs.ipfs.tech</a> - The IPFS documentation.</li>
+<li><a href="ipns://en.wikipedia-on-ipfs.org/wiki/">ipns://en.wikipedia-on-ipfs.org/wiki/</a> - Wikipedia, as a DNS Link</li>
+<li><a href="ipns://ipfs.io/">ipns://ipfs.io/</a> - an unusual case: a DNSLink another DNSLink</li>
+<li><a href="https://littlebearlabs.io">https://littlebearlabs.io</a> - an HTTPs URL for comparison.</li>
+</ul>
+</h1>
+</body>
+</html>

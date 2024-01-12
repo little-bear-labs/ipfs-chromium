@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include <ipfs_client/gw/gateway_request.h>
+#include <ipfs_client/ipfs_request.h>
 
 namespace g = ipfs::gw;
 using T = g::Requestor;
@@ -27,7 +28,11 @@ struct RequestorTest : public ::testing::Test {
   std::shared_ptr<TestRequestor> b = std::make_shared<TestRequestor>();
   std::shared_ptr<g::GatewayRequest> req_ =
       std::make_shared<g::GatewayRequest>();
-  RequestorTest() { req_->type = g::Type::Block; }
+  RequestorTest() {
+    req_->type = g::Type::Block;
+    req_->dependent =
+        std::make_shared<ipfs::IpfsRequest>("", [](auto&, auto&) {});
+  }
 };
 }  // namespace
 

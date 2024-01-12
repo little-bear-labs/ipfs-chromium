@@ -110,7 +110,7 @@ class TestContext final : public ContextApi {
     auto data = nlohmann::json::parse(j_str);
     std::ostringstream oss;
     oss << std::setw(2) << data;
-    GOOGLE_LOG(DEBUG) << "Parsed " << j_str.size()
+    GOOGLE_LOG(TRACE) << "Parsed " << j_str.size()
                       << " bytes of JSON string and got " << oss.str();
     return std::make_unique<ipfs::JsonCborAdapter>(data);
   }

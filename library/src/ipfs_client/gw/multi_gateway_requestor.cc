@@ -54,13 +54,9 @@ bool Self::Process(RequestPtr const& req) {
       //      state_.erase(to_rm);
       continue;
     } else if (req->failures.contains(gw->prefix)) {
-      //      VLOG(2) << "Not going to resend " << req->debug_string() << " to "
-      //              << gw->prefix << " as it has already failed us.";
     } else if (state_iter->second.over_rate(gw->rate)) {
       auto score = state_iter->second.score(*req, gw->rate);
       if (std::get<0>(over_rate) <= score) {
-        VLOG(2) << gw->prefix
-                << " may be over-rate, but keep it as a fallback.";
         over_rate = std::make_tuple(score, gw->prefix, &(state_iter->second));
       }
     } else {
@@ -74,7 +70,7 @@ bool Self::Process(RequestPtr const& req) {
   }
   if (std::get<2>(over_rate)) {
     if (candidates.empty()) {
-      LOG(INFO) << "Overburdened.";
+      VLOG(2) << "Overburdened.";
     }
     candidates.push_back(over_rate);
   }
@@ -83,7 +79,7 @@ bool Self::Process(RequestPtr const& req) {
     forward(req);
     return false;
   }
-  auto to_send = std::max(bored / 3UL, 2UL);
+  auto to_send = std::max(bored / 2UL, 2UL);
   std::sort(candidates.begin(), candidates.end(), std::greater{});
   for (auto& [score, prefix, state] : candidates) {
     DoSend(req, prefix, *state);
@@ -125,9 +121,8 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
                           std::string_view body,
                           ContextApi::HeaderAccess hdrs,
                           bool timed_out) {
-  if (req->type == Type::Zombie ||
+  if (req->Finished() ||
       (req->PartiallyRedundant() && req->type == Type::Block)) {
-    VLOG(1) << "Request has finished:" << req->debug_string();
     return;
   }
   auto i = state_.find(gw);
@@ -143,17 +138,17 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
       return;
     }
     if (!req->RespondSuccessfully(body, api_)) {
-      LOG(ERROR) << "Got an unuseful response from " << gw << " for request "
-                 << req->debug_string();
+      VLOG(1) << "Got an unuseful response from " << gw << " for request "
+              << req->debug_string();
     } else {
-      LOG(INFO) << "Response from " << gw << " to " << req->debug_string()
-                << " was successful & useful - progress made.";
+      VLOG(2) << "Response from " << gw << " to " << req->debug_string()
+              << " was successful & useful - progress made.";
       if (state_.end() != i) {
         i->second.hit(*req);
       }
       auto rpm = api_->GetGatewayRate(gw);
-      LOG(INFO) << "Rate for " << gw << " _WAS_ " << rpm
-                << " and is about to go up.";
+      VLOG(2) << "Rate for " << gw << " _WAS_ " << rpm
+              << " and is about to go up.";
       if (rpm < 15) {
         rpm *= 2;
       }
@@ -163,26 +158,29 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
     }
   }
   auto rpm = api_->GetGatewayRate(gw);
+  auto old_rpm = rpm;
   if (status == 408 || status == 504 || status == 429 || status == 110 ||
       timed_out) {
-    LOG(ERROR) << gw << " timed out on request " << req->debug_string();
+    LOG(WARNING) << gw << " timed out on request " << req->debug_string();
     if (req->type == Type::Block) {
       if (state_.end() != i) {
         i->second.timed_out();
       }
       if (rpm > 60U) {
-        api_->SetGatewayRate(gw, rpm - 9);
+        rpm -= 9;
       } else if (rpm) {
-        api_->SetGatewayRate(gw, rpm - 1);
+        --rpm;
       }
     }
   } else {
-    VLOG(1) << "Gateway " << gw << " failed request: " << req->debug_string();
     req->failures.insert(gw);
   }
   if (state_.end() != i && i->second.miss(*req) && rpm &&
       req->type == Type::Block) {
-    api_->SetGatewayRate(gw, rpm - 1);
+    --rpm;
+  }
+  if (old_rpm != rpm) {
+    api_->SetGatewayRate(gw, rpm);
   }
   Process(req);
 }

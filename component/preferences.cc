@@ -59,7 +59,6 @@ void Rates::SetRate(std::string_view k, unsigned val) {
   curr_.Set(k, i);
   if (!old) {
     LOG(INFO) << "Added new gateway: " << k << '@' << val;
-    // TODO - I believe the calls to save here need to be sent to UI thread
     save();
   } else if (++changes > update_thresh) {
     VLOG(2) << "Changing rate for gateway " << k << " to " << val;
@@ -80,6 +79,7 @@ std::size_t Rates::delta() const {
   return rv;
 }
 void Rates::save() {
+  // Should be called on UI thread
   changes = 0;
   last_ = curr_.Clone();
   update_thresh++;

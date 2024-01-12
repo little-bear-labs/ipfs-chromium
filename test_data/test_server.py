@@ -7,6 +7,11 @@ from sys import argv
 
 here = dirname(__file__)
 
+with open(join(here, 'gotit.json'), 'w') as gotit:
+    gotit.write('{"Providers":[{"Addrs": [')
+    gotit.write(f'"/ip4/127.0.0.1/tcp/{argv[1]}/http"')
+    gotit.write('],"ID": "12D3KooWHEzPJNmo4shWendFFrxDNttYf8DW4eLC7M2JzuXHC1hE","Protocol": "transport-ipfs-gateway-http"}]}')
+
 class Handler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/ping':
@@ -15,18 +20,25 @@ class Handler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(bytes('pong', 'utf-8'))
             return
         components = self.path.split('/')
-        if len(components) != 3:
-            print(self.path, 'aka', components, '(size=', len(components), ") doesn't follow the exact pattern expected of /ip?s/arg ... TODO at least return 404 for CAR")
-            exit(8)
         match components[1]:
             case 'ipfs':
-                path = join(here, 'blocks')
+                if len(components) == 3:
+                    path = join(here, 'blocks')
+                else:
+                    path = join(here, 'cars')
             case 'ipns':
                 path = join(here, 'names')
+            case 'routing':
+                self.respond(join(here, 'gotit.json'))
+                return
             case _ :
                 print(f"{self.path} ({components}) not handled request type ({components[0]})", file=sys.stderr)
                 exit(9)
-        path = join(path, components[2])
+        for comp in components[2:]:
+            path = join(path, comp)
+        self.respond(path)
+
+    def respond(self, path):
         try:
             with open(path, 'rb') as f:
                 self.send_response(200)

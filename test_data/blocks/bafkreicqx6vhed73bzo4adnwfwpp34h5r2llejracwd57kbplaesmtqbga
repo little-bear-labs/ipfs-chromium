@@ -1,0 +1,9 @@
+This directory contains this file,
+and some symbolic links, some of which should resolve to it.
+
+relative_link.txt is in the same directory and points to simply "readme.txt".
+abs_root_link.txt points to /symlinks/readme.txt , which is relative to content root
+sub/dotdot.txt points to "../readme.txt" and needs to be fixed
+
+absolute_link.txt points to "/ipfs/<cid of this file>", and should NOT work.
+ipns_abs_link.txt points to "/ipns/k51qzi5uqu5dkq4jxcqvujfm2woh4p9y6inrojofxflzdnfht168zf8ynfzuu1/symlinks/readme.txt" and also should NOT work.

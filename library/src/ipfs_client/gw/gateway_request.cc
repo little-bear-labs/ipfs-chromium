@@ -298,7 +298,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
       break;
     }
     case Type::Providers:
-      providers::ProcessResponse(bytes, *api);
+      success = providers::ProcessResponse(bytes, *api);
       break;
     case Type::Zombie:
       LOG(WARNING) << "Responding to a zombie is ill-advised.";
@@ -307,8 +307,6 @@ bool Self::RespondSuccessfully(std::string_view bytes,
       LOG(ERROR) << "TODO " << static_cast<int>(type);
   }
   if (success) {
-    LOG(INFO) << "Request " << this->debug_string()
-              << " was successful. Calling hooks and finishing.";
     for (auto& hook : bytes_received_hooks) {
       hook(bytes);
     }
@@ -325,10 +323,14 @@ void Self::orchestrator(std::shared_ptr<Orchestrator> const& orc) {
   orchestrator_ = orc;
 }
 bool Self::PartiallyRedundant() const {
+  if (Finished()) {
+    return true;
+  }
   if (!orchestrator_) {
     return false;
   }
   return orchestrator_->has_key(main_param);
 }
-
-#include <ipfs_client/dag_json_value.h>
+bool Self::Finished() const {
+  return type == Type::Zombie || !dependent || dependent->done();
+}

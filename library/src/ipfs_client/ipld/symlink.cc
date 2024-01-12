@@ -16,7 +16,20 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
                            // symlink, which is getting replaced with target
     result.assign(left_path.to_view());
   }
-  result.append("/").append(target_);
+  SlashDelimited target{target_};
+  for (std::string_view component; (component = target.pop()).size();) {
+    if (component == "..") {
+      auto slash = result.rfind('/');
+      DCHECK(slash < result.size());
+      if (slash < result.size()) {
+        result.resize(slash);
+      } else {
+        result.clear();
+      }
+    } else {
+      result.append(1UL, '/').append(component);
+    }
+  }
   if (!params.IsFinalComponent()) {
     result.append("/").append(params.PathToResolve().to_string());
   }
@@ -24,7 +37,9 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
   while ((i = result.find("//")) != std::string::npos) {
     result.erase(i, 1);
   }
-  if (result.ends_with('/')) {
+  if (result.empty()) {
+    result.assign(1UL, '/');
+  } else if (result.ends_with('/')) {
     result.resize(result.size() - 1);
   }
   LOG(INFO) << "symlink: '" << params.MyPath() << "' -> '" << result << "'.";

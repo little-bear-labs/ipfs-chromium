@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include <ipfs_client/gw/gateway_request.h>
+#include <ipfs_client/ipfs_request.h>
 
 namespace g = ipfs::gw;
 
@@ -29,6 +30,8 @@ TEST(BlockRequestSplitterTest, split2three) {
   req->main_param = "cid";
   req->path = "path";
   req->parallel = 123;
+  req->affinity = __func__;
+  req->dependent = std::make_shared<ipfs::IpfsRequest>("", [](auto&, auto&) {});
   tested.request(req);
   EXPECT_EQ(rec->requests_received.size(), 3U);
   EXPECT_TRUE(rec->requests_received.at(0)->type == g::Type::Block) <<

@@ -20,10 +20,10 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
     forward(br);
   }
   auto it = std::find(recent_provider_requests.begin(),
-                      recent_provider_requests.end(), r->main_param);
+                      recent_provider_requests.end(), r->affinity);
   if (recent_provider_requests.end() == it) {
     auto i = old_provider_request % recent_provider_requests.size();
-    recent_provider_requests[i] = r->main_param;
+    recent_provider_requests[i] = r->affinity;
     ++old_provider_request;
     auto pr = std::make_shared<gw::GatewayRequest>(*r);
     pr->type = Type::Providers;
