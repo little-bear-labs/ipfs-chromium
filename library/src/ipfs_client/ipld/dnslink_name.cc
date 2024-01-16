@@ -1,17 +1,13 @@
-#include "ipns_name.h"
-
-#include <ipfs_client/ipns_record.h>
+#include "dnslink_name.h"
 
 #include "log_macros.h"
 
-using Self = ipfs::ipld::IpnsName;
+using Self = ipfs::ipld::DnsLinkName;
 namespace ch = std::chrono;
 
-Self::IpnsName(ValidatedIpns const& record)
-    : expiration_{ch::system_clock::from_time_t(
-          std::min(record.use_until, record.cache_until))},
-      serial_{record.sequence} {
-  SlashDelimited target{record.value};
+Self::DnsLinkName(std::string_view target_abs_path)
+    : expiration_(ch::system_clock::now() + ch::minutes(5)) {
+  SlashDelimited target{target_abs_path};
   target_namespace_ = target.pop();
   target_root_ = target.pop();
   links_.emplace_back("", Link{target_root_, nullptr});
@@ -49,9 +45,9 @@ bool Self::expired() const {
   return expiration_ < ch::system_clock::now();
 }
 bool Self::PreferOver(DagNode const& another) const {
-  auto other = another.as_ipns();
+  auto* other = another.as_dnslink();
   if (!other) {
     return true;
   }
-  return serial_ > other->serial_;
+  return expiration_ > other->expiration_ + ch::seconds(1);
 }

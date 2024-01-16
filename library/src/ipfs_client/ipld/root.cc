@@ -18,6 +18,10 @@ Ptr Self::deroot() {
 Ptr Self::rooted() {
   return shared_from_this();
 }
+bool Self::expired() const {
+  auto n = links_.at(0).second.node;
+  return n ? n->expired() : true;
+}
 
 auto Self::resolve(ResolutionState& params) -> ResolveResult {
   auto location = params.PathToResolve().to_string();

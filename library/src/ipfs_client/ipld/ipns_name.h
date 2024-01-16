@@ -3,18 +3,29 @@
 
 #include "ipfs_client/ipld/dag_node.h"
 
-namespace ipfs::ipld {
+#include <chrono>
+
+namespace ipfs {
+struct ValidatedIpns;
+namespace ipld {
 class IpnsName : public DagNode {
   std::string target_namespace_;
   std::string target_root_;
   std::string target_path_;
+  std::chrono::system_clock::time_point expiration_;
+  std::size_t serial_;
 
   ResolveResult resolve(ResolutionState& params) override;
+  bool PreferOver(DagNode const& another) const override;
+  IpnsName const* as_ipns() const override { return this; }
 
  public:
-  IpnsName(std::string_view target_abs_path);
+  IpnsName(ValidatedIpns const&);
   virtual ~IpnsName() noexcept {}
+
+  bool expired() const override;
 };
-}  // namespace ipfs::ipld
+}  // namespace ipld
+}  // namespace ipfs
 
 #endif  // IPFS_IPLD_IPNS_NAME_H_

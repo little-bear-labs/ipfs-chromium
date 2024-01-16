@@ -1,6 +1,6 @@
 #include <ipfs_client/gw/dnslink_requestor.h>
 
-#include "ipfs_client/ipld/ipns_name.h"
+#include "ipfs_client/ipld/dnslink_name.h"
 
 #include <ipfs_client/gw/gateway_request.h>
 #include <ipfs_client/ipld/dag_node.h>

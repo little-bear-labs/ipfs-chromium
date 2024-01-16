@@ -223,6 +223,7 @@ ipfs::ValidatedIpns::ValidatedIpns(IpnsCborEntry const& e)
 #else
   use_until = timegm(&t);
 #endif
+  LOG(INFO) << "use_until=" << use_until << " based on " << e.validity;
   cache_until = std::time(nullptr) + ttl;
 }
 

@@ -18,10 +18,7 @@ class GatewayRequest;
 using RequestPtr = std::shared_ptr<GatewayRequest>;
 
 class Requestor : public std::enable_shared_from_this<Requestor> {
- protected:
-  Requestor() {}
-
-  friend class RequestorPool;
+ public:
   enum class HandleOutcome : char {
     NOT_HANDLED = 'N',
     PENDING = 'P',
@@ -29,6 +26,10 @@ class Requestor : public std::enable_shared_from_this<Requestor> {
     PARALLEL = 'L',
     MAYBE_LATER = 'M'
   };
+
+ protected:
+  Requestor() {}
+
   virtual HandleOutcome handle(RequestPtr) = 0;
 
   void definitive_failure(RequestPtr) const;

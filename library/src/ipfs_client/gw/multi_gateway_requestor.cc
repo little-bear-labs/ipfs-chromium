@@ -15,6 +15,9 @@ std::string_view Self::name() const {
   return "multi-gateway requestor";
 }
 auto Self::handle(RequestPtr r) -> HandleOutcome {
+  if (!r || !api_) {
+    return HandleOutcome::DONE;
+  }
   if (!r->is_http()) {
     LOG(INFO) << r->debug_string() << " is not an HTTP request.";
     return HandleOutcome::NOT_HANDLED;

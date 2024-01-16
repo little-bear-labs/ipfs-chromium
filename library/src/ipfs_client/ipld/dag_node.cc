@@ -4,7 +4,7 @@
 #include "dag_cbor_node.h"
 #include "dag_json_node.h"
 #include "directory_shard.h"
-#include "ipns_name.h"
+#include "dnslink_name.h"
 #include "root.h"
 #include "small_directory.h"
 #include "symlink.h"
@@ -144,7 +144,7 @@ std::shared_ptr<Node> Node::fromBlock(ipfs::PbDag const& block) {
 }
 
 auto Node::fromIpnsRecord(ipfs::ValidatedIpns const& v) -> NodePtr {
-  return std::make_shared<IpnsName>(v.value);
+  return std::make_shared<DnsLinkName>(v.value);
 }
 
 std::shared_ptr<Node> Node::deroot() {
@@ -152,9 +152,6 @@ std::shared_ptr<Node> Node::deroot() {
 }
 std::shared_ptr<Node> Node::rooted() {
   return std::make_shared<Root>(shared_from_this());
-}
-auto Node::as_hamt() -> DirShard* {
-  return nullptr;
 }
 void Node::set_api(std::shared_ptr<ContextApi> api) {
   api_ = api;
@@ -228,6 +225,12 @@ auto Node::FindChild(std::string_view link_key) -> Link* {
     }
   }
   return nullptr;
+}
+bool Node::expired() const {
+  return false;
+}
+bool Node::PreferOver(Node const&) const {
+  return false;
 }
 
 std::ostream& operator<<(std::ostream& s, ipfs::ipld::PathChange const& c) {

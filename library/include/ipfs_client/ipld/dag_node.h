@@ -30,6 +30,8 @@ namespace ipfs::ipld {
 
 using NodePtr = std::shared_ptr<DagNode>;
 class DirShard;
+class DnsLinkName;
+class IpnsName;
 
 struct MoreDataNeeded {
   MoreDataNeeded(std::string one) : ipfs_abs_paths_{{one}} {}
@@ -90,7 +92,14 @@ class DagNode : public std::enable_shared_from_this<DagNode> {
 
   virtual NodePtr rooted();
   virtual NodePtr deroot();
-  virtual DirShard* as_hamt();  // Wish I had access to dynamic_cast
+
+  // Wish I had access to dynamic_cast
+  virtual DnsLinkName const* as_dnslink() const { return nullptr; }
+  virtual DirShard* as_hamt() { return nullptr; }
+  virtual IpnsName const* as_ipns() const { return nullptr; }
+
+  virtual bool expired() const;
+  virtual bool PreferOver(DagNode const& another) const;
 
   void set_api(std::shared_ptr<ContextApi>);
 };

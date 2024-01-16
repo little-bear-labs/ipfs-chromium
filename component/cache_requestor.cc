@@ -47,7 +47,7 @@ void Self::Assign(dc::BackendResult res) {
   }
 }
 auto Self::handle(RequestPtr req) -> HandleOutcome {
-  if (startup_pending_) {
+  if (startup_pending_ || !(req->cachable())) {
     return HandleOutcome::NOT_HANDLED;
   }
   Task task;
@@ -132,19 +132,20 @@ void Self::OnBodyRead(Task task, int code) {
   task.body.assign(task.buf->data(), static_cast<std::size_t>(code));
   if (task.request) {
     task.SetHeaders(name());
-    if (task.request->RespondSuccessfully(task.body, api_)) {
-      VLOG(2) << "Cache hit on " << task.key << " for "
-              << task.request->debug_string();
+    bool valid = false;
+    task.request->RespondSuccessfully(task.body, api_, &valid);
+    if (valid) {
+      LOG(INFO) << "Cache hit for " << task.key;
     } else {
-      LOG(ERROR) << "Had a BAD cached response for " << task.key;
+      LOG(ERROR) << "Had a bad or expired cached response for " << task.key;
       Expire(task.key);
       Miss(task);
     }
   }
 }
 void Self::Store(std::string key, std::string headers, std::string body) {
-  VLOG(2) << "Store(" << name() << ',' << key << ',' << headers.size() << ','
-          << body.size() << ')';
+  LOG(INFO) << "Store(" << name() << ',' << key << ',' << headers.size() << ','
+            << body.size() << ')';
   auto bound = base::BindOnce(&Self::OnEntryCreated, base::Unretained(this),
                               key, headers, body);
   auto res = cache_->OpenOrCreateEntry(key, net::LOW, std::move(bound));

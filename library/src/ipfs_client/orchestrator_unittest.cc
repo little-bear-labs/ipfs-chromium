@@ -9,7 +9,7 @@
 #include <ipfs_client/logger.h>
 #include <ipfs_client/pb_dag.h>
 
-#include "ipld/ipns_name.h"
+#include "ipld/dnslink_name.h"
 
 #include <filesystem>
 #include <fstream>
@@ -96,6 +96,7 @@ struct TestRequestor final : public ig::Requestor {
         if (!is_regular_file(f)) {
           auto cmd =
               "ipfs routing get /ipns/" + cid + " > " + f.generic_string();
+          std::cout << cmd << std::endl;
           auto ec = std::system(cmd.c_str());
           EXPECT_EQ(ec, 0);
         }
@@ -285,6 +286,7 @@ TEST_F(OrchestratingRealData, examples_articles_generates_list) {
 )");
 }
 TEST_F(OrchestratingRealData, dirshard_immediate_hit) {
+  i::log::SetLevel(i::log::Level::TRACE);
   dorequest(
       "/ipfs/bafybeiaysi4s6lnjev27ln5icwm6tueaw2vdykrtjkwiphwekaywqhcjze/"
       "index.html");

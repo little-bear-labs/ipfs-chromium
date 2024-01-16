@@ -24,7 +24,7 @@ void Self::build_response(std::shared_ptr<IpfsRequest> req) {
     return;
   }
   auto req_path = req->path();
-  req_path.pop();  // namespace
+  req_path.pop();  // discard namespace ipfs or ipns
   std::string affinity{req_path.pop()};
   auto it = dags_.find(affinity);
   if (dags_.end() == it) {
@@ -82,6 +82,9 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
       response->location_.clear();
     }
     req->finish(*response);
+    if (node->expired()) {
+      dags_.erase(affinity);
+    }
   } else if (auto* pc = std::get_if<ipld::PathChange>(&result)) {
     LOG(ERROR) << "Should not be getting a PathChange in orchestrator - "
                   "should've been handled in the root, but got "
@@ -118,15 +121,22 @@ bool Self::gw_request(std::shared_ptr<IpfsRequest> ir,
 }
 
 bool Self::add_node(std::string key, ipfs::ipld::NodePtr p) {
-  if (p) {
-    if (dags_.insert({key, p}).second) {
-      p->set_api(api_);
-    }
-    return true;
-  } else {
+  if (!p) {
     LOG(INFO) << "NULL block attempted to be added for " << key;
+    return false;
   }
-  return false;
+  auto [it, first] = dags_.insert({key, p});
+  if (first) {
+    LOG(INFO) << "First node showed up for [" << key << "].";
+  } else if (p->PreferOver(*it->second)) {
+    it->second = p;
+  } else {
+    LOG(INFO) << "Already had a [" << key
+              << "] node that was at least as good.";
+    return false;
+  }
+  p->set_api(api_);
+  return true;
 }
 
 std::string Self::sniff(ipfs::SlashDelimited p, std::string const& body) const {

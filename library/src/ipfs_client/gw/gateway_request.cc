@@ -3,6 +3,7 @@
 #include <ipfs_client/gw/providers_response.h>
 #include <ipfs_client/ipld/chunk.h>
 #include <ipfs_client/ipld/dag_node.h>
+#include <ipfs_client/ipld/dnslink_name.h>
 #include <ipfs_client/ipld/ipns_name.h>
 
 #include <ipfs_client/car.h>
@@ -219,6 +220,23 @@ std::string_view ipfs::gw::name(ipfs::gw::Type t) {
   std::sprintf(buf.data(), "InvalidType %d", static_cast<std::int8_t>(t));
   return buf.data();
 }
+bool Self::cachable() const {
+  using ipfs::gw::Type;
+  switch (type) {
+    case Type::Car:
+      return path.find("/ipns/") == std::string::npos;
+    case Type::Block:
+    case Type::Ipns:
+      return true;
+    case Type::DnsLink:
+    case Type::Providers:
+    case Type::Identity:
+    case Type::Zombie:
+      return false;
+  }
+  LOG(ERROR) << "Unhandled request type: " << debug_string();
+  return false;
+}
 std::string Self::debug_string() const {
   std::ostringstream oss;
   oss << "Request{Type=" << type << ' ' << main_param;
@@ -237,9 +255,13 @@ std::string Self::Key() const {
   return rv;
 }
 bool Self::RespondSuccessfully(std::string_view bytes,
-                               std::shared_ptr<ContextApi> const& api) {
+                               std::shared_ptr<ContextApi> const& api,
+                               bool* valid) {
   using namespace ipfs::ipld;
   bool success = false;
+  if (valid) {
+    *valid = false;
+  }
   switch (type) {
     case Type::Block: {
       DCHECK(cid.has_value());
@@ -249,11 +271,19 @@ bool Self::RespondSuccessfully(std::string_view bytes,
       }
       DCHECK(api);
       auto node = DagNode::fromBytes(api, cid.value(), bytes);
+      if (!node) {
+        return false;
+      } else if (valid) {
+        *valid = true;
+      }
       success = orchestrator_->add_node(main_param, node);
     } break;
     case Type::Identity:
       success = orchestrator_->add_node(
           main_param, std::make_shared<Chunk>(std::string{bytes}));
+      if (valid) {
+        *valid = true;
+      }
       break;
     case Type::Ipns:
       if (cid.has_value()) {
@@ -262,43 +292,55 @@ bool Self::RespondSuccessfully(std::string_view bytes,
         auto rec = ipfs::ValidateIpnsRecord({byte_ptr, bytes.size()},
                                             cid.value(), *api);
         if (rec.has_value()) {
-          auto node = DagNode::fromIpnsRecord(rec.value());
+          auto node = std::make_shared<IpnsName>(rec.value());
           success = orchestrator_->add_node(main_param, node);
+          if (valid) {
+            *valid = !node->expired();
+            LOG(INFO) << "IPNS node created " << main_param << ' ' << success
+                      << " vs. " << *valid;
+          }
         } else {
           LOG(ERROR) << "IPNS record failed to validate!";
           return false;
         }
       }
       break;
-    case Type::DnsLink:
+    case Type::DnsLink: {
       LOG(INFO) << "Resolved " << debug_string() << " to " << bytes;
+      auto node = std::make_shared<ipld::DnsLinkName>(bytes);
       if (orchestrator_) {
-        success = orchestrator_->add_node(
-            main_param, std::make_shared<ipld::IpnsName>(bytes));
+        success = orchestrator_->add_node(main_param, node);
       } else {
         LOG(FATAL) << "I have no orchestrator!!";
       }
-      break;
+      if (valid) {
+        *valid = !node->expired();
+      }
+    } break;
     case Type::Car: {
       DCHECK(api);
       Car car(as_bytes(bytes), *api);
-      auto added = 0;
       while (auto block = car.NextBlock()) {
         auto cid_s = block->cid.to_string();
         auto n = DagNode::fromBytes(api, block->cid, block->bytes);
         if (!n) {
           LOG(ERROR) << "Unable to handle block from CAR: " << cid_s;
-        } else if (orchestrator_->add_node(cid_s, n)) {
-          ++added;
-        } else {
-          LOG(INFO) << "Did not add node from CAR: " << cid_s;
+          continue;
+        }
+        if (valid) {
+          *valid = true;
+        }
+        if (orchestrator_->add_node(cid_s, n)) {
+          success = true;
         }
       }
-      success = added > 0;
       break;
     }
     case Type::Providers:
       success = providers::ProcessResponse(bytes, *api);
+      if (valid) {
+        *valid = success;
+      }
       break;
     case Type::Zombie:
       LOG(WARNING) << "Responding to a zombie is ill-advised.";

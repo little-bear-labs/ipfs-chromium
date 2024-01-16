@@ -61,9 +61,11 @@ class GatewayRequest {
   std::optional<HttpRequestDescription> describe_http(std::string_view) const;
   std::string debug_string() const;
   void orchestrator(std::shared_ptr<Orchestrator> const&);
+  bool cachable() const;
 
   bool RespondSuccessfully(std::string_view,
-                           std::shared_ptr<ContextApi> const& api);
+                           std::shared_ptr<ContextApi> const& api,
+                           bool* valid = nullptr);
   void Hook(std::function<void(std::string_view)>);
   bool PartiallyRedundant() const;
   std::string Key() const;
