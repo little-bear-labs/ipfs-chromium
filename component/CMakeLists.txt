@@ -68,9 +68,9 @@ foreach(proto ${protos} )
     set(gn_protos "${gn_protos}  \"${basename}\",\n  ")
 endforeach()
 
-add_custom_target(patch_file
+add_custom_target(record_edits
   COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/patch.py" "${CHROMIUM_SOURCE_TREE}" "${GIT_EXECUTABLE}" "${CMAKE_BUILD_TYPE}"
-  COMMENT "Creating patch file (will overwrite if already present)."
+  COMMENT "Creating patch files and such (will overwrite if already present)."
   )
 
 add_custom_target(setup_in_tree
@@ -104,6 +104,11 @@ add_custom_target(build_browser
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" chrome
     DEPENDS chromium_ordering_issue
   )
+add_custom_target(build_electron
+        COMMENT "Building 'electron' in Chromium source tree, output in out/${CHROMIUM_PROFILE}"
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" electron
+        DEPENDS chromium_ordering_issue
+)
 
 if(CHROMIUM_PROFILE STREQUAL win)
     set(CHROMIUM_PACKAGE_TARGET mini_installer)
@@ -124,12 +129,17 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     )
 endif()
 
-#Symlink for convenience
+#Symlinks for convenience
 add_custom_command(
   TARGET build_browser
   POST_BUILD
   COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome" "${CMAKE_BINARY_DIR}/browser"
   COMMENT "Symlinking... your browser can be found here: ${CMAKE_BINARY_DIR}/browser or ${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome"
+)
+add_custom_command(
+  TARGET build_electron
+  POST_BUILD
+  COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/electron" "${CMAKE_BINARY_DIR}/electron"
 )
 
 add_custom_target(inc_link

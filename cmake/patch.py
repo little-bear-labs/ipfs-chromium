@@ -80,6 +80,8 @@ class Patcher:
                 verbose('Not putting component into edit tree')
             elif 'third_party/ipfs_client' in path:
                 verbose('Not putting library into edit tree')
+            elif isdir(from_path):
+                verbose('Ignoring unversioned directory, since that is not a kind of edit I do.')
             elif not self.file_in_branch(tag, path):
                 print('Copy', from_path, '->', to_path)
                 makedirs(to_dir, exist_ok=True)
@@ -99,8 +101,8 @@ class Patcher:
                         to_f.write(diff_out)
                         print(to_path)
         self.git(['add', 'url/url_canon_ipfs.cc'], Result.OrDie)
-        diff = self.git(['diff', '--patch', tag], Result.RawOutput)
-        file_name = join(self.pdir, name+'.patch')
+        # diff = self.git(['diff', '--patch', tag], Result.RawOutput)
+        # file_name = join(self.pdir, name+'.patch')
         # print('Old patch file:', file_name)
         # with open(file_name, 'w') as patch_file:
         #     patch_file.write(diff+"\n")
@@ -254,7 +256,7 @@ class Patcher:
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
-        fudge = 59895
+        fudge = 59899
         def check(version, version_set, s):
             i = as_int(version)
             by = (fudge,0)

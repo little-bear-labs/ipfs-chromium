@@ -70,6 +70,9 @@ std::string Self::url_suffix() const {
       return "/routing/v1/providers/" + main_param;
     case Type::DnsLink:
       LOG(FATAL) << "Don't try to use HTTP(s) for DNS TXT records.";
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wunreachable-code-return"
+#endif
       return {};
     case Type::Identity:
     case Type::Zombie:

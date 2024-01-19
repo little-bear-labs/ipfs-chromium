@@ -27,6 +27,13 @@ python = executable
 patcher = Patcher(src, git_binary, build_type)
 UPDATED = 'chromium_source_updated'
 
+prof_gn = profile.lower()
+electron_args_file = join(src, 'electron', 'build', 'args', prof_gn + '.gn')
+if isfile(electron_args_file):
+    toks = gnargs.split()
+    #electron defines is_debug by profile convention, and unfortunately they disagree with me
+    toks = filter(lambda x: not x.startswith('is_debug'), toks)
+    gnargs = ' '.join(toks) + f' import(\"//electron/build/args/testing.gn\") '
 
 def run(args, fail_ok=False):
     if isdir(src):

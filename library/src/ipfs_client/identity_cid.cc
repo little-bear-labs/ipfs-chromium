@@ -14,6 +14,9 @@ auto Self::forText(std::string_view txt) -> Cid {
   } else {
     LOG(FATAL)
         << "We really shouldn't be able to fail to 'hash' using identity.";
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wunreachable-code-return"
+#endif
     return forText("Unreachable");
   }
 }
