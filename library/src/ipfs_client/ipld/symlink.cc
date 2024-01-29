@@ -42,7 +42,7 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
   } else if (result.ends_with('/')) {
     result.resize(result.size() - 1);
   }
-  LOG(INFO) << "symlink: '" << params.MyPath() << "' -> '" << result << "'.";
+  VLOG(1) << "symlink: '" << params.MyPath() << "' -> '" << result << "'.";
   return PathChange{result};
 }
 

@@ -12,16 +12,7 @@
 namespace i = ipfs;
 
 namespace {
-struct Api final : public i::ContextApi {
-  void SendHttpRequest(i::HttpRequestDescription,
-                       HttpCompleteCallback cb) const {
-    throw 1;
-  }
-  void SendDnsTextRequest(std::string hostname,
-                          DnsTextResultsCallback,
-                          DnsTextCompleteCallback) {
-    throw 1;
-  }
+struct Api final : public i::Client {
   std::string MimeType(std::string extension,
                        std::string_view content,
                        std::string const& url) const {
@@ -46,7 +37,7 @@ struct Api final : public i::ContextApi {
     cbors.pop_front();
     return std::move(r);
   }
-  bool verify_key_signature(ipfs::SigningKeyType,
+  bool verify_key_signature(ipfs::crypto::SigningKeyType,
                             ipfs::ByteView signature,
                             ipfs::ByteView data,
                             ipfs::ByteView key_bytes) {
@@ -58,6 +49,7 @@ struct Api final : public i::ContextApi {
   }
   std::function<ipfs::IpnsCborEntry(ipfs::ByteView)> dser_;
   Api(std::function<ipfs::IpnsCborEntry(ipfs::ByteView)> f = {}) {
+    with(i::crypto::SigningKeyType::RSA, std::make_unique<MockSigVtor>());
     if (f) {
       dser_ = f;
     } else {

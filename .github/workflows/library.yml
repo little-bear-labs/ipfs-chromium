@@ -16,9 +16,19 @@ jobs:
       - name: Tour de IPFS
         run: ./ipfs_chromium/.github/tour.sh
       - name: Upload coverage reports to Codecov.com
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           files: build/library/cov.info
+      - name: Run Doxygen
+        run: |
+          cmake --build build --config Debug --target doc
+          ls -lrth build/doc/html
+          mv -v ipfs_chromium/.git .
+      - name: UpDoc
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build/doc/html
+          repository-name: little-bear-labs/ipfs-chromium
   build:
     name: ${{ matrix.config.name }}
     needs: [prechecks]
@@ -60,7 +70,7 @@ jobs:
               generators: "Visual Studio 17 2022"
             }
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Print env
         run: |
           echo github.event.action: ${{ github.event.action }}

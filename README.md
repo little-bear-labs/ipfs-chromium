@@ -12,11 +12,8 @@ Also, slides for a BlinkOn [lightning talk](doc/slides/blinkon23.md).
 [demo.webm](https://github.com/little-bear-labs/ipfs-chromium/assets/97759690/ae072a58-f5de-4270-8d48-2c858d9b17b1)
 
 ## Documentation
-See the [Doxygen](https://little-bear-labs.github.io/ipfs-chromium/annotated.html) docs.
-
-### Near-term tasks
-
-See [doc/todo.md](doc/todo.md)
+For info on how to use the library outside of Chromium, see [its readme](library/README.md).
+See also the [Doxygen](https://little-bear-labs.github.io/ipfs-chromium/annotated.html) docs.
 
 ## Design
 

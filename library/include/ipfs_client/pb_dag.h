@@ -12,7 +12,7 @@
 
 namespace ipfs {
 
-class ContextApi;
+class Client;
 
 /*!
  * \brief Something to which a CID may refer directly.
@@ -74,11 +74,10 @@ class PbDag {
 
   Cid const& cid() const;  ///< Getter for Content IDentifier
 
-  bool cid_matches_data(ContextApi&) const;  ///< Basic validation
+  bool cid_matches_data(Client&) const;  ///< Basic validation
 
   /// Pass INVALID to mean cid().hash_type()
-  std::vector<Byte> binary_hash(ContextApi&,
-                                HashType = HashType::INVALID) const;
+  std::vector<Byte> binary_hash(Client&, HashType = HashType::INVALID) const;
 
   void List(std::function<bool(std::string const&, std::string)>) const;
   std::optional<std::uint64_t> Fanout() const;

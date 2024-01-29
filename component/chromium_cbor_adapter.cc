@@ -1,8 +1,20 @@
 #include "chromium_cbor_adapter.h"
 
 #include <base/logging.h>
+#include <components/cbor/reader.h>
 
 using Self = ipfs::ChromiumCborAdapter;
+
+auto Self::Parse(ipfs::ByteView bytes) -> std::unique_ptr<DagCborValue> {
+  cbor::Reader::Config cfg;
+  cfg.parse_tags = true;
+  auto parsed = cbor::Reader::Read(as_octets(bytes), cfg);
+  if (parsed.has_value()) {
+    return std::make_unique<ChromiumCborAdapter>(std::move(parsed.value()));
+  }
+  LOG(ERROR) << "Failed to parse CBOR.";
+  return {};
+}
 
 bool Self::is_map() const {
   return cbor_.is_map();
@@ -83,6 +95,7 @@ void Self::iterate_array(ArrayElementCallback cb) const {
   }
 }
 
+Self::ChromiumCborAdapter() : cbor_{cbor::Value::SimpleValue::UNDEFINED} {}
 Self::ChromiumCborAdapter(cbor::Value const& v) : cbor_{v.Clone()} {}
 Self::ChromiumCborAdapter(cbor::Value&& v) : cbor_{std::move(v)} {}
 Self::ChromiumCborAdapter(ChromiumCborAdapter const& rhs)

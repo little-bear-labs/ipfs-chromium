@@ -1,9 +1,10 @@
 #include "ipfs_url_loader.h"
 
+#include "chromium_http.h"
 #include "chromium_ipfs_context.h"
 #include "inter_request_state.h"
 
-#include "ipfs_client/gateways.h"
+#include "ipfs_client/ctx/default_gateways.h"
 #include "ipfs_client/ipfs_request.h"
 
 #include "base/debug/stack_trace.h"
@@ -24,9 +25,13 @@ ipfs::IpfsUrlLoader::IpfsUrlLoader(
     InterRequestState& state)
     : state_{state}, lower_loader_factory_{handles_http}, api_{state_->api()} {}
 ipfs::IpfsUrlLoader::~IpfsUrlLoader() noexcept {
+  if (stepper_) {
+    stepper_->Stop();
+    stepper_.reset();
+  }
   if (!complete_) {
-    LOG(ERROR) << "Premature IPFS URLLoader dtor, uri was '" << original_url_
-               << "' " << base::debug::StackTrace();
+    VLOG(1) << "Premature IPFS URLLoader dtor, uri was '" << original_url_
+            << "' " << base::debug::StackTrace();
   }
 }
 
@@ -74,7 +79,8 @@ void ipfs::IpfsUrlLoader::StartRequest(
     auto path = resource_request.url.path();
     auto abs_path = "/" + ns + "/" + cid_str + path;
     me->root_ = cid_str;
-    me->api_->SetLoaderFactory(*(me->lower_loader_factory_));
+    me->api_->with(
+        std::make_unique<ChromiumHttp>(*(me->lower_loader_factory_)));
     auto whendone = [me](IpfsRequest const& req, ipfs::Response const& res) {
       VLOG(2) << "whendone(" << req.path().to_string() << ',' << res.status_
               << ',' << res.body_.size() << "B mime=" << res.mime_ << ')';
@@ -93,8 +99,11 @@ void ipfs::IpfsUrlLoader::StartRequest(
       }
       DCHECK(me->complete_);
     };
-    auto req = std::make_shared<IpfsRequest>(abs_path, whendone);
-    me->state_->orchestrator().build_response(req);
+    me->ipfs_request_ = std::make_shared<IpfsRequest>(abs_path, whendone);
+    me->stepper_ = std::make_unique<base::RepeatingTimer>();
+    me->stepper_->Start(FROM_HERE, base::Seconds(1), me.get(),
+                        &ipfs::IpfsUrlLoader::TakeStep);
+    me->TakeStep();
   } else {
     LOG(ERROR) << "Wrong scheme: " << resource_request.url.scheme();
   }
@@ -175,23 +184,35 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
                                absl::nullopt);
   }
   client_->OnComplete(network::URLLoaderCompletionStatus{});
-  stepper_.reset();
+  if (stepper_) {
+    stepper_->Stop();
+    stepper_.reset();
+  }
 }
 
 void ipfs::IpfsUrlLoader::DoesNotExist(std::string_view cid,
                                        std::string_view path) {
-  LOG(ERROR) << "Immutable data 404 for " << cid << '/' << path;
+  VLOG(1) << "Immutable data 404 for " << cid << '/' << path;
   complete_ = true;
   client_->OnComplete(
       network::URLLoaderCompletionStatus{net::ERR_FILE_NOT_FOUND});
-  stepper_.reset();
+  if (stepper_) {
+    stepper_->Stop();
+    stepper_.reset();
+  }
 }
-void ipfs::IpfsUrlLoader::NotHere(std::string_view cid, std::string_view path) {
-  LOG(INFO) << "TODO " << __func__ << '(' << cid << ',' << path << ')';
-}
+// void ipfs::IpfsUrlLoader::NotHere(std::string_view cid, std::string_view
+// path) {
+//   LOG(INFO) << "TODO " << __func__ << '(' << cid << ',' << path << ')';
+// }
 
 void ipfs::IpfsUrlLoader::ReceiveBlockBytes(std::string_view content) {
   partial_block_.append(content);
   VLOG(2) << "Recived a block of size " << content.size() << " now have "
           << partial_block_.size() << " bytes.";
+}
+void ipfs::IpfsUrlLoader::TakeStep() {
+  if (ipfs_request_) {
+    state_->orchestrator().build_response(ipfs_request_);
+  }
 }

@@ -46,7 +46,8 @@ index 23ee785c34a30..8550b43c61f2f 100644
        RenderFrameHost::FromID(render_process_id, render_frame_id);
    WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
  #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(ENABLE_EXTENSIONS) || \
-         // !BUILDFLAG(IS_ANDROID)
+-        // !BUILDFLAG(IS_ANDROID)
++        // !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_IPFS)
 +#if BUILDFLAG(ENABLE_IPFS)
 +  if (base::FeatureList::IsEnabled(ipfs::kEnableIpfs)) {
 +    network::mojom::URLLoaderFactory* default_factory = g_browser_process->system_network_context_manager()->GetURLLoaderFactory();

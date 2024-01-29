@@ -1,21 +1,26 @@
 #include "preferences.h"
 
-#include <ipfs_client/gateways.h>
+#include <ipfs_client/ctx/default_gateways.h>
+#include <ipfs_client/ctx/transitory_gateway_config.h>
 
 #include <base/logging.h>
 #include <components/prefs/pref_registry_simple.h>
 #include <components/prefs/pref_service.h>
-
-#include <ipfs_client/gateways.h>
 
 namespace {
 std::string const kRateLimit{"ipfs.gateways.rate_limits"};
 }
 
 void ipfs::RegisterPreferences(PrefRegistrySimple* service) {
+  ctx::TransitoryGatewayConfig cfg;
+  ctx::LoadStaticGatewayList(cfg);
   base::Value::Dict vals;
-  for (auto& gw : Gateways::DefaultGateways()) {
-    vals.Set(gw.prefix, static_cast<int>(gw.rate));
+  for (auto i = 0UL; i < 999UL; ++i) {
+    auto gw = cfg.GetGateway(i);
+    if (!gw) {
+      break;
+    }
+    vals.Set(gw->prefix, static_cast<int>(gw->rate));
   }
   VLOG(2) << "Registering ipfs.gateways preference with a default value "
              "that contains "
@@ -25,8 +30,8 @@ void ipfs::RegisterPreferences(PrefRegistrySimple* service) {
   }
   service->RegisterDictionaryPref(kRateLimit, std::move(vals));
 }
-using Rates = ipfs::GatewayRates;
-Rates::GatewayRates(PrefService* prefs) : prefs_{prefs} {
+using Self = ipfs::ChromiumIpfsGatewayConfig;
+Self::ChromiumIpfsGatewayConfig(PrefService* prefs) : prefs_{prefs} {
   if (prefs) {
     last_ = prefs->GetDict(kRateLimit).Clone();
     for (auto [k, v] : last_) {
@@ -40,7 +45,7 @@ Rates::GatewayRates(PrefService* prefs) : prefs_{prefs} {
   }
 }
 
-std::pair<std::string const*, unsigned> Rates::at(std::size_t index) const {
+std::pair<std::string const*, unsigned> Self::at(std::size_t index) const {
   if (index >= curr_.size()) {
     return {nullptr, 0U};
   }
@@ -49,11 +54,11 @@ std::pair<std::string const*, unsigned> Rates::at(std::size_t index) const {
   auto v = static_cast<unsigned>(std::max(0, it->second.GetInt()));
   return {p_k, v};
 }
-unsigned Rates::GetRate(std::string_view k) const {
+unsigned Self::GetGatewayRate(std::string_view k) {
   auto i = std::max(0, curr_.FindInt(k).value_or(0));
   return static_cast<unsigned>(i);
 }
-void Rates::SetRate(std::string_view k, unsigned val) {
+void Self::SetGatewayRate(std::string_view k, unsigned val) {
   auto i = static_cast<int>(std::min(val, static_cast<unsigned>(INT_MAX)));
   auto old = curr_.contains(k);
   curr_.Set(k, i);
@@ -70,7 +75,17 @@ void Rates::SetRate(std::string_view k, unsigned val) {
     }
   }
 }
-std::size_t Rates::delta() const {
+void Self::AddGateway(std::string_view k) {
+  SetGatewayRate(k, 120);
+}
+auto Self::GetGateway(std::size_t index) const -> std::optional<GatewaySpec> {
+  auto [k, r] = at(index);
+  if (k) {
+    return GatewaySpec{*k, r};
+  }
+  return std::nullopt;
+}
+std::size_t Self::delta() const {
   std::size_t rv = 0;
   for (auto [k, v] : curr_) {
     auto d = std::abs(v.GetInt() - last_.FindInt(k).value_or(0));
@@ -78,7 +93,7 @@ std::size_t Rates::delta() const {
   }
   return rv;
 }
-void Rates::save() {
+void Self::save() {
   // Should be called on UI thread
   changes = 0;
   last_ = curr_.Clone();

@@ -10,7 +10,7 @@
 #include "symlink.h"
 #include "unixfs_file.h"
 
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/client.h>
 #include <ipfs_client/ipns_record.h>
 #include <ipfs_client/pb_dag.h>
 
@@ -21,12 +21,12 @@
 
 using Node = ipfs::ipld::DagNode;
 
-std::shared_ptr<Node> Node::fromBytes(std::shared_ptr<ContextApi> const& api,
+std::shared_ptr<Node> Node::fromBytes(std::shared_ptr<Client> const& api,
                                       Cid const& cid,
                                       std::string_view bytes) {
   return fromBytes(api, cid, as_bytes(bytes));
 }
-auto Node::fromBytes(std::shared_ptr<ContextApi> const& api,
+auto Node::fromBytes(std::shared_ptr<Client> const& api,
                      ipfs::Cid const& cid,
                      ipfs::ByteView bytes) -> NodePtr {
   std::shared_ptr<Node> result = nullptr;
@@ -56,7 +56,7 @@ auto Node::fromBytes(std::shared_ptr<ContextApi> const& api,
   switch (cid.codec()) {
     case MultiCodec::DAG_CBOR: {
       auto p = reinterpret_cast<Byte const*>(bytes.data());
-      auto cbor = api->ParseCbor({p, bytes.size()});
+      auto cbor = api->cbor().Parse({p, bytes.size()});
       if (cbor) {
         result = std::make_shared<DagCborNode>(std::move(cbor));
       } else {
@@ -66,7 +66,7 @@ auto Node::fromBytes(std::shared_ptr<ContextApi> const& api,
     } break;
     case MultiCodec::DAG_JSON: {
       auto p = reinterpret_cast<char const*>(bytes.data());
-      auto json = api->ParseJson({p, bytes.size()});
+      auto json = api->json().Parse({p, bytes.size()});
       if (json) {
         result = std::make_shared<DagJsonNode>(std::move(json));
       } else {
@@ -153,7 +153,7 @@ std::shared_ptr<Node> Node::deroot() {
 std::shared_ptr<Node> Node::rooted() {
   return std::make_shared<Root>(shared_from_this());
 }
-void Node::set_api(std::shared_ptr<ContextApi> api) {
+void Node::set_api(std::shared_ptr<Client> api) {
   api_ = api;
 }
 auto Node::resolve(SlashDelimited initial_path, BlockLookup blu)

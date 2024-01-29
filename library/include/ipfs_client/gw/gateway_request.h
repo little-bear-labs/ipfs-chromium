@@ -2,7 +2,7 @@
 #define IPFS_TRUSTLESS_REQUEST_H_
 
 #include <ipfs_client/cid.h>
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/client.h>
 
 #include <vocab/flat_mapset.h>
 #include <vocab/slash_delimited.h>
@@ -14,7 +14,7 @@
 
 namespace ipfs {
 class IpfsRequest;
-class Orchestrator;
+class Partition;
 namespace ipld {
 class DagNode;
 }
@@ -37,10 +37,10 @@ std::string_view name(Type);
 constexpr std::size_t BLOCK_RESPONSE_BUFFER_SIZE = 2 * 1024 * 1024;
 
 class GatewayRequest {
-  std::shared_ptr<Orchestrator> orchestrator_;
+  std::shared_ptr<Partition> orchestrator_;
   std::vector<std::function<void(std::string_view)>> bytes_received_hooks;
 
-  void ParseNodes(std::string_view, ContextApi* api);
+  void ParseNodes(std::string_view, Client* api);
 
  public:
   Type type = Type::Zombie;
@@ -60,11 +60,11 @@ class GatewayRequest {
   std::optional<std::size_t> max_response_size() const;
   std::optional<HttpRequestDescription> describe_http(std::string_view) const;
   std::string debug_string() const;
-  void orchestrator(std::shared_ptr<Orchestrator> const&);
+  void orchestrator(std::shared_ptr<Partition> const&);
   bool cachable() const;
 
   bool RespondSuccessfully(std::string_view,
-                           std::shared_ptr<ContextApi> const& api,
+                           std::shared_ptr<Client> const& api,
                            bool* valid = nullptr);
   void Hook(std::function<void(std::string_view)>);
   bool PartiallyRedundant() const;

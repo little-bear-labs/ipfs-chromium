@@ -1,6 +1,6 @@
 #include "small_directory.h"
 
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/client.h>
 #include "ipfs_client/generated_directory_listing.h"
 #include "ipfs_client/path2url.h"
 

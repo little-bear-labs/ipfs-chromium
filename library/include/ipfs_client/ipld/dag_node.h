@@ -20,7 +20,7 @@
 
 namespace ipfs {
 class PbDag;
-class ContextApi;
+class Client;
 struct ValidatedIpns;
 }  // namespace ipfs
 namespace libp2p::multi {
@@ -56,7 +56,7 @@ class DagNode : public std::enable_shared_from_this<DagNode> {
 
  protected:
   std::vector<std::pair<std::string, Link>> links_;
-  std::shared_ptr<ContextApi> api_;
+  std::shared_ptr<Client> api_;
 
   ///< When the next path element is what's needed, and it should already be a
   ///< link known about...
@@ -79,10 +79,10 @@ class DagNode : public std::enable_shared_from_this<DagNode> {
   virtual ResolveResult resolve(ResolutionState& params) = 0;
   ResolveResult resolve(SlashDelimited initial_path, BlockLookup);
 
-  static NodePtr fromBytes(std::shared_ptr<ContextApi> const& api,
+  static NodePtr fromBytes(std::shared_ptr<Client> const& api,
                            Cid const&,
                            ByteView bytes);
-  static NodePtr fromBytes(std::shared_ptr<ContextApi> const& api,
+  static NodePtr fromBytes(std::shared_ptr<Client> const& api,
                            Cid const&,
                            std::string_view bytes);
   static NodePtr fromBlock(PbDag const&);
@@ -101,7 +101,7 @@ class DagNode : public std::enable_shared_from_this<DagNode> {
   virtual bool expired() const;
   virtual bool PreferOver(DagNode const& another) const;
 
-  void set_api(std::shared_ptr<ContextApi>);
+  void set_api(std::shared_ptr<Client>);
 };
 }  // namespace ipfs::ipld
 

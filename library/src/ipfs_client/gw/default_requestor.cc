@@ -6,9 +6,8 @@
 #include <ipfs_client/gw/multi_gateway_requestor.h>
 #include <ipfs_client/gw/terminating_requestor.h>
 
-auto ipfs::gw::default_requestor(ipfs::GatewayList /* gws */,
-                                 std::shared_ptr<Requestor> early,
-                                 std::shared_ptr<ContextApi> api)
+auto ipfs::gw::default_requestor(std::shared_ptr<Requestor> early,
+                                 std::shared_ptr<Client> api)
     -> std::shared_ptr<Requestor> {
   auto result = std::make_shared<gw::InlineRequestHandler>();
   result->or_else(std::make_shared<gw::BlockRequestSplitter>());

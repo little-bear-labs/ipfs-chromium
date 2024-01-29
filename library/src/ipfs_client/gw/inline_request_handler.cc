@@ -2,7 +2,7 @@
 
 #include <ipfs_client/gw/gateway_request.h>
 #include <ipfs_client/ipld/chunk.h>
-#include <ipfs_client/orchestrator.h>
+#include <ipfs_client/partition.h>
 
 #include "log_macros.h"
 

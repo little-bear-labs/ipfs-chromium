@@ -279,7 +279,7 @@ constexpr std::string_view Example{
 TEST(ProvidersResponseTest, ExampleAnswer) {
   MockApi api;
   ipfs::providers::ProcessResponse(Example, api);
-  auto& g = api.gateways_added;
+  auto& g = api.gw_->gateways_added;
   EXPECT_EQ(g.size(), 3UL);
   EXPECT_EQ(g.at(0), "http://212.6.53.91/");
   EXPECT_EQ(g.at(1), "http://45.141.104.43:31337/");

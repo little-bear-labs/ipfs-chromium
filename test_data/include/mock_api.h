@@ -3,8 +3,11 @@
 
 #include <gtest/gtest.h>
 
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/client.h>
 #include <ipfs_client/json_cbor_adapter.h>
+
+#include "mock_gw_cfg.h"
+#include "mock_sig_vtor.h"
 
 namespace ipfs::gw {
 class GatewayRequest;
@@ -12,22 +15,17 @@ class GatewayRequest;
 
 namespace i = ipfs;
 namespace ig = i::gw;
+namespace ic = i::ctx;
 
 using namespace std::literals;
 
 namespace {
-struct MockApi final : public i::ContextApi {
-  std::vector<HttpRequestDescription> mutable http_requests_sent;
-  std::vector<HttpCompleteCallback> mutable cbs;
-  void SendHttpRequest(HttpRequestDescription d,
-                       HttpCompleteCallback cb) const {
-    http_requests_sent.push_back(d);
-    cbs.push_back(cb);
-  }
+struct MockDnsTxt : public i::ctx::DnsTxtLookup {
   struct DnsInvocation {
     std::string host;
     std::vector<std::string> txt_records;
   };
+
   std::vector<DnsInvocation> mutable expected_dns;
   void SendDnsTextRequest(std::string host,
                           DnsTextResultsCallback rcb,
@@ -39,6 +37,23 @@ struct MockApi final : public i::ContextApi {
     expected_dns.erase(expected_dns.begin());
     ccb();
   }
+};
+struct MockApi final : public i::Client {
+  MockDnsTxt* dns_;
+  MockGwCfg* gw_;
+  MockApi() {
+    auto dns = std::make_unique<MockDnsTxt>();
+    dns_ = dns.get();
+    with(std::move(dns));
+    auto g = std::make_unique<MockGwCfg>();
+    gw_ = g.get();
+    with(std::move(g));
+    with(i::crypto::SigningKeyType::RSA, std::make_unique<MockSigVtor>());
+    with(i::crypto::SigningKeyType::Ed25519, std::make_unique<MockSigVtor>());
+  }
+  ~MockApi() noexcept override {}
+  std::vector<i::HttpRequestDescription> mutable http_requests_sent;
+  std::vector<ic::HttpApi::HttpCompleteCallback> mutable cbs;
   std::string MimeType(std::string extension,
                        std::string_view content,
                        std::string const& url) const {
@@ -47,7 +62,6 @@ struct MockApi final : public i::ContextApi {
   std::string UnescapeUrlComponent(std::string_view url_comp) const {
     return "";
   }
-  IpnsCborEntry deserialize_cbor(ByteView) const { return {}; }
   bool VerifyKeySignature(SigningKeyType,
                           ByteView signature,
                             ByteView data,
@@ -72,12 +86,6 @@ struct MockApi final : public i::ContextApi {
     return {};
   }
 #endif
-  std::optional<i::GatewaySpec> GetGateway(std::size_t) const {
-    return std::nullopt;
-  }
-  unsigned GetGatewayRate(std::string_view) { return 120U; }
-  std::vector<std::string> gateways_added;
-  void AddGateway(std::string_view g) { gateways_added.emplace_back(g); }
 };
 }  // namespace
 

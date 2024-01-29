@@ -1,7 +1,7 @@
 #ifndef IPFS_DNS_TXT_REQUEST_H_
 #define IPFS_DNS_TXT_REQUEST_H_
 
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/client.h>
 
 #include <mojo/public/cpp/bindings/receiver.h>
 #include <services/network/public/cpp/resolve_host_client_base.h>
@@ -12,8 +12,13 @@ class NetworkContext;
 
 namespace ipfs {
 class DnsTxtRequest final : public network::ResolveHostClientBase {
-  ipfs::ContextApi::DnsTextResultsCallback results_callback_;
-  ipfs::ContextApi::DnsTextCompleteCallback completion_callback_;
+ public:
+  using DnsTextResultsCallback = ctx::DnsTxtLookup::DnsTextResultsCallback;
+  using DnsTextCompleteCallback = ctx::DnsTxtLookup::DnsTextCompleteCallback;
+
+ private:
+  DnsTextResultsCallback results_callback_;
+  DnsTextCompleteCallback completion_callback_;
   mojo::Receiver<network::mojom::ResolveHostClient> recv_{this};
 
   using Endpoints = std::vector<::net::HostResolverEndpointResult>;
@@ -25,8 +30,8 @@ class DnsTxtRequest final : public network::ResolveHostClientBase {
 
  public:
   DnsTxtRequest(std::string,
-                ipfs::ContextApi::DnsTextResultsCallback,
-                ipfs::ContextApi::DnsTextCompleteCallback,
+                DnsTextResultsCallback,
+                DnsTextCompleteCallback,
                 network::mojom::NetworkContext*);
   DnsTxtRequest(DnsTxtRequest&&) = delete;
   ~DnsTxtRequest() noexcept override;

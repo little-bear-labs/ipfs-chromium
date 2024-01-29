@@ -1,10 +1,10 @@
 #include <ipfs_client/gw/inline_request_handler.h>
 
-#include <gtest/gtest.h>
+#include <mock_api.h>
 
 #include <ipfs_client/gw/gateway_request.h>
 #include <ipfs_client/gw/terminating_requestor.h>
-#include <ipfs_client/orchestrator.h>
+#include <ipfs_client/partition.h>
 
 namespace i = ipfs;
 namespace ig = i::gw;
@@ -15,9 +15,9 @@ using ipfs::Cid;
 
 TEST(InlineRequestHanlder, bluesky) {
   T t;
-
-  auto orc = std::make_shared<i::Orchestrator>(
-      std::make_shared<ig::TerminatingRequestor>());
+  auto api = std::make_shared<MockApi>();
+  auto rtor = std::make_shared<ig::TerminatingRequestor>();
+  auto orc = api->with(rtor).partition({});
   auto r = std::make_shared<ig::GatewayRequest>();
   r->type = ig::Type::Identity;
   r->orchestrator(orc);

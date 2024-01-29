@@ -5,7 +5,7 @@
 
 #include <ipfs_client/gw/requestor.h>
 
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/client.h>
 
 #include <deque>
 #include <map>
@@ -16,13 +16,15 @@ class MultiGatewayRequestor : public Requestor {
   std::deque<RequestPtr> q;
   bool Process(RequestPtr const&);
   void DoSend(RequestPtr, std::string const&, GatewayState&);
+  using HeaderAccess = ctx::HttpApi::HeaderAccess;
   void HandleResponse(HttpRequestDescription const&,
                       RequestPtr,
                       std::string const&,
                       std::int16_t,
                       std::string_view,
-                      ContextApi::HeaderAccess,
+                      HeaderAccess,
                       bool);
+  void Next();
 
  public:
   std::string_view name() const override;

@@ -3,9 +3,9 @@
 
 #include "cache_requestor.h"
 
-#include "ipfs_client/gateways.h"
+#include "ipfs_client/ctx/default_gateways.h"
 #include "ipfs_client/ipns_names.h"
-#include "ipfs_client/orchestrator.h"
+#include "ipfs_client/partition.h"
 
 #include "base/supports_user_data.h"
 #include "services/network/network_context.h"
@@ -18,15 +18,14 @@ class BrowserContext;
 
 namespace ipfs {
 class Scheduler;
-class ChromiumIpfsContext;
 class COMPONENT_EXPORT(IPFS) InterRequestState
     : public base::SupportsUserData::Data {
   IpnsNames names_;
-  std::shared_ptr<ChromiumIpfsContext> api_;
+  std::shared_ptr<Client> api_;
   std::time_t last_discovery_ = 0;
   std::shared_ptr<CacheRequestor> cache_;
   base::FilePath const disk_path_;
-  std::shared_ptr<Orchestrator> orc_;  // TODO - map of origin to Orchestrator
+  std::shared_ptr<Partition> orc_;  // TODO - map of origin to Orchestrator
   raw_ptr<network::mojom::NetworkContext> network_context_;
 
   std::shared_ptr<CacheRequestor>& cache();
@@ -37,9 +36,9 @@ class COMPONENT_EXPORT(IPFS) InterRequestState
 
   IpnsNames& names() { return names_; }
   Scheduler& scheduler();
-  std::shared_ptr<ChromiumIpfsContext> api();
+  std::shared_ptr<Client> api();
   std::array<std::shared_ptr<CacheRequestor>,2> serialized_caches();
-  Orchestrator& orchestrator();
+  Partition& orchestrator();
   void network_context(network::mojom::NetworkContext*);
   network::mojom::NetworkContext* network_context() const;
 

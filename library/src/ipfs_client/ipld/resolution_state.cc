@@ -1,6 +1,6 @@
 #include <ipfs_client/ipld/resolution_state.h>
 
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/client.h>
 
 using Self = ipfs::ipld::ResolutionState;
 
@@ -21,7 +21,7 @@ auto Self::PathToResolve() const -> SlashDelimited {
 auto Self::MyPath() const -> SlashDelimited {
   return SlashDelimited{resolved_path_components};
 }
-std::string Self::NextComponent(ContextApi const* api) const {
+std::string Self::NextComponent(Client* api) const {
   auto copy = unresolved_path;
   if (api) {
     return api->UnescapeUrlComponent(copy.pop());

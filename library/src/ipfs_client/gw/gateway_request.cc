@@ -9,7 +9,7 @@
 #include <ipfs_client/car.h>
 #include <ipfs_client/ipfs_request.h>
 #include <ipfs_client/ipns_record.h>
-#include <ipfs_client/orchestrator.h>
+#include <ipfs_client/partition.h>
 #include <ipfs_client/pb_dag.h>
 #include <ipfs_client/response.h>
 
@@ -111,15 +111,15 @@ std::string_view Self::accept() const {
 short Self::timeout_seconds() const {
   switch (type) {
     case Type::DnsLink:
-      return 16;
+      return 4;
     case Type::Block:
-      return 32;
+      return 8;
     case Type::Providers:
-      return 33;
+      return 16;
+    case Type::Car:
+      return 32;
     case Type::Ipns:
       return 64;
-    case Type::Car:
-      return 65;
     case Type::Identity:
     case Type::Zombie:
       return 0;
@@ -258,7 +258,7 @@ std::string Self::Key() const {
   return rv;
 }
 bool Self::RespondSuccessfully(std::string_view bytes,
-                               std::shared_ptr<ContextApi> const& api,
+                               std::shared_ptr<Client> const& api,
                                bool* valid) {
   using namespace ipfs::ipld;
   bool success = false;
@@ -309,7 +309,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
       }
       break;
     case Type::DnsLink: {
-      LOG(INFO) << "Resolved " << debug_string() << " to " << bytes;
+      VLOG(1) << "Resolved " << debug_string() << " to " << bytes;
       auto node = std::make_shared<ipld::DnsLinkName>(bytes);
       if (orchestrator_) {
         success = orchestrator_->add_node(main_param, node);
@@ -364,7 +364,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
 void Self::Hook(std::function<void(std::string_view)> f) {
   bytes_received_hooks.push_back(f);
 }
-void Self::orchestrator(std::shared_ptr<Orchestrator> const& orc) {
+void Self::orchestrator(std::shared_ptr<Partition> const& orc) {
   orchestrator_ = orc;
 }
 bool Self::PartiallyRedundant() const {

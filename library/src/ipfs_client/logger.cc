@@ -7,7 +7,7 @@
 namespace lg = ipfs::log;
 
 namespace {
-lg::Level current_level = lg::Level::WARN;
+lg::Level current_level = lg::Level::Warn;
 lg::Handler current_handler = nullptr;
 
 void CheckLevel(google::protobuf::LogLevel lv,
@@ -41,26 +41,26 @@ void lg::DefaultHandler(std::string const& message,
                         Level lev) {
   std::clog << source_file << ':' << source_line << ": " << LevelDescriptor(lev)
             << ": " << message << '\n';
-  if (lev == Level::FATAL) {
+  if (lev == Level::Fatal) {
     std::abort();
   }
 }
 
 std::string_view lg::LevelDescriptor(Level l) {
   switch (l) {
-    case Level::TRACE:
+    case Level::Trace:
       return "trace";
-    case Level::DEBUG:
+    case Level::Debug:
       return "debug";
-    case Level::INFO:
+    case Level::Info:
       return "note";  // The next 3 are gcc- & clang-inspired
-    case Level::WARN:
+    case Level::Warn:
       return "warning";
-    case Level::ERROR:
+    case Level::Error:
       return "error";
-    case Level::FATAL:
+    case Level::Fatal:
       return " ### FATAL ERROR ### ";
-    case Level::OFF:
+    case Level::Off:
       return "off";
     default:
       return "Unknown log level used: possible corruption?";

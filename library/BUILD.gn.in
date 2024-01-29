@@ -39,6 +39,7 @@ if (enable_ipfs) {
       ]
       public_deps = [
         "//third_party/abseil-cpp:absl",
+        "//third_party/boringssl",
         "//base",
       ]
       deps = [

@@ -1,15 +1,16 @@
 #include "inter_request_state.h"
 
 #include "chromium_ipfs_context.h"
+#include "json_parser_adapter.h"
 #include "preferences.h"
 
 #include <base/logging.h>
 #include "content/public/browser/browser_context.h"
 
-#include <ipfs_client/gateways.h>
 #include <ipfs_client/gw/default_requestor.h>
 #include <ipfs_client/ipfs_request.h>
 #include <ipfs_client/response.h>
+#include "ipfs_client/ctx/default_gateways.h"
 
 using Self = ipfs::InterRequestState;
 
@@ -20,7 +21,7 @@ constexpr char user_data_key[] = "ipfs_request_userdata";
 void Self::CreateForBrowserContext(content::BrowserContext* c, PrefService* p) {
   DCHECK(c);
   DCHECK(p);
-  LOG(INFO) << "Creating new IPFS state for this browser context.";
+  VLOG(1) << "Creating new IPFS state for this browser context.";
   auto owned = std::make_unique<ipfs::InterRequestState>(c->GetPath(), p);
   c->SetUserData(user_data_key, std::move(owned));
 }
@@ -40,7 +41,7 @@ auto Self::FromBrowserContext(content::BrowserContext* context)
     return static_state;
   }
 }
-std::shared_ptr<ipfs::ChromiumIpfsContext> Self::api() {
+std::shared_ptr<ipfs::Client> Self::api() {
   return api_;
 }
 auto Self::cache() -> std::shared_ptr<CacheRequestor>& {
@@ -49,11 +50,10 @@ auto Self::cache() -> std::shared_ptr<CacheRequestor>& {
   }
   return cache_;
 }
-auto Self::orchestrator() -> Orchestrator& {
+auto Self::orchestrator() -> Partition& {
   if (!orc_) {
-    auto rtor =
-        gw::default_requestor(Gateways::DefaultGateways(), cache(), api());
-    orc_ = std::make_shared<Orchestrator>(rtor, api());
+    auto rtor = gw::default_requestor(cache(), api());
+    orc_ = api()->with(rtor).partition({});
   }
   return *orc_;
 }
@@ -64,7 +64,8 @@ network::mojom::NetworkContext* Self::network_context() const {
   return network_context_;
 }
 Self::InterRequestState(base::FilePath p, PrefService* prefs)
-    : api_{std::make_shared<ChromiumIpfsContext>(*this, prefs)}, disk_path_{p} {
+    : api_{CreateContext(*this, prefs)}, disk_path_{p} {
+  api_->with(std::make_unique<JsonParserAdapter>());
   DCHECK(prefs);
 }
 Self::~InterRequestState() noexcept {

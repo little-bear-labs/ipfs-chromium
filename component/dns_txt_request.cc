@@ -7,8 +7,8 @@ namespace moj = network::mojom;
 using Self = ipfs::DnsTxtRequest;
 
 Self::DnsTxtRequest(std::string host,
-                    ipfs::ContextApi::DnsTextResultsCallback res,
-                    ipfs::ContextApi::DnsTextCompleteCallback don,
+                    DnsTextResultsCallback res,
+                    DnsTextCompleteCallback don,
                     moj::NetworkContext* network_context)
     : results_callback_{res}, completion_callback_{don} {
   auto params = moj::ResolveHostParameters::New();
@@ -26,7 +26,7 @@ Self::DnsTxtRequest(std::string host,
 Self::~DnsTxtRequest() {}
 
 void Self::OnTextResults(std::vector<std::string> const& results) {
-  LOG(INFO) << "Hit " << results.size() << " DNS TXT results.";
+  VLOG(1) << "Hit " << results.size() << " DNS TXT results.";
   results_callback_(results);
 }
 void Self::OnComplete(int32_t result,

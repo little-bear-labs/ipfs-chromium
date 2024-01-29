@@ -157,7 +157,7 @@ def copy_missing_and_changed_files(source, target):
             if not isdir(t):
                 makedirs(t)
             continue
-        if s.endswith('_unittest.cc') or basename(s).startswith('test_'):
+        if s.endswith('_unittest.cc') or basename(s).startswith('opinionated_'):
             continue
         ext = splitext(s)[-1]
         if ext in ignore_exts:

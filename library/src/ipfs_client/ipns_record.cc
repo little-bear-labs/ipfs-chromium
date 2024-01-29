@@ -1,7 +1,7 @@
 #include <ipfs_client/ipns_record.h>
 
 #include <ipfs_client/cid.h>
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/client.h>
 #include <ipfs_client/dag_cbor_value.h>
 
 #include "log_macros.h"
@@ -18,7 +18,7 @@
 namespace {
 bool matches(ipfs::MultiHash const& hash,
              ipfs::ByteView pubkey_bytes,
-             ipfs::ContextApi& api) {
+             ipfs::Client& api) {
   auto result = api.Hash(hash.type(), pubkey_bytes);
   if (!result.has_value()) {
     return false;
@@ -70,7 +70,7 @@ void assign(std::uint64_t& out,
 
 auto ipfs::ValidateIpnsRecord(ipfs::ByteView top_level_bytes,
                               Cid const& name,
-                              ContextApi& api) -> std::optional<IpnsCborEntry> {
+                              Client& api) -> std::optional<IpnsCborEntry> {
   DCHECK_EQ(name.codec(), MultiCodec::LIBP2P_KEY);
   if (name.codec() != MultiCodec::LIBP2P_KEY) {
     return {};
@@ -106,8 +106,8 @@ auto ipfs::ValidateIpnsRecord(ipfs::ByteView top_level_bytes,
   DCHECK_EQ(entry.validitytype(), 0);
 
   auto parsed =
-      api.ParseCbor({reinterpret_cast<Byte const*>(entry.data().data()),
-                     entry.data().size()});
+      api.cbor().Parse({reinterpret_cast<Byte const*>(entry.data().data()),
+                        entry.data().size()});
   if (!parsed) {
     LOG(ERROR) << "CBOR parsing failed.";
     return {};
@@ -144,8 +144,8 @@ auto ipfs::ValidateIpnsRecord(ipfs::ByteView top_level_bytes,
     LOG(ERROR) << "Failed to parse public key bytes";
     return {};
   }
-  LOG(INFO) << "Record contains a public key of type " << pk.type()
-            << " and points to " << entry.value();
+  VLOG(1) << "Record contains a public key of type " << pk.type()
+          << " and points to " << entry.value();
   auto& signature_str = entry.signaturev2();
   ByteView signature{reinterpret_cast<ipfs::Byte const*>(signature_str.data()),
                      signature_str.size()};
@@ -160,8 +160,8 @@ auto ipfs::ValidateIpnsRecord(ipfs::ByteView top_level_bytes,
                  bytes_str.size()};
   ByteView key_bytes{reinterpret_cast<ipfs::Byte const*>(pk.data().data()),
                      pk.data().size()};
-  if (!api.VerifyKeySignature(static_cast<SigningKeyType>(pk.type()), signature,
-                              bytes, key_bytes)) {
+  if (!api.VerifyKeySignature(static_cast<crypto::SigningKeyType>(pk.type()),
+                              signature, bytes, key_bytes)) {
     LOG(ERROR) << "Verification failed!!";
     return {};
   }
@@ -223,7 +223,7 @@ ipfs::ValidatedIpns::ValidatedIpns(IpnsCborEntry const& e)
 #else
   use_until = timegm(&t);
 #endif
-  LOG(INFO) << "use_until=" << use_until << " based on " << e.validity;
+  VLOG(1) << "use_until=" << use_until << " based on " << e.validity;
   cache_until = std::time(nullptr) + ttl;
 }
 

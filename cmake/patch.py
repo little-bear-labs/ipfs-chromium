@@ -161,7 +161,7 @@ class Patcher:
         else:
             with open(join(self.csrc,src)) as target_file:
                 text = target_file.read()
-                if 'ipfs' in text:
+                if 'ipfs' in text or 'ReadTagContent' in text:
                     print("Patch file", patch_path, 'may have already been applied, or otherwise hand-edited. Ignoring.')
                 else:
                     print("Failed to patch", src, '( at', join(self.csrc,src), ') with', patch_path)
@@ -256,7 +256,7 @@ class Patcher:
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
-        fudge = 59899
+        fudge = 59904
         def check(version, version_set, s):
             i = as_int(version)
             by = (fudge,0)

@@ -13,7 +13,8 @@
 #include <list>
 
 namespace ipfs {
-class ChromiumIpfsContext;
+class Client;
+class IpfsRequest;
 }  // namespace ipfs
 
 namespace network::mojom {
@@ -68,7 +69,7 @@ class IpfsUrlLoader final : public network::mojom::URLLoader {
   mojo::ScopedDataPipeProducerHandle pipe_prod_ = {};
   mojo::ScopedDataPipeConsumerHandle pipe_cons_ = {};
   bool complete_ = false;
-  std::shared_ptr<ChromiumIpfsContext> api_;
+  std::shared_ptr<Client> api_;
   std::string original_url_;
   std::string partial_block_;
   std::vector<std::pair<std::string,std::string>> additional_outgoing_headers_;
@@ -77,13 +78,14 @@ class IpfsUrlLoader final : public network::mojom::URLLoader {
   std::string root_;
   int status_ = 200;
   std::string resp_loc_;
+  std::shared_ptr<IpfsRequest> ipfs_request_;
 
   void CreateBlockRequest(std::string cid);
 
   void ReceiveBlockBytes(std::string_view);
   void BlocksComplete(std::string mime_type);
   void DoesNotExist(std::string_view cid, std::string_view path);
-  void NotHere(std::string_view cid, std::string_view path);
+  //  void NotHere(std::string_view cid, std::string_view path);
 
   void StartUnixFsProc(ptr, std::string_view);
   void AppendGatewayHeaders(std::vector<std::string> const& cids, net::HttpResponseHeaders&);

@@ -14,7 +14,7 @@ struct ContentIdentifier;
 
 namespace ipfs {
 class DagListener;
-class ContextApi;
+class Client;
 
 class UnixFsPathResolver;
 

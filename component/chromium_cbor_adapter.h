@@ -3,10 +3,11 @@
 
 #include <components/cbor/values.h>
 
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/ctx/cbor_parser.h>
+#include <ipfs_client/dag_cbor_value.h>
 
 namespace ipfs {
-class ChromiumCborAdapter final : public DagCborValue {
+class ChromiumCborAdapter final : public DagCborValue, public ctx::CborParser {
   cbor::Value cbor_;
 
   std::unique_ptr<DagCborValue> at(std::string_view) const override;
@@ -23,10 +24,13 @@ class ChromiumCborAdapter final : public DagCborValue {
   void iterate_array(ArrayElementCallback) const override;
 
  public:
+  explicit ChromiumCborAdapter();
   ChromiumCborAdapter(cbor::Value&&);
   ChromiumCborAdapter(cbor::Value const&);
   ChromiumCborAdapter(ChromiumCborAdapter const& rhs);
   ~ChromiumCborAdapter() noexcept override;
+
+  std::unique_ptr<DagCborValue> Parse(ByteView) override;
 };
 }  // namespace ipfs
 

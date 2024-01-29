@@ -22,15 +22,19 @@ auto Self::handle(RequestPtr r) -> HandleOutcome {
     LOG(INFO) << r->debug_string() << " is not an HTTP request.";
     return HandleOutcome::NOT_HANDLED;
   }
+  Next();
+  Process(r);
+  return HandleOutcome::PENDING;
+}
+void Self::Next() {
   if (!q.empty()) {
     auto popped = q.front();
     q.pop_front();
     Process(popped);
   }
-  Process(r);
-  return HandleOutcome::PENDING;
 }
 bool Self::Process(RequestPtr const& req) {
+  LOG(INFO) << "Process(" << req->debug_string() << ")";
   if (!req->is_http()) {
     return false;
   }
@@ -40,7 +44,8 @@ bool Self::Process(RequestPtr const& req) {
   std::vector<Candidate> candidates;
   auto bored = 0U;
   Candidate over_rate = {0, {}, nullptr};
-  while (auto gw = api_->GetGateway(config_idx++)) {
+  auto& gws = api_->gw_cfg();
+  while (auto gw = gws.GetGateway(config_idx++)) {
     if (state_iter == state_.end() || state_iter->first > gw->prefix) {
       VLOG(2) << "A new gateway has entered the chat: " << gw->prefix << '='
               << gw->rate;
@@ -72,9 +77,6 @@ bool Self::Process(RequestPtr const& req) {
     std::advance(state_iter, 1);
   }
   if (std::get<2>(over_rate)) {
-    if (candidates.empty()) {
-      VLOG(2) << "Overburdened.";
-    }
     candidates.push_back(over_rate);
   }
   if (candidates.empty() && config_idx <= req->failures.size()) {
@@ -82,7 +84,8 @@ bool Self::Process(RequestPtr const& req) {
     forward(req);
     return false;
   }
-  auto to_send = std::max(bored / 2UL, 2UL);
+  auto min_plel = req->type == Type::Block ? 4UL : 1UL;
+  auto to_send = std::max(bored / 2UL, min_plel);
   std::sort(candidates.begin(), candidates.end(), std::greater{});
   for (auto& [score, prefix, state] : candidates) {
     DoSend(req, prefix, *state);
@@ -115,20 +118,22 @@ void Self::DoSend(RequestPtr req, std::string const& gw, GatewayState& state) {
     HandleResponse(*desc, req, gw, s, b, h, timed_out);
   };
   state.just_sent_one();
-  api_->SendHttpRequest(*desc, cb);
+  api_->http().SendHttpRequest(*desc, cb);
 }
 void Self::HandleResponse(HttpRequestDescription const& desc,
                           RequestPtr req,
                           std::string const& gw,
                           std::int16_t status,
                           std::string_view body,
-                          ContextApi::HeaderAccess hdrs,
+                          HeaderAccess hdrs,
                           bool timed_out) {
+  LOG(INFO) << "HandleResponse(" << req->debug_string() << ")";
   if (req->Finished() ||
       (req->PartiallyRedundant() && req->type == Type::Block)) {
     return;
   }
   auto i = state_.find(gw);
+  auto& gws = api_->gw_cfg();
   if (status == 200) {
     auto ct = hdrs("content-type");
     std::transform(ct.begin(), ct.end(), ct.begin(), ::tolower);
@@ -138,10 +143,14 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
                ct.find(desc.accept) == std::string::npos) {
       VLOG(2) << "Requested with Accept: " << desc.accept
               << " but received response with content-type: " << ct;
+      if (state_.end() != i) {
+        i->second.miss(*req);
+      }
+      Next();
       return;
     }
     if (!req->RespondSuccessfully(body, api_)) {
-      VLOG(1) << "Got an unuseful response from " << gw << " for request "
+      VLOG(2) << "Got an unuseful response from " << gw << " for request "
               << req->debug_string();
     } else {
       VLOG(2) << "Response from " << gw << " to " << req->debug_string()
@@ -149,22 +158,23 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
       if (state_.end() != i) {
         i->second.hit(*req);
       }
-      auto rpm = api_->GetGatewayRate(gw);
+      auto rpm = gws.GetGatewayRate(gw);
       VLOG(2) << "Rate for " << gw << " _WAS_ " << rpm
               << " and is about to go up.";
       if (rpm < 15) {
         rpm *= 2;
       }
       rpm += 2;
-      api_->SetGatewayRate(gw, rpm);
+      gws.SetGatewayRate(gw, rpm);
+      Next();
       return;
     }
   }
-  auto rpm = api_->GetGatewayRate(gw);
+  auto rpm = gws.GetGatewayRate(gw);
   auto old_rpm = rpm;
   if (status == 408 || status == 504 || status == 429 || status == 110 ||
       timed_out) {
-    LOG(WARNING) << gw << " timed out on request " << req->debug_string();
+    VLOG(2) << gw << " timed out on request " << req->debug_string();
     if (req->type == Type::Block) {
       if (state_.end() != i) {
         i->second.timed_out();
@@ -183,7 +193,7 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
     --rpm;
   }
   if (old_rpm != rpm) {
-    api_->SetGatewayRate(gw, rpm);
+    gws.SetGatewayRate(gw, rpm);
   }
   Process(req);
 }

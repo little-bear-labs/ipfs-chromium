@@ -172,6 +172,8 @@ def search() -> bool:
                 verbose('existing_dir_map=',existing_dir_map)
             elif len(existing_dir_map):
                 t, f = existing_dir_map.pop()
+                if not isdir(f):
+                    continue
                 for entry in listdir(f):
                     source = join(f,entry)
                     target = join(t,entry)

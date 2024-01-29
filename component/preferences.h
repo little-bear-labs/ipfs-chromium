@@ -5,7 +5,8 @@
 
 #include <base/memory/raw_ptr.h>
 #include <base/values.h>
-#include <ipfs_client/gateways.h>
+
+#include <ipfs_client/ctx/gateway_config.h>
 
 #include <ranges>
 
@@ -14,7 +15,7 @@ class PrefService;
 
 namespace ipfs {
 COMPONENT_EXPORT(IPFS) void RegisterPreferences(PrefRegistrySimple*);
-class GatewayRates {
+class ChromiumIpfsGatewayConfig final : public ipfs::ctx::GatewayConfig {
   raw_ptr<PrefService> prefs_;
   base::Value::Dict last_;
   base::Value::Dict curr_;
@@ -25,10 +26,12 @@ class GatewayRates {
   std::size_t delta() const;
 
  public:
-  GatewayRates(PrefService*);
+  ChromiumIpfsGatewayConfig(PrefService*);
 
-  unsigned GetRate(std::string_view) const;
-  void SetRate(std::string_view, unsigned);
+  unsigned GetGatewayRate(std::string_view) override;
+  void SetGatewayRate(std::string_view, unsigned) override;
+  std::optional<GatewaySpec> GetGateway(std::size_t index) const override;
+  void AddGateway(std::string_view) override;
   std::pair<std::string const*, unsigned> at(std::size_t index) const;
 };
 }

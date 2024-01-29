@@ -1,6 +1,6 @@
 #include "providers_response.h"
 
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/client.h>
 #include <ipfs_client/dag_json_value.h>
 
 #include <vocab/slash_delimited.h>
@@ -44,7 +44,7 @@ std::string MultiaddrToGatewayPrefix(ipfs::SlashDelimited ma) {
   return rv;
 }
 
-bool ParseProvider(ipfs::DagJsonValue const& provider, ipfs::ContextApi& api) {
+bool ParseProvider(ipfs::DagJsonValue const& provider, ipfs::Client& api) {
   auto proto = provider["Protocol"sv];
   if (!proto) {
     // Perhaps Schema == peer. Not an error, but not used as of now.
@@ -70,7 +70,7 @@ bool ParseProvider(ipfs::DagJsonValue const& provider, ipfs::ContextApi& api) {
     if (auto s = addr.get_if_string()) {
       auto gw_pre = MultiaddrToGatewayPrefix(ipfs::SlashDelimited{s.value()});
       LOG(INFO) << "'" << *s << "' -> '" << gw_pre << "'.";
-      api.AddGateway(gw_pre);
+      api.gw_cfg().AddGateway(gw_pre);
       rv = true;
     } else {
       LOG(ERROR) << ".Providers[x].Addrs[x] is not a string";
@@ -83,8 +83,8 @@ bool ParseProvider(ipfs::DagJsonValue const& provider, ipfs::ContextApi& api) {
 }
 }  // namespace
 
-bool prov::ProcessResponse(std::string_view json_str, ContextApi& api) {
-  auto parsed = api.ParseJson(json_str);
+bool prov::ProcessResponse(std::string_view json_str, Client& api) {
+  auto parsed = api.json().Parse(json_str);
   if (!parsed) {
     LOG(ERROR)
         << "Response to routing/v1 providers request did not parse as JSON: "

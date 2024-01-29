@@ -4,14 +4,14 @@
 #include "requestor.h"
 
 namespace ipfs {
-class ContextApi;
+class Client;
 }
 
 namespace ipfs::gw {
 class DnsLinkRequestor final : public Requestor {
  public:
-  explicit DnsLinkRequestor(std::shared_ptr<ContextApi>);
-  
+  explicit DnsLinkRequestor(std::shared_ptr<Client>);
+
   HandleOutcome handle(RequestPtr) override;
   std::string_view name() const override;
 };

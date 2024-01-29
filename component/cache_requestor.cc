@@ -39,7 +39,7 @@ Self::~CacheRequestor() noexcept = default;
 void Self::Assign(dc::BackendResult res) {
   startup_pending_ = false;
   if (res.net_error == net::OK) {
-    LOG(INFO) << "Initialized disk cache";
+    VLOG(1) << "Initialized disk cache";
     cache_.swap(res.backend);
   } else {
     LOG(ERROR) << "Trouble opening " << name() << ": " << res.net_error;
@@ -91,7 +91,6 @@ std::shared_ptr<dc::Entry> GetEntry(dc::EntryResult& result) {
 
 void Self::OnOpen(Task task, dc::EntryResult res) {
   if (res.net_error() != net::OK) {
-    VLOG(2) << "Failed to find " << task.key << " in " << name();
     Miss(task);
     return;
   }
@@ -124,8 +123,7 @@ void Self::OnHeaderRead(Task task, int code) {
 }
 void Self::OnBodyRead(Task task, int code) {
   if (code <= 0) {
-    LOG(INFO) << "Failed to read body for entry " << task.key << " in "
-              << name();
+    VLOG(1) << "Failed to read body for entry " << task.key << " in " << name();
     Miss(task);
     return;
   }
@@ -135,7 +133,7 @@ void Self::OnBodyRead(Task task, int code) {
     bool valid = false;
     task.request->RespondSuccessfully(task.body, api_, &valid);
     if (valid) {
-      LOG(INFO) << "Cache hit for " << task.key;
+      VLOG(2) << "Cache hit for " << task.key;
     } else {
       LOG(ERROR) << "Had a bad or expired cached response for " << task.key;
       Expire(task.key);
@@ -144,8 +142,8 @@ void Self::OnBodyRead(Task task, int code) {
   }
 }
 void Self::Store(std::string key, std::string headers, std::string body) {
-  LOG(INFO) << "Store(" << name() << ',' << key << ',' << headers.size() << ','
-            << body.size() << ')';
+  VLOG(2) << "Store(" << name() << ',' << key << ',' << headers.size() << ','
+          << body.size() << ')';
   auto bound = base::BindOnce(&Self::OnEntryCreated, base::Unretained(this),
                               key, headers, body);
   auto res = cache_->OpenOrCreateEntry(key, net::LOW, std::move(bound));

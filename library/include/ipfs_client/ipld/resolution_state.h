@@ -7,7 +7,7 @@
 #include <memory>
 
 namespace ipfs {
-class ContextApi;
+class Client;
 }
 
 namespace ipfs::ipld {
@@ -27,7 +27,7 @@ class ResolutionState {
   SlashDelimited MyPath() const;
   SlashDelimited PathToResolve() const;
   bool IsFinalComponent() const;
-  std::string NextComponent(ContextApi const*) const;
+  std::string NextComponent(Client*) const;
   NodePtr GetBlock(std::string const& block_key) const;
 
   ResolutionState WithPath(std::string_view) const;

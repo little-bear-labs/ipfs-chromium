@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 echo Clone tester repo.
-git clone --single-branch --branch newmain https://github.com/John-LittleBearLabs/ipfs_client_clitester.git
+git clone --single-branch --branch decomposed_context https://github.com/John-LittleBearLabs/ipfs_client_clitester.git
 
 echo Install dependencies.
 sudo apt-get update

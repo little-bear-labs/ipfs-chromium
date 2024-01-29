@@ -4,7 +4,7 @@
 #include <ipfs_client/ipld/dag_node.h>
 
 #include <ipfs_client/ipfs_request.h>
-#include <ipfs_client/orchestrator.h>
+#include <ipfs_client/partition.h>
 #include <ipfs_client/pb_dag.h>
 #include <ipfs_client/response.h>
 
@@ -64,6 +64,6 @@ void Self::forward(ipfs::gw::RequestPtr req) const {
     next_->request(req);
   }
 }
-void Self::api(std::shared_ptr<ContextApi> a) {
+void Self::api(std::shared_ptr<Client> a) {
   api_ = a;
 }

@@ -1,5 +1,5 @@
 #include <ipfs_client/gw/gateway_request.h>
-#include <ipfs_client/orchestrator.h>
+#include <ipfs_client/partition.h>
 
 #include <mock_api.h>
 #include <mock_requestor.h>
@@ -53,9 +53,9 @@ struct GatewayRequestTest : public testing::Test {
   T t_;
   std::shared_ptr<MockApi> api = std::make_shared<MockApi>();
   std::shared_ptr<MockRequestor> rtor = std::make_shared<MockRequestor>();
-  std::shared_ptr<i::Orchestrator> orc =
-      std::make_shared<i::Orchestrator>(rtor, api);
+  std::shared_ptr<i::Partition> orc;
   GatewayRequestTest() {
+    orc = api->with(rtor).partition({});
     t_.orchestrator(orc);
     t_.main_param = "main";
   }
