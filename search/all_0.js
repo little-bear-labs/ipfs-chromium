@@ -1,4 +1,11 @@
 var searchData=
 [
-  ['_5finternal_0',['_Internal',['../classipfs_1_1ipns_1_1IpnsEntry_1_1__Internal.html',1,'ipfs::ipns::IpnsEntry::_Internal'],['../classipfs_1_1ipns_1_1PrivateKey_1_1__Internal.html',1,'ipfs::ipns::PrivateKey::_Internal'],['../classipfs_1_1ipns_1_1PublicKey_1_1__Internal.html',1,'ipfs::ipns::PublicKey::_Internal'],['../classipfs_1_1pb__dag_1_1PBLink_1_1__Internal.html',1,'ipfs::pb_dag::PBLink::_Internal'],['../classipfs_1_1pb__dag_1_1PBNode_1_1__Internal.html',1,'ipfs::pb_dag::PBNode::_Internal'],['../classipfs_1_1unix__fs_1_1Data_1_1__Internal.html',1,'ipfs::unix_fs::Data::_Internal'],['../classipfs_1_1unix__fs_1_1Metadata_1_1__Internal.html',1,'ipfs::unix_fs::Metadata::_Internal'],['../classipfs_1_1unix__fs_1_1UnixTime_1_1__Internal.html',1,'ipfs::unix_fs::UnixTime::_Internal']]]
+  ['addentry_0',['AddEntry',['../classipfs_1_1GeneratedDirectoryListing.html#ae7256c8d7bd7d24b97590cbeef73edda',1,'ipfs::GeneratedDirectoryListing']]],
+  ['addlistening_1',['AddListening',['../classipfs_1_1BlockStorage.html#a0071537003f3fc45bc09da2372bac766',1,'ipfs::BlockStorage']]],
+  ['addstoragehook_2',['AddStorageHook',['../classipfs_1_1BlockStorage.html#a35f051a01eb18bf489bd6e6f12b5d480',1,'ipfs::BlockStorage']]],
+  ['algorithm_3',['algorithm',['../classmultibase_1_1algorithm.html',1,'multibase']]],
+  ['api_5f_4',['api_',['../classipfs_1_1ipld_1_1DagNode.html#a5daefb2a24a35618603cdc4bf4075de1',1,'ipfs::ipld::DagNode']]],
+  ['as_2dimplemented_20design_20notes_5',['As-Implemented Design Notes',['../md_doc_design_notes.html',1,'']]],
+  ['assigndnslink_6',['AssignDnsLink',['../classipfs_1_1IpnsNames.html#a1ccd03ba666ba55c3c2e24c1566b100f',1,'ipfs::IpnsNames']]],
+  ['assignname_7',['AssignName',['../classipfs_1_1IpnsNames.html#aaaf39692cf8b7413d7c1b56c6c176a18',1,'ipfs::IpnsNames']]]
 ];

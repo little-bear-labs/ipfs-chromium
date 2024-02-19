@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['encoder_188',['encoder',['../classmultibase_1_1basic__algorithm_1_1encoder.html',1,'multibase::basic_algorithm']]]
+  ['file_183',['File',['../classipfs_1_1redirects_1_1File.html',1,'ipfs::redirects']]]
 ];

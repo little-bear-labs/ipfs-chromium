@@ -1,11 +1,16 @@
 var searchData=
 [
-  ['cacherequestor_168',['CacheRequestor',['../classipfs_1_1CacheRequestor.html',1,'ipfs']]],
-  ['chromiumcboradapter_169',['ChromiumCborAdapter',['../classipfs_1_1ChromiumCborAdapter.html',1,'ipfs']]],
-  ['chromiumipfscontext_170',['ChromiumIpfsContext',['../classipfs_1_1ChromiumIpfsContext.html',1,'ipfs']]],
-  ['chromiumjsonadapter_171',['ChromiumJsonAdapter',['../classipfs_1_1ChromiumJsonAdapter.html',1,'ipfs']]],
-  ['chunk_172',['Chunk',['../classipfs_1_1ipld_1_1Chunk.html',1,'ipfs::ipld']]],
-  ['cid_173',['Cid',['../classipfs_1_1Cid.html',1,'ipfs']]],
-  ['codec_174',['Codec',['../structipfs_1_1mb_1_1Codec.html',1,'ipfs::mb']]],
-  ['contextapi_175',['ContextApi',['../classipfs_1_1ContextApi.html',1,'ipfs']]]
+  ['dagcbornode_169',['DagCborNode',['../classipfs_1_1ipld_1_1DagCborNode.html',1,'ipfs::ipld']]],
+  ['dagcborvalue_170',['DagCborValue',['../classipfs_1_1DagCborValue.html',1,'ipfs']]],
+  ['dagjsonnode_171',['DagJsonNode',['../classipfs_1_1ipld_1_1DagJsonNode.html',1,'ipfs::ipld']]],
+  ['dagjsonvalue_172',['DagJsonValue',['../classipfs_1_1DagJsonValue.html',1,'ipfs']]],
+  ['dagnode_173',['DagNode',['../classipfs_1_1ipld_1_1DagNode.html',1,'ipfs::ipld']]],
+  ['data_174',['Data',['../structipfs_1_1PbDag_1_1Data.html',1,'ipfs::PbDag']]],
+  ['decoder_175',['decoder',['../classmultibase_1_1basic__algorithm_1_1decoder.html',1,'multibase::basic_algorithm']]],
+  ['directive_176',['Directive',['../classipfs_1_1redirects_1_1Directive.html',1,'ipfs::redirects']]],
+  ['dirshard_177',['DirShard',['../classipfs_1_1ipld_1_1DirShard.html',1,'ipfs::ipld']]],
+  ['dnslinkname_178',['DnsLinkName',['../classipfs_1_1ipld_1_1DnsLinkName.html',1,'ipfs::ipld']]],
+  ['dnslinkrequestor_179',['DnsLinkRequestor',['../classipfs_1_1gw_1_1DnsLinkRequestor.html',1,'ipfs::gw']]],
+  ['dnstxtlookup_180',['DnsTxtLookup',['../classipfs_1_1ctx_1_1DnsTxtLookup.html',1,'ipfs::ctx']]],
+  ['dnstxtrequest_181',['DnsTxtRequest',['../classipfs_1_1DnsTxtRequest.html',1,'ipfs']]]
 ];

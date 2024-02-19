@@ -1,7 +1,7 @@
 <map id="ipfs::ipld::Chunk" name="ipfs::ipld::Chunk">
-<area shape="rect" id="node1" title=" " alt="" coords="481,78,608,105"/>
-<area shape="rect" id="node2" href="$classipfs_1_1ipld_1_1DagNode.html" title="A block, an IPNS record, etc." alt="" coords="285,78,432,105"/>
-<area shape="rect" id="node3" title=" " alt="" coords="9,5,191,47"/>
-<area shape="rect" id="node4" title=" " alt="" coords="5,71,195,112"/>
-<area shape="rect" id="node5" title=" " alt="" coords="29,137,171,193"/>
+<area shape="rect" id="node1" title=" " alt="" coords="483,71,609,98"/>
+<area shape="rect" id="node2" href="$classipfs_1_1ipld_1_1DagNode.html" title="A block, an IPNS record, etc." alt="" coords="287,71,433,98"/>
+<area shape="rect" id="node3" title=" " alt="" coords="10,5,191,47"/>
+<area shape="rect" id="node4" title=" " alt="" coords="5,71,196,98"/>
+<area shape="rect" id="node5" title=" " alt="" coords="29,122,172,178"/>
 </map>

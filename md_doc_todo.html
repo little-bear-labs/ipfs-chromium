@@ -68,57 +68,37 @@ $(function() {
 <div class="textblock"><h1><a class="anchor" id="autotoc_md63"></a>
 Upstreaming</h1>
 <ul>
-<li>Link to blog in existing <a href="https://bugs.chromium.org/p/chromium/issues/detail?id=1440503">Chromium ticket</a></li>
-<li>Intent to intent to prototype precursor emails</li>
-<li>Intent to prototype</li>
 <li><a href="https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md">ChromiumStyle</a> </li>
 </ul>
 <h1><a class="anchor" id="autotoc_md64"></a>
 Documentation</h1>
 <ul>
-<li>Publish blog</li>
-<li>Document re-use of library/ipfs_client classes (doxygen/cldoc/doxypress/standardese?)</li>
+<li>Document re-use of library/ipfs_client classes</li>
 <li>Update design.md to as-implemented </li>
 </ul>
 <h1><a class="anchor" id="autotoc_md65"></a>
-Maintainability</h1>
-<ul>
-<li>Rename classes to better fit their responsibility (see class-level doc for inspiration) </li>
-</ul>
-<h1><a class="anchor" id="autotoc_md66"></a>
 Production features</h1>
 <ul>
-<li>User settings</li>
+<li>UI for User settings, also prefs for turning off discovery etc.</li>
 <li>MDNS discovery of gateways </li>
 </ul>
-<h1><a class="anchor" id="autotoc_md67"></a>
+<h1><a class="anchor" id="autotoc_md66"></a>
 QoI</h1>
 <ul>
-<li>Persist promote/demote (perhaps integrated with user settings)</li>
 <li>Real URLLoader (not just Simple*) for gateway requests (SetPriority, pause, etc.)</li>
-<li>Implement SetPriority, having it Scheduler parameters</li>
+<li>Implement SetPriority</li>
 <li>Other hash algos</li>
 <li>Other multibase encodings</li>
 <li>IPNS name resolution - receive multiple records and pick highest sequence # (partial)</li>
 <li>Etag</li>
-<li>Resolve identity CIDs internally</li>
-<li>Different headers for IPNS name resolution requests if they came from cache</li>
 <li>IPNS recursion limit </li>
 </ul>
-<h1><a class="anchor" id="autotoc_md68"></a>
+<h1><a class="anchor" id="autotoc_md67"></a>
 Dev QoL</h1>
 <ul>
 <li>Docker builds verifying every documented build approach</li>
-<li>Github Action release including uploading library artifacts</li>
-<li>Discovery doesn't really belong in gateway_requests.cc</li>
 <li>Streamline Windows release, e.g. package_browser</li>
-<li>library published in Conan</li>
-<li>Publish binaries in Conan </li>
-</ul>
-<h1><a class="anchor" id="autotoc_md69"></a>
-Features</h1>
-<ul>
-<li>.eth resolution </li>
+<li>library published in Conan </li>
 </ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->

@@ -74,28 +74,27 @@ $(function() {
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160; </div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;ipfs_client/ipld/dag_node.h&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;ipfs_client/context_api.h&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;ipfs_client/client.h&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">namespace </span>ipfs::ipld {</div>
 <div class="line"><a name="l00009"></a><span class="lineno"><a class="line" href="classipfs_1_1ipld_1_1DagCborNode.html">    9</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1ipld_1_1DagCborNode.html">DagCborNode</a> final : <span class="keyword">public</span> <a class="code" href="classipfs_1_1ipld_1_1DagNode.html">DagNode</a> {</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  ResolveResult resolve(<a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a>,BlockLookup,</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;                        std::string&amp;) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keyword">using</span> <a class="code" href="classipfs_1_1DagCborValue.html">Data</a> = <a class="code" href="classipfs_1_1DagCborValue.html">DagCborValue</a>;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classipfs_1_1ipld_1_1DagCborNode.html">DagCborNode</a>(std::unique_ptr&lt;Data&gt;);</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  ~<a class="code" href="classipfs_1_1ipld_1_1DagCborNode.html">DagCborNode</a>() noexcept <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  std::unique_ptr&lt;Data&gt; doc_;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;};</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;}</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_DAG_CBOR_NODE_H_</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  ResolveResult resolve(<a class="code" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp;) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <span class="keyword">using</span> <a class="code" href="classipfs_1_1DagCborValue.html">Data</a> = <a class="code" href="classipfs_1_1DagCborValue.html">DagCborValue</a>;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classipfs_1_1ipld_1_1DagCborNode.html">DagCborNode</a>(std::unique_ptr&lt;Data&gt;);</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  ~<a class="code" href="classipfs_1_1ipld_1_1DagCborNode.html">DagCborNode</a>() noexcept <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  std::unique_ptr&lt;Data&gt; doc_;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;};</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;}</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_DAG_CBOR_NODE_H_</span></div>
 <div class="ttc" id="aclassipfs_1_1DagCborValue_html"><div class="ttname"><a href="classipfs_1_1DagCborValue.html">ipfs::DagCborValue</a></div><div class="ttdef"><b>Definition:</b> dag_cbor_value.h:13</div></div>
 <div class="ttc" id="aclassipfs_1_1ipld_1_1DagCborNode_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DagCborNode.html">ipfs::ipld::DagCborNode</a></div><div class="ttdef"><b>Definition:</b> dag_cbor_node.h:9</div></div>
-<div class="ttc" id="aclassipfs_1_1ipld_1_1DagNode_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DagNode.html">ipfs::ipld::DagNode</a></div><div class="ttdoc">A block, an IPNS record, etc.</div><div class="ttdef"><b>Definition:</b> dag_node.h:47</div></div>
-<div class="ttc" id="astructipfs_1_1SlashDelimited_html"><div class="ttname"><a href="structipfs_1_1SlashDelimited.html">ipfs::SlashDelimited</a></div><div class="ttdef"><b>Definition:</b> slash_delimited.h:8</div></div>
+<div class="ttc" id="aclassipfs_1_1ipld_1_1DagNode_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DagNode.html">ipfs::ipld::DagNode</a></div><div class="ttdoc">A block, an IPNS record, etc.</div><div class="ttdef"><b>Definition:</b> dag_node.h:54</div></div>
+<div class="ttc" id="aclassipfs_1_1ipld_1_1ResolutionState_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1ResolutionState.html">ipfs::ipld::ResolutionState</a></div><div class="ttdef"><b>Definition:</b> resolution_state.h:18</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

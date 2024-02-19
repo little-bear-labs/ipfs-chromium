@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['is_5ffile_279',['is_file',['../classipfs_1_1Block.html#a23264e6906ed7558c94cbcc985d286c2',1,'ipfs::Block']]]
+  ['is_5ffile_258',['is_file',['../classipfs_1_1PbDag.html#af09e00523c4b0308d1a7809548a4de96',1,'ipfs::PbDag']]]
 ];

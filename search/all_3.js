@@ -1,17 +1,17 @@
 var searchData=
 [
-  ['cache_5funtil_19',['cache_until',['../structipfs_1_1ValidatedIpns.html#a41a4f4c7cf8f347cf2cd160227e07f98',1,'ipfs::ValidatedIpns']]],
-  ['cacherequestor_20',['CacheRequestor',['../classipfs_1_1CacheRequestor.html',1,'ipfs']]],
-  ['changes_2fadditions_21',['Changes/Additions',['../md_doc_original_design.html',1,'']]],
-  ['checklistening_22',['CheckListening',['../classipfs_1_1BlockStorage.html#a62c0428161a796bc977d5b42d0bd2c73',1,'ipfs::BlockStorage']]],
-  ['chromiumcboradapter_23',['ChromiumCborAdapter',['../classipfs_1_1ChromiumCborAdapter.html',1,'ipfs']]],
-  ['chromiumipfscontext_24',['ChromiumIpfsContext',['../classipfs_1_1ChromiumIpfsContext.html',1,'ipfs']]],
-  ['chromiumjsonadapter_25',['ChromiumJsonAdapter',['../classipfs_1_1ChromiumJsonAdapter.html',1,'ipfs']]],
-  ['chunk_26',['Chunk',['../classipfs_1_1ipld_1_1Chunk.html',1,'ipfs::ipld']]],
-  ['chunk_5fdata_27',['chunk_data',['../classipfs_1_1Block.html#a3b5a934d1925ad98228650fc4fb3e6f6',1,'ipfs::Block']]],
-  ['cid_28',['cid',['../classipfs_1_1Block.html#a47f697035e81089ff38d44324bce6aba',1,'ipfs::Block']]],
-  ['cid_29',['Cid',['../classipfs_1_1Cid.html',1,'ipfs']]],
-  ['cid_5fmatches_5fdata_30',['cid_matches_data',['../classipfs_1_1Block.html#aedc80be918995d8d72ac928346e47a3e',1,'ipfs::Block']]],
-  ['codec_31',['Codec',['../structipfs_1_1mb_1_1Codec.html',1,'ipfs::mb']]],
-  ['contextapi_32',['ContextApi',['../classipfs_1_1ContextApi.html',1,'ipfs']]]
+  ['dagcbornode_38',['DagCborNode',['../classipfs_1_1ipld_1_1DagCborNode.html',1,'ipfs::ipld']]],
+  ['dagcborvalue_39',['DagCborValue',['../classipfs_1_1DagCborValue.html',1,'ipfs']]],
+  ['dagjsonnode_40',['DagJsonNode',['../classipfs_1_1ipld_1_1DagJsonNode.html',1,'ipfs::ipld']]],
+  ['dagjsonvalue_41',['DagJsonValue',['../classipfs_1_1DagJsonValue.html',1,'ipfs']]],
+  ['dagnode_42',['DagNode',['../classipfs_1_1ipld_1_1DagNode.html',1,'ipfs::ipld']]],
+  ['data_43',['Data',['../structipfs_1_1PbDag_1_1Data.html',1,'ipfs::PbDag']]],
+  ['decoder_44',['decoder',['../classmultibase_1_1basic__algorithm_1_1decoder.html',1,'multibase::basic_algorithm']]],
+  ['deserialize_45',['Deserialize',['../structipfs_1_1ValidatedIpns.html#aabdd2defa62bbc9d1463fd4bef53ec23',1,'ipfs::ValidatedIpns']]],
+  ['directive_46',['Directive',['../classipfs_1_1redirects_1_1Directive.html',1,'ipfs::redirects']]],
+  ['dirshard_47',['DirShard',['../classipfs_1_1ipld_1_1DirShard.html',1,'ipfs::ipld']]],
+  ['dnslinkname_48',['DnsLinkName',['../classipfs_1_1ipld_1_1DnsLinkName.html',1,'ipfs::ipld']]],
+  ['dnslinkrequestor_49',['DnsLinkRequestor',['../classipfs_1_1gw_1_1DnsLinkRequestor.html',1,'ipfs::gw']]],
+  ['dnstxtlookup_50',['DnsTxtLookup',['../classipfs_1_1ctx_1_1DnsTxtLookup.html',1,'ipfs::ctx']]],
+  ['dnstxtrequest_51',['DnsTxtRequest',['../classipfs_1_1DnsTxtRequest.html',1,'ipfs']]]
 ];

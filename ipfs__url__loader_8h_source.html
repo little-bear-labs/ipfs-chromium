@@ -84,7 +84,7 @@ $(function() {
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;list&gt;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>ipfs {</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">class </span>ChromiumIpfsContext;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">class </span>Client;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; </div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>network::mojom {</div>
@@ -112,7 +112,7 @@ $(function() {
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="classipfs_1_1IpfsUrlLoader.html">IpfsUrlLoader</a>(network::mojom::URLLoaderFactory&amp; handles_http,</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                         <a class="code" href="classipfs_1_1InterRequestState.html">InterRequestState</a>&amp; state);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                         InterRequestState&amp; state);</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  ~<a class="code" href="classipfs_1_1IpfsUrlLoader.html">IpfsUrlLoader</a>() noexcept <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; </div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keyword">using</span> ptr = std::shared_ptr&lt;IpfsUrlLoader&gt;;</div>
@@ -139,7 +139,7 @@ $(function() {
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  mojo::ScopedDataPipeProducerHandle pipe_prod_ = {};</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  mojo::ScopedDataPipeConsumerHandle pipe_cons_ = {};</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordtype">bool</span> complete_ = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  std::shared_ptr&lt;ChromiumIpfsContext&gt; api_;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  std::shared_ptr&lt;Client&gt; api_;</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  std::string original_url_;</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  std::string partial_block_;</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  std::vector&lt;std::pair&lt;std::string,std::string&gt;&gt; additional_outgoing_headers_;</div>
@@ -165,7 +165,6 @@ $(function() {
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclassipfs_1_1InterRequestState_html"><div class="ttname"><a href="classipfs_1_1InterRequestState.html">ipfs::InterRequestState</a></div><div class="ttdef"><b>Definition:</b> inter_request_state.h:20</div></div>
 <div class="ttc" id="aclassipfs_1_1IpfsUrlLoader_html"><div class="ttname"><a href="classipfs_1_1IpfsUrlLoader.html">ipfs::IpfsUrlLoader</a></div><div class="ttdef"><b>Definition:</b> ipfs_url_loader.h:31</div></div>
 <div class="ttc" id="aclassnetwork_1_1mojom_1_1URLLoader_html"><div class="ttname"><a href="classnetwork_1_1mojom_1_1URLLoader.html">network::mojom::URLLoader</a></div></div>
 </div><!-- fragment --></div><!-- contents -->

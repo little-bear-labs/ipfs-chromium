@@ -1,8 +1,6 @@
 var searchData=
 [
-  ['gatewayhttprequestor_190',['GatewayHttpRequestor',['../classipfs_1_1gw_1_1GatewayHttpRequestor.html',1,'ipfs::gw']]],
-  ['gatewayrequest_191',['GatewayRequest',['../classipfs_1_1gw_1_1GatewayRequest.html',1,'ipfs::gw']]],
-  ['gateways_192',['Gateways',['../classipfs_1_1Gateways.html',1,'ipfs']]],
-  ['gatewayspec_193',['GatewaySpec',['../structipfs_1_1GatewaySpec.html',1,'ipfs']]],
-  ['generateddirectorylisting_194',['GeneratedDirectoryListing',['../classipfs_1_1GeneratedDirectoryListing.html',1,'ipfs']]]
+  ['hasher_189',['Hasher',['../classipfs_1_1crypto_1_1Hasher.html',1,'ipfs::crypto']]],
+  ['httpapi_190',['HttpApi',['../classipfs_1_1ctx_1_1HttpApi.html',1,'ipfs::ctx']]],
+  ['httprequestdescription_191',['HttpRequestDescription',['../structipfs_1_1HttpRequestDescription.html',1,'ipfs']]]
 ];

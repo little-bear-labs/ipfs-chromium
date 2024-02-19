@@ -88,21 +88,21 @@ Collaboration diagram for ipfs::CacheRequestor:</div>
 <div class="dyncontent">
 <div class="center"><img src="classipfs_1_1CacheRequestor__coll__graph.png" border="0" usemap="#aipfs_1_1CacheRequestor_coll__map" alt="Collaboration graph"/></div>
 <map name="aipfs_1_1CacheRequestor_coll__map" id="aipfs_1_1CacheRequestor_coll__map">
-<area shape="rect" title=" " alt="" coords="124,185,284,212"/>
-<area shape="rect" href="classipfs_1_1gw_1_1Requestor.html" title=" " alt="" coords="131,109,277,136"/>
+<area shape="rect" title=" " alt="" coords="125,185,285,212"/>
+<area shape="rect" href="classipfs_1_1gw_1_1Requestor.html" title=" " alt="" coords="132,109,279,136"/>
 <area shape="rect" title=" " alt="" coords="5,5,192,47"/>
-<area shape="rect" title=" " alt="" coords="216,5,405,47"/>
+<area shape="rect" title=" " alt="" coords="217,13,407,39"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a294f45c10c4b99eb1b9ee88864bd7f63"><td class="memItemLeft" align="right" valign="top"><a id="a294f45c10c4b99eb1b9ee88864bd7f63"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>CacheRequestor</b> (<a class="el" href="classipfs_1_1InterRequestState.html">InterRequestState</a> &amp;, base::FilePath)</td></tr>
+&#160;</td><td class="memItemRight" valign="bottom"><b>CacheRequestor</b> (InterRequestState &amp;, base::FilePath)</td></tr>
 <tr class="separator:a294f45c10c4b99eb1b9ee88864bd7f63"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9aa8dd600e6a289edd869b558775b4f"><td class="memItemLeft" align="right" valign="top"><a id="ad9aa8dd600e6a289edd869b558775b4f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Store</b> (std::string cid, std::string headers, std::string body)</td></tr>
-<tr class="separator:ad9aa8dd600e6a289edd869b558775b4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade9c9e2f219f9d5da56f1b7446668737"><td class="memItemLeft" align="right" valign="top"><a id="ade9c9e2f219f9d5da56f1b7446668737"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Store</b> (std::string key, std::string headers, std::string body)</td></tr>
+<tr class="separator:ade9c9e2f219f9d5da56f1b7446668737"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a97c6f819630a83a205dc559b3331d55b"><td class="memItemLeft" align="right" valign="top"><a id="a97c6f819630a83a205dc559b3331d55b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>Expire</b> (std::string const &amp;key)</td></tr>
 <tr class="separator:a97c6f819630a83a205dc559b3331d55b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -116,9 +116,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>request</b> (std::sha
 <tr class="memitem:a703eb07f92c8051d2a7dee116e729666 inherit pub_methods_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="a703eb07f92c8051d2a7dee116e729666"></a>
 <a class="el" href="classipfs_1_1gw_1_1Requestor.html">Requestor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>or_else</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1gw_1_1Requestor.html">Requestor</a> &gt; p)</td></tr>
 <tr class="separator:a703eb07f92c8051d2a7dee116e729666 inherit pub_methods_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab206cf9f3726391bed89e8493e66d83d inherit pub_methods_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="ab206cf9f3726391bed89e8493e66d83d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>api</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &gt;)</td></tr>
-<tr class="separator:ab206cf9f3726391bed89e8493e66d83d inherit pub_methods_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1932ae775e05f5bd10c8f635065ec523 inherit pub_methods_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="a1932ae775e05f5bd10c8f635065ec523"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>api</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt;)</td></tr>
+<tr class="separator:a1932ae775e05f5bd10c8f635065ec523 inherit pub_methods_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62cee993178acef97b32878f83c92ee2 inherit pub_methods_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="a62cee993178acef97b32878f83c92ee2"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>TestAccess</b> (void *)</td></tr>
 <tr class="separator:a62cee993178acef97b32878f83c92ee2 inherit pub_methods_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -126,11 +126,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>TestAccess</b> (void 
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_types_classipfs_1_1gw_1_1Requestor"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classipfs_1_1gw_1_1Requestor')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classipfs_1_1gw_1_1Requestor.html">ipfs::gw::Requestor</a></td></tr>
-<tr class="memitem:a5756c746cba35075d2ce68127dac7d5e inherit pub_types_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="a5756c746cba35075d2ce68127dac7d5e"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>RequestPtr</b> = ::ipfs::gw::RequestPtr</td></tr>
-<tr class="separator:a5756c746cba35075d2ce68127dac7d5e inherit pub_types_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_types_classipfs_1_1gw_1_1Requestor"><td colspan="2" onclick="javascript:toggleInherit('pro_types_classipfs_1_1gw_1_1Requestor')"><img src="closed.png" alt="-"/>&#160;Protected Types inherited from <a class="el" href="classipfs_1_1gw_1_1Requestor.html">ipfs::gw::Requestor</a></td></tr>
-<tr class="memitem:a879fa21c08df6c4831b5adf218ef6b83 inherit pro_types_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="a879fa21c08df6c4831b5adf218ef6b83"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>HandleOutcome</b> : char { <br />
+<tr class="memitem:a879fa21c08df6c4831b5adf218ef6b83 inherit pub_types_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="a879fa21c08df6c4831b5adf218ef6b83"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>HandleOutcome</b> : char { <br />
 &#160;&#160;<b>NOT_HANDLED</b> = 'N'
 , <b>PENDING</b> = 'P'
 , <b>DONE</b> = 'D'
@@ -139,20 +135,11 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>RequestPtr</b> = ::i
 &#160;&#160;<b>MAYBE_LATER</b> = 'M'
 <br />
  }</td></tr>
-<tr class="separator:a879fa21c08df6c4831b5adf218ef6b83 inherit pro_types_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a879fa21c08df6c4831b5adf218ef6b83 inherit pub_types_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5756c746cba35075d2ce68127dac7d5e inherit pub_types_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="a5756c746cba35075d2ce68127dac7d5e"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>RequestPtr</b> = ::ipfs::gw::RequestPtr</td></tr>
+<tr class="separator:a5756c746cba35075d2ce68127dac7d5e inherit pub_types_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classipfs_1_1gw_1_1Requestor"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classipfs_1_1gw_1_1Requestor')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classipfs_1_1gw_1_1Requestor.html">ipfs::gw::Requestor</a></td></tr>
-<tr class="memitem:a7ede9018374c96ccf77a3c231902c1cf inherit pro_methods_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="a7ede9018374c96ccf77a3c231902c1cf"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>iterate_nodes</b> (<a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> const &amp;req, <a class="el" href="structipfs_1_1Response.html">Response</a> const &amp;res, std::function&lt; void(std::string, std::shared_ptr&lt; <a class="el" href="classipfs_1_1ipld_1_1DagNode.html">ipld::DagNode</a> &gt;)&gt;) const</td></tr>
-<tr class="separator:a7ede9018374c96ccf77a3c231902c1cf inherit pro_methods_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57b2eae081fa4e73db5e9f30a6fed294 inherit pro_methods_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="a57b2eae081fa4e73db5e9f30a6fed294"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>receive_response</b> (RequestPtr, <a class="el" href="structipfs_1_1Response.html">ipfs::Response</a> const &amp;) const</td></tr>
-<tr class="separator:a57b2eae081fa4e73db5e9f30a6fed294 inherit pro_methods_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5aed8d8bafbec9fcb7862d039c88011a inherit pro_methods_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="a5aed8d8bafbec9fcb7862d039c88011a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>success</b> (RequestPtr, std::string_view body) const</td></tr>
-<tr class="separator:a5aed8d8bafbec9fcb7862d039c88011a inherit pro_methods_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af859958a3dfb2eae777776daff9e763b inherit pro_methods_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="af859958a3dfb2eae777776daff9e763b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>failure</b> (RequestPtr) const</td></tr>
-<tr class="separator:af859958a3dfb2eae777776daff9e763b inherit pro_methods_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abe08c5aea632f9b3a42b9b5d2a50b245 inherit pro_methods_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="abe08c5aea632f9b3a42b9b5d2a50b245"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>definitive_failure</b> (RequestPtr) const</td></tr>
 <tr class="separator:abe08c5aea632f9b3a42b9b5d2a50b245 inherit pro_methods_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -160,9 +147,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>definitive_failure</b
 void&#160;</td><td class="memItemRight" valign="bottom"><b>forward</b> (RequestPtr) const</td></tr>
 <tr class="separator:a6db499668823e59448d4052a3fbec364 inherit pro_methods_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classipfs_1_1gw_1_1Requestor"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classipfs_1_1gw_1_1Requestor')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classipfs_1_1gw_1_1Requestor.html">ipfs::gw::Requestor</a></td></tr>
-<tr class="memitem:a773155aabdea83458824db3654babcf5 inherit pro_attribs_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="a773155aabdea83458824db3654babcf5"></a>
-std::shared_ptr&lt; <a class="el" href="classipfs_1_1ContextApi.html">ContextApi</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>api_</b></td></tr>
-<tr class="separator:a773155aabdea83458824db3654babcf5 inherit pro_attribs_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3539251eb1302cf5900cc908112eb4f4 inherit pro_attribs_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="a3539251eb1302cf5900cc908112eb4f4"></a>
+std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>api_</b></td></tr>
+<tr class="separator:a3539251eb1302cf5900cc908112eb4f4 inherit pro_attribs_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>component/<a class="el" href="cache__requestor_8h_source.html">cache_requestor.h</a></li>

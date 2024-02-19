@@ -1,8 +1,9 @@
 <map id="ipfs::gw::GatewayRequest" name="ipfs::gw::GatewayRequest">
-<area shape="rect" id="node1" title=" " alt="" coords="204,124,395,151"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,5,164,32"/>
-<area shape="rect" id="node3" title=" " alt="" coords="188,5,243,32"/>
-<area shape="rect" id="node4" title=" " alt="" coords="271,5,323,32"/>
-<area shape="rect" id="node5" title=" " alt="" coords="347,5,406,32"/>
-<area shape="rect" id="node6" title=" " alt="" coords="431,5,661,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="367,141,557,168"/>
+<area shape="rect" id="node2" title=" " alt="" coords="41,5,200,32"/>
+<area shape="rect" id="node3" title=" " alt="" coords="93,56,148,83"/>
+<area shape="rect" id="node4" title=" " alt="" coords="95,107,147,133"/>
+<area shape="rect" id="node5" title=" " alt="" coords="91,176,150,203"/>
+<area shape="rect" id="node6" title=" " alt="" coords="5,227,236,253"/>
+<area shape="rect" id="node7" title=" " alt="" coords="38,277,203,304"/>
 </map>

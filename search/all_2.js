@@ -1,13 +1,23 @@
 var searchData=
 [
-  ['basic_5falgorithm_9',['basic_algorithm',['../classmultibase_1_1basic__algorithm.html',1,'multibase']]],
-  ['binary_5fhash_10',['binary_hash',['../classipfs_1_1Block.html#aeebea6eec1d41eb08a324fbb115d13d7',1,'ipfs::Block']]],
-  ['blinkon23_11',['blinkon23',['../md_doc_slides_blinkon23.html',1,'']]],
-  ['block_12',['Block',['../classipfs_1_1Block.html#aaae97cdd642eea9386b680e9442f25ca',1,'ipfs::Block::Block(Cid const &amp;cid, std::istream &amp;stream)'],['../classipfs_1_1Block.html#a611509857b5b9cc9fdd0c5cbf97ae24d',1,'ipfs::Block::Block(Cid const &amp;cid, std::string_view bytes)'],['../classipfs_1_1Block.html#aa6f73edb4a3d9583f30ad74486b27278',1,'ipfs::Block::Block()'],['../classipfs_1_1Block.html',1,'ipfs::Block']]],
-  ['block_5fsize_13',['block_size',['../classmultibase_1_1algorithm.html#a872d1a79fe4def712d0db5ae52f8b578',1,'multibase::algorithm::block_size()'],['../classmultibase_1_1basic__algorithm_1_1encoder.html#a5b57f4d351f68c9a916926b698e43476',1,'multibase::basic_algorithm::encoder::block_size()'],['../classmultibase_1_1basic__algorithm_1_1decoder.html#a24945adaf71db96418954e8f2ed231df',1,'multibase::basic_algorithm::decoder::block_size()']]],
-  ['block_5ftag_14',['block_tag',['../classmultibase_1_1algorithm_1_1block__tag.html',1,'multibase::algorithm']]],
-  ['blockhttprequest_15',['BlockHttpRequest',['../classipfs_1_1BlockHttpRequest.html',1,'ipfs']]],
-  ['blockrequestor_16',['BlockRequestor',['../classipfs_1_1BlockRequestor.html',1,'ipfs']]],
-  ['blockrequestsplitter_17',['BlockRequestSplitter',['../classipfs_1_1gw_1_1BlockRequestSplitter.html',1,'ipfs::gw']]],
-  ['blockstorage_18',['BlockStorage',['../classipfs_1_1BlockStorage.html',1,'ipfs']]]
+  ['cache_5funtil_18',['cache_until',['../structipfs_1_1ValidatedIpns.html#a41a4f4c7cf8f347cf2cd160227e07f98',1,'ipfs::ValidatedIpns']]],
+  ['cacherequestor_19',['CacheRequestor',['../classipfs_1_1CacheRequestor.html',1,'ipfs']]],
+  ['callchild_20',['CallChild',['../classipfs_1_1ipld_1_1DagNode.html#a3ec76ce53695d2ed7e55cdc5238ba769',1,'ipfs::ipld::DagNode::CallChild(ResolutionState &amp;, std::string_view link_key)'],['../classipfs_1_1ipld_1_1DagNode.html#a28a67bb9a0172de308d17362adfa6c7b',1,'ipfs::ipld::DagNode::CallChild(ResolutionState &amp;, std::function&lt; NodePtr(std::string_view)&gt; gen_child)'],['../classipfs_1_1ipld_1_1DagNode.html#ad5f9cb31ef4b6d043276202525fd9fb3',1,'ipfs::ipld::DagNode::CallChild(ResolutionState &amp;)']]],
+  ['car_21',['Car',['../classipfs_1_1Car.html',1,'ipfs']]],
+  ['cborparser_22',['CborParser',['../classipfs_1_1ctx_1_1CborParser.html',1,'ipfs::ctx']]],
+  ['changes_2fadditions_23',['Changes/Additions',['../md_doc_original_design.html',1,'']]],
+  ['checklistening_24',['CheckListening',['../classipfs_1_1BlockStorage.html#a62c0428161a796bc977d5b42d0bd2c73',1,'ipfs::BlockStorage']]],
+  ['chromebrowsermainextraparts_25',['ChromeBrowserMainExtraParts',['../classChromeBrowserMainExtraParts.html',1,'']]],
+  ['chromiumcboradapter_26',['ChromiumCborAdapter',['../classipfs_1_1ChromiumCborAdapter.html',1,'ipfs']]],
+  ['chromiumdnstxtlookup_27',['ChromiumDnsTxtLookup',['../classipfs_1_1ChromiumDnsTxtLookup.html',1,'ipfs']]],
+  ['chromiumhttp_28',['ChromiumHttp',['../classipfs_1_1ChromiumHttp.html',1,'ipfs']]],
+  ['chromiumipfsgatewayconfig_29',['ChromiumIpfsGatewayConfig',['../classipfs_1_1ChromiumIpfsGatewayConfig.html',1,'ipfs']]],
+  ['chromiumjsonadapter_30',['ChromiumJsonAdapter',['../classipfs_1_1ChromiumJsonAdapter.html',1,'ipfs']]],
+  ['chunk_31',['Chunk',['../classipfs_1_1ipld_1_1Chunk.html',1,'ipfs::ipld']]],
+  ['chunk_5fdata_32',['chunk_data',['../classipfs_1_1PbDag.html#a45ae5d750c58952b38b341753690a9bb',1,'ipfs::PbDag']]],
+  ['cid_33',['cid',['../classipfs_1_1PbDag.html#a2a961573eef1d1777f353eae561179a1',1,'ipfs::PbDag']]],
+  ['cid_34',['Cid',['../classipfs_1_1Cid.html',1,'ipfs']]],
+  ['cid_5fmatches_5fdata_35',['cid_matches_data',['../classipfs_1_1PbDag.html#a257c7a75b75f465e5272e2bf162456aa',1,'ipfs::PbDag']]],
+  ['client_36',['Client',['../classipfs_1_1Client.html',1,'ipfs']]],
+  ['codec_37',['Codec',['../structipfs_1_1mb_1_1Codec.html',1,'ipfs::mb']]]
 ];

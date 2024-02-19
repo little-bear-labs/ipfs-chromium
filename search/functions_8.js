@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['list_280',['List',['../classipfs_1_1Block.html#a8344f0e15846950ccb8804086c7fd4db',1,'ipfs::Block']]]
+  ['mimetype_259',['MimeType',['../classipfs_1_1Client.html#a062c3273e71f61ebc1ddde7a5b77dce7',1,'ipfs::Client']]]
 ];

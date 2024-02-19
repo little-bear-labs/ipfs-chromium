@@ -1,10 +1,6 @@
 var searchData=
 [
-  ['raw_5fptr_225',['raw_ptr',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
-  ['raw_5fptr_3c_20network_3a_3amojom_3a_3anetworkcontext_20_3e_226',['raw_ptr&lt; network::mojom::NetworkContext &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
-  ['raw_5fptr_3c_20network_3a_3amojom_3a_3aurlloaderfactory_20_3e_227',['raw_ptr&lt; network::mojom::URLLoaderFactory &gt;',['../classipfs_1_1raw__ptr.html',1,'ipfs']]],
-  ['requestor_228',['Requestor',['../classipfs_1_1gw_1_1Requestor.html',1,'ipfs::gw']]],
-  ['requestorpool_229',['RequestorPool',['../classipfs_1_1gw_1_1RequestorPool.html',1,'ipfs::gw']]],
-  ['response_230',['Response',['../structipfs_1_1Response.html',1,'ipfs']]],
-  ['root_231',['Root',['../classipfs_1_1ipld_1_1Root.html',1,'ipfs::ipld']]]
+  ['partition_208',['Partition',['../classipfs_1_1Partition.html',1,'ipfs']]],
+  ['pathchange_209',['PathChange',['../structipfs_1_1ipld_1_1PathChange.html',1,'ipfs::ipld']]],
+  ['pbdag_210',['PbDag',['../classipfs_1_1PbDag.html',1,'ipfs']]]
 ];

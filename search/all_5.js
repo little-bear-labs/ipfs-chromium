@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['encoder_49',['encoder',['../classmultibase_1_1basic__algorithm_1_1encoder.html',1,'multibase::basic_algorithm']]],
-  ['entry_50',['Entry',['../classipfs_1_1IpnsNames.html#a201e70563c10eb06441c49ba06231587',1,'ipfs::IpnsNames']]]
+  ['fetch_5ftime_54',['fetch_time',['../structipfs_1_1ValidatedIpns.html#a2848fb8db773402c46dfe9d53303d845',1,'ipfs::ValidatedIpns']]],
+  ['file_55',['File',['../classipfs_1_1redirects_1_1File.html',1,'ipfs::redirects']]],
+  ['finish_56',['Finish',['../classipfs_1_1GeneratedDirectoryListing.html#aea8410db96a18911bd0288eb0fcf02a3',1,'ipfs::GeneratedDirectoryListing']]]
 ];

@@ -1,11 +1,13 @@
 var searchData=
 [
-  ['addentry_1',['AddEntry',['../classipfs_1_1GeneratedDirectoryListing.html#ae7256c8d7bd7d24b97590cbeef73edda',1,'ipfs::GeneratedDirectoryListing']]],
-  ['addgateways_2',['AddGateways',['../classipfs_1_1Gateways.html#ad5cf5869f8cadbb64fd9f011964091ad',1,'ipfs::Gateways']]],
-  ['addlistening_3',['AddListening',['../classipfs_1_1BlockStorage.html#a0071537003f3fc45bc09da2372bac766',1,'ipfs::BlockStorage']]],
-  ['addstoragehook_4',['AddStorageHook',['../classipfs_1_1BlockStorage.html#a35f051a01eb18bf489bd6e6f12b5d480',1,'ipfs::BlockStorage']]],
-  ['algorithm_5',['algorithm',['../classmultibase_1_1algorithm.html',1,'multibase']]],
-  ['as_2dimplemented_20design_20notes_6',['As-Implemented Design Notes',['../md_doc_design_notes.html',1,'']]],
-  ['assigndnslink_7',['AssignDnsLink',['../classipfs_1_1IpnsNames.html#a1ccd03ba666ba55c3c2e24c1566b100f',1,'ipfs::IpnsNames']]],
-  ['assignname_8',['AssignName',['../classipfs_1_1IpnsNames.html#aaaf39692cf8b7413d7c1b56c6c176a18',1,'ipfs::IpnsNames']]]
+  ['basic_5falgorithm_8',['basic_algorithm',['../classmultibase_1_1basic__algorithm.html',1,'multibase']]],
+  ['binary_5fhash_9',['binary_hash',['../classipfs_1_1PbDag.html#ab3e8ffbd31327afcc6f0ad093c1dc501',1,'ipfs::PbDag']]],
+  ['blinkon23_10',['blinkon23',['../md_doc_slides_blinkon23.html',1,'']]],
+  ['block_11',['Block',['../structipfs_1_1Car_1_1Block.html',1,'ipfs::Car']]],
+  ['block_5fsize_12',['block_size',['../classmultibase_1_1algorithm.html#a872d1a79fe4def712d0db5ae52f8b578',1,'multibase::algorithm::block_size()'],['../classmultibase_1_1basic__algorithm_1_1encoder.html#a5b57f4d351f68c9a916926b698e43476',1,'multibase::basic_algorithm::encoder::block_size()'],['../classmultibase_1_1basic__algorithm_1_1decoder.html#a24945adaf71db96418954e8f2ed231df',1,'multibase::basic_algorithm::decoder::block_size()']]],
+  ['block_5ftag_13',['block_tag',['../classmultibase_1_1algorithm_1_1block__tag.html',1,'multibase::algorithm']]],
+  ['blockhttprequest_14',['BlockHttpRequest',['../classipfs_1_1BlockHttpRequest.html',1,'ipfs']]],
+  ['blockrequestor_15',['BlockRequestor',['../classipfs_1_1BlockRequestor.html',1,'ipfs']]],
+  ['blockrequestsplitter_16',['BlockRequestSplitter',['../classipfs_1_1gw_1_1BlockRequestSplitter.html',1,'ipfs::gw']]],
+  ['blockstorage_17',['BlockStorage',['../classipfs_1_1BlockStorage.html',1,'ipfs']]]
 ];
