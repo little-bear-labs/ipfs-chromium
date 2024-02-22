@@ -108,7 +108,7 @@ It also provides for opportunities down the road for natural synergies, for exam
 
 At a high level, the most important features for compatibility are those analagous to [subdomain gateway](https://specs.ipfs.tech/http-gateways/subdomain-gateway/) 
 features, but implemented in the client obviating the need for a separate HTTP server,
-using data from [trustless gateways](https://specs.ipfs.tech/http-gateways/trustless-gateway/).
+using data from [trustless gateways](https://specs.ipfs.tech/http-gateways/trustless-gateway/) and performing hash verification on end user's machine (Chromium).
 
 As discussed in the proposal, for the purposes of cross-implementation compatibility, we'll seek a common subset of URLs that all implementations support. 
 This implies a common universally-supported-as-input subset of:
