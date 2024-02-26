@@ -244,6 +244,12 @@ class Patcher:
         self.up_rels[key] = result
         return result
 
+    def oldest(self):
+        evs = self.release_versions('Extended', 'Mac') + self.release_versions('Extended', 'Windows')
+        evs = list(map(lambda x: (as_int(x[1]), x[1]), evs))
+        evs.sort()
+        return evs[0]
+
     def electron_version(self, branch='main'):
         if 'electron-main' in self.up_rels:
             return self.up_rels['electron-main']
@@ -256,7 +262,7 @@ class Patcher:
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
-        fudge = 59904
+        fudge = 59906
         def check(version, version_set, s):
             i = as_int(version)
             by = (fudge,0)
@@ -323,8 +329,12 @@ class Patcher:
 
     def list_ood(self, to_check: list[str], sense: bool):
         to_check.sort()
+        oldest = self.oldest()
+        verbose(f'Oldest supportable version: {oldest}')
         for p in to_check:
-            if self.out_of_date(p) == sense:
+            if (as_int(p) < oldest[0]) == sense:
+                print(p)
+            elif self.out_of_date(p) == sense:
                 print(p)
 
 

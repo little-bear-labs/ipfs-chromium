@@ -1,6 +1,8 @@
 #ifndef COMPONENTS_IPFS_URL_LOADER_H_
 #define COMPONENTS_IPFS_URL_LOADER_H_ 1
 
+#include "virtual_optional.h"
+
 #include "base/debug/debugging_buildflags.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -34,7 +36,7 @@ class IpfsUrlLoader final : public network::mojom::URLLoader {
       std::vector<std::string> const& removed_headers,
       net::HttpRequestHeaders const& modified_headers,
       net::HttpRequestHeaders const& modified_cors_exempt_headers,
-      absl::optional<::GURL> const& new_url) override;
+      VirtualOptional<::GURL> const& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
