@@ -4,12 +4,11 @@
 
 #include <ipfs_client/dag_json_value.h>
 #include <ipfs_client/ipfs_request.h>
+#include <ipfs_client/ipld/dnslink_name.h>
 #include <ipfs_client/ipns_record.h>
 #include <ipfs_client/ipns_record.pb.h>
 #include <ipfs_client/logger.h>
 #include <ipfs_client/pb_dag.h>
-
-#include "ipld/dnslink_name.h"
 
 #include <filesystem>
 #include <fstream>
@@ -76,7 +75,7 @@ struct TestRequestor final : public ig::Requestor {
       base_dir = base_dir.parent_path();
     }
     switch (r->type) {
-      case i::gw::Type::Ipns: {
+      case i::gw::GatewayRequestType::Ipns: {
         auto dir = base_dir / "test_data" / "names";
         auto f = dir / cid;
         EXPECT_TRUE(is_regular_file(f)) << cid << " missing";
@@ -106,10 +105,10 @@ struct TestRequestor final : public ig::Requestor {
         buf.resize(buf.size() - 1);
         r->RespondSuccessfully(buf, api);
       } break;
-      case i::gw::Type::Car:
-        r->type = i::gw::Type::Block;
+      case i::gw::GatewayRequestType::Car:
+        r->type = i::gw::GatewayRequestType::Block;
         [[fallthrough]];
-      case i::gw::Type::Block: {
+      case i::gw::GatewayRequestType::Block: {
         auto blocs_dir = base_dir / "test_data" / "blocks";
         EXPECT_TRUE(is_directory(blocs_dir));
         auto f = blocs_dir / cid;
@@ -133,7 +132,7 @@ struct TestRequestor final : public ig::Requestor {
           return HandleOutcome::DONE;
         }
       } break;
-      case i::gw::Type::DnsLink: {
+      case i::gw::GatewayRequestType::DnsLink: {
         auto dir = base_dir / "test_data" / "names";
         auto f = dir / cid;
         EXPECT_TRUE(is_regular_file(f)) << cid << " missing";

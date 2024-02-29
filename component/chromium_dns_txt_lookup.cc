@@ -9,7 +9,7 @@ void Self::SendDnsTextRequest(std::string host,
                               DnsTextCompleteCallback don) {
   if (dns_reqs_.find(host) != dns_reqs_.end()) {
     // TODO: do combine two or delay this one. Don't drop the first one!!
-    VLOG(1) << "Requested resolution of DNSLink host " << host
+    VLOG(2) << "Requested resolution of DNSLink host " << host
             << " multiple times.";
   }
   auto don_wrap = [don, this, host]() {

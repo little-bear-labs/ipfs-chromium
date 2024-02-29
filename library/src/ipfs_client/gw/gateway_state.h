@@ -1,34 +1,49 @@
 #ifndef IPFS_GATEWAY_STATE_H_
 #define IPFS_GATEWAY_STATE_H_
 
+#include <ipfs_client/gw/gateway_request_type.h>
 #include <vocab/flat_mapset.h>
 
 #include <ctime>
 
 #include <array>
+#include <memory>
 #include <string>
+
+namespace ipfs {
+class Client;
+
+namespace ctx {
+class GatewayConfig;
+}
+}  // namespace ipfs
 
 namespace ipfs::gw {
 class GatewayRequest;
 class GatewayState {
+  std::string prefix_;
+  std::shared_ptr<Client> api_;
   flat_map<std::string, long> affinity_success;
-  std::array<long, 7> request_type_success;
   static constexpr short MinutesTracked = 4;
   std::array<unsigned, MinutesTracked * 60UL> sent_counts;
   std::size_t total_sent = 0UL;
   std::time_t last_hist_update;
   unsigned& current_bucket();
   long slowness = 0;
+  bool over_rate(unsigned req_per_min);
+
+  ctx::GatewayConfig& cfg();
+  ctx::GatewayConfig const& cfg() const;
 
  public:
-  GatewayState();
+  GatewayState(std::string_view prefix, std::shared_ptr<Client>);
   long score(GatewayRequest const&, unsigned) const;
-  bool over_rate(unsigned req_per_min);
   bool bored() const;
+  bool over_rate();
 
   void just_sent_one();
-  void hit(GatewayRequest const&);
-  bool miss(GatewayRequest const&);
+  void hit(GatewayRequestType, GatewayRequest const&);
+  bool miss(GatewayRequestType, GatewayRequest const&);
   void timed_out();
   long extra_ms() { return slowness; }
 };

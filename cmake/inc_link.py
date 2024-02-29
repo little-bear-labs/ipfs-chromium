@@ -199,6 +199,8 @@ def flesh_out() -> bool:
             t = readlink(f)
             existing_dir_map.add( (dirname(f), dirname(t)) )
     for t, f in existing_dir_map:
+        if not isdir(f):
+            continue
         for entry in listdir(f):
             source = join(f,entry)
             target = join(t,entry)

@@ -4,17 +4,31 @@
 #include <ipfs_client/ctx/gateway_config.h>
 
 namespace i = ipfs;
+namespace ig = i::gw;
 
 namespace {
-struct MockGwCfg : public ipfs::ctx::GatewayConfig {
+struct MockGwCfg final : public ipfs::ctx::GatewayConfig {
   std::optional<i::GatewaySpec> GetGateway(std::size_t) const {
     return std::nullopt;
   }
   unsigned GetGatewayRate(std::string_view) { return 120U; }
   std::vector<std::string> gateways_added;
   void AddGateway(std::string_view g) { gateways_added.emplace_back(g); }
+  void AddGateway(std::string_view g, unsigned) {
+    gateways_added.emplace_back(g);
+  }
   void SetGatewayRate(std::string_view, unsigned int) override {}
+  unsigned RoutingApiDiscoveryDefaultRate() const { return 9; }
   virtual ~MockGwCfg() noexcept override {}
+  bool http_disc_ = true;
+  bool RoutingApiDiscoveryOfUnencryptedGateways() const { return http_disc_; }
+  int GetTypeAffinity(std::string_view url_prefix,
+                      ig::GatewayRequestType) const {
+    return 0;
+  }
+  void SetTypeAffinity(std::string_view url_prefix,
+                       ig::GatewayRequestType,
+                       int) {}
 };
 }  // namespace
 

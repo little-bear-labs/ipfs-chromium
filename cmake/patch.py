@@ -297,16 +297,24 @@ class Patcher:
         dir_path = f'{self.edir}/{p}'
         if not isdir(dir_path):
             return True
+        file_path = join(dir_path,'components/cbor/reader_unittest.cc.patch')
+        if not isfile(file_path):
+            return True
+        with open(file_path) as f:
+            lines = list(map(lambda x: x.strip(), f.readlines()))
+            if '+  absl::optional<Value> cbor = Reader::Read(kTaggedCbor, config);' in lines:
+                verbose(p, 'Still relying on absl::optional in unit tests', file_path)
+                return True
         file_path = f'{self.pdir}/{p}.patch'
         if not isfile(file_path):
             return False
         with open(file_path) as f:
-            lines = f.readlines()
+            lines = list(map(lambda x: x.strip(), f.readlines()))
             if not Patcher.has_file_line(lines, 'chrome/browser/flag-metadata.json', '+    "name": "enable-ipfs",'):
-                verbose(p, 'does not have enable-ipfs in flag-metadata.json', file_path, file=sys.stderr)
+                verbose(p, 'does not have enable-ipfs in flag-metadata.json', file_path)
                 return True
             if not Patcher.has_file_line(lines, 'chrome/browser/chrome_content_browser_client.cc', '+    main_parts->AddParts(std::make_unique<IpfsExtraParts>());'):
-                verbose(p, 'does not have enable-ipfs in flag-metadata.json', file_path, file=sys.stderr)
+                verbose(p, 'does not have enable-ipfs in flag-metadata.json', file_path)
                 return True
         return False
 
@@ -332,14 +340,14 @@ class Patcher:
         oldest = self.oldest()
         verbose(f'Oldest supportable version: {oldest}')
         for p in to_check:
-            if (as_int(p) < oldest[0]) == sense:
-                print(p)
-            elif self.out_of_date(p) == sense:
+            if (as_int(p) < oldest[0] or self.out_of_date(p)) == sense:
                 print(p)
 
 
 if __name__ == '__main__':
-    if argv[1] == 'apply':
+    if len(argv) < 2:
+        print('Give an argument to indicate what you\'d like to do.')
+    elif argv[1] == 'apply':
         Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug').apply()
     elif argv[1] == 'rec':
         print(osname())
