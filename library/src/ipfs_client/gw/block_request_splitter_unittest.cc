@@ -1,6 +1,6 @@
 #include <ipfs_client/gw/block_request_splitter.h>
 
-#include <gtest/gtest.h>
+#include <mock_api.h>
 
 #include <ipfs_client/gw/gateway_request.h>
 #include <ipfs_client/ipfs_request.h>
@@ -23,6 +23,7 @@ struct Recording : public g::Requestor {
 
 TEST(BlockRequestSplitterTest, split2three) {
   Tested tested;
+  tested.api(std::make_shared<MockApi>());
   auto rec = std::make_shared<Recording>();
   tested.or_else(rec);
   auto req = std::make_shared<Req>();

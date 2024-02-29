@@ -56,7 +56,7 @@ bool parse_results(ipfs::gw::RequestPtr req,
           << req->main_param << " looking for dnslink...";
   for (auto& result : results) {
     if (starts_with(result, prefix)) {
-      VLOG(1) << "DNSLink result=" << result;
+      VLOG(2) << "DNSLink result=" << result;
       req->RespondSuccessfully(result.substr(prefix.size()), api);
       return true;
     } else {

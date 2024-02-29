@@ -339,7 +339,9 @@ class Patcher:
 
 
 if __name__ == '__main__':
-    if argv[1] == 'apply':
+    if len(argv) < 2:
+        print('Give an argument to indicate what you\'d like to do.')
+    elif argv[1] == 'apply':
         Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug').apply()
     elif argv[1] == 'rec':
         print(osname())

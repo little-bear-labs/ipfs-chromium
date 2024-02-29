@@ -15,7 +15,9 @@ class TransitoryGatewayConfig : public GatewayConfig {
   std::optional<GatewaySpec> GetGateway(std::size_t index) const override;
   unsigned GetGatewayRate(std::string_view) override;
   void SetGatewayRate(std::string_view, unsigned) override;
-  void AddGateway(std::string_view) override;
+  void AddGateway(std::string_view, unsigned) override;
+  unsigned RoutingApiDiscoveryDefaultRate() const override;
+  bool RoutingApiDiscoveryOfUnencryptedGateways() const override;
 
   TransitoryGatewayConfig();
 };

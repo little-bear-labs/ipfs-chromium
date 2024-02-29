@@ -34,7 +34,7 @@ void Self::Next() {
   }
 }
 bool Self::Process(RequestPtr const& req) {
-  LOG(INFO) << "Process(" << req->debug_string() << ")";
+  VLOG(2) << "Process(" << req->debug_string() << ")";
   if (!req->is_http()) {
     return false;
   }
@@ -127,7 +127,7 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
                           std::string_view body,
                           HeaderAccess hdrs,
                           bool timed_out) {
-  LOG(INFO) << "HandleResponse(" << req->debug_string() << ")";
+  VLOG(2) << "HandleResponse(" << req->debug_string() << ")";
   if (req->Finished() ||
       (req->PartiallyRedundant() && req->type == Type::Block)) {
     return;
@@ -164,7 +164,7 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
       if (rpm < 15) {
         rpm *= 2;
       }
-      rpm += 2;
+      rpm += 3;
       gws.SetGatewayRate(gw, rpm);
       Next();
       return;

@@ -8,7 +8,9 @@
 #include <components/prefs/pref_service.h>
 
 namespace {
-std::string const kRateLimit{"ipfs.gateways.rate_limits"};
+std::string const kRateLimits{"ipfs.gateways.rate_limits"};
+std::string const kDiscoveryRate{"ipfs.gateways.discovery.rate"};
+std::string const kDiscoveryOfUnencrypted{"ipfs.gateways.discovery.http"};
 }
 
 void ipfs::RegisterPreferences(PrefRegistrySimple* service) {
@@ -28,17 +30,19 @@ void ipfs::RegisterPreferences(PrefRegistrySimple* service) {
   for (auto [k, v] : vals) {
     DCHECK(v.is_int());
   }
-  service->RegisterDictionaryPref(kRateLimit, std::move(vals));
+  service->RegisterDictionaryPref(kRateLimits, std::move(vals));
+  service->RegisterIntegerPref(kDiscoveryRate, 120);
+  service->RegisterIntegerPref(kDiscoveryOfUnencrypted, true);
 }
 using Self = ipfs::ChromiumIpfsGatewayConfig;
 Self::ChromiumIpfsGatewayConfig(PrefService* prefs) : prefs_{prefs} {
   if (prefs) {
-    last_ = prefs->GetDict(kRateLimit).Clone();
+    last_ = prefs->GetDict(kRateLimits).Clone();
     for (auto [k, v] : last_) {
       auto i = v.GetInt();
       curr_.Set(k, std::max(i, 1));
     }
-    VLOG(1) << "Initialized with " << curr_.size() << " gateways.";
+    VLOG(2) << "Initialized with " << curr_.size() << " gateways.";
   } else {
     LOG(ERROR)
         << "Reading preferences without a preferences service is not great.";
@@ -75,8 +79,8 @@ void Self::SetGatewayRate(std::string_view k, unsigned val) {
     }
   }
 }
-void Self::AddGateway(std::string_view k) {
-  SetGatewayRate(k, 120);
+void Self::AddGateway(std::string_view k, unsigned r) {
+  curr_.Set(k, curr_.FindInt(k).value_or(r) + 1);
 }
 auto Self::GetGateway(std::size_t index) const -> std::optional<GatewaySpec> {
   auto [k, r] = at(index);
@@ -98,5 +102,11 @@ void Self::save() {
   changes = 0;
   last_ = curr_.Clone();
   update_thresh++;
-  prefs_->SetDict(kRateLimit, last_.Clone());
+  prefs_->SetDict(kRateLimits, last_.Clone());
+}
+unsigned Self::RoutingApiDiscoveryDefaultRate() const {
+  return static_cast<unsigned>(prefs_->GetInteger(kDiscoveryRate));
+}
+bool Self ::RoutingApiDiscoveryOfUnencryptedGateways() const {
+  return prefs_->GetBoolean(kDiscoveryOfUnencrypted);
 }

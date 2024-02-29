@@ -299,8 +299,8 @@ bool Self::RespondSuccessfully(std::string_view bytes,
           success = orchestrator_->add_node(main_param, node);
           if (valid) {
             *valid = !node->expired();
-            LOG(INFO) << "IPNS node created " << main_param << ' ' << success
-                      << " vs. " << *valid;
+            VLOG(1) << "IPNS node created " << main_param << ' ' << success
+                    << " vs. " << *valid;
           }
         } else {
           LOG(ERROR) << "IPNS record failed to validate!";
@@ -309,7 +309,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
       }
       break;
     case Type::DnsLink: {
-      VLOG(1) << "Resolved " << debug_string() << " to " << bytes;
+      VLOG(2) << "Resolved " << debug_string() << " to " << bytes;
       auto node = std::make_shared<ipld::DnsLinkName>(bytes);
       if (orchestrator_) {
         success = orchestrator_->add_node(main_param, node);
