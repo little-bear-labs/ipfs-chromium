@@ -88,15 +88,27 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a237184c917bee827af4e88288f2b5884"><td class="memItemLeft" align="right" valign="top"><a id="a237184c917bee827af4e88288f2b5884"></a>
 virtual std::optional&lt; <a class="el" href="structipfs_1_1GatewaySpec.html">GatewaySpec</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>GetGateway</b> (std::size_t index) const =0</td></tr>
 <tr class="separator:a237184c917bee827af4e88288f2b5884"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a93c6e9c4c46e4ba29a24768f58fea82f"><td class="memItemLeft" align="right" valign="top"><a id="a93c6e9c4c46e4ba29a24768f58fea82f"></a>
-virtual unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>GetGatewayRate</b> (std::string_view)=0</td></tr>
-<tr class="separator:a93c6e9c4c46e4ba29a24768f58fea82f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0068d151c2bfaecc3e413fc5c44ca2cb"><td class="memItemLeft" align="right" valign="top"><a id="a0068d151c2bfaecc3e413fc5c44ca2cb"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>SetGatewayRate</b> (std::string_view, unsigned)=0</td></tr>
-<tr class="separator:a0068d151c2bfaecc3e413fc5c44ca2cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5503bd6148d83c16062601d3a019d32e"><td class="memItemLeft" align="right" valign="top"><a id="a5503bd6148d83c16062601d3a019d32e"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>AddGateway</b> (std::string_view)=0</td></tr>
-<tr class="separator:a5503bd6148d83c16062601d3a019d32e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f85848258f5ccd2be78962909659860"><td class="memItemLeft" align="right" valign="top"><a id="a0f85848258f5ccd2be78962909659860"></a>
+virtual unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>GetGatewayRate</b> (std::string_view url_prefix)=0</td></tr>
+<tr class="separator:a0f85848258f5ccd2be78962909659860"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a938b542b5ef039c79543fb3cb78a3650"><td class="memItemLeft" align="right" valign="top"><a id="a938b542b5ef039c79543fb3cb78a3650"></a>
+virtual int&#160;</td><td class="memItemRight" valign="bottom"><b>GetTypeAffinity</b> (std::string_view url_prefix, gw::GatewayRequestType) const =0</td></tr>
+<tr class="separator:a938b542b5ef039c79543fb3cb78a3650"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae692239b0cfa3d4fb2ad5a043ccbb1fd"><td class="memItemLeft" align="right" valign="top"><a id="ae692239b0cfa3d4fb2ad5a043ccbb1fd"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>SetTypeAffinity</b> (std::string_view url_prefix, gw::GatewayRequestType, int)=0</td></tr>
+<tr class="separator:ae692239b0cfa3d4fb2ad5a043ccbb1fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec00d99ec93c357a40f0ed5a32c6bf71"><td class="memItemLeft" align="right" valign="top"><a id="aec00d99ec93c357a40f0ed5a32c6bf71"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>SetGatewayRate</b> (std::string_view url_prefix, unsigned rpm)=0</td></tr>
+<tr class="separator:aec00d99ec93c357a40f0ed5a32c6bf71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7df07cd5d5dab67dae8b8a8353970af8"><td class="memItemLeft" align="right" valign="top"><a id="a7df07cd5d5dab67dae8b8a8353970af8"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>AddGateway</b> (std::string_view url_prefix, unsigned rpm)=0</td></tr>
+<tr class="separator:a7df07cd5d5dab67dae8b8a8353970af8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a434ac447e98ae4324772be78159f3b15"><td class="memItemLeft" align="right" valign="top"><a id="a434ac447e98ae4324772be78159f3b15"></a>
+virtual unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>RoutingApiDiscoveryDefaultRate</b> () const =0</td></tr>
+<tr class="separator:a434ac447e98ae4324772be78159f3b15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80e3d2d937134935abd8ce1c99653fc0"><td class="memItemLeft" align="right" valign="top"><a id="a80e3d2d937134935abd8ce1c99653fc0"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>RoutingApiDiscoveryOfUnencryptedGateways</b> () const =0</td></tr>
+<tr class="separator:a80e3d2d937134935abd8ce1c99653fc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/ctx/<a class="el" href="gateway__config_8h_source.html">gateway_config.h</a></li>
