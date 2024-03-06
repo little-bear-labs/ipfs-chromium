@@ -39,17 +39,18 @@ std::shared_ptr<Self> Self::fromIpfsPath(ipfs::SlashDelimited p) {
       return {};
     }
     if (r->cid.value().hash_type() == HashType::IDENTITY) {
-      r->type = Type::Identity;
+      r->type = GatewayRequestType::Identity;
     } else {
       r->path = p.pop_all();
-      r->type = r->path.empty() ? Type::Block : Type::Car;
+      r->type =
+          r->path.empty() ? GatewayRequestType::Block : GatewayRequestType::Car;
     }
   } else if (name_space == "ipns") {
     r->path = p.pop_all();
     if (Cid(r->main_param).valid()) {
-      r->type = Type::Ipns;
+      r->type = GatewayRequestType::Ipns;
     } else {
-      r->type = Type::DnsLink;
+      r->type = GatewayRequestType::DnsLink;
     }
   } else {
     LOG(FATAL) << "Unsupported namespace in ipfs path: /" << name_space << '/'
@@ -60,22 +61,22 @@ std::shared_ptr<Self> Self::fromIpfsPath(ipfs::SlashDelimited p) {
 
 std::string Self::url_suffix() const {
   switch (type) {
-    case Type::Block:
+    case GatewayRequestType::Block:
       return "/ipfs/" + main_param;
-    case Type::Car:
+    case GatewayRequestType::Car:
       return "/ipfs/" + main_param + "/" + path + "?dag-scope=entity";
-    case Type::Ipns:
+    case GatewayRequestType::Ipns:
       return "/ipns/" + main_param;
-    case Type::Providers:
+    case GatewayRequestType::Providers:
       return "/routing/v1/providers/" + main_param;
-    case Type::DnsLink:
+    case GatewayRequestType::DnsLink:
       LOG(FATAL) << "Don't try to use HTTP(s) for DNS TXT records.";
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Wunreachable-code-return"
 #endif
       return {};
-    case Type::Identity:
-    case Type::Zombie:
+    case GatewayRequestType::Identity:
+    case GatewayRequestType::Zombie:
       return {};
   }
   LOG(FATAL) << "Unhandled gateway request type: " << static_cast<int>(type);
@@ -83,15 +84,15 @@ std::string Self::url_suffix() const {
 }
 std::string_view Self::accept() const {
   switch (type) {
-    case Type::Block:
+    case GatewayRequestType::Block:
       return "application/vnd.ipld.raw"sv;
-    case Type::Ipns:
+    case GatewayRequestType::Ipns:
       return "application/vnd.ipfs.ipns-record"sv;
-    case Type::Car:
+    case GatewayRequestType::Car:
       return "application/vnd.ipld.car"sv;
-    case Type::Providers:
+    case GatewayRequestType::Providers:
       return "application/json"sv;
-    case Type::DnsLink:
+    case GatewayRequestType::DnsLink:
       // TODO : not sure this advice is 100% good, actually.
       //   If the user's system setup allows for text records to actually work,
       //   it would be good to respect their autonomy and try to follow the
@@ -101,8 +102,8 @@ std::string_view Self::accept() const {
       //   DNSLink capability.
       LOG(FATAL) << "Don't try to use HTTP(s) for DNS TXT records.";
       return {};
-    case Type::Identity:
-    case Type::Zombie:
+    case GatewayRequestType::Identity:
+    case GatewayRequestType::Zombie:
       return {};
   }
   LOG(FATAL) << "Invalid gateway request type: " << static_cast<int>(type);
@@ -110,18 +111,18 @@ std::string_view Self::accept() const {
 }
 short Self::timeout_seconds() const {
   switch (type) {
-    case Type::DnsLink:
-      return 4;
-    case Type::Block:
+    case GatewayRequestType::DnsLink:
       return 8;
-    case Type::Providers:
+    case GatewayRequestType::Providers:
       return 16;
-    case Type::Car:
+    case GatewayRequestType::Block:
       return 32;
-    case Type::Ipns:
+    case GatewayRequestType::Car:
       return 64;
-    case Type::Identity:
-    case Type::Zombie:
+    case GatewayRequestType::Ipns:
+      return 128;
+    case GatewayRequestType::Identity:
+    case GatewayRequestType::Zombie:
       return 0;
   }
   LOG(FATAL) << "timeout_seconds() called for unsupported gateway request type "
@@ -130,7 +131,7 @@ short Self::timeout_seconds() const {
 }
 
 auto Self::identity_data() const -> std::string_view {
-  if (type != Type::Identity) {
+  if (type != GatewayRequestType::Identity) {
     return "";
   }
   auto hash = cid.value().hash();
@@ -140,14 +141,14 @@ auto Self::identity_data() const -> std::string_view {
 
 bool Self::is_http() const {
   switch (type) {
-    case Type::Ipns:
-    case Type::Car:
-    case Type::Block:
-    case Type::Providers:
+    case GatewayRequestType::Ipns:
+    case GatewayRequestType::Car:
+    case GatewayRequestType::Block:
+    case GatewayRequestType::Providers:
       return true;
-    case Type::Identity:
-    case Type::DnsLink:
-    case Type::Zombie:
+    case GatewayRequestType::Identity:
+    case GatewayRequestType::DnsLink:
+    case GatewayRequestType::Zombie:
       return false;
   }
   return true;
@@ -169,15 +170,15 @@ auto Self::describe_http(std::string_view prefix) const
 }
 std::optional<std::size_t> Self::max_response_size() const {
   switch (type) {
-    case Type::Identity:
+    case GatewayRequestType::Identity:
       return 0;
-    case Type::DnsLink:
+    case GatewayRequestType::DnsLink:
       return std::nullopt;
-    case Type::Ipns:
+    case GatewayRequestType::Ipns:
       return MAX_IPNS_PB_SERIALIZED_SIZE;
-    case Type::Block:
+    case GatewayRequestType::Block:
       return BLOCK_RESPONSE_BUFFER_SIZE;
-    case Type::Car: {
+    case GatewayRequestType::Car: {
       // There could be an unlimited number of blocks in the CAR
       //  The _floor_ is the number of path components.
       //  But one path component could be a HAMT sharded directory that we may
@@ -186,9 +187,9 @@ std::optional<std::size_t> Self::max_response_size() const {
       //    number of blocks in it.
       return std::nullopt;
     }
-    case Type::Zombie:
+    case GatewayRequestType::Zombie:
       return 0;
-    case Type::Providers:
+    case GatewayRequestType::Providers:
       // This one's tricky.
       //   One could easily guess a practical limit to the size of a Peer's
       //    json, and the spec says it SHOULD be limited to 100 peers.
@@ -201,40 +202,18 @@ std::optional<std::size_t> Self::max_response_size() const {
   LOG(ERROR) << "Invalid gateway request type " << static_cast<int>(type);
   return std::nullopt;
 }
-std::string_view ipfs::gw::name(ipfs::gw::Type t) {
-  using ipfs::gw::Type;
-  switch (t) {
-    case Type::Block:
-      return "Block";
-    case Type::Car:
-      return "Car";
-    case Type::Ipns:
-      return "Ipns";
-    case Type::DnsLink:
-      return "DnsLink";
-    case Type::Providers:
-      return "Providers";
-    case Type::Identity:
-      return "Identity";
-    case Type::Zombie:
-      return "CompletedRequest";
-  }
-  static std::array<char, 19> buf;
-  std::sprintf(buf.data(), "InvalidType %d", static_cast<std::int8_t>(t));
-  return buf.data();
-}
 bool Self::cachable() const {
-  using ipfs::gw::Type;
+  using ipfs::gw::GatewayRequestType;
   switch (type) {
-    case Type::Car:
+    case GatewayRequestType::Car:
       return path.find("/ipns/") == std::string::npos;
-    case Type::Block:
-    case Type::Ipns:
+    case GatewayRequestType::Block:
+    case GatewayRequestType::Ipns:
       return true;
-    case Type::DnsLink:
-    case Type::Providers:
-    case Type::Identity:
-    case Type::Zombie:
+    case GatewayRequestType::DnsLink:
+    case GatewayRequestType::Providers:
+    case GatewayRequestType::Identity:
+    case GatewayRequestType::Zombie:
       return false;
   }
   LOG(ERROR) << "Unhandled request type: " << debug_string();
@@ -266,7 +245,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
     *valid = false;
   }
   switch (type) {
-    case Type::Block: {
+    case GatewayRequestType::Block: {
       DCHECK(cid.has_value());
       if (!cid.has_value()) {
         LOG(ERROR) << "Your CID doesn't even have a value!";
@@ -281,14 +260,14 @@ bool Self::RespondSuccessfully(std::string_view bytes,
       }
       success = orchestrator_->add_node(main_param, node);
     } break;
-    case Type::Identity:
+    case GatewayRequestType::Identity:
       success = orchestrator_->add_node(
           main_param, std::make_shared<Chunk>(std::string{bytes}));
       if (valid) {
         *valid = true;
       }
       break;
-    case Type::Ipns:
+    case GatewayRequestType::Ipns:
       if (cid.has_value()) {
         DCHECK(api);
         auto byte_ptr = reinterpret_cast<ipfs::Byte const*>(bytes.data());
@@ -308,7 +287,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
         }
       }
       break;
-    case Type::DnsLink: {
+    case GatewayRequestType::DnsLink: {
       VLOG(2) << "Resolved " << debug_string() << " to " << bytes;
       auto node = std::make_shared<ipld::DnsLinkName>(bytes);
       if (orchestrator_) {
@@ -320,7 +299,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
         *valid = !node->expired();
       }
     } break;
-    case Type::Car: {
+    case GatewayRequestType::Car: {
       DCHECK(api);
       Car car(as_bytes(bytes), *api);
       while (auto block = car.NextBlock()) {
@@ -339,13 +318,13 @@ bool Self::RespondSuccessfully(std::string_view bytes,
       }
       break;
     }
-    case Type::Providers:
+    case GatewayRequestType::Providers:
       success = providers::ProcessResponse(bytes, *api);
       if (valid) {
         *valid = success;
       }
       break;
-    case Type::Zombie:
+    case GatewayRequestType::Zombie:
       LOG(WARNING) << "Responding to a zombie is ill-advised.";
       break;
     default:
@@ -357,7 +336,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
     }
     bytes_received_hooks.clear();
     orchestrator_->build_response(dependent);
-    type = Type::Zombie;
+    type = GatewayRequestType::Zombie;
   }
   return success;
 }
@@ -377,5 +356,11 @@ bool Self::PartiallyRedundant() const {
   return orchestrator_->has_key(main_param);
 }
 bool Self::Finished() const {
-  return type == Type::Zombie || !dependent || dependent->done();
+  if (type == GatewayRequestType::Zombie) {
+    return true;
+  }
+  if (type == GatewayRequestType::Providers) {
+    return false;
+  }
+  return !dependent || dependent->done();
 }

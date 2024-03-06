@@ -44,7 +44,7 @@ class Requestor : public std::enable_shared_from_this<Requestor> {
   virtual ~Requestor() noexcept {}
   void request(std::shared_ptr<GatewayRequest>);
   Requestor& or_else(std::shared_ptr<Requestor> p);
-  void api(std::shared_ptr<Client>);
+  Requestor& api(std::shared_ptr<Client>);
 
   void TestAccess(void*);
 

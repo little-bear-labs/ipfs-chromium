@@ -2,6 +2,7 @@
 
 #include <ipfs_client/gw/gateway_request.h>
 
+#include "ipfs_client/gw/gateway_request_type.h"
 #include "log_macros.h"
 
 #include <algorithm>
@@ -34,7 +35,9 @@ void Self::Next() {
   }
 }
 bool Self::Process(RequestPtr const& req) {
-  VLOG(2) << "Process(" << req->debug_string() << ")";
+  if (req->type == GatewayRequestType::Providers) {
+    VLOG(1) << "Process(" << req->debug_string() << ")";
+  }
   if (!req->is_http()) {
     return false;
   }
@@ -50,7 +53,8 @@ bool Self::Process(RequestPtr const& req) {
       VLOG(2) << "A new gateway has entered the chat: " << gw->prefix << '='
               << gw->rate;
       // One can insert like this because state_ is std::map w/ stable iterators
-      state_iter = state_.insert({gw->prefix, GatewayState{}}).first;
+      state_iter =
+          state_.insert({gw->prefix, GatewayState{gw->prefix, api_}}).first;
       candidates.emplace_back(LONG_MAX, gw->prefix, &(state_iter->second));
     } else if (state_iter->first < gw->prefix) {
       LOG(INFO) << "Gateway has disappeared: " << state_iter->first
@@ -62,7 +66,7 @@ bool Self::Process(RequestPtr const& req) {
       //      state_.erase(to_rm);
       continue;
     } else if (req->failures.contains(gw->prefix)) {
-    } else if (state_iter->second.over_rate(gw->rate)) {
+    } else if (state_iter->second.over_rate()) {
       auto score = state_iter->second.score(*req, gw->rate);
       if (std::get<0>(over_rate) <= score) {
         over_rate = std::make_tuple(score, gw->prefix, &(state_iter->second));
@@ -84,10 +88,11 @@ bool Self::Process(RequestPtr const& req) {
     forward(req);
     return false;
   }
-  auto min_plel = req->type == Type::Block ? 4UL : 1UL;
+  auto min_plel = req->type == GatewayRequestType::Block ? 4UL : 1UL;
   auto to_send = std::max(bored / 2UL, min_plel);
   std::sort(candidates.begin(), candidates.end(), std::greater{});
   for (auto& [score, prefix, state] : candidates) {
+    DCHECK(!prefix.empty());
     DoSend(req, prefix, *state);
     if (!--to_send) {
       return true;
@@ -97,6 +102,7 @@ bool Self::Process(RequestPtr const& req) {
   return false;
 }
 void Self::DoSend(RequestPtr req, std::string const& gw, GatewayState& state) {
+  DCHECK(!gw.empty());
   auto desc = req->describe_http(gw);
   if (!desc.has_value()) {
     LOG(ERROR) << "A request that has no HTTP description got pretty far "
@@ -119,6 +125,10 @@ void Self::DoSend(RequestPtr req, std::string const& gw, GatewayState& state) {
   };
   state.just_sent_one();
   api_->http().SendHttpRequest(*desc, cb);
+  if (req->type == GatewayRequestType::Providers) {
+    VLOG(1) << "Just sent " << req->debug_string() << " as "
+            << desc.value().url;
+  }
 }
 void Self::HandleResponse(HttpRequestDescription const& desc,
                           RequestPtr req,
@@ -127,13 +137,15 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
                           std::string_view body,
                           HeaderAccess hdrs,
                           bool timed_out) {
-  VLOG(2) << "HandleResponse(" << req->debug_string() << ")";
+  auto req_type = req->type;
+  if (req_type == GatewayRequestType::Providers) {
+    VLOG(1) << "Received response to " << req->debug_string() << " from " << gw << " status=" << status;
+  }
   if (req->Finished() ||
-      (req->PartiallyRedundant() && req->type == Type::Block)) {
+      (req->PartiallyRedundant() && req_type == GatewayRequestType::Block)) {
     return;
   }
   auto i = state_.find(gw);
-  auto& gws = api_->gw_cfg();
   if (status == 200) {
     auto ct = hdrs("content-type");
     std::transform(ct.begin(), ct.end(), ct.begin(), ::tolower);
@@ -144,7 +156,7 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
       VLOG(2) << "Requested with Accept: " << desc.accept
               << " but received response with content-type: " << ct;
       if (state_.end() != i) {
-        i->second.miss(*req);
+        i->second.miss(req_type, *req);
       }
       Next();
       return;
@@ -156,44 +168,22 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
       VLOG(2) << "Response from " << gw << " to " << req->debug_string()
               << " was successful & useful - progress made.";
       if (state_.end() != i) {
-        i->second.hit(*req);
+        i->second.hit(req_type, *req);
       }
-      auto rpm = gws.GetGatewayRate(gw);
-      VLOG(2) << "Rate for " << gw << " _WAS_ " << rpm
-              << " and is about to go up.";
-      if (rpm < 15) {
-        rpm *= 2;
-      }
-      rpm += 3;
-      gws.SetGatewayRate(gw, rpm);
       Next();
       return;
     }
   }
-  auto rpm = gws.GetGatewayRate(gw);
-  auto old_rpm = rpm;
+  i->second.miss(req_type, *req);
+  req->failures.insert(gw);
   if (status == 408 || status == 504 || status == 429 || status == 110 ||
       timed_out) {
     VLOG(2) << gw << " timed out on request " << req->debug_string();
-    if (req->type == Type::Block) {
+    if (req->type == GatewayRequestType::Block) {
       if (state_.end() != i) {
         i->second.timed_out();
       }
-      if (rpm > 60U) {
-        rpm -= 9;
-      } else if (rpm) {
-        --rpm;
-      }
     }
-  } else {
-    req->failures.insert(gw);
-  }
-  if (state_.end() != i && i->second.miss(*req) && rpm &&
-      req->type == Type::Block) {
-    --rpm;
-  }
-  if (old_rpm != rpm) {
-    gws.SetGatewayRate(gw, rpm);
   }
   Process(req);
 }

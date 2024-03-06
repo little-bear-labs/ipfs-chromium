@@ -6,22 +6,26 @@
 
 using Self = ipfs::gw::GatewayState;
 
-Self::GatewayState() {
-  request_type_success.fill(0L);
+Self::GatewayState(std::string_view prefix, std::shared_ptr<Client> api)
+    : prefix_{prefix}, api_{api} {
+  DCHECK(!prefix_.empty());
   last_hist_update = std::time({});
   sent_counts.fill(0U);
 }
 long Self::score(GatewayRequest const& req, unsigned baseline) const {
   auto result = static_cast<long>(baseline);
-  result += 2 * request_type_success.at(static_cast<std::size_t>(req.type));
+  result += 4L * cfg().GetTypeAffinity(prefix_, req.type);
   auto i = affinity_success.find(req.affinity);
   if (i != affinity_success.end()) {
-    result += 3 * i->second;
+    result += 3L * i->second;
   }
   return result;
 }
 bool Self::over_rate(unsigned req_per_min) {
   return total_sent + current_bucket() > req_per_min * MinutesTracked;
+}
+bool Self::over_rate() {
+  return over_rate(cfg().GetGatewayRate(prefix_));
 }
 bool Self::bored() const {
   return total_sent == 0UL;
@@ -40,15 +44,55 @@ unsigned int& Self::current_bucket() {
   }
   return sent_counts[last_hist_update % sent_counts.size()];
 }
-void Self::hit(GatewayRequest const& req) {
-  request_type_success.at(static_cast<std::size_t>(req.type))++;
+void Self::hit(GatewayRequestType grt, GatewayRequest const& req) {
+  auto& c = cfg();
+  auto aff = c.GetTypeAffinity(prefix_, grt);
+  c.SetTypeAffinity(prefix_, grt, ++aff);
   affinity_success[req.affinity]++;
+  auto rpm = c.GetGatewayRate(prefix_);
+  if (!over_rate(rpm++ / 4)) {
+    return;
+  }
+  if (over_rate(rpm++ / 3)) {
+    ++rpm;
+  }
+  if (over_rate(rpm++ / 2)) {
+    ++rpm;
+  }
+  if (over_rate(rpm++)) {
+    ++rpm;
+  }
+  c.SetGatewayRate(prefix_, rpm);
 }
-bool Self::miss(GatewayRequest const& req) {
-  request_type_success.at(static_cast<std::size_t>(req.type))--;
-  slowness++;
+bool Self::miss(GatewayRequestType grt, GatewayRequest const& req) {
+  auto& c = cfg();
+  auto aff = c.GetTypeAffinity(prefix_, grt);
+  if (aff > std::numeric_limits<decltype(aff)>::min()) {
+    c.SetTypeAffinity(prefix_, grt, --aff);
+  }
+  auto rpm = c.GetGatewayRate(prefix_);
+  if (rpm && !over_rate(rpm)) {
+    c.SetGatewayRate(prefix_, rpm - 1);
+  }
   return affinity_success[req.affinity]-- >= 0;
 }
 void Self::timed_out() {
   slowness += 10;
+  auto& c = cfg();
+  auto rpm = c.GetGatewayRate(prefix_);
+  if (over_rate(rpm)) {
+    return;
+  }
+  if (--rpm && !over_rate(rpm / 2)) {
+    --rpm;
+  }
+  c.SetGatewayRate(prefix_, rpm);
+}
+auto Self::cfg() -> ctx::GatewayConfig& {
+  DCHECK(api_);
+  return api_->gw_cfg();
+}
+auto Self::cfg() const -> ctx::GatewayConfig const& {
+  DCHECK(api_);
+  return api_->gw_cfg();
 }

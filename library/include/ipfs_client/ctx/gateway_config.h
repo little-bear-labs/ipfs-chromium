@@ -13,6 +13,11 @@ class GatewayConfig {
   virtual ~GatewayConfig() noexcept {}
   virtual std::optional<GatewaySpec> GetGateway(std::size_t index) const = 0;
   virtual unsigned GetGatewayRate(std::string_view url_prefix) = 0;
+  virtual int GetTypeAffinity(std::string_view url_prefix,
+                              gw::GatewayRequestType) const = 0;
+  virtual void SetTypeAffinity(std::string_view url_prefix,
+                               gw::GatewayRequestType,
+                               int) = 0;
 
   // These 2 calls are similar, but AddGateway will ignore rpm if the gw is
   // already present,

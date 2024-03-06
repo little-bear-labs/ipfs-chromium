@@ -1,6 +1,9 @@
 #include <ipfs_client/gw/block_request_splitter.h>
 
 #include <ipfs_client/gw/gateway_request.h>
+#include <ipfs_client/gw/gateway_request_type.h>
+
+#include "log_macros.h"
 
 #include <algorithm>
 
@@ -10,12 +13,12 @@ std::string_view Self::name() const {
   return "BlockRequestSplitter";
 }
 auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
-  if (r->type != Type::Car) {
+  if (r->type != GatewayRequestType::Car) {
     return HandleOutcome::NOT_HANDLED;
   }
   {
     auto br = std::make_shared<gw::GatewayRequest>(*r);
-    br->type = Type::Block;
+    br->type = GatewayRequestType::Block;
     br->path.clear();
     forward(br);
   }
@@ -27,11 +30,16 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
       recent_provider_requests[i] = r->affinity;
       ++old_provider_request;
       auto pr = std::make_shared<gw::GatewayRequest>(*r);
-      pr->type = Type::Providers;
+      pr->type = GatewayRequestType::Providers;
       pr->path.clear();
       pr->affinity.clear();
+      LOG(INFO) << "Forwarding providers' split: " << pr->affinity;
       forward(pr);
+    } else {
+      VLOG(1) << "Not re-requesting providers for '" << r->affinity << "'.";
     }
+  } else if (++old_provider_request == 1UL) {
+    LOG(INFO) << "Routing requests disabled.";
   }
   return HandleOutcome::NOT_HANDLED;
 }

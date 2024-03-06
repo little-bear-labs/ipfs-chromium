@@ -4,20 +4,22 @@
 
 #include <ipfs_client/gw/gateway_request.h>
 #include <ipfs_client/ipfs_request.h>
+#include "ipfs_client/gw/gateway_request_type.h"
 
 namespace i = ipfs;
 namespace ig = i::gw;
 using T = ig::TerminatingRequestor;
+using RT = ig::GatewayRequestType;
 
 TEST(TerminatingRequestorTest, ZombieIsDone) {
   auto req = std::make_shared<ig::GatewayRequest>();
-  req->type = ig::Type::Zombie;
+  req->type = RT::Zombie;
   T tested;
   EXPECT_TRUE(tested.handle(req) == T::HandleOutcome::DONE);
 }
 TEST(TerminatingRequestorTest, BeingHandledInParallel) {
   auto req = std::make_shared<ig::GatewayRequest>();
-  req->type = ig::Type::Block;
+  req->type = RT::Block;
   req->dependent = std::make_shared<i::IpfsRequest>("", [](auto&, auto&) {});
   req->parallel = 9;
   T tested;

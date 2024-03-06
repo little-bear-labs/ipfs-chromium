@@ -26,6 +26,7 @@ void Self::build_response(std::shared_ptr<IpfsRequest> req) {
   auto req_path = req->path();
   req_path.pop();  // discard namespace ipfs or ipns
   std::string affinity{req_path.pop()};
+  VLOG(1) << req->path().to_string() << " Affinity: " << affinity;
   auto it = dags_.find(affinity);
   if (dags_.end() == it) {
     if (gw_request(req, req->path(), affinity)) {

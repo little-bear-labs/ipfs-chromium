@@ -31,7 +31,7 @@ void Interceptor::MaybeCreateLoader(network::ResourceRequest const& req,
         .Run(base::BindOnce(&ipfs::IpfsUrlLoader::StartRequest, loader));
 
   } else {
-    VLOG(1) << "Not intercepting " << req.url.spec();
+    VLOG(2) << "Not intercepting " << req.url.spec();
     std::move(loader_callback).Run({});  // SEP
   }
 }

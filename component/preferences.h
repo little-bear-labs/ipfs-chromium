@@ -32,9 +32,14 @@ class ChromiumIpfsGatewayConfig final : public ipfs::ctx::GatewayConfig {
   void SetGatewayRate(std::string_view, unsigned) override;
   std::optional<GatewaySpec> GetGateway(std::size_t index) const override;
   void AddGateway(std::string_view, unsigned) override;
-  std::pair<std::string const*, unsigned> at(std::size_t index) const;
+  //  std::pair<std::string const*, unsigned> at(std::size_t index) const;
   unsigned RoutingApiDiscoveryDefaultRate() const override;
   bool RoutingApiDiscoveryOfUnencryptedGateways() const override;
+  int GetTypeAffinity(std::string_view url_prefix,
+                      gw::GatewayRequestType) const override;
+  void SetTypeAffinity(std::string_view url_prefix,
+                       gw::GatewayRequestType,
+                       int) override;
 };
 }
 

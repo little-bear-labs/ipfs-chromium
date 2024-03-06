@@ -64,6 +64,7 @@ void Self::forward(ipfs::gw::RequestPtr req) const {
     next_->request(req);
   }
 }
-void Self::api(std::shared_ptr<Client> a) {
+Self& Self::api(std::shared_ptr<Client> a) {
   api_ = a;
+  return *this;
 }

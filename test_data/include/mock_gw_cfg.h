@@ -4,6 +4,7 @@
 #include <ipfs_client/ctx/gateway_config.h>
 
 namespace i = ipfs;
+namespace ig = i::gw;
 
 namespace {
 struct MockGwCfg final : public ipfs::ctx::GatewayConfig {
@@ -21,6 +22,13 @@ struct MockGwCfg final : public ipfs::ctx::GatewayConfig {
   virtual ~MockGwCfg() noexcept override {}
   bool http_disc_ = true;
   bool RoutingApiDiscoveryOfUnencryptedGateways() const { return http_disc_; }
+  int GetTypeAffinity(std::string_view url_prefix,
+                      ig::GatewayRequestType) const {
+    return 0;
+  }
+  void SetTypeAffinity(std::string_view url_prefix,
+                       ig::GatewayRequestType,
+                       int) {}
 };
 }  // namespace
 

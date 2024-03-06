@@ -9,6 +9,7 @@
 #include <ipfs_client/ipfs_request.h>
 #include <ipfs_client/partition.h>
 
+#include "ipfs_client/gw/gateway_request_type.h"
 #include "log_macros.h"
 
 #include <absl/base/options.h>
@@ -28,7 +29,7 @@ bool parse_results(ipfs::gw::RequestPtr req,
                    std::shared_ptr<ipfs::Client> const&);
 }
 auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
-  if (req->type != Type::DnsLink) {
+  if (req->type != GatewayRequestType::DnsLink) {
     return HandleOutcome::NOT_HANDLED;
   }
   // std::function requires target be copy-constructible
