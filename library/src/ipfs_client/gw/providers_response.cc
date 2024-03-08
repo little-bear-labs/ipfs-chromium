@@ -24,7 +24,7 @@ bool default_port(std::string_view scheme, std::string_view port) {
     return false;
   }
 }
-std::string MultiaddrToGatewayPrefix(ipfs::SlashDelimited ma) {
+std::string MultiaddrToGatewayPrefix(ipfs::SlashDelimited ma, bool http) {
   auto addr_proto = ma.pop();
   VLOG(2)
       << "Protocol expected to be one of ip4|ip6|dnsaddr|dns|dns4|dns6 , is:"
@@ -34,6 +34,10 @@ std::string MultiaddrToGatewayPrefix(ipfs::SlashDelimited ma) {
   DCHECK_EQ(tcp, "tcp");
   auto port = ma.pop();
   auto app_proto = ma.pop();
+  if (app_proto == "http" && !http) {
+    LOG(INFO) << "Rejecting http:// gateway discovery due to config.";
+    return "";
+  }
   DCHECK_EQ(app_proto.substr(0, 4), "http");
   std::string rv{app_proto};
   rv.append("://").append(host);
@@ -68,10 +72,15 @@ bool ParseProvider(ipfs::DagJsonValue const& provider, ipfs::Client& api) {
   bool rv = false;
   auto handle_addr = [&api, &rv](ipfs::DagJsonValue const& addr) {
     if (auto s = addr.get_if_string()) {
-      auto gw_pre = MultiaddrToGatewayPrefix(ipfs::SlashDelimited{s.value()});
-      LOG(INFO) << "'" << *s << "' -> '" << gw_pre << "'.";
-      api.gw_cfg().AddGateway(gw_pre);
-      rv = true;
+      auto& c = api.gw_cfg();
+      auto http = c.RoutingApiDiscoveryOfUnencryptedGateways();
+      ipfs::SlashDelimited sd{s.value()};
+      auto gw_pre = MultiaddrToGatewayPrefix(sd, http);
+      if (gw_pre.size()) {
+        LOG(INFO) << "'" << *s << "' -> '" << gw_pre << "'.";
+        c.AddGateway(gw_pre, c.RoutingApiDiscoveryDefaultRate());
+        rv = true;
+      }
     } else {
       LOG(ERROR) << ".Providers[x].Addrs[x] is not a string";
     }

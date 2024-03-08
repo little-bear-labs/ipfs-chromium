@@ -2,6 +2,7 @@
 
 #include <ipfs_client/gw/gateway_request.h>
 
+#include "ipfs_client/gw/gateway_request_type.h"
 #include "log_macros.h"
 
 using Self = ipfs::gw::TerminatingRequestor;
@@ -18,7 +19,7 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
     LOG(ERROR) << "Out of options, giving up on gateway request "
                << r->debug_string();
     definitive_failure(r);
-    r->type = Type::Zombie;
+    r->type = GatewayRequestType::Zombie;
     return HandleOutcome::DONE;
   }
 }

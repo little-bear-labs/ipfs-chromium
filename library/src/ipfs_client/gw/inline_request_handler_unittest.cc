@@ -5,12 +5,15 @@
 #include <ipfs_client/gw/gateway_request.h>
 #include <ipfs_client/gw/terminating_requestor.h>
 #include <ipfs_client/partition.h>
+#include "ipfs_client/gw/gateway_request_type.h"
 
 namespace i = ipfs;
 namespace ig = i::gw;
 namespace pm = libp2p::multi;
 using namespace std::literals;
 using T = ig::InlineRequestHandler;
+using RT = ig::GatewayRequestType;
+
 using ipfs::Cid;
 
 TEST(InlineRequestHanlder, bluesky) {
@@ -19,7 +22,7 @@ TEST(InlineRequestHanlder, bluesky) {
   auto rtor = std::make_shared<ig::TerminatingRequestor>();
   auto orc = api->with(rtor).partition({});
   auto r = std::make_shared<ig::GatewayRequest>();
-  r->type = ig::Type::Identity;
+  r->type = RT::Identity;
   r->orchestrator(orc);
   i::MultiHash h(i::HashType::IDENTITY, i::as_bytes("abc"sv));
   r->cid = Cid(i::MultiCodec::RAW, h);

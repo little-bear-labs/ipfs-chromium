@@ -21,15 +21,12 @@ std::optional<ipfs::GatewaySpec> Self::GetGateway(std::size_t index) const {
   }
   return std::nullopt;
 }
-void Self::AddGateway(std::string_view prefix) {
+void Self::AddGateway(std::string_view prefix, unsigned at_rate) {
   auto it = FindGateway(prefix);
   if (gateways_.end() != it && it->prefix == prefix) {
     it->rate++;
-    VLOG(1) << "Re-found existing gateway. Bumping it: " << prefix << '='
-            << it->rate;
   } else {
-    VLOG(1) << "Adding new gateway:" << prefix;
-    gateways_.insert(it, GatewaySpec{std::string{prefix}, 60U});
+    gateways_.insert(it, GatewaySpec{std::string{prefix}, at_rate});
     DCHECK(
         std::is_sorted(gateways_.begin(), gateways_.end(),
                        [](auto& a, auto& b) { return a.prefix < b.prefix; }));
@@ -54,3 +51,13 @@ auto Self::FindGateway(std::string_view prefix)
   auto cmp = [](auto& g, std::string_view p) { return g.prefix < p; };
   return std::lower_bound(gateways_.begin(), gateways_.end(), prefix, cmp);
 }
+unsigned Self::RoutingApiDiscoveryDefaultRate() const {
+  return 60U;
+}
+bool Self::RoutingApiDiscoveryOfUnencryptedGateways() const {
+  return false;
+}
+int Self::GetTypeAffinity(std::string_view, gw::GatewayRequestType) const {
+  return 9;
+}
+void Self::SetTypeAffinity(std::string_view, gw::GatewayRequestType, int) {}

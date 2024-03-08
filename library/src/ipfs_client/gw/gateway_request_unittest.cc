@@ -3,6 +3,7 @@
 
 #include <mock_api.h>
 #include <mock_requestor.h>
+#include "ipfs_client/gw/gateway_request_type.h"
 
 using T = ig::GatewayRequest;
 
@@ -65,7 +66,7 @@ struct GatewayRequestTest : public testing::Test {
 TEST_F(GatewayRequestTest, RespondsToCar) {
   t_.cid =
       i::Cid{"bafybeibwfakyszctcz54dungqay7jae35agjjhokltvvtboospgo6napxy"};
-  t_.type = ig::Type::Car;
+  t_.type = RT::Car;
   auto p = reinterpret_cast<char const*>(a_car.data());
   EXPECT_FALSE(orc->has_key(
       "bafkreidxbzqhmjgwretfzjwejccnbad5tmcu2i6eopaqnrzl5hparnzxnq"));
@@ -82,26 +83,26 @@ TEST_F(GatewayRequestTest, RespondsToCar) {
       "bafybeibwfakyszctcz54dungqay7jae35agjjhokltvvtboospgo6napxy"));
 }
 TEST_F(GatewayRequestTest, suffices) {
-  t_.type = ig::Type::Car;
+  t_.type = RT::Car;
   EXPECT_EQ(t_.url_suffix(), "/ipfs/main/?dag-scope=entity");
-  t_.type = ig::Type::Ipns;
+  t_.type = RT::Ipns;
   EXPECT_EQ(t_.url_suffix(), "/ipns/main");
-  t_.type = ig::Type::Providers;
+  t_.type = RT::Providers;
   EXPECT_EQ(t_.url_suffix(), "/routing/v1/providers/main");
-  t_.type = ig::Type::Identity;
+  t_.type = RT::Identity;
   EXPECT_EQ(t_.url_suffix(), "");
-  t_.type = ig::Type::Zombie;
+  t_.type = RT::Zombie;
   EXPECT_EQ(t_.url_suffix(), "");
 }
 TEST_F(GatewayRequestTest, accept_param) {
-  t_.type = ig::Type::Car;
+  t_.type = RT::Car;
   EXPECT_EQ(t_.accept(), "application/vnd.ipld.car");
-  t_.type = ig::Type::Ipns;
+  t_.type = RT::Ipns;
   EXPECT_EQ(t_.accept(), "application/vnd.ipfs.ipns-record");
-  t_.type = ig::Type::Providers;
+  t_.type = RT::Providers;
   EXPECT_EQ(t_.accept(), "application/json");
-  t_.type = ig::Type::Identity;
+  t_.type = RT::Identity;
   EXPECT_EQ(t_.accept(), "");
-  t_.type = ig::Type::Zombie;
+  t_.type = RT::Zombie;
   EXPECT_EQ(t_.accept(), "");
 }

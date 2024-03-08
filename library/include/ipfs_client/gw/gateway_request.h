@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include "gateway_request_type.h"
 
 namespace ipfs {
 class IpfsRequest;
@@ -23,16 +24,7 @@ class DagNode;
 namespace ipfs::gw {
 class Requestor;
 
-enum class Type : char {
-  Block,
-  Car,
-  Ipns,
-  DnsLink,
-  Providers,
-  Identity,
-  Zombie
-};
-std::string_view name(Type);
+std::string_view name(GatewayRequestType);
 
 constexpr std::size_t BLOCK_RESPONSE_BUFFER_SIZE = 2 * 1024 * 1024;
 
@@ -43,7 +35,7 @@ class GatewayRequest {
   void ParseNodes(std::string_view, Client* api);
 
  public:
-  Type type = Type::Zombie;
+  GatewayRequestType type = GatewayRequestType::Zombie;
   std::string main_param;  ///< CID, IPNS name, hostname
   std::string path;        ///< For CAR requests
   std::shared_ptr<IpfsRequest> dependent;
@@ -76,7 +68,8 @@ class GatewayRequest {
 
 }  // namespace ipfs::gw
 
-inline std::ostream& operator<<(std::ostream& s, ipfs::gw::Type t) {
+inline std::ostream& operator<<(std::ostream& s,
+                                ipfs::gw::GatewayRequestType t) {
   return s << name(t);
 }
 
