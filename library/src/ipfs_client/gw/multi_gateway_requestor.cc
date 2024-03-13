@@ -36,7 +36,7 @@ void Self::Next() {
 }
 bool Self::Process(RequestPtr const& req) {
   if (req->type == GatewayRequestType::Providers) {
-    VLOG(1) << "Process(" << req->debug_string() << ")";
+    VLOG(2) << "Process(" << req->debug_string() << ")";
   }
   if (!req->is_http()) {
     return false;
@@ -89,7 +89,7 @@ bool Self::Process(RequestPtr const& req) {
     return false;
   }
   auto min_plel = req->type == GatewayRequestType::Block ? 4UL : 1UL;
-  auto to_send = std::max(bored / 2UL, min_plel);
+  auto to_send = std::max(bored / 4UL, min_plel);
   std::sort(candidates.begin(), candidates.end(), std::greater{});
   for (auto& [score, prefix, state] : candidates) {
     DCHECK(!prefix.empty());
@@ -126,7 +126,7 @@ void Self::DoSend(RequestPtr req, std::string const& gw, GatewayState& state) {
   state.just_sent_one();
   api_->http().SendHttpRequest(*desc, cb);
   if (req->type == GatewayRequestType::Providers) {
-    VLOG(1) << "Just sent " << req->debug_string() << " as "
+    VLOG(2) << "Just sent " << req->debug_string() << " as "
             << desc.value().url;
   }
 }
@@ -165,8 +165,6 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
       VLOG(2) << "Got an unuseful response from " << gw << " for request "
               << req->debug_string();
     } else {
-      VLOG(2) << "Response from " << gw << " to " << req->debug_string()
-              << " was successful & useful - progress made.";
       if (state_.end() != i) {
         i->second.hit(req_type, *req);
       }

@@ -11,6 +11,8 @@
 
 #include <ipfs_client/gw/requestor.h>
 
+#include <vocab/byte_view.h>
+
 #include <memory>
 
 namespace ipfs {
@@ -22,7 +24,7 @@ class CacheRequestor : public gw::Requestor {
  public:
   CacheRequestor(InterRequestState&, base::FilePath);
   ~CacheRequestor() noexcept override;
-  void Store(std::string key, std::string headers, std::string body);
+  void Store(std::string key, std::string headers, ByteView body);
   void Expire(std::string const& key);
 
   std::string_view name() const override;

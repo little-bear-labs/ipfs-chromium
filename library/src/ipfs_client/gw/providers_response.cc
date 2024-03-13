@@ -77,7 +77,6 @@ bool ParseProvider(ipfs::DagJsonValue const& provider, ipfs::Client& api) {
       ipfs::SlashDelimited sd{s.value()};
       auto gw_pre = MultiaddrToGatewayPrefix(sd, http);
       if (gw_pre.size()) {
-        LOG(INFO) << "'" << *s << "' -> '" << gw_pre << "'.";
         c.AddGateway(gw_pre, c.RoutingApiDiscoveryDefaultRate());
         rv = true;
       }

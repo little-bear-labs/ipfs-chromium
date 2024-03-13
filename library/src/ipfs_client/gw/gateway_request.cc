@@ -64,7 +64,9 @@ std::string Self::url_suffix() const {
     case GatewayRequestType::Block:
       return "/ipfs/" + main_param;
     case GatewayRequestType::Car:
-      return "/ipfs/" + main_param + "/" + path + "?dag-scope=entity";
+      //      return "/ipfs/" + main_param + "/" + path + "?dag-scope=entity";
+      return "/ipfs/" + main_param + "/" + path +
+             "?entity-bytes=0:" + std::to_string(BLOCK_RESPONSE_BUFFER_SIZE);
     case GatewayRequestType::Ipns:
       return "/ipns/" + main_param;
     case GatewayRequestType::Providers:
@@ -166,7 +168,8 @@ auto Self::describe_http(std::string_view prefix) const
     url.insert(0UL, 1UL, '/');
   }
   url.insert(0UL, prefix);
-  return HttpRequestDescription{url, timeout_seconds(), std::string{accept()}, max_response_size()};
+  return HttpRequestDescription{url, timeout_seconds(), std::string{accept()},
+                                max_response_size()};
 }
 std::optional<std::size_t> Self::max_response_size() const {
   switch (type) {
@@ -179,13 +182,7 @@ std::optional<std::size_t> Self::max_response_size() const {
     case GatewayRequestType::Block:
       return BLOCK_RESPONSE_BUFFER_SIZE;
     case GatewayRequestType::Car: {
-      // There could be an unlimited number of blocks in the CAR
-      //  The _floor_ is the number of path components.
-      //  But one path component could be a HAMT sharded directory that we may
-      //    need to pass through several layers on.
-      //  And the final path component could be a UnixFS file with an unlimited
-      //    number of blocks in it.
-      return std::nullopt;
+      return BLOCK_RESPONSE_BUFFER_SIZE * 2;
     }
     case GatewayRequestType::Zombie:
       return 0;
@@ -205,11 +202,12 @@ std::optional<std::size_t> Self::max_response_size() const {
 bool Self::cachable() const {
   using ipfs::gw::GatewayRequestType;
   switch (type) {
-    case GatewayRequestType::Car:
-      return path.find("/ipns/") == std::string::npos;
+      //    case GatewayRequestType::Car:
+      //      return path.find("/ipns/") == std::string::npos;
     case GatewayRequestType::Block:
     case GatewayRequestType::Ipns:
       return true;
+    case GatewayRequestType::Car:
     case GatewayRequestType::DnsLink:
     case GatewayRequestType::Providers:
     case GatewayRequestType::Identity:
@@ -233,7 +231,7 @@ std::string Self::debug_string() const {
 }
 std::string Self::Key() const {
   auto rv = main_param;
-  rv.append(" ").append(name(type)).append(" ").append(path);
+  //  rv.append(" ").append(name(type)).append(" ").append(path);
   return rv;
 }
 bool Self::RespondSuccessfully(std::string_view bytes,
@@ -304,7 +302,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
       Car car(as_bytes(bytes), *api);
       while (auto block = car.NextBlock()) {
         auto cid_s = block->cid.to_string();
-        auto n = DagNode::fromBytes(api, block->cid, block->bytes);
+        auto n = DagNode::fromBytes(api, block->cid, block->bytes, {});  // TODO
         if (!n) {
           LOG(ERROR) << "Unable to handle block from CAR: " << cid_s;
           continue;
@@ -314,6 +312,9 @@ bool Self::RespondSuccessfully(std::string_view bytes,
         }
         if (orchestrator_->add_node(cid_s, n)) {
           success = true;
+          for (auto& hook : bytes_received_hooks) {
+            hook(cid_s, block->bytes);
+          }
         }
       }
       break;
@@ -331,8 +332,10 @@ bool Self::RespondSuccessfully(std::string_view bytes,
       LOG(ERROR) << "TODO " << static_cast<int>(type);
   }
   if (success) {
-    for (auto& hook : bytes_received_hooks) {
-      hook(bytes);
+    if (type != GatewayRequestType::Car) {
+      for (auto& hook : bytes_received_hooks) {
+        hook(main_param, as_bytes(bytes));
+      }
     }
     bytes_received_hooks.clear();
     orchestrator_->build_response(dependent);
@@ -340,7 +343,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
   }
   return success;
 }
-void Self::Hook(std::function<void(std::string_view)> f) {
+void Self::Hook(BytesReceivedHook f) {
   bytes_received_hooks.push_back(f);
 }
 void Self::orchestrator(std::shared_ptr<Partition> const& orc) {

@@ -14,7 +14,6 @@ void Self::SendDnsTextRequest(std::string host,
   }
   auto don_wrap = [don, this, host]() {
     don();
-    VLOG(2) << "Finished resolving " << host << " via DNSLink";
     dns_reqs_.erase(host);
   };
   auto* nc = state_->network_context();

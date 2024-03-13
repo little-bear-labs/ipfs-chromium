@@ -4,12 +4,13 @@
 #include <ipfs_client/ctx/transitory_gateway_config.h>
 
 #include <base/logging.h>
+#include <base/task/thread_pool.h>
 #include <components/prefs/pref_registry_simple.h>
 #include <components/prefs/pref_service.h>
+#include <content/public/browser/browser_thread.h>
 
 namespace {
 std::string const kGateway{"ipfs.gateway"};
-// std::string const kRateLimits{"ipfs.gateways.rate_limits"};
 std::string const kDiscoveryRate{"ipfs.discovery.rate"};
 std::string const kDiscoveryOfUnencrypted{"ipfs.discovery.http"};
 
@@ -63,16 +64,16 @@ void Self::SetGatewayRate(std::string_view k, unsigned val) {
     AddGateway(k, val);
     return;
   }
-  auto i = static_cast<int>(std::min(val, static_cast<unsigned>(INT_MAX)));
+  auto i = std::min(static_cast<int>(val), INT_MAX);
   d->Set(kRateKey, i);
-  VLOG(1) << "Changing rate for gateway " << k << " to " << val;
+  VLOG(2) << "Changing rate for gateway " << k << " to " << val;
   if (++changes > update_thresh) {
     auto delt = delta();
     if (delt > update_thresh) {
       save();
     } else {
       changes = delt / 2;
-      LOG(INFO) << "Rate changes total (delta) " << delt;
+      VLOG(1) << "Rate changes total (delta) " << delt;
     }
   }
 }
@@ -137,7 +138,14 @@ void Self::save() {
   changes = 0;
   last_ = curr_.Clone();
   update_thresh++;
-  prefs_->SetDict(kGateway, last_.Clone());
+  //  void (*f)(PrefService*, base::Value::Dict) = ;
+  auto cb = base::BindOnce(
+      [](PrefService* prefs, base::Value::Dict to_save) {
+        prefs->SetDict(kGateway, std::move(to_save));
+      },
+      prefs_.get(), last_.Clone());
+  // base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN
+  content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(cb));
 }
 unsigned Self::RoutingApiDiscoveryDefaultRate() const {
   auto i = prefs_->GetInteger(kDiscoveryRate);
@@ -158,7 +166,6 @@ void Self::SetTypeAffinity(std::string_view url_prefix,
                            gw::GatewayRequestType typ,
                            int val) {
   auto nm = name(typ);
-  VLOG(1) << "SetTypeAff(" << url_prefix << ',' << nm << ',' << val << ')';
   if (auto* d = curr_.FindDict(url_prefix)) {
     d->Set(nm, val);
   }

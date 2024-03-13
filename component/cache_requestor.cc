@@ -47,11 +47,17 @@ void Self::Assign(dc::BackendResult res) {
   }
 }
 auto Self::handle(RequestPtr req) -> HandleOutcome {
+  if (req->type == gw::GatewayRequestType::Car) {
+    req->Hook([this](std::string_view key, ByteView bytes) {
+      Store(std::string{key}, "TODO", bytes);
+    });
+    return HandleOutcome::NOT_HANDLED;
+  }
   if (startup_pending_ || !(req->cachable())) {
     return HandleOutcome::NOT_HANDLED;
   }
   Task task;
-  task.key = req->Key();
+  task.key = req->main_param;  // req->Key();
   task.request = req;
   StartFetch(task, net::MAXIMUM_PRIORITY);
   return HandleOutcome::PENDING;
@@ -71,8 +77,8 @@ void Self::StartFetch(Task& task, net::RequestPriority priority) {
 void Self::Miss(Task& task) {
   if (task.request) {
     auto req = task.request;
-    task.request->Hook([this, req](std::string_view bytes) {
-      Store(req->Key(), "TODO", std::string{bytes});
+    task.request->Hook([this](std::string_view key, ByteView bytes) {
+      Store(std::string{key}, "TODO", bytes);
     });
     forward(req);
   }
@@ -133,7 +139,7 @@ void Self::OnBodyRead(Task task, int code) {
     bool valid = false;
     task.request->RespondSuccessfully(task.body, api_, &valid);
     if (valid) {
-      VLOG(2) << "Cache hit for " << task.key;
+      VLOG(1) << "Cache hit for " << task.key;
     } else {
       LOG(ERROR) << "Had a bad or expired cached response for " << task.key;
       Expire(task.key);
@@ -141,14 +147,15 @@ void Self::OnBodyRead(Task task, int code) {
     }
   }
 }
-void Self::Store(std::string key, std::string headers, std::string body) {
+void Self::Store(std::string key, std::string headers, ByteView body) {
   VLOG(2) << "Store(" << name() << ',' << key << ',' << headers.size() << ','
           << body.size() << ')';
+  std::string body_s{reinterpret_cast<char const*>(body.data()), body.size()};
   auto bound = base::BindOnce(&Self::OnEntryCreated, base::Unretained(this),
-                              key, headers, body);
+                              key, headers, body_s);
   auto res = cache_->OpenOrCreateEntry(key, net::LOW, std::move(bound));
   if (res.net_error() != net::ERR_IO_PENDING) {
-    OnEntryCreated(key, headers, body, std::move(res));
+    OnEntryCreated(key, headers, body_s, std::move(res));
   }
 }
 void Self::OnEntryCreated(std::string cid,

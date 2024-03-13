@@ -53,7 +53,7 @@ bool parse_results(ipfs::gw::RequestPtr req,
                    std::vector<std::string> const& results,
                    std::shared_ptr<ipfs::Client> const& api) {
   constexpr auto prefix = "dnslink="sv;
-  VLOG(1) << "Scanning " << results.size() << " DNS TXT records for "
+  VLOG(2) << "Scanning " << results.size() << " DNS TXT records for "
           << req->main_param << " looking for dnslink...";
   for (auto& result : results) {
     if (starts_with(result, prefix)) {

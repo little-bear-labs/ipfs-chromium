@@ -20,7 +20,6 @@ Self& Self::or_else(std::shared_ptr<Self> p) {
     next_ = p;
   }
   if (api_ && !p->api_) {
-    VLOG(2) << name() << " granting context to " << p->name();
     p->api_ = api_;
   }
   return *this;

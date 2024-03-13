@@ -77,6 +77,10 @@ add_custom_target(setup_in_tree
     COMMENT "Preparing the Chromium repository & build directory, but not building any targets."
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" base
   )
+add_custom_target(pull_clang_config
+    COMMAND "${CMAKE_COMMAND}" -E copy "${CHROMIUM_SOURCE_TREE}/.clang-format" "${CMAKE_SOURCE_DIR}/"
+    COMMAND "${CMAKE_COMMAND}" -E copy "${CHROMIUM_SOURCE_TREE}/.clang-tidy"   "${CMAKE_SOURCE_DIR}/"
+)
 #Chromium ninja.py targets:
 add_custom_target(in_tree_gen
     COMMENT "Building targets necessary to have generated headers...."

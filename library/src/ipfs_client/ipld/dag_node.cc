@@ -24,11 +24,12 @@ using Node = ipfs::ipld::DagNode;
 std::shared_ptr<Node> Node::fromBytes(std::shared_ptr<Client> const& api,
                                       Cid const& cid,
                                       std::string_view bytes) {
-  return fromBytes(api, cid, as_bytes(bytes));
+  return fromBytes(api, cid, as_bytes(bytes), {});  // TODO
 }
 auto Node::fromBytes(std::shared_ptr<Client> const& api,
                      ipfs::Cid const& cid,
-                     ipfs::ByteView bytes) -> NodePtr {
+                     ipfs::ByteView bytes,
+                     BlockSource src) -> NodePtr {
   std::shared_ptr<Node> result = nullptr;
   auto hash = api->Hash(cid.hash_type(), bytes);
   if (!hash.has_value()) {
@@ -100,6 +101,7 @@ auto Node::fromBytes(std::shared_ptr<Client> const& api,
   }
   if (result) {
     result->set_api(api);
+    result->source_ = src;
   }
   return result;
 }
@@ -141,10 +143,6 @@ std::shared_ptr<Node> Node::fromBlock(ipfs::PbDag const& block) {
   };
   block.List(add_link);
   return result;
-}
-
-auto Node::fromIpnsRecord(ipfs::ValidatedIpns const& v) -> NodePtr {
-  return std::make_shared<DnsLinkName>(v.value);
 }
 
 std::shared_ptr<Node> Node::deroot() {

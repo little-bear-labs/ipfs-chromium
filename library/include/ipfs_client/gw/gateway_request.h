@@ -29,8 +29,12 @@ std::string_view name(GatewayRequestType);
 constexpr std::size_t BLOCK_RESPONSE_BUFFER_SIZE = 2 * 1024 * 1024;
 
 class GatewayRequest {
+ public:
+  using BytesReceivedHook = std::function<void(std::string_view, ByteView)>;
+
+ private:
   std::shared_ptr<Partition> orchestrator_;
-  std::vector<std::function<void(std::string_view)>> bytes_received_hooks;
+  std::vector<BytesReceivedHook> bytes_received_hooks;
 
   void ParseNodes(std::string_view, Client* api);
 
@@ -58,7 +62,7 @@ class GatewayRequest {
   bool RespondSuccessfully(std::string_view,
                            std::shared_ptr<Client> const& api,
                            bool* valid = nullptr);
-  void Hook(std::function<void(std::string_view)>);
+  void Hook(BytesReceivedHook);
   bool PartiallyRedundant() const;
   std::string Key() const;
   bool Finished() const;

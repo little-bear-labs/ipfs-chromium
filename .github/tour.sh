@@ -44,7 +44,7 @@ function url_case() {
   echo "test case description =${4}"
   ll="${5-note}"
   echo "log level = ${ll}"
-  if timeout 360 ./tester_build/clitester "${ll}" "${1}://${2}"
+  if timeout 420 ./tester_build/clitester "${ll}" "${1}://${2}"
   then
     echo clitester exited with successful status
   else

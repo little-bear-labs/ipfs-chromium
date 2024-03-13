@@ -10,7 +10,10 @@
 #include "base/debug/stack_trace.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
+#include "content/public/browser/browser_thread.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -79,8 +82,6 @@ void ipfs::IpfsUrlLoader::StartRequest(
     me->api_->with(
         std::make_unique<ChromiumHttp>(*(me->lower_loader_factory_)));
     auto whendone = [me](IpfsRequest const& req, ipfs::Response const& res) {
-      VLOG(2) << "whendone(" << req.path().to_string() << ',' << res.status_
-              << ',' << res.body_.size() << "B mime=" << res.mime_ << ')';
       if (!res.body_.empty()) {
         me->ReceiveBlockBytes(res.body_);
       }
@@ -98,7 +99,12 @@ void ipfs::IpfsUrlLoader::StartRequest(
     };
     me->ipfs_request_ = std::make_shared<IpfsRequest>(abs_path, whendone);
     me->stepper_ = std::make_unique<base::RepeatingTimer>();
-    me->stepper_->Start(FROM_HERE, base::Seconds(1), me.get(),
+    //    auto f = [](std::shared_ptr<IpfsUrlLoader> m) { m->TakeStep(); };
+    //    auto cb = base::BindOnce(f, me);
+    //    content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
+    //    std::move(cb));
+    //    base::ThreadPool::PostTask(FROM_HERE, std::move(cb));
+    me->stepper_->Start(FROM_HERE, base::Seconds(2), me.get(),
                         &ipfs::IpfsUrlLoader::TakeStep);
     me->TakeStep();
   } else {
@@ -189,7 +195,7 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
 
 void ipfs::IpfsUrlLoader::DoesNotExist(std::string_view cid,
                                        std::string_view path) {
-  VLOG(1) << "Immutable data 404 for " << cid << '/' << path;
+  VLOG(2) << "Immutable data 404 for " << cid << '/' << path;
   complete_ = true;
   client_->OnComplete(
       network::URLLoaderCompletionStatus{net::ERR_FILE_NOT_FOUND});

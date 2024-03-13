@@ -4,8 +4,10 @@
 #include "link.h"
 #include "resolution_state.h"
 
-#include <ipfs_client/cid.h>
 #include <ipfs_client/gw/gateway_request.h>
+#include <ipfs_client/ipld/block_source.h>
+
+#include <ipfs_client/cid.h>
 #include <ipfs_client/response.h>
 #include <vocab/slash_delimited.h>
 
@@ -52,6 +54,7 @@ using ResolveResult =
  * @brief A block, an IPNS record, etc.
  */
 class DagNode : public std::enable_shared_from_this<DagNode> {
+  BlockSource source_;
   Link* FindChild(std::string_view);
 
  protected:
@@ -81,12 +84,12 @@ class DagNode : public std::enable_shared_from_this<DagNode> {
 
   static NodePtr fromBytes(std::shared_ptr<Client> const& api,
                            Cid const&,
-                           ByteView bytes);
+                           ByteView bytes,
+                           BlockSource);
   static NodePtr fromBytes(std::shared_ptr<Client> const& api,
                            Cid const&,
                            std::string_view bytes);
   static NodePtr fromBlock(PbDag const&);
-  static NodePtr fromIpnsRecord(ValidatedIpns const&);
 
   virtual ~DagNode() noexcept {}
 

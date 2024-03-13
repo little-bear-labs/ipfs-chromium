@@ -84,7 +84,7 @@ TEST_F(GatewayRequestTest, RespondsToCar) {
 }
 TEST_F(GatewayRequestTest, suffices) {
   t_.type = RT::Car;
-  EXPECT_EQ(t_.url_suffix(), "/ipfs/main/?dag-scope=entity");
+  EXPECT_EQ(t_.url_suffix(), "/ipfs/main/?entity-bytes=0:2097152");
   t_.type = RT::Ipns;
   EXPECT_EQ(t_.url_suffix(), "/ipns/main");
   t_.type = RT::Providers;
