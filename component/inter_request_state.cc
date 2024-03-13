@@ -51,11 +51,12 @@ auto Self::cache() -> std::shared_ptr<CacheRequestor>& {
   return cache_;
 }
 auto Self::orchestrator() -> Partition& {
-  if (!orc_) {
+  if (!cache_) {
     auto rtor = gw::default_requestor(cache(), api());
-    orc_ = api()->with(rtor).partition({});
+    api()->with(rtor);
   }
-  return *orc_;
+  // TODO - use origin
+  return *api()->partition({});
 }
 void Self::network_context(network::mojom::NetworkContext* val) {
   network_context_ = val;

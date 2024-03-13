@@ -8,6 +8,7 @@
 auto ipfs::gw::from_name(std::string_view name)
     -> std::optional<GatewayRequestType> {
   using T = GatewayRequestType;
+  // It is important that these string represetnations not contain whitespace
   if (name == "Block") {
     return T::Block;
   }

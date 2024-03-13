@@ -10,8 +10,7 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
     return CallChild(params, "", cid_str);
   }
   if (params.IsFinalComponent()) {
-    return Response{"text/html", 200, doc_->html(),
-                    params.PathToResolve().to_string()};
+    return Response{"text/html", 200, doc_->html(), params.PathToResolve().to_string(), {}};
   }
   return CallChild(params, [this](std::string_view element_name) -> NodePtr {
     if (auto child = doc_->at(element_name)) {

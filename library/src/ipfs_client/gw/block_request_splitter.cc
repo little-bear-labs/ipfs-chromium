@@ -33,10 +33,7 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
       pr->type = GatewayRequestType::Providers;
       pr->path.clear();
       pr->affinity.clear();
-      LOG(INFO) << "Forwarding providers' split: " << pr->affinity;
       forward(pr);
-    } else {
-      VLOG(1) << "Not re-requesting providers for '" << r->affinity << "'.";
     }
   } else if (++old_provider_request == 1UL) {
     LOG(INFO) << "Routing requests disabled.";

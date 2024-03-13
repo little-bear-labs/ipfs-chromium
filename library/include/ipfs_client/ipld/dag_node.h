@@ -4,8 +4,10 @@
 #include "link.h"
 #include "resolution_state.h"
 
-#include <ipfs_client/cid.h>
 #include <ipfs_client/gw/gateway_request.h>
+#include <ipfs_client/ipld/block_source.h>
+
+#include <ipfs_client/cid.h>
 #include <ipfs_client/response.h>
 #include <vocab/slash_delimited.h>
 
@@ -53,6 +55,9 @@ using ResolveResult =
  */
 class DagNode : public std::enable_shared_from_this<DagNode> {
   Link* FindChild(std::string_view);
+  BlockSource source_;
+
+  virtual ResolveResult resolve(ResolutionState& params) = 0;
 
  protected:
   std::vector<std::pair<std::string, Link>> links_;
@@ -74,10 +79,10 @@ class DagNode : public std::enable_shared_from_this<DagNode> {
   ResolveResult CallChild(ResolutionState&,
                           std::string_view link_key,
                           std::string_view block_key);
-
+  
  public:
-  virtual ResolveResult resolve(ResolutionState& params) = 0;
   ResolveResult resolve(SlashDelimited initial_path, BlockLookup);
+  ResolveResult Resolve(ResolutionState& params);
 
   static NodePtr fromBytes(std::shared_ptr<Client> const& api,
                            Cid const&,
@@ -86,7 +91,6 @@ class DagNode : public std::enable_shared_from_this<DagNode> {
                            Cid const&,
                            std::string_view bytes);
   static NodePtr fromBlock(PbDag const&);
-  static NodePtr fromIpnsRecord(ValidatedIpns const&);
 
   virtual ~DagNode() noexcept {}
 
@@ -102,6 +106,7 @@ class DagNode : public std::enable_shared_from_this<DagNode> {
   virtual bool PreferOver(DagNode const& another) const;
 
   void set_api(std::shared_ptr<Client>);
+  void source(BlockSource src) { source_ = src; }
 };
 }  // namespace ipfs::ipld
 

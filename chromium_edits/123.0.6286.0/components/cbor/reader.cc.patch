@@ -12,6 +12,7 @@ index 3c31e3d05e5d3..b0cf411b350e2 100644
  
  namespace {
 @@ -157,6 +157,10 @@ std::optional<Value> Reader::DecodeCompleteDataItem(const Config& config,
+     case Value::Type::FLOAT_VALUE:
        // Floating point values also go here since they are also type 7.
        return DecodeToSimpleValueOrFloat(*header, config);
 -    case Value::Type::TAG:  // We explicitly don't support TAG.

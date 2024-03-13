@@ -19,7 +19,6 @@ class GURL;
 namespace ipfs {
 class BlockHttpRequest : public std::enable_shared_from_this<BlockHttpRequest> {
   // TODO ween oneself off of SimpleURLLoader
-  //  std::array<char, gw::BLOCK_RESPONSE_BUFFER_SIZE> buffer_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
 
  public:
