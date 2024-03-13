@@ -66,6 +66,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
@@ -89,6 +90,12 @@ Collaboration diagram for ipfs::gw::GatewayRequest:</div>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:aa8de398bb25474f2a289b1c48b12a224"><td class="memItemLeft" align="right" valign="top"><a id="aa8de398bb25474f2a289b1c48b12a224"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>BytesReceivedHook</b> = std::function&lt; void(std::string_view, ByteView)&gt;</td></tr>
+<tr class="separator:aa8de398bb25474f2a289b1c48b12a224"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a4ecdf2f0eb5dbe221f8976d6483317b5"><td class="memItemLeft" align="right" valign="top"><a id="a4ecdf2f0eb5dbe221f8976d6483317b5"></a>
@@ -124,9 +131,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>cachable</b> () const
 <tr class="memitem:aab82a02aa47cefabb14ca94a725f2853"><td class="memItemLeft" align="right" valign="top"><a id="aab82a02aa47cefabb14ca94a725f2853"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>RespondSuccessfully</b> (std::string_view, std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt; const &amp;api, bool *valid=nullptr)</td></tr>
 <tr class="separator:aab82a02aa47cefabb14ca94a725f2853"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac05957fd96280e965674967bf5475142"><td class="memItemLeft" align="right" valign="top"><a id="ac05957fd96280e965674967bf5475142"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Hook</b> (std::function&lt; void(std::string_view)&gt;)</td></tr>
-<tr class="separator:ac05957fd96280e965674967bf5475142"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af954c1a592327a14264d934f526ff1bd"><td class="memItemLeft" align="right" valign="top"><a id="af954c1a592327a14264d934f526ff1bd"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Hook</b> (BytesReceivedHook)</td></tr>
+<tr class="separator:af954c1a592327a14264d934f526ff1bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31b79b36bf2208ced5b9e2fb5f31d6a6"><td class="memItemLeft" align="right" valign="top"><a id="a31b79b36bf2208ced5b9e2fb5f31d6a6"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>PartiallyRedundant</b> () const</td></tr>
 <tr class="separator:a31b79b36bf2208ced5b9e2fb5f31d6a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
