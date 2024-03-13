@@ -1,6 +1,8 @@
 #ifndef IPFS_RESOLUTION_STATE_H_
 #define IPFS_RESOLUTION_STATE_H_
 
+#include <ipfs_client/ipld/dag_headers.h>
+
 #include <vocab/slash_delimited.h>
 
 #include <functional>
@@ -34,6 +36,8 @@ class ResolutionState {
   ResolutionState RestartResolvedPath() const;
 
   void Descend();
+
+  ipld::DagHeaders headers;
 };
 }  // namespace ipfs::ipld
 

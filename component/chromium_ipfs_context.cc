@@ -34,7 +34,7 @@ std::string DeduceMimeType(std::string extension,
   } else if (!net::GetWellKnownMimeTypeFromExtension(fp_ext, &result)) {
     result.clear();
   }
-  auto head_size = std::min(content.size(), 999'999UL);
+  auto head_size = std::min(content.size(), static_cast<std::size_t>(999'999));
   net::SniffMimeType({content.data(), head_size}, GURL{url}, result,
                      net::ForceSniffFileUrlsForHtml::kDisabled, &result);
   if (result.empty() || result == "application/octet-stream") {

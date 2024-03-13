@@ -47,11 +47,17 @@ void Self::Assign(dc::BackendResult res) {
   }
 }
 auto Self::handle(RequestPtr req) -> HandleOutcome {
+  if (req->type == gw::GatewayRequestType::Car) {
+    req->Hook([this](auto key, ByteView bytes, ipld::BlockSource const& src) {
+      Store(std::string{key}, src.Serialize(), bytes);
+    });
+    return HandleOutcome::NOT_HANDLED;
+  }
   if (startup_pending_ || !(req->cachable())) {
     return HandleOutcome::NOT_HANDLED;
   }
   Task task;
-  task.key = req->Key();
+  task.key = req->main_param;  // req->Key();
   task.request = req;
   StartFetch(task, net::MAXIMUM_PRIORITY);
   return HandleOutcome::PENDING;
@@ -71,8 +77,9 @@ void Self::StartFetch(Task& task, net::RequestPriority priority) {
 void Self::Miss(Task& task) {
   if (task.request) {
     auto req = task.request;
-    task.request->Hook([this, req](std::string_view bytes) {
-      Store(req->Key(), "TODO", std::string{bytes});
+    task.request->Hook([this](std::string_view key, ByteView bytes,
+                              ipld::BlockSource const& src) {
+      Store(std::string{key}, src.Serialize(), bytes);
     });
     forward(req);
   }
@@ -114,6 +121,7 @@ void Self::OnHeaderRead(Task task, int code) {
     //    return;
   }
   task.header.assign(task.buf->data(), static_cast<std::size_t>(code));
+  task.orig_src.Deserialize({task.buf->data(), static_cast<std::size_t>(code)});
   auto bound = base::BindOnce(&Self::OnBodyRead, base::Unretained(this), task);
   code = task.entry->ReadData(1, 0, task.buf.get(), task.buf->size(),
                               std::move(bound));
@@ -130,25 +138,26 @@ void Self::OnBodyRead(Task task, int code) {
   task.body.assign(task.buf->data(), static_cast<std::size_t>(code));
   if (task.request) {
     task.SetHeaders(name());
+    task.orig_src.load_duration = std::chrono::system_clock::now() - task.start;
+    task.orig_src.cat.cached = true;
     bool valid = false;
-    task.request->RespondSuccessfully(task.body, api_, &valid);
-    if (valid) {
-      VLOG(2) << "Cache hit for " << task.key;
-    } else {
+    task.request->RespondSuccessfully(task.body, api_, task.orig_src, &valid);
+    if (!valid) {
       LOG(ERROR) << "Had a bad or expired cached response for " << task.key;
       Expire(task.key);
       Miss(task);
     }
   }
 }
-void Self::Store(std::string key, std::string headers, std::string body) {
+void Self::Store(std::string key, std::string headers, ByteView body) {
   VLOG(2) << "Store(" << name() << ',' << key << ',' << headers.size() << ','
           << body.size() << ')';
+  std::string body_s{reinterpret_cast<char const*>(body.data()), body.size()};
   auto bound = base::BindOnce(&Self::OnEntryCreated, base::Unretained(this),
-                              key, headers, body);
+                              key, headers, body_s);
   auto res = cache_->OpenOrCreateEntry(key, net::LOW, std::move(bound));
   if (res.net_error() != net::ERR_IO_PENDING) {
-    OnEntryCreated(key, headers, body, std::move(res));
+    OnEntryCreated(key, headers, body_s, std::move(res));
   }
 }
 void Self::OnEntryCreated(std::string cid,
@@ -184,9 +193,7 @@ void Self::OnHeaderWritten(scoped_refptr<net::StringIOBuffer> buf,
   }
   buf = base::MakeRefCounted<net::StringIOBuffer>(body);
   DCHECK(buf);
-  auto f = [](scoped_refptr<net::StringIOBuffer>, int c) {
-    VLOG(2) << "body write " << c;
-  };
+  auto f = [](scoped_refptr<net::StringIOBuffer>, int) {};
   auto bound = base::BindOnce(f, buf);
   entry->WriteData(1, 0, buf.get(), buf->size(), std::move(bound), true);
 }

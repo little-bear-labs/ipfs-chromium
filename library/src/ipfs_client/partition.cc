@@ -26,7 +26,6 @@ void Self::build_response(std::shared_ptr<IpfsRequest> req) {
   auto req_path = req->path();
   req_path.pop();  // discard namespace ipfs or ipns
   std::string affinity{req_path.pop()};
-  VLOG(1) << req->path().to_string() << " Affinity: " << affinity;
   auto it = dags_.find(affinity);
   if (dags_.end() == it) {
     if (gw_request(req, req->path(), affinity)) {
@@ -53,11 +52,6 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
   auto result = root->resolve(relative_path, block_look_up);
   auto response = std::get_if<Response>(&result);
   if (response) {
-    VLOG(2) << "Tree gave us a response to '" << req->path()
-            << "' : status=" << response->status_
-              << " mime=" << response->mime_
-              << " location=" << response->location_ << " body is "
-              << response->body_.size() << " bytes.";
     if (response->mime_.empty() && !response->body_.empty()) {
       if (response->location_.empty()) {
         VLOG(2) << "Request for " << req->path()
@@ -74,8 +68,8 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
         hit_path.append(response->location_);
         VLOG(2) << "Request for " << req->path() << " returned a location of "
                 << response->location_ << " and a body of "
-                  << response->body_.size() << " bytes, sniffing mime from "
-                  << hit_path;
+                << response->body_.size() << " bytes, sniffing mime from "
+                << hit_path;
         response->mime_ = sniff(SlashDelimited{hit_path}, response->body_);
       }
     }

@@ -25,10 +25,7 @@ bool default_port(std::string_view scheme, std::string_view port) {
   }
 }
 std::string MultiaddrToGatewayPrefix(ipfs::SlashDelimited ma, bool http) {
-  auto addr_proto = ma.pop();
-  VLOG(2)
-      << "Protocol expected to be one of ip4|ip6|dnsaddr|dns|dns4|dns6 , is:"
-      << addr_proto;
+  /* auto addr_proto = */ ma.pop();
   auto host = ma.pop();
   auto tcp = ma.pop();
   DCHECK_EQ(tcp, "tcp");
@@ -77,7 +74,6 @@ bool ParseProvider(ipfs::DagJsonValue const& provider, ipfs::Client& api) {
       ipfs::SlashDelimited sd{s.value()};
       auto gw_pre = MultiaddrToGatewayPrefix(sd, http);
       if (gw_pre.size()) {
-        LOG(INFO) << "'" << *s << "' -> '" << gw_pre << "'.";
         c.AddGateway(gw_pre, c.RoutingApiDiscoveryDefaultRate());
         rv = true;
       }

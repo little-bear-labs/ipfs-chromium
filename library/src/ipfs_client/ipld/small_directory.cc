@@ -14,7 +14,6 @@ using Self = ipfs::ipld::SmallDirectory;
 
 auto Self::resolve(ResolutionState& params) -> ResolveResult {
   if (params.IsFinalComponent()) {
-    VLOG(2) << "Directory listing requested for " << params.MyPath();
     auto result = CallChild(params, "index.html");
     if (auto resp = std::get_if<Response>(&result)) {
       resp->mime_ = "text/html";
@@ -27,9 +26,9 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
     for (auto& [name, link] : links_) {
       index_html.AddEntry(name);
     }
-    return Response{"text/html", 200, index_html.Finish(), ""};
+    return Response{"text/html", 200, index_html.Finish(), "", {}};
   }
   return CallChild(params);
 }
 
-Self::~SmallDirectory() {}
+Self::~SmallDirectory() noexcept {}

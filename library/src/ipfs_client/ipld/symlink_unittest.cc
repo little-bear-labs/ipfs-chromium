@@ -53,7 +53,7 @@ TEST(SymlinkTest, relative) {
   ii::ResolutionState state{"/a/b", blu};
   state.Descend();
   state.Descend();
-  auto res = super.resolve(state);
+  auto res = super.Resolve(state);
   EXPECT_TRUE(std::holds_alternative<ii::PathChange>(res));
   EXPECT_EQ(std::get<ii::PathChange>(res).new_path, "/a/c");
 }
@@ -64,7 +64,7 @@ TEST(SymlinkTest, relative_with_dotdot) {
   ii::ResolutionState state{"/a/b/c", blu};
   state.Descend();
   state.Descend();
-  auto res = super.resolve(state);
+  auto res = super.Resolve(state);
   EXPECT_TRUE(std::holds_alternative<ii::PathChange>(res));
   EXPECT_EQ(std::get<ii::PathChange>(res).new_path, "/X/c");
 }
