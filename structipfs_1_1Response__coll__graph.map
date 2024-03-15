@@ -1,5 +1,6 @@
 <map id="ipfs::Response" name="ipfs::Response">
-<area shape="rect" id="node1" title=" " alt="" coords="29,133,147,159"/>
+<area shape="rect" id="node1" title=" " alt="" coords="129,133,247,159"/>
 <area shape="rect" id="node2" title=" " alt="" coords="5,5,80,32"/>
-<area shape="rect" id="node3" title=" " alt="" coords="104,5,163,32"/>
+<area shape="rect" id="node3" href="$classipfs_1_1ipld_1_1DagHeaders.html" title=" " alt="" coords="105,5,271,32"/>
+<area shape="rect" id="node4" title=" " alt="" coords="296,5,355,32"/>
 </map>

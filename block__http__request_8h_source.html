@@ -90,31 +90,30 @@ $(function() {
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>ipfs {</div>
 <div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="classipfs_1_1BlockHttpRequest.html">   20</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1BlockHttpRequest.html">BlockHttpRequest</a> : <span class="keyword">public</span> std::enable_shared_from_this&lt;BlockHttpRequest&gt; {</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="comment">// TODO ween oneself off of SimpleURLLoader</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="comment">//  std::array&lt;char, gw::BLOCK_RESPONSE_BUFFER_SIZE&gt; buffer_;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  std::unique_ptr&lt;network::SimpleURLLoader&gt; loader_;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keyword">using</span> HttpCompleteCallback = ctx::HttpApi::HttpCompleteCallback;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <a class="code" href="classipfs_1_1BlockHttpRequest.html">BlockHttpRequest</a>(<a class="code" href="structipfs_1_1HttpRequestDescription.html">ipfs::HttpRequestDescription</a>, HttpCompleteCallback);</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  ~<a class="code" href="classipfs_1_1BlockHttpRequest.html">BlockHttpRequest</a>() noexcept;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; </div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordtype">void</span> send(<a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr&lt;network::mojom::URLLoaderFactory&gt;</a>);</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <a class="code" href="structipfs_1_1HttpRequestDescription.html">ipfs::HttpRequestDescription</a> <span class="keyword">const</span> inf_;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  HttpCompleteCallback callback_;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  std::string status_line_;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  ctx::HttpApi::HeaderAccess header_accessor_ = [](<span class="keyword">auto</span>) {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordflow">return</span> std::string{};</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  };</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keywordtype">void</span> OnResponseHead(GURL <span class="keyword">const</span>&amp;, network::mojom::URLResponseHead <span class="keyword">const</span>&amp;);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordtype">void</span> OnResponse(std::shared_ptr&lt;BlockHttpRequest&gt;,</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                  std::unique_ptr&lt;std::string&gt; body);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;};</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_BLOCK_HTTP_REQUEST_H_</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  std::unique_ptr&lt;network::SimpleURLLoader&gt; loader_;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keyword">using</span> HttpCompleteCallback = ctx::HttpApi::HttpCompleteCallback;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <a class="code" href="classipfs_1_1BlockHttpRequest.html">BlockHttpRequest</a>(<a class="code" href="structipfs_1_1HttpRequestDescription.html">ipfs::HttpRequestDescription</a>, HttpCompleteCallback);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  ~<a class="code" href="classipfs_1_1BlockHttpRequest.html">BlockHttpRequest</a>() noexcept;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keywordtype">void</span> send(<a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr&lt;network::mojom::URLLoaderFactory&gt;</a>);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <a class="code" href="structipfs_1_1HttpRequestDescription.html">ipfs::HttpRequestDescription</a> <span class="keyword">const</span> inf_;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  HttpCompleteCallback callback_;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  std::string status_line_;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  ctx::HttpApi::HeaderAccess header_accessor_ = [](<span class="keyword">auto</span>) {</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordflow">return</span> std::string{};</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  };</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; </div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordtype">void</span> OnResponseHead(GURL <span class="keyword">const</span>&amp;, network::mojom::URLResponseHead <span class="keyword">const</span>&amp;);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keywordtype">void</span> OnResponse(std::shared_ptr&lt;BlockHttpRequest&gt;,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                  std::unique_ptr&lt;std::string&gt; body);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;};</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_BLOCK_HTTP_REQUEST_H_</span></div>
 <div class="ttc" id="aclassipfs_1_1BlockHttpRequest_html"><div class="ttname"><a href="classipfs_1_1BlockHttpRequest.html">ipfs::BlockHttpRequest</a></div><div class="ttdef"><b>Definition:</b> block_http_request.h:20</div></div>
 <div class="ttc" id="aclassipfs_1_1raw__ptr_html"><div class="ttname"><a href="classipfs_1_1raw__ptr.html">ipfs::raw_ptr&lt; network::mojom::URLLoaderFactory &gt;</a></div></div>
 <div class="ttc" id="astructipfs_1_1HttpRequestDescription_html"><div class="ttname"><a href="structipfs_1_1HttpRequestDescription.html">ipfs::HttpRequestDescription</a></div><div class="ttdef"><b>Definition:</b> http_request_description.h:10</div></div>

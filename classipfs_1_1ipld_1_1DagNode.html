@@ -113,12 +113,12 @@ Collaboration diagram for ipfs::ipld::DagNode:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a576c5dcd937fbec95ae441c5fd25075d"><td class="memItemLeft" align="right" valign="top"><a id="a576c5dcd937fbec95ae441c5fd25075d"></a>
-virtual ResolveResult&#160;</td><td class="memItemRight" valign="bottom"><b>resolve</b> (<a class="el" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a> &amp;params)=0</td></tr>
-<tr class="separator:a576c5dcd937fbec95ae441c5fd25075d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2d7fb3f332c39a2a72404580d728694e"><td class="memItemLeft" align="right" valign="top"><a id="a2d7fb3f332c39a2a72404580d728694e"></a>
 ResolveResult&#160;</td><td class="memItemRight" valign="bottom"><b>resolve</b> (<a class="el" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> initial_path, BlockLookup)</td></tr>
 <tr class="separator:a2d7fb3f332c39a2a72404580d728694e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8235a31cacc5dd726e269f47ea6a729a"><td class="memItemLeft" align="right" valign="top"><a id="a8235a31cacc5dd726e269f47ea6a729a"></a>
+ResolveResult&#160;</td><td class="memItemRight" valign="bottom"><b>Resolve</b> (<a class="el" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a> &amp;params)</td></tr>
+<tr class="separator:a8235a31cacc5dd726e269f47ea6a729a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac8ebf47a8b85ad35e82bc03ddca34b64"><td class="memItemLeft" align="right" valign="top"><a id="ac8ebf47a8b85ad35e82bc03ddca34b64"></a>
 virtual NodePtr&#160;</td><td class="memItemRight" valign="bottom"><b>rooted</b> ()</td></tr>
 <tr class="separator:ac8ebf47a8b85ad35e82bc03ddca34b64"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -143,12 +143,15 @@ virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>PreferOver</b
 <tr class="memitem:a73dd35a0ca501f34e047ae398fb46c34"><td class="memItemLeft" align="right" valign="top"><a id="a73dd35a0ca501f34e047ae398fb46c34"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_api</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt;)</td></tr>
 <tr class="separator:a73dd35a0ca501f34e047ae398fb46c34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6fb06a87b2c5653096be7957ea3c92c"><td class="memItemLeft" align="right" valign="top"><a id="ae6fb06a87b2c5653096be7957ea3c92c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>source</b> (<a class="el" href="structipfs_1_1ipld_1_1BlockSource.html">BlockSource</a> src)</td></tr>
+<tr class="separator:ae6fb06a87b2c5653096be7957ea3c92c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a32406a28165457114b3a921884d95421"><td class="memItemLeft" align="right" valign="top"><a id="a32406a28165457114b3a921884d95421"></a>
-static NodePtr&#160;</td><td class="memItemRight" valign="bottom"><b>fromBytes</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt; const &amp;api, <a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;, ByteView bytes, <a class="el" href="classipfs_1_1ipld_1_1BlockSource.html">BlockSource</a>)</td></tr>
-<tr class="separator:a32406a28165457114b3a921884d95421"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed6bb1d82597ba7e9f11e347d0f4a0c8"><td class="memItemLeft" align="right" valign="top"><a id="aed6bb1d82597ba7e9f11e347d0f4a0c8"></a>
+static NodePtr&#160;</td><td class="memItemRight" valign="bottom"><b>fromBytes</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt; const &amp;api, <a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;, ByteView bytes)</td></tr>
+<tr class="separator:aed6bb1d82597ba7e9f11e347d0f4a0c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af02f2920e2a85d5b907e16da4b73da56"><td class="memItemLeft" align="right" valign="top"><a id="af02f2920e2a85d5b907e16da4b73da56"></a>
 static NodePtr&#160;</td><td class="memItemRight" valign="bottom"><b>fromBytes</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt; const &amp;api, <a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;, std::string_view bytes)</td></tr>
 <tr class="separator:af02f2920e2a85d5b907e16da4b73da56"><td class="memSeparator" colspan="2">&#160;</td></tr>

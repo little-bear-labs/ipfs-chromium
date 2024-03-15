@@ -92,9 +92,9 @@ Collaboration diagram for ipfs::gw::GatewayRequest:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:aa8de398bb25474f2a289b1c48b12a224"><td class="memItemLeft" align="right" valign="top"><a id="aa8de398bb25474f2a289b1c48b12a224"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>BytesReceivedHook</b> = std::function&lt; void(std::string_view, ByteView)&gt;</td></tr>
-<tr class="separator:aa8de398bb25474f2a289b1c48b12a224"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20a1ec743bee476e8358ad2a60182350"><td class="memItemLeft" align="right" valign="top"><a id="a20a1ec743bee476e8358ad2a60182350"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>BytesReceivedHook</b> = std::function&lt; void(std::string_view, ByteView, <a class="el" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> const  &amp;)&gt;</td></tr>
+<tr class="separator:a20a1ec743bee476e8358ad2a60182350"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -128,9 +128,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>orchestrator</b> (std
 <tr class="memitem:af739efd67499fd535b8eba21a7bf7f4a"><td class="memItemLeft" align="right" valign="top"><a id="af739efd67499fd535b8eba21a7bf7f4a"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>cachable</b> () const</td></tr>
 <tr class="separator:af739efd67499fd535b8eba21a7bf7f4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab82a02aa47cefabb14ca94a725f2853"><td class="memItemLeft" align="right" valign="top"><a id="aab82a02aa47cefabb14ca94a725f2853"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>RespondSuccessfully</b> (std::string_view, std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt; const &amp;api, bool *valid=nullptr)</td></tr>
-<tr class="separator:aab82a02aa47cefabb14ca94a725f2853"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae92264d16b2bdc14546e6a190c5c81f"><td class="memItemLeft" align="right" valign="top"><a id="aae92264d16b2bdc14546e6a190c5c81f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>RespondSuccessfully</b> (std::string_view, std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt; const &amp;api, <a class="el" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> src, bool *valid=nullptr)</td></tr>
+<tr class="separator:aae92264d16b2bdc14546e6a190c5c81f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af954c1a592327a14264d934f526ff1bd"><td class="memItemLeft" align="right" valign="top"><a id="af954c1a592327a14264d934f526ff1bd"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>Hook</b> (BytesReceivedHook)</td></tr>
 <tr class="separator:af954c1a592327a14264d934f526ff1bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
