@@ -31,4 +31,4 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
   return CallChild(params);
 }
 
-Self::~SmallDirectory() {}
+Self::~SmallDirectory() noexcept {}

@@ -194,8 +194,11 @@ class Patcher:
         return self.git(['rev-parse', ref], Result.Output)
 
     def distance(self, ref) -> int:
-        a, b = self.distances('HEAD', ref)
-        return a + b
+        try:
+            a, b = self.distances('HEAD', ref)
+            return a + b
+        except:
+            return 1_234_567_890
 
     def recommend(self) -> str:
         channels = ['Dev', 'Beta', 'Stable', 'Extended']

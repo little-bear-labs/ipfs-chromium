@@ -90,7 +90,7 @@ std::vector<std::string> Self::hexhash(std::string_view path_element) const {
 }
 
 Self::DirShard(std::uint64_t fanout) : fanout_{fanout} {}
-Self::~DirShard() {}
+Self::~DirShard() noexcept {}
 Self* Self::as_hamt() {
   return this;
 }
