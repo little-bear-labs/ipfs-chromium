@@ -49,17 +49,18 @@ def on_tag():
 def deduce():
     tag = on_tag()
     if tag and tag_to_version(tag) > 0:
-        return tag
-    git(['fetch', '--tags'])
-    tags = git(['tag']).splitlines()
-    versions = map(tag_to_version, tags)
-    last = max(versions)
-    next = last + 1
-    major = str(next//1000)
-    minor = str((next//100) % 10)
-    revision = str((next//10) % 10)
-    build = str(next % 10)
-    result = '.'.join([major, minor, revision, build])
+        result = tag
+    else:
+        git(['fetch', '--tags'])
+        tags = git(['tag']).splitlines()
+        versions = map(tag_to_version, tags)
+        last = max(versions)
+        next = last + 1
+        major = str(next//1000)
+        minor = str((next//100) % 10)
+        revision = str((next//10) % 10)
+        build = str(next % 10)
+        result = '.'.join([major, minor, revision, build])
     with open(join(here, 'library', 'version.txt'), 'w') as txt:
         print(result, file=txt)
     return result

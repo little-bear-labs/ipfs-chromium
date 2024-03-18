@@ -281,9 +281,10 @@ bool Self::RespondSuccessfully(std::string_view bytes,
                                             cid.value(), *api);
         if (rec.has_value()) {
           auto node = std::make_shared<IpnsName>(rec.value());
-          if (node) {
-            node->source(src);
+          if (!node || node->expired()) {
+            return false;
           }
+          node->source(src);
           success = orchestrator_->add_node(main_param, node);
           if (valid) {
             *valid = !node->expired();
