@@ -14,7 +14,7 @@ index e5c02ceea3402..07168e636d6bd 100644
 +    0x9d, 0xf6, 0x3a, 0x36, 0x5b
 +  };
 +  Reader::Config config;
-+  absl::optional<Value> cbor = Reader::Read(kTaggedCbor, config);
++  auto cbor = Reader::Read(kTaggedCbor, config);
 +  EXPECT_FALSE(cbor.has_value());
 +}
 +TEST(CBORReaderTest, ReadsTagWhenConfiguredToDoSo) {
@@ -26,7 +26,7 @@ index e5c02ceea3402..07168e636d6bd 100644
 +  };
 +  Reader::Config config;
 +  config.parse_tags = true;
-+  absl::optional<Value> cbor = Reader::Read(kTaggedCbor, config);
++  auto cbor = Reader::Read(kTaggedCbor, config);
 +  EXPECT_TRUE(cbor.has_value());
 +  auto& v = cbor.value();
 +  EXPECT_TRUE(v.has_tag());

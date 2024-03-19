@@ -10,6 +10,9 @@
 #include <base/time/time.h>
 
 #include <ipfs_client/gw/requestor.h>
+#include <ipfs_client/ipld/block_source.h>
+
+#include <vocab/byte_view.h>
 
 #include <memory>
 
@@ -22,7 +25,7 @@ class CacheRequestor : public gw::Requestor {
  public:
   CacheRequestor(InterRequestState&, base::FilePath);
   ~CacheRequestor() noexcept override;
-  void Store(std::string key, std::string headers, std::string body);
+  void Store(std::string key, std::string headers, ByteView body);
   void Expire(std::string const& key);
 
   std::string_view name() const override;
@@ -33,12 +36,14 @@ class CacheRequestor : public gw::Requestor {
     Task(Task const&);
     ~Task() noexcept;
     std::string key;
-    base::TimeTicks start = base::TimeTicks::Now();
+    ipld::BlockSource::Clock::time_point start =
+        ipld::BlockSource::Clock::now();
     std::string header;
     std::string body;
     scoped_refptr<net::IOBufferWithSize> buf;
     std::shared_ptr<disk_cache::Entry> entry;
     gw::RequestPtr request;
+    ipld::BlockSource orig_src;
 
     void SetHeaders(std::string_view);
   };

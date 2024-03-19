@@ -165,7 +165,6 @@ auto ipfs::ValidateIpnsRecord(ipfs::ByteView top_level_bytes,
     LOG(ERROR) << "Verification failed!!";
     return {};
   }
-  // TODO check expiration date
   if (entry.has_value() && entry.value() != result.value) {
     LOG(ERROR) << "IPNS " << name.to_string() << " has different values for V1("
                << entry.value() << ") and V2(" << result.value << ')';

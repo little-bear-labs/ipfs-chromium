@@ -6,7 +6,7 @@ using Self = ipfs::ipld::Symlink;
 
 Self::Symlink(std::string target) : target_{target} {}
 
-Self::~Symlink() {}
+Self::~Symlink() noexcept {}
 
 auto Self::resolve(ResolutionState& params) -> ResolveResult {
   std::string result;

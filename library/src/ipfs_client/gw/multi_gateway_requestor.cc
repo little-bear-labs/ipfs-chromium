@@ -36,7 +36,7 @@ void Self::Next() {
 }
 bool Self::Process(RequestPtr const& req) {
   if (req->type == GatewayRequestType::Providers) {
-    VLOG(1) << "Process(" << req->debug_string() << ")";
+    VLOG(2) << "Process(" << req->debug_string() << ")";
   }
   if (!req->is_http()) {
     return false;
@@ -89,7 +89,7 @@ bool Self::Process(RequestPtr const& req) {
     return false;
   }
   auto min_plel = req->type == GatewayRequestType::Block ? 4UL : 1UL;
-  auto to_send = std::max(bored / 2UL, min_plel);
+  auto to_send = std::max(bored / 4UL, min_plel);
   std::sort(candidates.begin(), candidates.end(), std::greater{});
   for (auto& [score, prefix, state] : candidates) {
     DCHECK(!prefix.empty());
@@ -113,22 +113,18 @@ void Self::DoSend(RequestPtr req, std::string const& gw, GatewayState& state) {
   if (state.extra_ms()) {
     desc->timeout_seconds += state.extra_ms() / 1000L + 1L;
   }
+  auto start = ch::system_clock::now();
   auto timeout_threshold =
-      ch::system_clock::now() +
       ch::seconds(desc->timeout_seconds ? desc->timeout_seconds : 300) -
       ch::milliseconds(1);
   auto hold_alive = shared_from_this();
-  auto cb = [this, hold_alive, req, gw, timeout_threshold, desc](
+  auto cb = [this, hold_alive, req, gw, timeout_threshold, desc, start](
                 std::int16_t s, std::string_view b, auto h) {
-    auto timed_out = ch::system_clock::now() >= timeout_threshold;
-    HandleResponse(*desc, req, gw, s, b, h, timed_out);
+    auto timed_out = ch::system_clock::now() - start >= timeout_threshold;
+    HandleResponse(*desc, req, gw, s, b, h, timed_out, start);
   };
   state.just_sent_one();
   api_->http().SendHttpRequest(*desc, cb);
-  if (req->type == GatewayRequestType::Providers) {
-    VLOG(1) << "Just sent " << req->debug_string() << " as "
-            << desc.value().url;
-  }
 }
 void Self::HandleResponse(HttpRequestDescription const& desc,
                           RequestPtr req,
@@ -136,11 +132,9 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
                           std::int16_t status,
                           std::string_view body,
                           HeaderAccess hdrs,
-                          bool timed_out) {
+                          bool timed_out,
+                          std::chrono::system_clock::time_point start) {
   auto req_type = req->type;
-  if (req_type == GatewayRequestType::Providers) {
-    VLOG(1) << "Received response to " << req->debug_string() << " from " << gw << " status=" << status;
-  }
   if (req->Finished() ||
       (req->PartiallyRedundant() && req_type == GatewayRequestType::Block)) {
     return;
@@ -161,12 +155,13 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
       Next();
       return;
     }
-    if (!req->RespondSuccessfully(body, api_)) {
+    ipfs::ipld::BlockSource src;
+    src.load_duration = src.fetched_at - start;
+    src.cat.gateway_url = gw;
+    if (!req->RespondSuccessfully(body, api_, src)) {
       VLOG(2) << "Got an unuseful response from " << gw << " for request "
               << req->debug_string();
     } else {
-      VLOG(2) << "Response from " << gw << " to " << req->debug_string()
-              << " was successful & useful - progress made.";
       if (state_.end() != i) {
         i->second.hit(req_type, *req);
       }

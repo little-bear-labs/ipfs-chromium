@@ -17,6 +17,9 @@
 namespace ipfs {
 class Client;
 class IpfsRequest;
+namespace ipld {
+class DagHeaders;
+}
 }  // namespace ipfs
 
 namespace network::mojom {
@@ -74,7 +77,6 @@ class IpfsUrlLoader final : public network::mojom::URLLoader {
   std::shared_ptr<Client> api_;
   std::string original_url_;
   std::string partial_block_;
-  std::vector<std::pair<std::string,std::string>> additional_outgoing_headers_;
   std::shared_ptr<network::mojom::URLLoader> extra_;
   std::unique_ptr<base::RepeatingTimer> stepper_;
   std::string root_;
@@ -82,16 +84,9 @@ class IpfsUrlLoader final : public network::mojom::URLLoader {
   std::string resp_loc_;
   std::shared_ptr<IpfsRequest> ipfs_request_;
 
-  void CreateBlockRequest(std::string cid);
-
   void ReceiveBlockBytes(std::string_view);
-  void BlocksComplete(std::string mime_type);
+  void BlocksComplete(std::string mime_type, ipld::DagHeaders const&);
   void DoesNotExist(std::string_view cid, std::string_view path);
-  //  void NotHere(std::string_view cid, std::string_view path);
-
-  void StartUnixFsProc(ptr, std::string_view);
-  void AppendGatewayHeaders(std::vector<std::string> const& cids, net::HttpResponseHeaders&);
-  void AppendGatewayInfoHeader(std::string const&, net::HttpResponseHeaders&);
   void TakeStep();
 };
 

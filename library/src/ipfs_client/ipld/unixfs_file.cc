@@ -20,7 +20,7 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
       link.node = params.GetBlock(link.cid);
     }
     if (link.node) {
-      auto recurse = link.node->resolve(params);
+      auto recurse = link.node->Resolve(params);
       auto mdn = std::get_if<MoreDataNeeded>(&recurse);
       if (mdn) {
         missing.insert(missing.end(), mdn->ipfs_abs_paths_.begin(),
@@ -39,7 +39,7 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
         "",
         200,
         body,
-        params.MyPath().to_string(),
+        params.MyPath().to_string(), {},
     };
   }
   auto result = MoreDataNeeded{missing};
@@ -47,4 +47,4 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
   return result;
 }
 
-Self::~UnixfsFile() {}
+Self::~UnixfsFile() noexcept {}

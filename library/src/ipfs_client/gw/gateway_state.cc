@@ -50,13 +50,10 @@ void Self::hit(GatewayRequestType grt, GatewayRequest const& req) {
   c.SetTypeAffinity(prefix_, grt, ++aff);
   affinity_success[req.affinity]++;
   auto rpm = c.GetGatewayRate(prefix_);
-  if (!over_rate(rpm++ / 4)) {
+  if (!over_rate(rpm / 3)) {
     return;
   }
-  if (over_rate(rpm++ / 3)) {
-    ++rpm;
-  }
-  if (over_rate(rpm++ / 2)) {
+  if (over_rate(rpm / 2)) {
     ++rpm;
   }
   if (over_rate(rpm++)) {
@@ -71,7 +68,18 @@ bool Self::miss(GatewayRequestType grt, GatewayRequest const& req) {
     c.SetTypeAffinity(prefix_, grt, --aff);
   }
   auto rpm = c.GetGatewayRate(prefix_);
-  if (rpm && !over_rate(rpm)) {
+  if (!rpm) {
+    for (auto i = 0U;; ++i) {
+      if (auto gw = c.GetGateway(i)) {
+        auto& p = gw->prefix;
+        if (p != prefix_) {
+          c.SetGatewayRate(p, gw->rate + 1U);
+        }
+      } else {
+        break;
+      }
+    }
+  } else if (!over_rate(rpm)) {
     c.SetGatewayRate(prefix_, rpm - 1);
   }
   return affinity_success[req.affinity]-- >= 0;

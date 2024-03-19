@@ -7,6 +7,7 @@
 
 #include <ipfs_client/client.h>
 
+#include <chrono>
 #include <deque>
 #include <map>
 
@@ -23,7 +24,8 @@ class MultiGatewayRequestor : public Requestor {
                       std::int16_t,
                       std::string_view,
                       HeaderAccess,
-                      bool);
+                      bool,
+                      std::chrono::system_clock::time_point);
   void Next();
 
  public:

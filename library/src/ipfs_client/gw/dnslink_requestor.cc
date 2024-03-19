@@ -15,6 +15,7 @@
 #include <absl/base/options.h>
 
 using Self = ipfs::gw::DnsLinkRequestor;
+using Source = ipfs::ipld::BlockSource;
 using namespace std::literals;
 
 Self::DnsLinkRequestor(std::shared_ptr<Client> api) {
@@ -26,7 +27,8 @@ std::string_view Self::name() const {
 namespace {
 bool parse_results(ipfs::gw::RequestPtr req,
                    std::vector<std::string> const& results,
-                   std::shared_ptr<ipfs::Client> const&);
+                   std::shared_ptr<ipfs::Client> const&,
+                   Source::Clock::time_point);
 }
 auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
   if (req->type != GatewayRequestType::DnsLink) {
@@ -36,8 +38,9 @@ auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
   auto success = std::make_shared<bool>();
   *success = false;
   auto a = api_;
-  auto res = [req, success, a](std::vector<std::string> const& results) {
-    *success = *success || parse_results(req, results, a);
+  auto start = Source::Clock::now();
+  auto res = [req, success, a, start](std::vector<std::string> const& results) {
+    *success = *success || parse_results(req, results, a, start);
   };
   auto don = [success, req]() {
     if (!*success) {
@@ -51,14 +54,19 @@ auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
 namespace {
 bool parse_results(ipfs::gw::RequestPtr req,
                    std::vector<std::string> const& results,
-                   std::shared_ptr<ipfs::Client> const& api) {
+                   std::shared_ptr<ipfs::Client> const& api,
+                   Source::Clock::time_point start) {
   constexpr auto prefix = "dnslink="sv;
-  VLOG(1) << "Scanning " << results.size() << " DNS TXT records for "
+  VLOG(2) << "Scanning " << results.size() << " DNS TXT records for "
           << req->main_param << " looking for dnslink...";
+  auto t = Source::Clock::now();
   for (auto& result : results) {
     if (starts_with(result, prefix)) {
       VLOG(2) << "DNSLink result=" << result;
-      req->RespondSuccessfully(result.substr(prefix.size()), api);
+      Source src;
+      src.fetched_at = t;
+      src.load_duration = t - start;
+      req->RespondSuccessfully(result.substr(prefix.size()), api, src);
       return true;
     } else {
       LOG(INFO) << "Irrelevant TXT result, ignored: " << result;

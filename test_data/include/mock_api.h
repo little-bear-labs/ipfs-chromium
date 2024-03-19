@@ -16,6 +16,7 @@ class GatewayRequest;
 namespace i = ipfs;
 namespace ig = i::gw;
 namespace ic = i::ctx;
+namespace ii = i::ipld;
 using RT = ig::GatewayRequestType;
 
 using namespace std::literals;

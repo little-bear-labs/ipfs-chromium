@@ -103,7 +103,7 @@ struct TestRequestor final : public ig::Requestor {
         cbor.set("TTL", entry.ttl());
         api->cbors.push_back(cbor);
         buf.resize(buf.size() - 1);
-        r->RespondSuccessfully(buf, api);
+        r->RespondSuccessfully(buf, api, {});
       } break;
       case i::gw::GatewayRequestType::Car:
         r->type = i::gw::GatewayRequestType::Block;
@@ -122,7 +122,7 @@ struct TestRequestor final : public ig::Requestor {
           std::string buf(std::filesystem::file_size(f) + 1, '\0');
           fs.read(buf.data(), buf.size());
           buf.resize(buf.size() - 1);
-          r->RespondSuccessfully(buf, api_);
+          r->RespondSuccessfully(buf, api_, {});
         } else {
           auto cmd =
               "ipfs block get " + cid + " > '" + f.generic_string() + "'";
@@ -146,7 +146,7 @@ struct TestRequestor final : public ig::Requestor {
         std::ifstream fs{f};
         std::string target;
         std::getline(fs, target);
-        r->RespondSuccessfully(target, api_);
+        r->RespondSuccessfully(target, api_, {});
       } break;
       default:
         return HandleOutcome::DONE;

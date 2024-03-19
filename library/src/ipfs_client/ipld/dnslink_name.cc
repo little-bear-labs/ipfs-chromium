@@ -23,7 +23,7 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
     return MoreDataNeeded(target_namespace_ + "/" + target_root_);
   }
   if (target_path_.empty()) {
-    return node->resolve(params);
+    return node->Resolve(params);
   }
   auto path = target_path_;
   path.append("/").append(params.PathToResolve().to_view());
@@ -32,7 +32,7 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
                << target_namespace_ << '/' << target_root_ << '/'
                << target_path_ << "): " << params.MyPath()
                << " will be resolved as " << path;
-  auto lower = node->resolve(params);
+  auto lower = node->Resolve(params);
   if (auto* mdn = std::get_if<MoreDataNeeded>(&lower)) {
     if (expired()) {
       auto refresh_path = "/ipns/" + params.MyPath().pop_back();

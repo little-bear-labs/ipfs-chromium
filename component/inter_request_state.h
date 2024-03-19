@@ -22,10 +22,8 @@ class COMPONENT_EXPORT(IPFS) InterRequestState
     : public base::SupportsUserData::Data {
   IpnsNames names_;
   std::shared_ptr<Client> api_;
-  std::time_t last_discovery_ = 0;
   std::shared_ptr<CacheRequestor> cache_;
   base::FilePath const disk_path_;
-  std::shared_ptr<Partition> orc_;  // TODO - map of origin to Orchestrator
   raw_ptr<network::mojom::NetworkContext> network_context_;
 
   std::shared_ptr<CacheRequestor>& cache();

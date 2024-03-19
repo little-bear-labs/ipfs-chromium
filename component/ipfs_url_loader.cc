@@ -6,11 +6,15 @@
 
 #include "ipfs_client/ctx/default_gateways.h"
 #include "ipfs_client/ipfs_request.h"
+#include "ipfs_client/ipld/dag_headers.h"
 
 #include "base/debug/stack_trace.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
+#include "content/public/browser/browser_thread.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/parsed_headers.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -41,7 +45,7 @@ void ipfs::IpfsUrlLoader::FollowRedirect(
     net::HttpRequestHeaders const& /* modified_cors_exempt_headers */,
     VirtualOptional<::GURL> const& /*new_url*/
 ) {
-  NOTIMPLEMENTED();  // TODO react better to _redirects redirecting
+  NOTIMPLEMENTED();
 }
 
 void ipfs::IpfsUrlLoader::SetPriority(net::RequestPriority priority,
@@ -79,8 +83,6 @@ void ipfs::IpfsUrlLoader::StartRequest(
     me->api_->with(
         std::make_unique<ChromiumHttp>(*(me->lower_loader_factory_)));
     auto whendone = [me](IpfsRequest const& req, ipfs::Response const& res) {
-      VLOG(2) << "whendone(" << req.path().to_string() << ',' << res.status_
-              << ',' << res.body_.size() << "B mime=" << res.mime_ << ')';
       if (!res.body_.empty()) {
         me->ReceiveBlockBytes(res.body_);
       }
@@ -92,13 +94,18 @@ void ipfs::IpfsUrlLoader::StartRequest(
         std::string cid{p.pop()};
         me->DoesNotExist(cid, p.to_string());
       } else {
-        me->BlocksComplete(res.mime_);
+        me->BlocksComplete(res.mime_, res.headers_);
       }
       DCHECK(me->complete_);
     };
     me->ipfs_request_ = std::make_shared<IpfsRequest>(abs_path, whendone);
     me->stepper_ = std::make_unique<base::RepeatingTimer>();
-    me->stepper_->Start(FROM_HERE, base::Seconds(1), me.get(),
+    //    auto f = [](std::shared_ptr<IpfsUrlLoader> m) { m->TakeStep(); };
+    //    auto cb = base::BindOnce(f, me);
+    //    content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
+    //    std::move(cb));
+    //    base::ThreadPool::PostTask(FROM_HERE, std::move(cb));
+    me->stepper_->Start(FROM_HERE, base::Seconds(2), me.get(),
                         &ipfs::IpfsUrlLoader::TakeStep);
     me->TakeStep();
   } else {
@@ -109,12 +116,9 @@ void ipfs::IpfsUrlLoader::StartRequest(
 void ipfs::IpfsUrlLoader::OverrideUrl(GURL u) {
   original_url_ = u.spec();
 }
-void ipfs::IpfsUrlLoader::AddHeader(std::string_view a, std::string_view b) {
-  VLOG(1) << "AddHeader(" << a << ',' << b << ')';
-  additional_outgoing_headers_.emplace_back(a, b);
-}
 
-void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
+void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type,
+                                         ipld::DagHeaders const& hdrs) {
   VLOG(2) << "Resolved from unix-fs dag a file of type: " << mime_type
           << " will report it as " << original_url_;
   if (complete_) {
@@ -153,8 +157,8 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
   }
   head->headers->SetHeader("Access-Control-Allow-Origin", "*");
   head->was_fetched_via_spdy = false;
-  for (auto& [n, v] : additional_outgoing_headers_) {
-    VLOG(1) << "Appending 'additional' header:" << n << '=' << v << '.';
+
+  for (auto& [n, v] : hdrs.headers()) {
     head->headers->AddHeader(n, v);
   }
   if (resp_loc_.size()) {
@@ -186,10 +190,9 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type) {
     stepper_.reset();
   }
 }
-
 void ipfs::IpfsUrlLoader::DoesNotExist(std::string_view cid,
                                        std::string_view path) {
-  VLOG(1) << "Immutable data 404 for " << cid << '/' << path;
+  VLOG(2) << "Immutable data 404 for " << cid << '/' << path;
   complete_ = true;
   client_->OnComplete(
       network::URLLoaderCompletionStatus{net::ERR_FILE_NOT_FOUND});
@@ -198,15 +201,8 @@ void ipfs::IpfsUrlLoader::DoesNotExist(std::string_view cid,
     stepper_.reset();
   }
 }
-// void ipfs::IpfsUrlLoader::NotHere(std::string_view cid, std::string_view
-// path) {
-//   LOG(INFO) << "TODO " << __func__ << '(' << cid << ',' << path << ')';
-// }
-
 void ipfs::IpfsUrlLoader::ReceiveBlockBytes(std::string_view content) {
   partial_block_.append(content);
-  VLOG(2) << "Recived a block of size " << content.size() << " now have "
-          << partial_block_.size() << " bytes.";
 }
 void ipfs::IpfsUrlLoader::TakeStep() {
   if (ipfs_request_) {

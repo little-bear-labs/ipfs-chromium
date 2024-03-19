@@ -4,7 +4,7 @@
     c-ares/1.22.1
     gtest/1.13.0
     nlohmann_json/3.11.2
-    openssl/1.1.1t
+    openssl/3.2.1
     protobuf/3.20.0
 [options]
     boost/*:header_only=True

@@ -107,11 +107,14 @@ std::shared_ptr<Node> Node::fromBlock(ipfs::PbDag const& block) {
   std::shared_ptr<Node> result;
   switch (block.type()) {
     case PbDag::Type::FileChunk:
-      return std::make_shared<Chunk>(block.chunk_data());
+      result = std::make_shared<Chunk>(block.chunk_data());
+      break;
     case PbDag::Type::NonFs:
-      return std::make_shared<Chunk>(block.unparsed());
+      result = std::make_shared<Chunk>(block.unparsed());
+      break;
     case PbDag::Type::Symlink:
-      return std::make_shared<Symlink>(block.chunk_data());
+      result = std::make_shared<Symlink>(block.chunk_data());
+      break;
     case PbDag::Type::Directory:
       result = std::make_shared<SmallDirectory>();
       break;
@@ -143,10 +146,6 @@ std::shared_ptr<Node> Node::fromBlock(ipfs::PbDag const& block) {
   return result;
 }
 
-auto Node::fromIpnsRecord(ipfs::ValidatedIpns const& v) -> NodePtr {
-  return std::make_shared<DnsLinkName>(v.value);
-}
-
 std::shared_ptr<Node> Node::deroot() {
   return shared_from_this();
 }
@@ -159,7 +158,13 @@ void Node::set_api(std::shared_ptr<Client> api) {
 auto Node::resolve(SlashDelimited initial_path, BlockLookup blu)
     -> ResolveResult {
   ResolutionState state{initial_path, blu};
-  return resolve(state);
+  return Resolve(state);
+}
+auto Node::Resolve(ResolutionState& params) -> ResolveResult {
+  if (source_.cid.size()) {
+    params.headers.Add(source_);
+  }
+  return resolve(params);
 }
 auto Node::CallChild(ipfs::ipld::ResolutionState& state) -> ResolveResult {
   return CallChild(state, state.NextComponent(api_.get()));
@@ -185,7 +190,7 @@ auto Node::CallChild(ResolutionState& state, std::string_view link_key)
   }
   if (node) {
     state.Descend();
-    return node->resolve(state);
+    return node->Resolve(state);
   } else {
     std::string needed{"/ipfs/"};
     needed.append(child->cid);
@@ -216,7 +221,7 @@ auto Node::CallChild(ResolutionState& state,
     }
   }
   state.Descend();
-  return node->resolve(state);
+  return node->Resolve(state);
 }
 auto Node::FindChild(std::string_view link_key) -> Link* {
   for (auto& [name, link] : links_) {
