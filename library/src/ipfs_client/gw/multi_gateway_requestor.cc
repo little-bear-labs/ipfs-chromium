@@ -35,9 +35,6 @@ void Self::Next() {
   }
 }
 bool Self::Process(RequestPtr const& req) {
-  if (req->type == GatewayRequestType::Providers) {
-    VLOG(2) << "Process(" << req->debug_string() << ")";
-  }
   if (!req->is_http()) {
     return false;
   }

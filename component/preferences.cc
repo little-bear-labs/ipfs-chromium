@@ -72,7 +72,7 @@ void Self::SetGatewayRate(std::string_view k, unsigned val) {
       save();
     } else {
       changes = delt / 2;
-      VLOG(1) << "Rate changes total (delta) " << delt;
+      VLOG(2) << "Rate changes total (delta) " << delt;
     }
   }
 }
@@ -124,10 +124,7 @@ std::size_t Self::delta() const {
       p = prev_dict->FindInt(kRateKey).value_or(0);
     }
     auto off = std::abs(c - p);
-    if (off) {
-      VLOG(2) << k << " : " << p << " to " << c << " : absdiff=" << off;
-      rv += static_cast<std::size_t>(off);
-    }
+    rv += static_cast<std::size_t>(off);
   }
   return rv;
 }

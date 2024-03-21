@@ -166,10 +166,6 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type,
     LOG(INFO) << "Sending response for " << original_url_ << " with mime type "
               << head->mime_type << " and status line '" << status_line
               << "' @location '" << resp_loc_ << "'";
-  } else {
-    VLOG(2) << "Sending response for " << original_url_ << " with mime type "
-            << head->mime_type << " and status line '" << status_line
-              << "' with no location header.";
   }
   head->parsed_headers =
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});

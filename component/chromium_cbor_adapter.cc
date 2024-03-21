@@ -61,7 +61,8 @@ auto Self::as_bytes() const -> std::optional<std::vector<std::uint8_t>> {
   return std::nullopt;
 }
 auto Self::as_link() const -> std::optional<Cid> {
-  VLOG(1) << "Trying to do an as_link(" << static_cast<int>(cbor_.type()) << ',' << std::boolalpha << cbor_.has_tag() << ")";
+  VLOG(2) << "Trying to do an as_link(" << static_cast<int>(cbor_.type()) << ','
+          << std::boolalpha << cbor_.has_tag() << ")";
   if (!cbor_.has_tag() || cbor_.GetTag() != 42UL || !cbor_.is_bytestring()) {
     VLOG(1) << "This is not a link.";
     return std::nullopt;

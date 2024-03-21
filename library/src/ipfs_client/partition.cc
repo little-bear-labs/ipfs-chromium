@@ -117,11 +117,10 @@ bool Self::add_node(std::string key, ipfs::ipld::NodePtr p) {
   }
   auto [it, first] = dags_.insert({key, p});
   if (first) {
-    VLOG(2) << "First node showed up for [" << key << "].";
+    // VLOG(2) << "First node showed up for [" << key << "].";
   } else if (p->PreferOver(*it->second)) {
     it->second = p;
   } else {
-    //    VLOG(2) << "Already had a [" << key << "] node that was as good.";
     return false;
   }
   p->set_api(api_);
