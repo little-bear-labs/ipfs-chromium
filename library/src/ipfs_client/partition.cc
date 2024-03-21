@@ -66,10 +66,6 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
           hit_path.push_back('/');
         }
         hit_path.append(response->location_);
-        VLOG(2) << "Request for " << req->path() << " returned a location of "
-                << response->location_ << " and a body of "
-                << response->body_.size() << " bytes, sniffing mime from "
-                << hit_path;
         response->mime_ = sniff(SlashDelimited{hit_path}, response->body_);
       }
     }
@@ -117,11 +113,10 @@ bool Self::add_node(std::string key, ipfs::ipld::NodePtr p) {
   }
   auto [it, first] = dags_.insert({key, p});
   if (first) {
-    VLOG(2) << "First node showed up for [" << key << "].";
+    // VLOG(2) << "First node showed up for [" << key << "].";
   } else if (p->PreferOver(*it->second)) {
     it->second = p;
   } else {
-    //    VLOG(2) << "Already had a [" << key << "] node that was as good.";
     return false;
   }
   p->set_api(api_);

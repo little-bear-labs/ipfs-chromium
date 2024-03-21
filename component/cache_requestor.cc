@@ -28,7 +28,7 @@ void Self::Start() {
       //      dc::ResetHandling::kNeverReset,
       dc::ResetHandling::kResetOnError, nullptr,
       base::BindOnce(&Self::Assign, base::Unretained(this)));
-  LOG(INFO) << "Start(" << result.net_error << ')' << result.net_error;
+  VLOG(1) << "Start(" << result.net_error << ')' << result.net_error;
   startup_pending_ = result.net_error == net::ERR_IO_PENDING;
   if (!startup_pending_) {
     Assign(std::move(result));
@@ -131,13 +131,12 @@ void Self::OnHeaderRead(Task task, int code) {
 }
 void Self::OnBodyRead(Task task, int code) {
   if (code <= 0) {
-    VLOG(1) << "Failed to read body for entry " << task.key << " in " << name();
+    VLOG(2) << "Failed to read body for entry " << task.key << " in " << name();
     Miss(task);
     return;
   }
   task.body.assign(task.buf->data(), static_cast<std::size_t>(code));
   if (task.request) {
-    task.SetHeaders(name());
     task.orig_src.load_duration = std::chrono::system_clock::now() - task.start;
     task.orig_src.cat.cached = true;
     bool valid = false;
@@ -150,8 +149,6 @@ void Self::OnBodyRead(Task task, int code) {
   }
 }
 void Self::Store(std::string key, std::string headers, ByteView body) {
-  VLOG(2) << "Store(" << name() << ',' << key << ',' << headers.size() << ','
-          << body.size() << ')';
   std::string body_s{reinterpret_cast<char const*>(body.data()), body.size()};
   auto bound = base::BindOnce(&Self::OnEntryCreated, base::Unretained(this),
                               key, headers, body_s);
@@ -165,7 +162,7 @@ void Self::OnEntryCreated(std::string cid,
                           std::string body,
                           disk_cache::EntryResult result) {
   if (result.opened()) {
-    VLOG(1) << "No need to write an entry for " << cid << " in " << name()
+    VLOG(2) << "No need to write an entry for " << cid << " in " << name()
             << " as it is already there and immutable.";
   } else if (result.net_error() == net::OK) {
     auto entry = GetEntry(result);
@@ -198,11 +195,6 @@ void Self::OnHeaderWritten(scoped_refptr<net::StringIOBuffer> buf,
   entry->WriteData(1, 0, buf.get(), buf->size(), std::move(bound), true);
 }
 
-void Self::Task::SetHeaders(std::string_view source) {
-  auto heads = base::MakeRefCounted<net::HttpResponseHeaders>(header);
-  // TODO
-  header = heads->raw_headers();
-}
 void Self::Expire(std::string const& key) {
   if (cache_ && !startup_pending_) {
     cache_->DoomEntry(key, net::RequestPriority::LOWEST, base::DoNothing());

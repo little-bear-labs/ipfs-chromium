@@ -35,9 +35,6 @@ void Self::Next() {
   }
 }
 bool Self::Process(RequestPtr const& req) {
-  if (req->type == GatewayRequestType::Providers) {
-    VLOG(2) << "Process(" << req->debug_string() << ")";
-  }
   if (!req->is_http()) {
     return false;
   }
@@ -158,10 +155,7 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
     ipfs::ipld::BlockSource src;
     src.load_duration = src.fetched_at - start;
     src.cat.gateway_url = gw;
-    if (!req->RespondSuccessfully(body, api_, src)) {
-      VLOG(2) << "Got an unuseful response from " << gw << " for request "
-              << req->debug_string();
-    } else {
+    if (req->RespondSuccessfully(body, api_, src)) {
       if (state_.end() != i) {
         i->second.hit(req_type, *req);
       }

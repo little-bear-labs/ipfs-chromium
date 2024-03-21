@@ -96,7 +96,6 @@ However, this also leaves value on the table.
 
 Our approach raise the browser to a first-class citizen of the IPFS ecosystem (doing its own content verification).
 It enables taking advantage of characteristics built into the protocol, for example caching (in the case of an IPFS block, indefinitely; in the case of an IPNS record, until the specified expiration) by binary CID rather than gateway- and multibase-specific URLs.
-It also provides for opportunities down the road for natural synergies, for example using Chromium's mDNS abilities to discover [nearby Kubo](https://github.com/ipfs/kubo/blob/master/docs/config.md#discoverymdnsenabled) gateways.
 
 ## Key differences with this approach
 

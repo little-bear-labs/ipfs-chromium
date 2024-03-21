@@ -1,0 +1,79 @@
+diff --git a/components/cbor/values.h b/components/cbor/values.h
+index d81ef5607c55a..10216a8dcdc57 100644
+--- a/components/cbor/values.h
++++ b/components/cbor/values.h
+@@ -127,28 +127,29 @@ class CBOR_EXPORT Value {
+ 
+   explicit Value(Type type);
+ 
+-  explicit Value(SimpleValue in_simple);
+-  explicit Value(bool boolean_value);
+-  explicit Value(double in_float);
++  explicit Value(SimpleValue in_simple, uint64_t tag = NO_TAG);
++  explicit Value(bool boolean_value, uint64_t tag = NO_TAG);
++  explicit Value(double in_float, uint64_t tag = NO_TAG);
+ 
+-  explicit Value(int integer_value);
+-  explicit Value(int64_t integer_value);
++  explicit Value(int integer_value, uint64_t tag = NO_TAG);
++  explicit Value(int64_t integer_value, uint64_t tag = NO_TAG);
+   explicit Value(uint64_t integer_value) = delete;
+ 
+-  explicit Value(base::span<const uint8_t> in_bytes);
++  explicit Value(base::span<const uint8_t> in_bytes, uint64_t tag = NO_TAG);
+   explicit Value(BinaryValue&& in_bytes) noexcept;
+ 
+   explicit Value(const char* in_string, Type type = Type::STRING);
+   explicit Value(std::string&& in_string, Type type = Type::STRING) noexcept;
+-  explicit Value(base::StringPiece in_string, Type type = Type::STRING);
++  explicit Value(base::StringPiece in_string, Type type = Type::STRING, uint64_t tag = NO_TAG);
+ 
+-  explicit Value(const ArrayValue& in_array);
+-  explicit Value(ArrayValue&& in_array) noexcept;
++  explicit Value(const ArrayValue& in_array, uint64_t tag = NO_TAG);
++  explicit Value(ArrayValue&& in_array, uint64_t tag = NO_TAG) noexcept;
+ 
+-  explicit Value(const MapValue& in_map);
++  explicit Value(const MapValue& in_map, uint64_t tag = NO_TAG);
+   explicit Value(MapValue&& in_map) noexcept;
+ 
+   Value& operator=(Value&& that) noexcept;
++  Value& SetTag(uint64_t) noexcept;
+ 
+   Value(const Value&) = delete;
+   Value& operator=(const Value&) = delete;
+@@ -179,6 +180,7 @@ class CBOR_EXPORT Value {
+   bool is_string() const { return type() == Type::STRING; }
+   bool is_array() const { return type() == Type::ARRAY; }
+   bool is_map() const { return type() == Type::MAP; }
++  bool has_tag() const { return tag_ != NO_TAG; }
+ 
+   // These will all fatally assert if the type doesn't match.
+   SimpleValue GetSimpleValue() const;
+@@ -194,12 +196,13 @@ class CBOR_EXPORT Value {
+   const ArrayValue& GetArray() const;
+   const MapValue& GetMap() const;
+   const BinaryValue& GetInvalidUTF8() const;
++  uint64_t GetTag() const;
+ 
+  private:
+   friend class Reader;
+   // This constructor allows INVALID_UTF8 values to be created, which only
+   // |Reader| and InvalidUTF8StringValueForTesting() may do.
+-  Value(base::span<const uint8_t> in_bytes, Type type);
++  Value(base::span<const uint8_t> in_bytes, Type type, uint64_t tag = NO_TAG);
+ 
+   Type type_;
+ 
+@@ -213,6 +216,11 @@ class CBOR_EXPORT Value {
+     MapValue map_value_;
+   };
+ 
++  //This value specified as Invalid,
++  //  used here to represent absence of TAG
++  constexpr static uint64_t NO_TAG = 0xFFFF;
++  uint64_t tag_ = NO_TAG;
++
+   void InternalMoveConstructFrom(Value&& that);
+   void InternalCleanup();
+ };
