@@ -61,4 +61,3 @@ TEST_F(RequestorTest, done_stops_request) {
   EXPECT_TRUE(a->requests_sent_to_handle.at(0) == req_);
 }
 
-TEST_F(RequestorTest, success_callsback) {}

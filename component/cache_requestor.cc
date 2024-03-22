@@ -28,7 +28,7 @@ void Self::Start() {
       //      dc::ResetHandling::kNeverReset,
       dc::ResetHandling::kResetOnError, nullptr,
       base::BindOnce(&Self::Assign, base::Unretained(this)));
-  LOG(INFO) << "Start(" << result.net_error << ')' << result.net_error;
+  VLOG(1) << "Start(" << result.net_error << ')' << result.net_error;
   startup_pending_ = result.net_error == net::ERR_IO_PENDING;
   if (!startup_pending_) {
     Assign(std::move(result));
