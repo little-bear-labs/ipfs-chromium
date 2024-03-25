@@ -66,10 +66,6 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
           hit_path.push_back('/');
         }
         hit_path.append(response->location_);
-        VLOG(2) << "Request for " << req->path() << " returned a location of "
-                << response->location_ << " and a body of "
-                << response->body_.size() << " bytes, sniffing mime from "
-                << hit_path;
         response->mime_ = sniff(SlashDelimited{hit_path}, response->body_);
       }
     }

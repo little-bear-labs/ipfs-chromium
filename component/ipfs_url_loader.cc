@@ -150,7 +150,6 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type,
   auto* reason =
       net::GetHttpReasonPhrase(static_cast<net::HttpStatusCode>(status_));
   auto status_line = base::StringPrintf("HTTP/1.1 %d %s", status_, reason);
-  VLOG(2) << "Returning with status line '" << status_line << "'.\n";
   head->headers->ReplaceStatusLine(status_line);
   if (mime_type.size()) {
     head->headers->SetHeader("Content-Type", mime_type);

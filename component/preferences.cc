@@ -82,8 +82,8 @@ void Self::AddGateway(std::string_view k, unsigned r) {
     d->Set(kRateKey, d->FindInt(kRateKey).value_or(r) + 1);
   } else {
     auto j = AsJson(GatewaySpec{k, r});
-    LOG(INFO) << static_cast<void*>(this) << " Adding " << k << " @ " << r
-              << " = " << j;
+    VLOG(1) << static_cast<void*>(this) << " Adding " << k << " @ " << r
+            << " = " << j;
     curr_.Set(k, std::move(j));
   }
 }
@@ -129,7 +129,6 @@ std::size_t Self::delta() const {
   return rv;
 }
 void Self::save() {
-  VLOG(2) << "Saving preferences. Threshold: " << update_thresh;
   // Should be called on UI thread
   changes = 0;
   last_ = curr_.Clone();

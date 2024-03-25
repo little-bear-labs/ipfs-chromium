@@ -1,0 +1,36 @@
+diff --git a/components/cbor/writer_unittest.cc b/components/cbor/writer_unittest.cc
+index e3bffe20734bc..0ed569ae164a0 100644
+--- a/components/cbor/writer_unittest.cc
++++ b/components/cbor/writer_unittest.cc
+@@ -522,4 +522,31 @@ TEST(CBORWriterTest, OverlyNestedCBOR) {
+   EXPECT_FALSE(Writer::Write(Value(map), 4).has_value());
+ }
+ 
++TEST(CBORWriterTest, CanWriteTag) {
++  std::array<uint8_t,37> content{
++      0x00, 0x01, 0x71, 0x12, 0x20,
++      0x69, 0xea, 0x07, 0x40, 0xf9,
++      0x80, 0x7a, 0x28, 0xf4, 0xd9,
++      0x32, 0xc6, 0x2e, 0x7c, 0x1c,
++      0x83, 0xbe, 0x05, 0x5e, 0x55,
++      0x07, 0x2c, 0x90, 0x26, 0x6a,
++      0xb3, 0xe7, 0x9d, 0xf6, 0x3a,
++      0x36, 0x5b
++    };
++  Value to_write(content);
++  to_write.SetTag(42);
++  auto result = Writer::Write(to_write);
++  EXPECT_TRUE(result.has_value());
++  auto& bytes = result.value();
++  EXPECT_EQ(bytes.size(), 41UL);
++  EXPECT_EQ(bytes.at(0), 0xd8);
++  EXPECT_EQ(bytes.at(1), 0x2a);
++  EXPECT_EQ(bytes.at(2), 0x58);
++  EXPECT_EQ(bytes.at(3), 0x25);
++  for (auto i = 0UL; i < content.size(); ++i) {
++    ASSERT_LT(i + 4UL, bytes.size());
++    ASSERT_EQ(content.at(i), bytes.at(i+4UL));
++  }
++}
++
+ }  // namespace cbor

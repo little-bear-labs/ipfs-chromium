@@ -44,8 +44,6 @@ class CacheRequestor : public gw::Requestor {
     std::shared_ptr<disk_cache::Entry> entry;
     gw::RequestPtr request;
     ipld::BlockSource orig_src;
-
-    void SetHeaders(std::string_view);
   };
   raw_ref<InterRequestState> state_;
   std::unique_ptr<disk_cache::Backend> cache_;
