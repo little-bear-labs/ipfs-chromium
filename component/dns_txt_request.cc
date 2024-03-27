@@ -31,8 +31,8 @@ void Self::OnTextResults(std::vector<std::string> const& results) {
 }
 void Self::OnComplete(int32_t result,
                       const ::net::ResolveErrorInfo&,
-                      const absl::optional<::net::AddressList>&,
-                      const absl::optional<Endpoints>&) {
+                      VirtualOptional<::net::AddressList> const&,
+                      VirtualOptional<Endpoints> const&) {
   VLOG(2) << "DNS Results done with code: " << result;
   completion_callback_();
 }

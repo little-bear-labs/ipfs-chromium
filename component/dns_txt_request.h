@@ -1,6 +1,8 @@
 #ifndef IPFS_DNS_TXT_REQUEST_H_
 #define IPFS_DNS_TXT_REQUEST_H_
 
+#include "virtual_optional.h"
+
 #include <ipfs_client/client.h>
 
 #include <mojo/public/cpp/bindings/receiver.h>
@@ -25,8 +27,8 @@ class DnsTxtRequest final : public network::ResolveHostClientBase {
   void OnTextResults(std::vector<std::string> const&) override;
   void OnComplete(int32_t result,
                   ::net::ResolveErrorInfo const&,
-                  absl::optional<::net::AddressList> const&,
-                  absl::optional<Endpoints> const&) override;
+                  VirtualOptional<::net::AddressList> const&,
+                  VirtualOptional<Endpoints> const&) override;
 
  public:
   DnsTxtRequest(std::string,

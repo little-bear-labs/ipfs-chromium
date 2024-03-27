@@ -36,15 +36,12 @@ ipfs::IpfsUrlLoader::~IpfsUrlLoader() noexcept {
 }
 
 void ipfs::IpfsUrlLoader::FollowRedirect(
-    std::vector<std::string> const&  // removed_headers
-    ,
-    net::HttpRequestHeaders const&  // modified_headers
-    ,
-    net::HttpRequestHeaders const&  // modified_cors_exempt_headers
-    ,
-    absl::optional<::GURL> const&  // new_url
+    std::vector<std::string> const& /* removed_headers */,
+    net::HttpRequestHeaders const& /* modified_headers */,
+    net::HttpRequestHeaders const& /* modified_cors_exempt_headers */,
+    VirtualOptional<::GURL> const& /*new_url*/
 ) {
-  NOTIMPLEMENTED();
+  NOTIMPLEMENTED();  // TODO react better to _redirects redirecting
 }
 
 void ipfs::IpfsUrlLoader::SetPriority(net::RequestPriority priority,
