@@ -48,10 +48,13 @@ void Self::hit(GatewayRequestType grt, GatewayRequest const& req) {
   auto& c = cfg();
   auto aff = c.GetTypeAffinity(prefix_, grt);
   c.SetTypeAffinity(prefix_, grt, ++aff);
-  affinity_success[req.affinity]++;
+  affinity_success[req.affinity] += 9;
   auto rpm = c.GetGatewayRate(prefix_);
-  if (!over_rate(rpm / 3)) {
+  if (!over_rate(rpm / 4)) {
     return;
+  }
+  if (over_rate(rpm / 3)) {
+    ++rpm;
   }
   if (over_rate(rpm / 2)) {
     ++rpm;

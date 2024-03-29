@@ -132,8 +132,6 @@ std::string Self::sniff(ipfs::SlashDelimited p, std::string const& body) const {
     ext.assign(file_name, dot + 1);
   }
   auto result = api_->MimeType(ext, body, fake_url);
-  VLOG(2) << "Deduced mime from (ext=" << ext << " body of " << body.size()
-          << " bytes, 'url'=" << fake_url << ")=" << result;
   return result;
 }
 

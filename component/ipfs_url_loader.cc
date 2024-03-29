@@ -139,7 +139,6 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type,
   VLOG(2) << "Calling WriteData(" << byte_count << ")";
   pipe_prod_->WriteData(partial_block_.data(), &byte_count,
                         MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE);
-  VLOG(2) << "Called WriteData(" << byte_count << ")";
   head->content_length = byte_count;
   head->headers =
       net::HttpResponseHeaders::TryToCreate("access-control-allow-origin: *");

@@ -23,7 +23,7 @@ Self::Car(ByteView bytes, Client& api) {
   auto version = ReadHeader(after_header, api);
   switch (version) {
     case 0:
-      VLOG(1) << "Problem parsing CAR header.";
+      VLOG(2) << "Problem parsing CAR header.";
       break;
     case 1:
       data_ = after_header;

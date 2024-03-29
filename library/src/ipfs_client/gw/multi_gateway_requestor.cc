@@ -144,8 +144,6 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
       LOG(ERROR) << "No content-type header?";
     } else if (desc.accept.size() &&
                ct.find(desc.accept) == std::string::npos) {
-      VLOG(2) << "Requested with Accept: " << desc.accept
-              << " but received response with content-type: " << ct;
       if (state_.end() != i) {
         i->second.miss(req_type, *req);
       }
