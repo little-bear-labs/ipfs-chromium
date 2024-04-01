@@ -84,7 +84,7 @@ $(function() {
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">class </span>BoostBeastHttp : <span class="keyword">public</span> HttpApi {</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  boost::asio::io_context&amp; io_;</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  boost::asio::ssl::context <span class="keyword">mutable</span> ssl_ctx_ =</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;      boost::asio::ssl::context{boost::asio::ssl::context::tls_client};</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;      boost::asio::ssl::context{boost::asio::ssl::context::sslv23_client};</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  BoostBeastHttp(boost::asio::io_context&amp;);</div>
