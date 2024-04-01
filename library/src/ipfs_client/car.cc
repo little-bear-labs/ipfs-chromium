@@ -31,8 +31,14 @@ Self::Car(ByteView bytes, Client& api) {
     case 2: {
       auto [off, siz] = GetV1PayloadPos(after_header);
       LOG(INFO) << "CARv2 carries a payload of " << siz << "B @ " << off;
-      // TODO validate off and siz are sane, e.g. not pointing back into pragma
-      // or whatever
+      if (bytes.size() - after_header.size() > off) {
+        LOG(ERROR) << "CARv2 payload is supposedly offset into the V1 header";
+        break;
+      }
+      if (siz > after_header.size()) {
+        LOG(ERROR) << "Payload size indicated by V1 header too large.";
+        break;
+      }
       data_ = bytes.subspan(off, siz);
       ReadHeader(data_, api);
       break;
