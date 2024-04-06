@@ -82,7 +82,7 @@ void Self::AddGateway(std::string_view k, unsigned r) {
     d->Set(kRateKey, d->FindInt(kRateKey).value_or(r) + 1);
   } else {
     auto j = AsJson(GatewaySpec{k, r});
-    VLOG(1) << static_cast<void*>(this) << " Adding " << k << " @ " << r
+    VLOG(2) << static_cast<void*>(this) << " Adding " << k << " @ " << r
             << " = " << j;
     curr_.Set(k, std::move(j));
   }

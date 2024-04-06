@@ -165,7 +165,6 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
   req->failures.insert(gw);
   if (status == 408 || status == 504 || status == 429 || status == 110 ||
       timed_out) {
-    VLOG(2) << gw << " timed out on request " << req->debug_string();
     if (req->type == GatewayRequestType::Block) {
       if (state_.end() != i) {
         i->second.timed_out();

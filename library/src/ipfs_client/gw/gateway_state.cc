@@ -46,8 +46,8 @@ unsigned int& Self::current_bucket() {
 }
 void Self::hit(GatewayRequestType grt, GatewayRequest const& req) {
   auto& c = cfg();
-  auto aff = c.GetTypeAffinity(prefix_, grt);
-  c.SetTypeAffinity(prefix_, grt, ++aff);
+  auto typaff = c.GetTypeAffinity(prefix_, grt);
+  c.SetTypeAffinity(prefix_, grt, std::max(typaff + 9, typaff / 9));
   affinity_success[req.affinity] += 9;
   auto rpm = c.GetGatewayRate(prefix_);
   if (!over_rate(rpm / 4)) {

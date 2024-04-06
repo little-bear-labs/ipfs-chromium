@@ -106,7 +106,7 @@ bool prov::ProcessResponse(std::string_view json_str, Client& api) {
   bool rv = false;
   auto parse_one = [&rv, &api](auto& p) { rv = ParseProvider(p, api) || rv; };
   if (!list->iterate_list(parse_one)) {
-    VLOG(1) << ".Providers was not a list.";
+    VLOG(2) << ".Providers was not a list.";
   }
   return rv;
 }

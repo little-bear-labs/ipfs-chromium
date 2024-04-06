@@ -17,6 +17,9 @@ except ModuleNotFoundError:
     import requests
 
 
+FUDGE = 59913
+
+
 def osname():
     if platform == 'linux':
         return 'Linux'
@@ -265,13 +268,12 @@ class Patcher:
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
-        fudge = 59913
         def check(version, version_set, s):
             i = as_int(version)
-            by = (fudge,0)
+            by = (FUDGE,0)
             for a in avail:
                 d = abs(a-i)
-                if d < fudge:
+                if d < FUDGE:
                     return True
                 elif d < by[0]:
                     by = ( d, a )
@@ -343,7 +345,7 @@ class Patcher:
         oldest = self.oldest()
         verbose(f'Oldest supportable version: {oldest}')
         for p in to_check:
-            if (as_int(p) < oldest[0] or self.out_of_date(p)) == sense:
+            if (as_int(p) + FUDGE * 2 < oldest[0] or self.out_of_date(p)) == sense:
                 print(p)
 
 
