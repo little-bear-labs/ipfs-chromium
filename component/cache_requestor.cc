@@ -39,7 +39,7 @@ Self::~CacheRequestor() noexcept = default;
 void Self::Assign(dc::BackendResult res) {
   startup_pending_ = false;
   if (res.net_error == net::OK) {
-    VLOG(1) << "Initialized disk cache";
+    VLOG(2) << "Initialized disk cache";
     cache_.swap(res.backend);
   } else {
     LOG(ERROR) << "Trouble opening " << name() << ": " << res.net_error;

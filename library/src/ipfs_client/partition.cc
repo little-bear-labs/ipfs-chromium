@@ -54,10 +54,6 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
   if (response) {
     if (response->mime_.empty() && !response->body_.empty()) {
       if (response->location_.empty()) {
-        VLOG(2) << "Request for " << req->path()
-                << " returned no location, so sniffing from request path and "
-                   "body of "
-                << response->body_.size() << "B.";
         response->mime_ = sniff(req->path(), response->body_);
       } else {
         std::string hit_path{req->path().pop_n(2)};

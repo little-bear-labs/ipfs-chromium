@@ -47,8 +47,6 @@ bool Self::Process(RequestPtr const& req) {
   auto& gws = api_->gw_cfg();
   while (auto gw = gws.GetGateway(config_idx++)) {
     if (state_iter == state_.end() || state_iter->first > gw->prefix) {
-      VLOG(2) << "A new gateway has entered the chat: " << gw->prefix << '='
-              << gw->rate;
       // One can insert like this because state_ is std::map w/ stable iterators
       state_iter =
           state_.insert({gw->prefix, GatewayState{gw->prefix, api_}}).first;
