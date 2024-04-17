@@ -1,0 +1,13 @@
+diff --git a/content/public/renderer/render_frame_observer.h b/content/public/renderer/render_frame_observer.h
+index 289a8c25f14ca..5b91eadb698ee 100644
+--- a/content/public/renderer/render_frame_observer.h
++++ b/content/public/renderer/render_frame_observer.h
+@@ -146,6 +146,8 @@ class CONTENT_EXPORT RenderFrameObserver
+   virtual void DidHandleOnloadEvents() {}
+   virtual void DidCreateScriptContext(v8::Local<v8::Context> context,
+                                       int32_t world_id) {}
++  virtual void DidInstallConditionalFeatures(v8::Local<v8::Context> context,
++                                             int32_t world_id) {}
+   virtual void WillReleaseScriptContext(v8::Local<v8::Context> context,
+                                         int32_t world_id) {}
+   virtual void DidClearWindowObject() {}

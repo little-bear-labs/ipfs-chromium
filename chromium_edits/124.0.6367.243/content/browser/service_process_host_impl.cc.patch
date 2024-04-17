@@ -1,0 +1,21 @@
+diff --git a/content/browser/service_process_host_impl.cc b/content/browser/service_process_host_impl.cc
+index 1987b9539e6d3..73d8c2fcbed9d 100644
+--- a/content/browser/service_process_host_impl.cc
++++ b/content/browser/service_process_host_impl.cc
+@@ -207,6 +207,16 @@ void LaunchServiceProcess(mojo::GenericPendingReceiver receiver,
+       options.allow_gpu_client.value()) {
+     host->SetAllowGpuClient();
+   }
++
++#if BUILDFLAG(IS_WIN)
++  host->SetStdioHandles(std::move(options.stdout_handle), std::move(options.stderr_handle));
++#elif BUILDFLAG(IS_POSIX)
++  host->SetAdditionalFds(std::move(options.fds_to_remap));
++#endif
++  host->SetCurrentDirectory(options.current_directory);
++  host->SetEnv(options.environment);
++  if (options.clear_environment)
++    host->ClearEnvironment();
+   host->Start();
+   host->GetChildProcess()->BindServiceInterface(std::move(receiver));
+ }

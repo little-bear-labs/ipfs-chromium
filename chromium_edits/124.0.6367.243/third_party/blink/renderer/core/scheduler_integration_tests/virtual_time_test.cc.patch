@@ -1,0 +1,12 @@
+diff --git a/third_party/blink/renderer/core/scheduler_integration_tests/virtual_time_test.cc b/third_party/blink/renderer/core/scheduler_integration_tests/virtual_time_test.cc
+index 5b633b529b132..cf861f130b342 100644
+--- a/third_party/blink/renderer/core/scheduler_integration_tests/virtual_time_test.cc
++++ b/third_party/blink/renderer/core/scheduler_integration_tests/virtual_time_test.cc
+@@ -58,6 +58,7 @@ class VirtualTimeTest : public SimTest {
+         mojom::blink::LoadEventBlockingOption::kDoNotBlock,
+         WTF::BindOnce(&ScriptExecutionCallbackHelper::Completed,
+                       base::Unretained(&callback_helper)),
++        base::NullCallback(),
+         BackForwardCacheAware::kAllow,
+         mojom::blink::WantResultOption::kWantResult,
+         mojom::blink::PromiseResultOption::kDoNotWait);

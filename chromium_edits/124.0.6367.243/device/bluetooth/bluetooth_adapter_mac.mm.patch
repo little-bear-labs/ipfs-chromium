@@ -1,0 +1,44 @@
+diff --git a/device/bluetooth/bluetooth_adapter_mac.mm b/device/bluetooth/bluetooth_adapter_mac.mm
+index 3033b23a07041..9dd6cb1aa49d0 100644
+--- a/device/bluetooth/bluetooth_adapter_mac.mm
++++ b/device/bluetooth/bluetooth_adapter_mac.mm
+@@ -37,6 +37,7 @@
+ #include "device/bluetooth/bluetooth_socket_mac.h"
+ #include "device/bluetooth/public/cpp/bluetooth_address.h"
+ 
++#if !IS_MAS_BUILD()
+ extern "C" {
+ // Undocumented IOBluetooth Preference API [1]. Used by `blueutil` [2] and
+ // `Karabiner` [3] to programmatically control the Bluetooth state. Calling the
+@@ -50,6 +51,7 @@ extern "C" {
+ // [4] https://support.apple.com/kb/PH25091
+ void IOBluetoothPreferenceSetControllerPowerState(int state);
+ }
++#endif
+ 
+ namespace {
+ 
+@@ -93,8 +95,10 @@ BluetoothAdapterMac::BluetoothAdapterMac()
+     : controller_state_function_(
+           base::BindRepeating(&BluetoothAdapterMac::GetHostControllerState,
+                               base::Unretained(this))),
++#if !IS_MAS_BUILD()
+       power_state_function_(
+           base::BindRepeating(IOBluetoothPreferenceSetControllerPowerState)),
++#endif
+       device_paired_status_callback_(
+           base::BindRepeating(&IsDeviceSystemPaired)) {
+ }
+@@ -242,8 +246,12 @@ base::WeakPtr<BluetoothAdapter> BluetoothAdapterMac::GetWeakPtr() {
+ }
+ 
+ bool BluetoothAdapterMac::SetPoweredImpl(bool powered) {
++#if !IS_MAS_BUILD()
+   power_state_function_.Run(base::strict_cast<int>(powered));
+   return true;
++#else
++  return false;
++#endif
+ }
+ 
+ base::WeakPtr<BluetoothLowEnergyAdapterApple>

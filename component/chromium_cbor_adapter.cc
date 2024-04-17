@@ -25,7 +25,13 @@ bool Self::is_array() const {
 auto Self::at(std::string_view key) const -> std::unique_ptr<DagCborValue> {
   if (is_map()) {
     auto& m = cbor_.GetMap();
-    auto it = m.find(cbor::Value{base::StringPiece{key}});
+    auto it = m.find(cbor::Value{
+#ifdef BASE_STRINGS_STRING_PIECE_H_
+        base::StringPiece{key}
+#else
+        key
+#endif
+    });
     if (m.end() != it) {
       return std::make_unique<Self>(it->second.Clone());
     }

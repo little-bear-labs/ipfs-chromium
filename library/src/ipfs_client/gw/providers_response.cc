@@ -89,6 +89,10 @@ bool ParseProvider(ipfs::DagJsonValue const& provider, ipfs::Client& api) {
 }  // namespace
 
 bool prov::ProcessResponse(std::string_view json_str, Client& api) {
+  if (json_str.empty()) {
+    LOG(ERROR) << "Empty body in response to routing/v1 providers request.";
+    return false;
+  }
   auto parsed = api.json().Parse(json_str);
   if (!parsed) {
     LOG(ERROR)

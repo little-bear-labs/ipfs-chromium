@@ -1,0 +1,13 @@
+diff --git a/third_party/blink/renderer/core/loader/document_loader.h b/third_party/blink/renderer/core/loader/document_loader.h
+index 4b0cc3793ecb9..07b05d3d90a72 100644
+--- a/third_party/blink/renderer/core/loader/document_loader.h
++++ b/third_party/blink/renderer/core/loader/document_loader.h
+@@ -312,7 +312,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
+       std::optional<scheduler::TaskAttributionId>
+           soft_navigation_heuristics_task_id);
+ 
+-  void SetDefersLoading(LoaderFreezeMode);
++  void SetDefersLoading(LoaderFreezeMode) override;
+ 
+   DocumentLoadTiming& GetTiming() { return document_load_timing_; }
+ 

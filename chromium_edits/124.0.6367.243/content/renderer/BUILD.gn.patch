@@ -1,0 +1,12 @@
+diff --git a/content/renderer/BUILD.gn b/content/renderer/BUILD.gn
+index d80cdfcc88d89..c48d2fa394ab2 100644
+--- a/content/renderer/BUILD.gn
++++ b/content/renderer/BUILD.gn
+@@ -228,6 +228,7 @@ target(link_target_type, "renderer") {
+   }
+ 
+   configs += [ "//content:content_implementation" ]
++  configs += ["//electron/build/config:mas_build"]
+   defines = []
+ 
+   public_deps = [

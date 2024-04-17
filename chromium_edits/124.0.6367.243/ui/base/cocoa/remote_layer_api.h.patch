@@ -1,0 +1,21 @@
+diff --git a/ui/base/cocoa/remote_layer_api.h b/ui/base/cocoa/remote_layer_api.h
+index 59dc2f82214cf..d585ba14b3402 100644
+--- a/ui/base/cocoa/remote_layer_api.h
++++ b/ui/base/cocoa/remote_layer_api.h
+@@ -17,6 +17,7 @@
+ 
+ #if BUILDFLAG(IS_MAC)
+ 
++#if !IS_MAS_BUILD()
+ // The CGSConnectionID is used to create the CAContext in the process that is
+ // going to share the CALayers that it is rendering to another process to
+ // display.
+@@ -68,6 +69,8 @@ extern NSString* const kCAContextIgnoresHitTest;
+ 
+ #endif  // __OBJC__
+ 
++#endif // MAS_BUILD
++
+ namespace ui {
+ 
+ // This function will check if all of the interfaces listed above are supported

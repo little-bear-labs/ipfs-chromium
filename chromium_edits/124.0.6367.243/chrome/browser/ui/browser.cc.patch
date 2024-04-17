@@ -1,0 +1,19 @@
+diff --git a/chrome/browser/ui/browser.cc b/chrome/browser/ui/browser.cc
+index 3d985470f60d1..cf96fc1321da4 100644
+--- a/chrome/browser/ui/browser.cc
++++ b/chrome/browser/ui/browser.cc
+@@ -1933,12 +1933,11 @@ bool Browser::IsWebContentsCreationOverridden(
+     content::SiteInstance* source_site_instance,
+     content::mojom::WindowContainerType window_container_type,
+     const GURL& opener_url,
+-    const std::string& frame_name,
+-    const GURL& target_url) {
++    const content::mojom::CreateNewWindowParams& params) {
+   return window_container_type ==
+              content::mojom::WindowContainerType::BACKGROUND &&
+          ShouldCreateBackgroundContents(source_site_instance, opener_url,
+-                                        frame_name);
++                                        params.frame_name);
+ }
+ 
+ WebContents* Browser::CreateCustomWebContents(

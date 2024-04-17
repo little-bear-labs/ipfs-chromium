@@ -28,7 +28,6 @@ void Self::Start() {
       //      dc::ResetHandling::kNeverReset,
       dc::ResetHandling::kResetOnError, nullptr,
       base::BindOnce(&Self::Assign, base::Unretained(this)));
-  VLOG(1) << "Start(" << result.net_error << ')' << result.net_error;
   startup_pending_ = result.net_error == net::ERR_IO_PENDING;
   if (!startup_pending_) {
     Assign(std::move(result));
@@ -39,7 +38,6 @@ Self::~CacheRequestor() noexcept = default;
 void Self::Assign(dc::BackendResult res) {
   startup_pending_ = false;
   if (res.net_error == net::OK) {
-    VLOG(2) << "Initialized disk cache";
     cache_.swap(res.backend);
   } else {
     LOG(ERROR) << "Trouble opening " << name() << ": " << res.net_error;
@@ -142,7 +140,7 @@ void Self::OnBodyRead(Task task, int code) {
     bool valid = false;
     task.request->RespondSuccessfully(task.body, api_, task.orig_src, &valid);
     if (!valid) {
-      LOG(ERROR) << "Had a bad or expired cached response for " << task.key;
+      VLOG(2) << "Had a bad or expired cached response for " << task.key;
       Expire(task.key);
       Miss(task);
     }
@@ -162,8 +160,7 @@ void Self::OnEntryCreated(std::string cid,
                           std::string body,
                           disk_cache::EntryResult result) {
   if (result.opened()) {
-    VLOG(2) << "No need to write an entry for " << cid << " in " << name()
-            << " as it is already there and immutable.";
+    // No need to write this entry as it is already there and immutable.";
   } else if (result.net_error() == net::OK) {
     auto entry = GetEntry(result);
     auto buf = base::MakeRefCounted<net::StringIOBuffer>(headers);

@@ -14,6 +14,7 @@ void ipfs::IpfsURLLoaderFactory::Create(
     new IpfsURLLoaderFactory(scheme, pending.InitWithNewPipeAndPassReceiver(),
                              context, default_factory, net_ctxt, pref_svc);
     in_out->emplace(scheme, std::move(pending));
+    VLOG(2) << "Registered subresource loader factory for " << scheme;
   }
 }
 

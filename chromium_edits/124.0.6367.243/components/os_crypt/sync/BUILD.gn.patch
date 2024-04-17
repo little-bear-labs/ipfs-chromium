@@ -1,0 +1,12 @@
+diff --git a/components/os_crypt/sync/BUILD.gn b/components/os_crypt/sync/BUILD.gn
+index 4fe7a0bfaa5b3..b1c70281c45aa 100644
+--- a/components/os_crypt/sync/BUILD.gn
++++ b/components/os_crypt/sync/BUILD.gn
+@@ -46,6 +46,7 @@ component("os_crypt") {
+       "os_crypt_mac.mm",
+     ]
+     deps += [ "//crypto:mock_apple_keychain" ]
++    configs += ["//electron/build/config:mas_build"]
+   }
+ 
+   if (is_win) {

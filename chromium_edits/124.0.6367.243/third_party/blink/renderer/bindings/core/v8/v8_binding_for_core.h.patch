@@ -1,0 +1,15 @@
+diff --git a/third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h b/third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h
+index baadef23f6109..685b2744b00e8 100644
+--- a/third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h
++++ b/third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h
+@@ -269,7 +269,10 @@ inline uint64_t DoubleToInteger(double d) {
+   constexpr uint64_t kMaxULL = std::numeric_limits<uint64_t>::max();
+ 
+   // -2^{64} < fmod_value < 2^{64}.
++#pragma clang diagnostic push
++#pragma clang diagnostic ignored "-Wimplicit-const-int-float-conversion"
+   double fmod_value = fmod(trunc(d), kMaxULL + 1.0);
++#pragma clang diagnostic pop
+   if (fmod_value >= 0) {
+     // 0 <= fmod_value < 2^{64}.
+     // 0 <= value < 2^{64}. This cast causes no loss.

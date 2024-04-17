@@ -1,0 +1,15 @@
+diff --git a/components/viz/host/layered_window_updater_impl.cc b/components/viz/host/layered_window_updater_impl.cc
+index 8f726bde2cb5d..45d8cae3ba0fc 100644
+--- a/components/viz/host/layered_window_updater_impl.cc
++++ b/components/viz/host/layered_window_updater_impl.cc
+@@ -46,7 +46,9 @@ void LayeredWindowUpdaterImpl::OnAllocatedSharedMemory(
+   // |region|'s handle will close when it goes out of scope.
+ }
+ 
+-void LayeredWindowUpdaterImpl::Draw(DrawCallback draw_callback) {
++void LayeredWindowUpdaterImpl::Draw(
++    const gfx::Rect& damage_rect,
++    DrawCallback draw_callback) {
+   TRACE_EVENT0("viz", "LayeredWindowUpdaterImpl::Draw");
+ 
+   if (!canvas_) {

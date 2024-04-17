@@ -1,0 +1,12 @@
+diff --git a/ui/views/controls/menu/menu_controller.h b/ui/views/controls/menu/menu_controller.h
+index a051195134920..84f4cc26646f0 100644
+--- a/ui/views/controls/menu/menu_controller.h
++++ b/ui/views/controls/menu/menu_controller.h
+@@ -139,6 +139,7 @@ class VIEWS_EXPORT MenuController
+            MenuAnchorPosition position,
+            bool context_menu,
+            bool is_nested_drag,
++           ui::MenuSourceType source_type,
+            gfx::NativeView native_view_for_gestures = gfx::NativeView());
+ 
+   bool for_drop() const { return for_drop_; }

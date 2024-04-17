@@ -1,0 +1,12 @@
+diff --git a/content/test/mock_platform_notification_service.cc b/content/test/mock_platform_notification_service.cc
+index 32a0cf3838998..8a788f243e913 100644
+--- a/content/test/mock_platform_notification_service.cc
++++ b/content/test/mock_platform_notification_service.cc
+@@ -29,6 +29,7 @@ MockPlatformNotificationService::MockPlatformNotificationService(
+ MockPlatformNotificationService::~MockPlatformNotificationService() = default;
+ 
+ void MockPlatformNotificationService::DisplayNotification(
++    RenderFrameHost* render_frame_host,
+     const std::string& notification_id,
+     const GURL& origin,
+     const GURL& document_url,

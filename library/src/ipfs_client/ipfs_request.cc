@@ -8,8 +8,6 @@
 
 using Self = ipfs::IpfsRequest;
 
-// Self::IpfsRequest(std::string path_p)
-//     : path_{path_p}, callback_([](auto&, auto&) {}) {}
 Self::IpfsRequest(std::string path_p, Finisher f)
     : path_{path_p}, callback_{f} {}
 

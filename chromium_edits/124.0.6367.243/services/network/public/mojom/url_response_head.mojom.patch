@@ -1,0 +1,22 @@
+diff --git a/services/network/public/mojom/url_response_head.mojom b/services/network/public/mojom/url_response_head.mojom
+index e1fb008d12ae8..3f5074bde0de5 100644
+--- a/services/network/public/mojom/url_response_head.mojom
++++ b/services/network/public/mojom/url_response_head.mojom
+@@ -12,6 +12,7 @@ import "services/network/public/mojom/encoded_body_length.mojom";
+ import "services/network/public/mojom/attribution.mojom";
+ import "services/network/public/mojom/fetch_api.mojom";
+ import "services/network/public/mojom/ip_address_space.mojom";
++import "services/network/public/mojom/http_raw_headers.mojom";
+ import "services/network/public/mojom/ip_endpoint.mojom";
+ import "services/network/public/mojom/load_timing_info.mojom";
+ import "services/network/public/mojom/network_param.mojom";
+@@ -42,6 +43,9 @@ struct URLResponseHead {
+   // The response headers or NULL if the URL type does not support headers.
+   HttpResponseHeaders headers;
+ 
++  // Actual response headers, as obtained from the network stack.
++  array<HttpRawHeaderPair> raw_response_headers;
++
+   // The mime type of the response.  This may be a derived value.
+   string mime_type;
+ 

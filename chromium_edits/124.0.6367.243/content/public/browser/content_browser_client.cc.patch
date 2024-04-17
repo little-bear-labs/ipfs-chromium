@@ -1,0 +1,13 @@
+diff --git a/content/public/browser/content_browser_client.cc b/content/public/browser/content_browser_client.cc
+index 465de2f945f3a..6635f7d3932a8 100644
+--- a/content/public/browser/content_browser_client.cc
++++ b/content/public/browser/content_browser_client.cc
+@@ -718,6 +718,8 @@ bool ContentBrowserClient::CanCreateWindow(
+     const std::string& frame_name,
+     WindowOpenDisposition disposition,
+     const blink::mojom::WindowFeatures& features,
++    const std::string& raw_features,
++    const scoped_refptr<network::ResourceRequestBody>& body,
+     bool user_gesture,
+     bool opener_suppressed,
+     bool* no_javascript_access) {

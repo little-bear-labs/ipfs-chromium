@@ -129,7 +129,7 @@ if not isfile(join(src, '.landmines')):
 patcher.apply()
 
 ipfs_dir = join(src, 'components', 'ipfs')
-
+elec_dir = join(src, 'electron')
 
 def files_content_differ(a, b):
     try:
@@ -227,6 +227,9 @@ def sync_dir(source_relative, target_relative, complete=True):
 
 sync_dir('component', 'components/ipfs')
 sync_dir('library', 'third_party/ipfs_client')
+if isdir(elec_dir):
+    sync_dir('electron-spin', 'electron-spin')
+
 if 'branding' in argv:
     argv.remove('branding')
     sync_dir('component/branding', 'chrome', False)

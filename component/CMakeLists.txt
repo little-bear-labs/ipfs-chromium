@@ -100,7 +100,9 @@ add_custom_target(in_tree_build
   )
 add_custom_target(chromium_ordering_issue
     COMMENT "For some versions of Chromium the internal build dependency order isn't perfect."
-    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" ui/webui/resources/cr_components/color_change_listener:mojom
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}"
+        ui/webui/resources/cr_components/color_change_listener:mojom
+        components/reporting/proto:configuration_file_proto
     DEPENDS in_tree_build
   )
 add_custom_target(build_browser
@@ -172,23 +174,27 @@ target_compile_options(out_of_tree
     ${WARNING_FLAGS}
   )
 find_package(Protobuf)
+find_package(OpenSSL
+    COMPONENTS
+        Crypto
+)
 target_link_libraries(out_of_tree
   PUBLIC
     protobuf::libprotobuf
     ipfs_client
+    OpenSSL::SSL
   )
 target_include_directories(out_of_tree
   SYSTEM
   BEFORE
-  PRIVATE
+  PUBLIC
     "../chromium_tree/oot"
     "${protobuf_INCLUDE_DIR}"
     "${CMAKE_CURRENT_BINARY_DIR}/inc_link"
   )
-
 target_include_directories(out_of_tree
   PUBLIC
   ../library/src
   )
-add_dependencies(out_of_tree inc_link)
 
+add_dependencies(out_of_tree inc_link)

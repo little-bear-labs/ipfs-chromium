@@ -1,0 +1,12 @@
+diff --git a/content/browser/gpu/gpu_data_manager_impl_private.h b/content/browser/gpu/gpu_data_manager_impl_private.h
+index f907360160cae..af68fc04861ca 100644
+--- a/content/browser/gpu/gpu_data_manager_impl_private.h
++++ b/content/browser/gpu/gpu_data_manager_impl_private.h
+@@ -84,6 +84,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
+   bool Dx12Requested() const;
+   bool VulkanRequested() const;
+   void TerminateInfoCollectionGpuProcess();
++  bool DxdiagDx12VulkanRequested() const;
+ #endif
+   void PostCreateThreads();
+   void UpdateDawnInfo(const std::vector<std::string>& dawn_info_list);

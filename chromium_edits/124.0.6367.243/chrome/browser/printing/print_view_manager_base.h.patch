@@ -1,0 +1,72 @@
+diff --git a/chrome/browser/printing/print_view_manager_base.h b/chrome/browser/printing/print_view_manager_base.h
+index 24a2bc8b26462..402aab3b14e69 100644
+--- a/chrome/browser/printing/print_view_manager_base.h
++++ b/chrome/browser/printing/print_view_manager_base.h
+@@ -49,6 +49,8 @@ class PrinterQuery;
+ // rollout.
+ BASE_DECLARE_FEATURE(kCheckPrintRfhIsActive);
+ 
++using CompletionCallback = base::OnceCallback<void(bool, const std::string&)>;
++
+ // Base class for managing the print commands for a WebContents.
+ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
+  public:
+@@ -82,7 +84,10 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
+   // Prints the current document immediately. Since the rendering is
+   // asynchronous, the actual printing will not be completed on the return of
+   // this function. Returns false if printing is impossible at the moment.
+-  virtual bool PrintNow(content::RenderFrameHost* rfh);
++  virtual bool PrintNow(content::RenderFrameHost* rfh,
++                        bool silent = true,
++                        base::Value::Dict settings = {},
++                        CompletionCallback callback = {});
+ 
+   // Like PrintNow(), but for the node under the context menu, instead of the
+   // entire frame.
+@@ -136,8 +141,10 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
+   void IsPrintingEnabled(IsPrintingEnabledCallback callback) override;
+   void ScriptedPrint(mojom::ScriptedPrintParamsPtr params,
+                      ScriptedPrintCallback callback) override;
++  void ShowInvalidPrinterSettingsError() override;
+   void PrintingFailed(int32_t cookie,
+                       mojom::PrintFailureReason reason) override;
++  void UserInitCanceled();
+ 
+   // Adds and removes observers for `PrintViewManagerBase` events. The order in
+   // which notifications are sent to observers is undefined. Observers must be
+@@ -145,6 +152,14 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
+   void AddTestObserver(TestObserver& observer);
+   void RemoveTestObserver(TestObserver& observer);
+ 
++  enum class PrintStatus {
++    kSucceeded,
++    kCanceled,
++    kFailed,
++    kInvalid,
++    kUnknown
++  };
++
+  protected:
+   explicit PrintViewManagerBase(content::WebContents* web_contents);
+ 
+@@ -268,6 +283,7 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
+                                 bool success);
+ #endif
+   void CompleteUpdatePrintSettings(
++      std::unique_ptr<PrinterQuery> printer_query,
+       base::Value::Dict job_settings,
+       std::unique_ptr<PrintSettings> print_settings,
+       UpdatePrintSettingsCallback callback);
+@@ -362,8 +378,11 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
+   // The current RFH that is printing with a system printing dialog.
+   raw_ptr<content::RenderFrameHost> printing_rfh_ = nullptr;
+ 
++  // Respond with success of the print job.
++  CompletionCallback callback_;
++
+   // Indication of success of the print job.
+-  bool printing_succeeded_ = false;
++  PrintStatus printing_status_ = PrintStatus::kUnknown;
+ 
+   // Indication that the job is getting canceled.
+   bool canceling_job_ = false;

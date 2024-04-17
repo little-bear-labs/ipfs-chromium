@@ -1,0 +1,16 @@
+diff --git a/tools/gritsettings/resource_ids.spec b/tools/gritsettings/resource_ids.spec
+index 3b6a1acc7deef..abdbcaceab717 100644
+--- a/tools/gritsettings/resource_ids.spec
++++ b/tools/gritsettings/resource_ids.spec
+@@ -1283,6 +1283,11 @@
+     "includes": [8440],
+   },
+ 
++  "electron/electron_resources.grd": {
++    "messages": [31750],
++    "includes": [31950],
++  },
++
+   # END "everything else" section.
+   # Everything but chrome/, components/, content/, and ios/
+ 

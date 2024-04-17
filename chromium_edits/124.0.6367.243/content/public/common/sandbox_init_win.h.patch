@@ -1,0 +1,13 @@
+diff --git a/content/public/common/sandbox_init_win.h b/content/public/common/sandbox_init_win.h
+index 9bb4b30ba0f5d..b614fef01ee5c 100644
+--- a/content/public/common/sandbox_init_win.h
++++ b/content/public/common/sandbox_init_win.h
+@@ -29,7 +29,7 @@ class SandboxedProcessLauncherDelegate;
+ CONTENT_EXPORT sandbox::ResultCode StartSandboxedProcess(
+     SandboxedProcessLauncherDelegate* delegate,
+     const base::CommandLine& target_command_line,
+-    const base::HandlesToInheritVector& handles_to_inherit,
++    const base::LaunchOptions* options,
+     base::Process* process);
+ 
+ }  // namespace content
