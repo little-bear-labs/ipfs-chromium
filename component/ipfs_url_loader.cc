@@ -48,9 +48,9 @@ void ipfs::IpfsUrlLoader::FollowRedirect(
   NOTIMPLEMENTED();
 }
 
-void ipfs::IpfsUrlLoader::SetPriority(net::RequestPriority priority,
-                                      int32_t intra_prio_val) {
-  VLOG(2) << "TODO SetPriority(" << priority << ',' << intra_prio_val << ')';
+void ipfs::IpfsUrlLoader::SetPriority(net::RequestPriority /*priority*/,
+                                      int32_t /* intra_prio_val */) {
+  // TODO implement
 }
 
 void ipfs::IpfsUrlLoader::PauseReadingBodyFromNet() {
@@ -119,8 +119,6 @@ void ipfs::IpfsUrlLoader::OverrideUrl(GURL u) {
 
 void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type,
                                          ipld::DagHeaders const& hdrs) {
-  VLOG(2) << "Resolved from unix-fs dag a file of type: " << mime_type
-          << " will report it as " << original_url_;
   if (complete_) {
     return;
   }
@@ -135,7 +133,7 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type,
   if (mime_type.size()) {
     head->mime_type = mime_type;
   }
-  std::uint32_t byte_count = partial_block_.size();
+  size_t byte_count = partial_block_.size();
   pipe_prod_->WriteData(partial_block_.data(), &byte_count,
                         MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE);
   head->content_length = byte_count;

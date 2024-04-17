@@ -91,7 +91,7 @@ bool ParseProvider(ipfs::DagJsonValue const& provider, ipfs::Client& api) {
 bool prov::ProcessResponse(std::string_view json_str, Client& api) {
   auto parsed = api.json().Parse(json_str);
   if (!parsed) {
-    LOG(ERROR)
+    LOG(WARNING)
         << "Response to routing/v1 providers request did not parse as JSON: "
         << json_str;
     return false;

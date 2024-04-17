@@ -17,7 +17,7 @@ except ModuleNotFoundError:
     import requests
 
 
-FUDGE = 59913
+FUDGE = 59917
 
 
 def osname():
