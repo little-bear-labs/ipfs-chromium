@@ -1,0 +1,12 @@
+diff --git a/ui/views/widget/desktop_aura/desktop_window_tree_host_win.h b/ui/views/widget/desktop_aura/desktop_window_tree_host_win.h
+index 8d5b01098915d..797670a6d0a34 100644
+--- a/ui/views/widget/desktop_aura/desktop_window_tree_host_win.h
++++ b/ui/views/widget/desktop_aura/desktop_window_tree_host_win.h
+@@ -261,6 +261,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
+   void HandleWindowSizeUnchanged() override;
+   void HandleWindowScaleFactorChanged(float window_scale_factor) override;
+   void HandleHeadlessWindowBoundsChanged(const gfx::Rect& bounds) override;
++  bool HandleMouseEventForCaption(UINT message) const override;
+ 
+   Widget* GetWidget();
+   const Widget* GetWidget() const;

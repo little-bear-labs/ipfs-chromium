@@ -1,0 +1,12 @@
+diff --git a/components/printing/browser/print_manager.h b/components/printing/browser/print_manager.h
+index ca71560874a01..a8551d95e64da 100644
+--- a/components/printing/browser/print_manager.h
++++ b/components/printing/browser/print_manager.h
+@@ -48,6 +48,7 @@ class PrintManager : public content::WebContentsObserver,
+                         DidPrintDocumentCallback callback) override;
+   void IsPrintingEnabled(IsPrintingEnabledCallback callback) override;
+   void DidShowPrintDialog() override;
++  void ShowInvalidPrinterSettingsError() override;
+   void PrintingFailed(int32_t cookie,
+                       mojom::PrintFailureReason reason) override;
+ 

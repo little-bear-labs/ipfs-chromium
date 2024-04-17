@@ -26,7 +26,6 @@ Self::DnsTxtRequest(std::string host,
 Self::~DnsTxtRequest() {}
 
 void Self::OnTextResults(std::vector<std::string> const& results) {
-  VLOG(2) << "Hit " << results.size() << " DNS TXT results.";
   results_callback_(results);
 }
 void Self::OnComplete(int32_t result,

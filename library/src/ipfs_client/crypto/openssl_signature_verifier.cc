@@ -28,7 +28,6 @@ bool Self::VerifySignature(ipfs::ByteView signature,
   }
   auto result =
       EVP_DigestVerify(ctx.get(), sig_p, signature.size(), data_p, data.size());
-  VLOG(2) << "EVP_DigestVerify returned " << result;
   return result == 1;
 }
 

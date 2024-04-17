@@ -1,0 +1,65 @@
+diff --git a/content/app/content_main_runner_impl.cc b/content/app/content_main_runner_impl.cc
+index 824026e6e2bd6..1213080cce1a3 100644
+--- a/content/app/content_main_runner_impl.cc
++++ b/content/app/content_main_runner_impl.cc
+@@ -39,6 +39,7 @@
+ #include "base/process/memory.h"
+ #include "base/process/process.h"
+ #include "base/process/process_handle.h"
++#include "base/strings/string_piece.h"
+ #include "base/strings/string_number_conversions.h"
+ #include "base/strings/string_util.h"
+ #include "base/task/single_thread_task_runner.h"
+@@ -253,8 +254,13 @@ std::string GetSnapshotDataDescriptor(const base::CommandLine& command_line) {
+ 
+ #endif
+ 
+-void LoadV8SnapshotFile(const base::CommandLine& command_line) {
++void LoadV8SnapshotFile(const raw_ptr<ContentMainDelegate> delegate, const base::CommandLine& command_line) {
+   const gin::V8SnapshotFileType snapshot_type = GetSnapshotType(command_line);
++  base::StringPiece browser_v8_snapshot_file_name = delegate->GetBrowserV8SnapshotFilename();
++  if (!browser_v8_snapshot_file_name.empty()) {
++    gin::V8Initializer::LoadV8SnapshotFromFileName(browser_v8_snapshot_file_name, snapshot_type);
++    return;
++  }
+ #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+   base::FileDescriptorStore& file_descriptor_store =
+       base::FileDescriptorStore::GetInstance();
+@@ -274,11 +280,8 @@ void LoadV8SnapshotFile(const base::CommandLine& command_line) {
+ 
+ bool ShouldLoadV8Snapshot(const base::CommandLine& command_line,
+                           const std::string& process_type) {
+-  // The gpu does not need v8, and the browser only needs v8 when in single
+-  // process mode.
+-  if (process_type == switches::kGpuProcess ||
+-      (process_type.empty() &&
+-       !command_line.HasSwitch(switches::kSingleProcess))) {
++  // The gpu does not need v8
++  if (process_type == switches::kGpuProcess) {
+     return false;
+   }
+   return true;
+@@ -286,11 +289,12 @@ bool ShouldLoadV8Snapshot(const base::CommandLine& command_line,
+ 
+ #endif  // V8_USE_EXTERNAL_STARTUP_DATA
+ 
+-void LoadV8SnapshotIfNeeded(const base::CommandLine& command_line,
++void LoadV8SnapshotIfNeeded(const raw_ptr<ContentMainDelegate> delegate,
++                            const base::CommandLine& command_line,
+                             const std::string& process_type) {
+ #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
+   if (ShouldLoadV8Snapshot(command_line, process_type))
+-    LoadV8SnapshotFile(command_line);
++    LoadV8SnapshotFile(delegate, command_line);
+ #endif  // V8_USE_EXTERNAL_STARTUP_DATA
+ }
+ 
+@@ -974,7 +978,7 @@ int ContentMainRunnerImpl::Initialize(ContentMainParams params) {
+     return TerminateForFatalInitializationError();
+ #endif  // BUILDFLAG(IS_ANDROID) && (ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE)
+ 
+-  LoadV8SnapshotIfNeeded(command_line, process_type);
++  LoadV8SnapshotIfNeeded(delegate_, command_line, process_type);
+ 
+   blink::TrialTokenValidator::SetOriginTrialPolicyGetter(
+       base::BindRepeating([]() -> blink::OriginTrialPolicy* {

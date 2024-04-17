@@ -30,7 +30,7 @@ std::string_view name(GatewayRequestType);
 
 constexpr std::size_t BLOCK_RESPONSE_BUFFER_SIZE = 2 * 1024 * 1024;
 
-class GatewayRequest {
+class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
  public:
   // TODO add BlockSource param
   using BytesReceivedHook =

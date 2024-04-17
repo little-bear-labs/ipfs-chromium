@@ -17,7 +17,7 @@ auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
     return HandleOutcome::NOT_HANDLED;
   }
   std::string data{req->identity_data()};
-  VLOG(1) << "Responding to inline CID without using network.";
+  VLOG(2) << "Responding to inline CID without using network.";
   req->RespondSuccessfully(data, api_, {});
   return HandleOutcome::DONE;
 }

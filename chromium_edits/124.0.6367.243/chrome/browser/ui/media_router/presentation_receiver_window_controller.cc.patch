@@ -1,0 +1,14 @@
+diff --git a/chrome/browser/ui/media_router/presentation_receiver_window_controller.cc b/chrome/browser/ui/media_router/presentation_receiver_window_controller.cc
+index 4f9040c4fd312..a4e8d400404b4 100644
+--- a/chrome/browser/ui/media_router/presentation_receiver_window_controller.cc
++++ b/chrome/browser/ui/media_router/presentation_receiver_window_controller.cc
+@@ -203,8 +203,7 @@ bool PresentationReceiverWindowController::IsWebContentsCreationOverridden(
+     content::SiteInstance* source_site_instance,
+     content::mojom::WindowContainerType window_container_type,
+     const GURL& opener_url,
+-    const std::string& frame_name,
+-    const GURL& target_url) {
++    const content::mojom::CreateNewWindowParams& params) {
+   // Disallow creating separate WebContentses.  The WebContents implementation
+   // uses this to spawn new windows/tabs, which is also not allowed for
+   // local presentations.

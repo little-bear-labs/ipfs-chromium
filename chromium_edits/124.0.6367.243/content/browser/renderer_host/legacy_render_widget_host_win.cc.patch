@@ -1,0 +1,31 @@
+diff --git a/content/browser/renderer_host/legacy_render_widget_host_win.cc b/content/browser/renderer_host/legacy_render_widget_host_win.cc
+index 70c19054022dd..ed9bea21b4ee6 100644
+--- a/content/browser/renderer_host/legacy_render_widget_host_win.cc
++++ b/content/browser/renderer_host/legacy_render_widget_host_win.cc
+@@ -320,12 +320,12 @@ LRESULT LegacyRenderWidgetHostHWND::OnMouseRange(UINT message,
+                                                  WPARAM w_param,
+                                                  LPARAM l_param,
+                                                  BOOL& handled) {
+-  if (message == WM_MOUSEMOVE) {
++  if (message == WM_MOUSEMOVE || message == WM_NCMOUSEMOVE) {
+     if (!mouse_tracking_enabled_) {
+       mouse_tracking_enabled_ = true;
+       TRACKMOUSEEVENT tme;
+       tme.cbSize = sizeof(tme);
+-      tme.dwFlags = TME_LEAVE;
++      tme.dwFlags = message == WM_NCMOUSEMOVE ? TME_NONCLIENT | TME_LEAVE : TME_LEAVE;
+       tme.hwndTrack = hwnd();
+       tme.dwHoverTime = 0;
+       TrackMouseEvent(&tme);
+@@ -356,7 +356,10 @@ LRESULT LegacyRenderWidgetHostHWND::OnMouseRange(UINT message,
+     // out of the picture.
+     if (!handled &&
+         (message >= WM_NCMOUSEMOVE && message <= WM_NCXBUTTONDBLCLK)) {
+-      ret = ::DefWindowProc(GetParent(), message, w_param, l_param);
++      // Send WM_NCMOUSEMOVE messages using the LegacyRenderWidgetHostHWND's
++      // handle so mouse tracking on non-client areas doesn't break.
++      HWND target = message == WM_NCMOUSEMOVE ? hwnd() : GetParent();
++      ret = ::DefWindowProc(target, message, w_param, l_param);
+       handled = TRUE;
+     }
+   }

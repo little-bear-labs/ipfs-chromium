@@ -8,6 +8,7 @@
 #include "ipfs_client/ipfs_request.h"
 #include "ipfs_client/ipld/dag_headers.h"
 
+#include "base/check_version_internal.h"
 #include "base/debug/stack_trace.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -23,6 +24,17 @@
 #include "services/network/url_loader_factory.h"
 
 #include <fstream>
+
+#if BASE_CHECK_VERSION_INTERNAL < 125
+using PipeByteCount = uint32_t;
+#define SPAN_ARG 0
+#elif BASE_CHECK_VERSION_INTERNAL < 128
+using PipeByteCount = size_t;
+#define SPAN_ARG 0
+#else
+using PipeByteCount = size_t;
+#define SPAN_ARG 1
+#endif
 
 ipfs::IpfsUrlLoader::IpfsUrlLoader(
     network::mojom::URLLoaderFactory& handles_http,
@@ -48,9 +60,9 @@ void ipfs::IpfsUrlLoader::FollowRedirect(
   NOTIMPLEMENTED();
 }
 
-void ipfs::IpfsUrlLoader::SetPriority(net::RequestPriority priority,
-                                      int32_t intra_prio_val) {
-  VLOG(2) << "TODO SetPriority(" << priority << ',' << intra_prio_val << ')';
+void ipfs::IpfsUrlLoader::SetPriority(net::RequestPriority /*priority*/,
+                                      int32_t /* intra_prio_val */) {
+  // TODO implement
 }
 
 void ipfs::IpfsUrlLoader::PauseReadingBodyFromNet() {
@@ -119,8 +131,6 @@ void ipfs::IpfsUrlLoader::OverrideUrl(GURL u) {
 
 void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type,
                                          ipld::DagHeaders const& hdrs) {
-  VLOG(2) << "Resolved from unix-fs dag a file of type: " << mime_type
-          << " will report it as " << original_url_;
   if (complete_) {
     return;
   }
@@ -135,9 +145,15 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type,
   if (mime_type.size()) {
     head->mime_type = mime_type;
   }
-  std::uint32_t byte_count = partial_block_.size();
+  auto byte_count = static_cast<PipeByteCount>(partial_block_.size());
+#if SPAN_ARG
+  auto* p = reinterpret_cast<uint8_t const*>(partial_block_.data());
+  pipe_prod_->WriteData({p, byte_count}, MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE,
+                        byte_count);
+#else
   pipe_prod_->WriteData(partial_block_.data(), &byte_count,
                         MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE);
+#endif
   head->content_length = byte_count;
   head->headers =
       net::HttpResponseHeaders::TryToCreate("access-control-allow-origin: *");

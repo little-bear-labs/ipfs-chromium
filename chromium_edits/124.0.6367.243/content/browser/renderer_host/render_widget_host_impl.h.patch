@@ -1,0 +1,13 @@
+diff --git a/content/browser/renderer_host/render_widget_host_impl.h b/content/browser/renderer_host/render_widget_host_impl.h
+index fb89c4500eeae..52868268ba484 100644
+--- a/content/browser/renderer_host/render_widget_host_impl.h
++++ b/content/browser/renderer_host/render_widget_host_impl.h
+@@ -920,6 +920,8 @@ class CONTENT_EXPORT RenderWidgetHostImpl
+   void UpdateBrowserControlsState(cc::BrowserControlsState constraints,
+                                   cc::BrowserControlsState current,
+                                   bool animate);
++  // Electron: Prevents the widget from getting hidden.
++  bool disable_hidden_ = false;
+ 
+   void StartDragging(blink::mojom::DragDataPtr drag_data,
+                      const url::Origin& source_origin,

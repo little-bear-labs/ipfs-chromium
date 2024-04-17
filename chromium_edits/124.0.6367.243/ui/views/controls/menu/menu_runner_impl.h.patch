@@ -1,0 +1,12 @@
+diff --git a/ui/views/controls/menu/menu_runner_impl.h b/ui/views/controls/menu/menu_runner_impl.h
+index c36540ede44a1..1c3464af16aad 100644
+--- a/ui/views/controls/menu/menu_runner_impl.h
++++ b/ui/views/controls/menu/menu_runner_impl.h
+@@ -52,6 +52,7 @@ class VIEWS_EXPORT MenuRunnerImpl : public MenuRunnerImplInterface,
+                  const gfx::Rect& bounds,
+                  MenuAnchorPosition anchor,
+                  int32_t run_types,
++                 ui::MenuSourceType source_type,
+                  gfx::NativeView native_view_for_gestures,
+                  std::optional<gfx::RoundedCornersF> corners = std::nullopt,
+                  std::optional<std::string> show_menu_host_duration_histogram =

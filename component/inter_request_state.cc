@@ -21,7 +21,6 @@ constexpr char user_data_key[] = "ipfs_request_userdata";
 void Self::CreateForBrowserContext(content::BrowserContext* c, PrefService* p) {
   DCHECK(c);
   DCHECK(p);
-  VLOG(2) << "Creating new IPFS state for this browser context.";
   auto owned = std::make_unique<ipfs::InterRequestState>(c->GetPath(), p);
   c->SetUserData(user_data_key, std::move(owned));
 }

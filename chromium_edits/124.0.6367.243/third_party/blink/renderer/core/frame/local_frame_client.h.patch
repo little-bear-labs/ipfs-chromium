@@ -1,0 +1,13 @@
+diff --git a/third_party/blink/renderer/core/frame/local_frame_client.h b/third_party/blink/renderer/core/frame/local_frame_client.h
+index 7a5d4721f7bd3..4c415c2464fee 100644
+--- a/third_party/blink/renderer/core/frame/local_frame_client.h
++++ b/third_party/blink/renderer/core/frame/local_frame_client.h
+@@ -305,6 +305,8 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
+ 
+   virtual void DidCreateScriptContext(v8::Local<v8::Context>,
+                                       int32_t world_id) = 0;
++  virtual void DidInstallConditionalFeatures(v8::Local<v8::Context>,
++                                             int32_t world_id) = 0;
+   virtual void WillReleaseScriptContext(v8::Local<v8::Context>,
+                                         int32_t world_id) = 0;
+   virtual bool AllowScriptExtensions() = 0;

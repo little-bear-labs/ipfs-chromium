@@ -32,6 +32,8 @@ void ipfs::RegisterPreferences(PrefRegistrySimple* service) {
     //    vals.Set(gw->prefix, static_cast<int>(gw->rate));
     vals.Set(gw->prefix, AsJson(*gw));
   }
+  VLOG(2) << "Registering preferences: " << kDiscoveryRate << " ; "
+          << kDiscoveryOfUnencrypted << " ; " << kGateway;
   service->RegisterDictionaryPref(kGateway, std::move(vals));
   service->RegisterIntegerPref(kDiscoveryRate, 120);
   service->RegisterBooleanPref(kDiscoveryOfUnencrypted, true);
@@ -72,7 +74,6 @@ void Self::SetGatewayRate(std::string_view k, unsigned val) {
       save();
     } else {
       changes = delt / 2;
-      VLOG(2) << "Rate changes total (delta) " << delt;
     }
   }
 }

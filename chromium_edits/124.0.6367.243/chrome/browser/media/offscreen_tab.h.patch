@@ -1,0 +1,14 @@
+diff --git a/chrome/browser/media/offscreen_tab.h b/chrome/browser/media/offscreen_tab.h
+index 9433ce4602414..f38afaafcd671 100644
+--- a/chrome/browser/media/offscreen_tab.h
++++ b/chrome/browser/media/offscreen_tab.h
+@@ -107,8 +107,7 @@ class OffscreenTab final : public ProfileObserver,
+       content::SiteInstance* source_site_instance,
+       content::mojom::WindowContainerType window_container_type,
+       const GURL& opener_url,
+-      const std::string& frame_name,
+-      const GURL& target_url) final;
++      const content::mojom::CreateNewWindowParams& params) override;
+   void EnterFullscreenModeForTab(
+       content::RenderFrameHost* requesting_frame,
+       const blink::mojom::FullscreenOptions& options) final;

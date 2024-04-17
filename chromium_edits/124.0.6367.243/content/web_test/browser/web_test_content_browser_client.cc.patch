@@ -1,0 +1,13 @@
+diff --git a/content/web_test/browser/web_test_content_browser_client.cc b/content/web_test/browser/web_test_content_browser_client.cc
+index 6cf5db64b526c..08869632d8b68 100644
+--- a/content/web_test/browser/web_test_content_browser_client.cc
++++ b/content/web_test/browser/web_test_content_browser_client.cc
+@@ -512,6 +512,8 @@ bool WebTestContentBrowserClient::CanCreateWindow(
+     const std::string& frame_name,
+     WindowOpenDisposition disposition,
+     const blink::mojom::WindowFeatures& features,
++    const std::string& raw_features,
++    const scoped_refptr<network::ResourceRequestBody>& body,
+     bool user_gesture,
+     bool opener_suppressed,
+     bool* no_javascript_access) {

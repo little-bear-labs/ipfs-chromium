@@ -8,6 +8,7 @@ do
     echo "Using compat/${e}"
     break
   fi
+  echo "No compat branch for ${e}. Remaining mainly on the main."
 done
 
 grep -n . ipfs_client_clitester/conanfile.txt

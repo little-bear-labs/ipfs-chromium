@@ -73,7 +73,6 @@ std::string Self::UnescapeUrlComponent(std::string_view url_comp) {
 auto Self::partition(std::string key) -> std::shared_ptr<Partition> {
   auto& part = partitions_[key];
   if (!part) {
-    VLOG(2) << "New partition for key '" << key << "'.";
     part = std::make_shared<Partition>(requestor(), shared_from_this());
   }
   return part;

@@ -51,6 +51,8 @@ else()
     message(WARNING "CHROMIUM_SOURCE_TREE (${CHROMIUM_SOURCE_TREE}) not pointing to source tree.")
 endif()
 
+add_subdirectory(electron-spin)
+
 include(cmake/doxy.cmake)
 include(cmake/marp.cmake)
 if(doc_targets)

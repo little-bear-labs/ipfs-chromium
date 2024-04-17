@@ -1,0 +1,13 @@
+diff --git a/components/upload_list/upload_list.h b/components/upload_list/upload_list.h
+index c45b3d46f505f..2c8c2c1b7ce68 100644
+--- a/components/upload_list/upload_list.h
++++ b/components/upload_list/upload_list.h
+@@ -82,6 +82,8 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
+   // overwrite the previously supplied one, and the first will not be called.
+   void Load(base::OnceClosure callback);
+ 
++  void LoadSync();
++
+   // Clears any data associated with the upload list, where the upload time or
+   // capture time falls within the given range.
+   void Clear(const base::Time& begin,

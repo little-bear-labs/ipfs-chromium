@@ -1,0 +1,13 @@
+diff --git a/printing/buildflags/buildflags.gni b/printing/buildflags/buildflags.gni
+index 9382e3ed7dab7..a83508602f5bd 100644
+--- a/printing/buildflags/buildflags.gni
++++ b/printing/buildflags/buildflags.gni
+@@ -48,7 +48,7 @@ declare_args() {
+ 
+   # Enable snapshotting a page when printing for its content to be analyzed for
+   # sensitive content by enterprise users.
+-  enable_print_content_analysis = is_chromeos || is_win || is_linux || is_mac
++  enable_print_content_analysis = is_chromeos_ash || is_chromeos_lacros
+ }
+ 
+ declare_args() {

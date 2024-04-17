@@ -1,0 +1,13 @@
+diff --git a/gin/public/gin_embedders.h b/gin/public/gin_embedders.h
+index 8d7c5631fd8f1..99b2e2f63be8a 100644
+--- a/gin/public/gin_embedders.h
++++ b/gin/public/gin_embedders.h
+@@ -18,6 +18,8 @@ namespace gin {
+ enum GinEmbedder : uint16_t {
+   kEmbedderNativeGin,
+   kEmbedderBlink,
++  kEmbedderElectron,
++  kEmbedderBlinkTag,
+   kEmbedderPDFium,
+   kEmbedderFuchsia,
+ };

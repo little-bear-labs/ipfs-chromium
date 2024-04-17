@@ -1,0 +1,32 @@
+diff --git a/components/remote_cocoa/app_shim/application_bridge.mm b/components/remote_cocoa/app_shim/application_bridge.mm
+index ee110fe82749f..55c2d643004a5 100644
+--- a/components/remote_cocoa/app_shim/application_bridge.mm
++++ b/components/remote_cocoa/app_shim/application_bridge.mm
+@@ -51,6 +51,7 @@ class NativeWidgetBridgeOwner : public NativeWidgetNSWindowHostHelper {
+ 
+   // NativeWidgetNSWindowHostHelper:
+   id GetNativeViewAccessible() override {
++#if !IS_MAS_BUILD()
+     if (!remote_accessibility_element_) {
+       base::ProcessId browser_pid = base::kNullProcessId;
+       std::vector<uint8_t> element_token;
+@@ -61,6 +62,9 @@ class NativeWidgetBridgeOwner : public NativeWidgetNSWindowHostHelper {
+           ui::RemoteAccessibility::GetRemoteElementFromToken(element_token);
+     }
+     return remote_accessibility_element_;
++#else
++    return nil;
++#endif
+   }
+   void DispatchKeyEvent(ui::KeyEvent* event) override {
+     bool event_handled = false;
+@@ -99,7 +103,9 @@ class NativeWidgetBridgeOwner : public NativeWidgetNSWindowHostHelper {
+   mojo::AssociatedRemote<mojom::TextInputHost> text_input_host_remote_;
+ 
+   std::unique_ptr<NativeWidgetNSWindowBridge> bridge_;
++#if !IS_MAS_BUILD()
+   NSAccessibilityRemoteUIElement* __strong remote_accessibility_element_;
++#endif
+ };
+ 
+ }  // namespace

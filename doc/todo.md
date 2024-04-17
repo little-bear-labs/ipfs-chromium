@@ -5,12 +5,10 @@
 ## Documentation
   - Update design.md to as-implemented
 ## Production features
-  - UI for User settings, also prefs for turning off discovery etc.
+  - UI for User settings
 ## QoI
   - Real URLLoader (not just Simple*) for gateway requests (SetPriority, pause, etc.)
   - Implement SetPriority
-  - Other hash algos
-  - Other multibase encodings
   - Etag
   - IPNS recursion limit
 ## Dev QoL

@@ -1,0 +1,20 @@
+diff --git a/ui/accessibility/platform/inspect/ax_transform_mac.mm b/ui/accessibility/platform/inspect/ax_transform_mac.mm
+index c737a2ca1afb4..879f1357b5129 100644
+--- a/ui/accessibility/platform/inspect/ax_transform_mac.mm
++++ b/ui/accessibility/platform/inspect/ax_transform_mac.mm
+@@ -108,6 +108,7 @@ base::Value AXNSObjectToBaseValue(id value, const AXTreeIndexerMac* indexer) {
+     }
+   }
+ 
++#if !IS_MAS_BUILD()
+   // AXTextMarker
+   if (IsAXTextMarker(value)) {
+     return AXTextMarkerToBaseValue(value, indexer);
+@@ -117,6 +118,7 @@ base::Value AXNSObjectToBaseValue(id value, const AXTreeIndexerMac* indexer) {
+   if (IsAXTextMarkerRange(value)) {
+     return AXTextMarkerRangeToBaseValue(value, indexer);
+   }
++#endif
+ 
+   // Accessible object
+   if (AXElementWrapper::IsValidElement(value)) {

@@ -1,0 +1,41 @@
+diff --git a/ui/base/models/simple_menu_model.cc b/ui/base/models/simple_menu_model.cc
+index bd42c5630ccf0..57c295a242274 100644
+--- a/ui/base/models/simple_menu_model.cc
++++ b/ui/base/models/simple_menu_model.cc
+@@ -53,6 +53,11 @@ std::u16string SimpleMenuModel::Delegate::GetLabelForCommandId(
+   return std::u16string();
+ }
+ 
++std::u16string SimpleMenuModel::Delegate::GetSecondaryLabelForCommandId(
++    int command_id) const {
++  return std::u16string();
++}
++
+ ImageModel SimpleMenuModel::Delegate::GetIconForCommandId(
+     int command_id) const {
+   return ImageModel();
+@@ -338,6 +343,11 @@ void SimpleMenuModel::SetLabel(size_t index, const std::u16string& label) {
+   MenuItemsChanged();
+ }
+ 
++void SimpleMenuModel::SetSecondaryLabel(size_t index, const std::u16string& secondary_label) {
++  items_[ValidateItemIndex(index)].secondary_label = secondary_label;
++  MenuItemsChanged();
++}
++
+ void SimpleMenuModel::SetMinorText(size_t index,
+                                    const std::u16string& minor_text) {
+   items_[ValidateItemIndex(index)].minor_text = minor_text;
+@@ -428,6 +438,12 @@ std::u16string SimpleMenuModel::GetLabelAt(size_t index) const {
+   return items_[ValidateItemIndex(index)].label;
+ }
+ 
++std::u16string SimpleMenuModel::GetSecondaryLabelAt(size_t index) const {
++  if (IsItemDynamicAt(index))
++    return delegate_->GetSecondaryLabelForCommandId(GetCommandIdAt(index));
++  return items_[ValidateItemIndex(index)].secondary_label;
++}
++
+ std::u16string SimpleMenuModel::GetMinorTextAt(size_t index) const {
+   return items_[ValidateItemIndex(index)].minor_text;
+ }

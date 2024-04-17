@@ -1,0 +1,28 @@
+diff --git a/sandbox/mac/sandbox_logging.cc b/sandbox/mac/sandbox_logging.cc
+index 095c639b9893e..cfa5e307de832 100644
+--- a/sandbox/mac/sandbox_logging.cc
++++ b/sandbox/mac/sandbox_logging.cc
+@@ -33,9 +33,11 @@
+   }
+ #endif
+ 
++#if !IS_MAS_BUILD()
+ extern "C" {
+ void abort_report_np(const char*, ...);
+ }
++#endif
+ 
+ namespace sandbox::logging {
+ 
+@@ -76,9 +78,11 @@ void SendOsLog(Level level, const char* message) {
+     sandbox::crash_message::SetCrashMessage(message);
+   }
+ 
++#if !IS_MAS_BUILD()
+   if (level == Level::FATAL) {
+     abort_report_np(message);
+   }
++#endif
+ }
+ 
+ // |error| is strerror(errno) when a P* logging function is called. Pass

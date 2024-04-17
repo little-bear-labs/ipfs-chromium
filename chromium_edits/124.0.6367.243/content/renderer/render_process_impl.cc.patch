@@ -1,0 +1,14 @@
+diff --git a/content/renderer/render_process_impl.cc b/content/renderer/render_process_impl.cc
+index 59438368edfc0..8bd1076177936 100644
+--- a/content/renderer/render_process_impl.cc
++++ b/content/renderer/render_process_impl.cc
+@@ -216,6 +216,9 @@ RenderProcessImpl::RenderProcessImpl()
+     v8::V8::SetFlagsFromString(kSABPerContextFlag, sizeof(kSABPerContextFlag));
+   }
+ 
++  // Freezing flags after init conflicts with node in the renderer.
++  v8::V8::SetFlagsFromString("--no-freeze-flags-after-init");
++
+ #ifdef ENABLE_WEB_ASSEMBLY_TRAP_HANDLER_LINUX
+   if (base::FeatureList::IsEnabled(features::kWebAssemblyTrapHandler)) {
+     // The trap handler is set as the first chance handler for Crashpad's signal

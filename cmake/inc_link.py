@@ -106,10 +106,10 @@ class Command:
         if not exists( dirname(target) ):
             makedirs(dirname(target))
         if 'openssl' in target:
-            with open(target, 'w') as tgt:
-                print("//This file included and probably not provided by the conan (newer) version of openssl", file=tgt)
-                print('Stubbed',tgt)
-                return True
+            # with open(target, 'w') as tgt:
+            #     print("//This file included and probably not provided by the conan (newer) version of openssl", file=tgt)
+            #     print('Stubbed',tgt)
+            return False
         for base in source_bases:
             source = join(base,inc)
             if exists(source):

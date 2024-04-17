@@ -1,0 +1,26 @@
+diff --git a/ui/base/BUILD.gn b/ui/base/BUILD.gn
+index 3452178f0db87..fa510698a6ccc 100644
+--- a/ui/base/BUILD.gn
++++ b/ui/base/BUILD.gn
+@@ -361,6 +361,7 @@ component("base") {
+       "interaction/element_tracker_mac.mm",
+       "resource/resource_bundle_mac.mm",
+     ]
++    configs += ["//electron/build/config:mas_build"]
+   }
+ 
+   if (is_apple) {
+@@ -378,6 +379,13 @@ component("base") {
+     sources += [ "resource/resource_bundle_lacros.cc" ]
+   }
+ 
++  if (is_mas_build) {
++    sources -= [
++      "cocoa/remote_accessibility_api.h",
++      "cocoa/remote_accessibility_api.mm",
++    ]
++  }
++
+   if (is_ios) {
+     sources += [
+       "device_form_factor_ios.mm",

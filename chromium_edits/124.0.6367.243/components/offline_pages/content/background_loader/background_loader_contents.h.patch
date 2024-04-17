@@ -1,0 +1,14 @@
+diff --git a/components/offline_pages/content/background_loader/background_loader_contents.h b/components/offline_pages/content/background_loader/background_loader_contents.h
+index c5b0d3b23b8da..16ed1f46c9afd 100644
+--- a/components/offline_pages/content/background_loader/background_loader_contents.h
++++ b/components/offline_pages/content/background_loader/background_loader_contents.h
+@@ -66,8 +66,7 @@ class BackgroundLoaderContents : public content::WebContentsDelegate {
+       content::SiteInstance* source_site_instance,
+       content::mojom::WindowContainerType window_container_type,
+       const GURL& opener_url,
+-      const std::string& frame_name,
+-      const GURL& target_url) override;
++      const content::mojom::CreateNewWindowParams& params) override;
+ 
+   void AddNewContents(content::WebContents* source,
+                       std::unique_ptr<content::WebContents> new_contents,

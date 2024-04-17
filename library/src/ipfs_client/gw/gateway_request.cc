@@ -288,7 +288,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
           success = orchestrator_->add_node(main_param, node);
           if (valid) {
             *valid = !node->expired();
-            VLOG(1) << "IPNS node created " << main_param << ' ' << success
+            VLOG(2) << "IPNS node created " << main_param << ' ' << success
                     << " vs. " << *valid;
           }
         } else {
@@ -298,7 +298,6 @@ bool Self::RespondSuccessfully(std::string_view bytes,
       }
       break;
     case GatewayRequestType::DnsLink: {
-      VLOG(2) << "Resolved " << debug_string() << " to " << bytes;
       auto node = std::make_shared<ipld::DnsLinkName>(bytes);
       if (node) {
         node->source(src);
@@ -383,7 +382,15 @@ bool Self::Finished() const {
   if (type == GatewayRequestType::Providers) {
     return false;
   }
-  return !dependent || dependent->done();
+  if (!dependent) {
+    LOG(WARNING) << "Gateway request considered finished, because it has no "
+                    "dependent request. Unusual case.";
+    return true;
+  }
+  if (dependent->done()) {
+    return true;
+  }
+  return false;
 }
 void Self::FleshOut(ipld::BlockSource& s) const {
   if (cid.has_value() && cid->valid()) {

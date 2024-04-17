@@ -1,0 +1,14 @@
+diff --git a/ui/gfx/mojom/ca_layer_params_mojom_traits.cc b/ui/gfx/mojom/ca_layer_params_mojom_traits.cc
+index e1c6ed1b3a456..87bff4350cdfc 100644
+--- a/ui/gfx/mojom/ca_layer_params_mojom_traits.cc
++++ b/ui/gfx/mojom/ca_layer_params_mojom_traits.cc
+@@ -52,6 +52,9 @@ bool StructTraits<gfx::mojom::CALayerParamsDataView, gfx::CALayerParams>::Read(
+   if (!data.ReadPixelSize(&out->pixel_size))
+     return false;
+ 
++  if (!data.ReadDamage(&out->damage))
++    return false;
++
+   out->scale_factor = data.scale_factor();
+   return true;
+ }

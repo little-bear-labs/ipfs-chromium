@@ -1,0 +1,14 @@
+diff --git a/ui/views/controls/webview/BUILD.gn b/ui/views/controls/webview/BUILD.gn
+index e3dd4fab3a1ca..f31130eaa3719 100644
+--- a/ui/views/controls/webview/BUILD.gn
++++ b/ui/views/controls/webview/BUILD.gn
+@@ -19,6 +19,9 @@ component("webview") {
+ 
+   if (is_mac) {
+     sources += [ "unhandled_keyboard_event_handler_mac.mm" ]
++    configs += [
++      "//electron/build/config:mas_build",
++    ]
+   }
+ 
+   if (is_win) {

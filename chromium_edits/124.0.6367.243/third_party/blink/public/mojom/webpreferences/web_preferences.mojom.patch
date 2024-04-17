@@ -1,0 +1,32 @@
+diff --git a/third_party/blink/public/mojom/webpreferences/web_preferences.mojom b/third_party/blink/public/mojom/webpreferences/web_preferences.mojom
+index c3ff064deb240..7fd096a61e3dd 100644
+--- a/third_party/blink/public/mojom/webpreferences/web_preferences.mojom
++++ b/third_party/blink/public/mojom/webpreferences/web_preferences.mojom
+@@ -9,6 +9,7 @@ import "third_party/blink/public/mojom/css/preferred_contrast.mojom";
+ import "third_party/blink/public/mojom/v8_cache_options.mojom";
+ import "url/mojom/url.mojom";
+ import "mojo/public/mojom/base/string16.mojom";
++import "mojo/public/mojom/base/file_path.mojom";
+ 
+ enum PointerType {
+   kPointerNone                              = 1,             // 1 << 0
+@@ -218,6 +219,19 @@ struct WebPreferences {
+   // If true, stylus handwriting recognition to text input will be available in
+   // editable input fields which are non-password type.
+   bool stylus_handwriting_enabled;
++  // Begin Electron-specific WebPreferences.
++  bool context_isolation;
++  bool is_webview;
++  bool hidden_page;
++  bool offscreen;
++  bool node_integration;
++  bool node_integration_in_worker;
++  bool node_integration_in_sub_frames;
++  bool enable_spellcheck;
++  bool enable_plugins;
++  bool enable_websql;
++  bool webview_tag;
++  // End Electron-specific WebPreferences.
+ 
+   // This flags corresponds to a Page's Settings' setCookieEnabled state. It
+   // only controls whether or not the "document.cookie" field is properly

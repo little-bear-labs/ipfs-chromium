@@ -16,3 +16,13 @@ TEST(TransitoryGatewayConfigTest, EmptyStringEnvLoadsStatic) {
   EXPECT_GE(first->rate, second->rate);
   EXPECT_GT(second->rate, 0);
 }
+TEST(TransitoryGatewayConfigTest, SetGatewayRateObservable) {
+  ipfs::ctx::TransitoryGatewayConfig c;
+  auto b4 = c.GetGateway(0);
+  ASSERT_TRUE(b4.has_value());
+  auto pre = b4.value().prefix;
+  auto val = b4.value().rate;
+  c.SetGatewayRate(pre, val + 9);
+  auto result = c.GetGatewayRate(pre);
+  EXPECT_EQ(result, val + 9);
+}

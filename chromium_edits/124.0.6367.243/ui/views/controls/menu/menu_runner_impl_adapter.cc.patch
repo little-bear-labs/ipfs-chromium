@@ -1,0 +1,18 @@
+diff --git a/ui/views/controls/menu/menu_runner_impl_adapter.cc b/ui/views/controls/menu/menu_runner_impl_adapter.cc
+index 35f1542e2162d..59175a7b1ab31 100644
+--- a/ui/views/controls/menu/menu_runner_impl_adapter.cc
++++ b/ui/views/controls/menu/menu_runner_impl_adapter.cc
+@@ -35,11 +35,12 @@ void MenuRunnerImplAdapter::RunMenuAt(
+     const gfx::Rect& bounds,
+     MenuAnchorPosition anchor,
+     int32_t types,
++    ui::MenuSourceType source_type,
+     gfx::NativeView native_view_for_gestures,
+     std::optional<gfx::RoundedCornersF> corners,
+     std::optional<std::string> show_menu_host_duration_histogram) {
+   impl_->RunMenuAt(parent, button_controller, bounds, anchor, types,
+-                   native_view_for_gestures);
++                   source_type, native_view_for_gestures);
+ }
+ 
+ void MenuRunnerImplAdapter::Cancel() {

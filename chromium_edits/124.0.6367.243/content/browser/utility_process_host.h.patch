@@ -1,0 +1,71 @@
+diff --git a/content/browser/utility_process_host.h b/content/browser/utility_process_host.h
+index cba1933af784d..ecb0b0e028703 100644
+--- a/content/browser/utility_process_host.h
++++ b/content/browser/utility_process_host.h
+@@ -35,6 +35,10 @@
+ #include "mojo/public/cpp/system/message_pipe.h"
+ #endif
+ 
++#if BUILDFLAG(IS_WIN)
++#include "base/win/scoped_handle.h"
++#endif
++
+ namespace base {
+ class Thread;
+ }  // namespace base
+@@ -104,9 +108,13 @@ class CONTENT_EXPORT UtilityProcessHost
+ 
+   // Returns information about the utility child process.
+   const ChildProcessData& GetData();
+-#if BUILDFLAG(IS_POSIX)
++
++  // Set/Unset environment variables.
+   void SetEnv(const base::EnvironmentMap& env);
+-#endif
++
++  // Clear the environment for the new process before processing
++  // changes from SetEnv.
++  void ClearEnvironment();
+ 
+   // Starts the utility process.
+   bool Start();
+@@ -157,6 +165,16 @@ class CONTENT_EXPORT UtilityProcessHost
+   void SetZygoteForTesting(ZygoteCommunication* handle);
+ #endif  // BUILDFLAG(USE_ZYGOTE)
+ 
++#if BUILDFLAG(IS_WIN)
++  void SetStdioHandles(base::win::ScopedHandle stdout_handle,
++                       base::win::ScopedHandle stderr_handle);
++#elif BUILDFLAG(IS_POSIX)
++  void SetAdditionalFds(base::FileHandleMappingVector mapping);
++#endif
++
++  // Sets the working directory of the process.
++  void SetCurrentDirectory(const base::FilePath& cwd);
++
+   // Returns a control interface for the running child process.
+   mojom::ChildProcess* GetChildProcess();
+ 
+@@ -212,6 +230,22 @@ class CONTENT_EXPORT UtilityProcessHost
+   std::optional<raw_ptr<ZygoteCommunication>> zygote_for_testing_;
+ #endif  // BUILDFLAG(USE_ZYGOTE)
+ 
++#if BUILDFLAG(IS_WIN)
++  // Specifies the handles for redirection of stdout and stderr.
++  base::win::ScopedHandle stdout_handle_;
++  base::win::ScopedHandle stderr_handle_;
++#elif BUILDFLAG(IS_POSIX)
++  // Specifies file descriptors to propagate into the child process
++  // based on the mapping.
++  base::FileHandleMappingVector fds_to_remap_;
++#endif
++
++  // If not empty, change to this directory before executing the new process.
++  base::FilePath current_directory_;
++
++  // Inherit enviroment from parent process.
++  bool inherit_environment_ = true;
++
+   // Indicates whether the process has been successfully launched yet, or if
+   // launch failed.
+   enum class LaunchState {

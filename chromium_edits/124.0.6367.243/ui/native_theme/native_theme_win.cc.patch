@@ -1,0 +1,13 @@
+diff --git a/ui/native_theme/native_theme_win.cc b/ui/native_theme/native_theme_win.cc
+index 566230f830ede..65d4d09c1e9e5 100644
+--- a/ui/native_theme/native_theme_win.cc
++++ b/ui/native_theme/native_theme_win.cc
+@@ -673,6 +673,8 @@ bool NativeThemeWin::ShouldUseDarkColors() const {
+   // ...unless --force-dark-mode was specified in which case caveat emptor.
+   if (InForcedColorsMode() && !IsForcedDarkMode())
+     return false;
++  if (theme_source() == ThemeSource::kForcedLight) return false;
++  if (theme_source() == ThemeSource::kForcedDark) return true;
+   return NativeTheme::ShouldUseDarkColors();
+ }
+ 
