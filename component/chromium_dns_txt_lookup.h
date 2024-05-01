@@ -9,7 +9,7 @@ namespace ipfs {
 class InterRequestState;
 class ChromiumDnsTxtLookup : public ctx::DnsTxtLookup {
   raw_ptr<InterRequestState> state_;
-  std::map<std::string, std::unique_ptr<DnsTxtRequest>> dns_reqs_;
+  std::map<std::string, std::vector<std::unique_ptr<DnsTxtRequest>>> dns_reqs_;
 
   void SendDnsTextRequest(std::string,
                           DnsTextResultsCallback,

@@ -12,3 +12,10 @@
    fun:getenv
    ...
 }
+{
+   ThisMightResultFromAPreviousPutenv
+   Memcheck:Addr1
+   ...
+   fun:getenv
+   ...
+}

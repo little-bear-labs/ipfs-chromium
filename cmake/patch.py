@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import sys
+
 from enum import auto, Enum
 from glob import glob
 from os import listdir, makedirs, remove
@@ -7,7 +7,7 @@ from os.path import exists, dirname, isdir, isfile, join, realpath, relpath, spl
 from shutil import copyfile, rmtree
 from subprocess import call, check_call, check_output, DEVNULL
 from sys import argv, executable, platform, stderr
-from time import ctime
+from time import ctime, gmtime, strftime
 from verbose import verbose
 
 try:
@@ -15,6 +15,9 @@ try:
 except ModuleNotFoundError:
     check_call([executable, '-m', 'pip', 'install', 'requests'])
     import requests
+
+
+FUDGE = 59913
 
 
 def osname():
@@ -249,7 +252,7 @@ class Patcher:
 
     def oldest(self):
         evs = self.release_versions('Extended', 'Mac') + self.release_versions('Extended', 'Windows')
-        evs = list(map(lambda x: (as_int(x[1]), x[1]), evs))
+        evs = list(map(lambda x: (as_int(x[1]), x[1], x[0]), evs))
         evs.sort()
         return evs[0]
 
@@ -265,13 +268,12 @@ class Patcher:
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
-        fudge = 59911
         def check(version, version_set, s):
             i = as_int(version)
-            by = (fudge,0)
+            by = (FUDGE,0)
             for a in avail:
                 d = abs(a-i)
-                if d < fudge:
+                if d < FUDGE:
                     return True
                 elif d < by[0]:
                     by = ( d, a )
@@ -343,7 +345,7 @@ class Patcher:
         oldest = self.oldest()
         verbose(f'Oldest supportable version: {oldest}')
         for p in to_check:
-            if (as_int(p) < oldest[0] or self.out_of_date(p)) == sense:
+            if (as_int(p) + FUDGE * 2 < oldest[0] or self.out_of_date(p)) == sense:
                 print(p)
 
 
@@ -371,6 +373,9 @@ if __name__ == '__main__':
                 if len(rels) > 2:
                     print(f'Old  {chan:9}{os:7}', rels[2][1])
         print("Electron's main branch:", p.electron_version())
+        o = p.oldest()
+        d = ctime(o[2])
+        print("Oldest maintained Extended:", o[1], f'({d})')
     elif argv[1] == 'available':
         pr = Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug')
         print(list(pr.available()))

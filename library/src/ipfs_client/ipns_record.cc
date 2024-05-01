@@ -222,7 +222,7 @@ ipfs::ValidatedIpns::ValidatedIpns(IpnsCborEntry const& e)
 #else
   use_until = timegm(&t);
 #endif
-  VLOG(1) << "use_until=" << use_until << " based on " << e.validity;
+  VLOG(2) << "use_until=" << use_until << " based on " << e.validity;
   cache_until = std::time(nullptr) + ttl;
 }
 

@@ -136,10 +136,8 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type,
     head->mime_type = mime_type;
   }
   std::uint32_t byte_count = partial_block_.size();
-  VLOG(2) << "Calling WriteData(" << byte_count << ")";
   pipe_prod_->WriteData(partial_block_.data(), &byte_count,
                         MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE);
-  VLOG(2) << "Called WriteData(" << byte_count << ")";
   head->content_length = byte_count;
   head->headers =
       net::HttpResponseHeaders::TryToCreate("access-control-allow-origin: *");
@@ -150,7 +148,6 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type,
   auto* reason =
       net::GetHttpReasonPhrase(static_cast<net::HttpStatusCode>(status_));
   auto status_line = base::StringPrintf("HTTP/1.1 %d %s", status_, reason);
-  VLOG(2) << "Returning with status line '" << status_line << "'.\n";
   head->headers->ReplaceStatusLine(status_line);
   if (mime_type.size()) {
     head->headers->SetHeader("Content-Type", mime_type);
@@ -166,10 +163,6 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type,
     LOG(INFO) << "Sending response for " << original_url_ << " with mime type "
               << head->mime_type << " and status line '" << status_line
               << "' @location '" << resp_loc_ << "'";
-  } else {
-    VLOG(2) << "Sending response for " << original_url_ << " with mime type "
-            << head->mime_type << " and status line '" << status_line
-              << "' with no location header.";
   }
   head->parsed_headers =
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});

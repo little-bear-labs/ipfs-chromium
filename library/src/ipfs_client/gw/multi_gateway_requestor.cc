@@ -35,9 +35,6 @@ void Self::Next() {
   }
 }
 bool Self::Process(RequestPtr const& req) {
-  if (req->type == GatewayRequestType::Providers) {
-    VLOG(2) << "Process(" << req->debug_string() << ")";
-  }
   if (!req->is_http()) {
     return false;
   }
@@ -50,8 +47,6 @@ bool Self::Process(RequestPtr const& req) {
   auto& gws = api_->gw_cfg();
   while (auto gw = gws.GetGateway(config_idx++)) {
     if (state_iter == state_.end() || state_iter->first > gw->prefix) {
-      VLOG(2) << "A new gateway has entered the chat: " << gw->prefix << '='
-              << gw->rate;
       // One can insert like this because state_ is std::map w/ stable iterators
       state_iter =
           state_.insert({gw->prefix, GatewayState{gw->prefix, api_}}).first;
@@ -147,8 +142,6 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
       LOG(ERROR) << "No content-type header?";
     } else if (desc.accept.size() &&
                ct.find(desc.accept) == std::string::npos) {
-      VLOG(2) << "Requested with Accept: " << desc.accept
-              << " but received response with content-type: " << ct;
       if (state_.end() != i) {
         i->second.miss(req_type, *req);
       }
@@ -158,10 +151,7 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
     ipfs::ipld::BlockSource src;
     src.load_duration = src.fetched_at - start;
     src.cat.gateway_url = gw;
-    if (!req->RespondSuccessfully(body, api_, src)) {
-      VLOG(2) << "Got an unuseful response from " << gw << " for request "
-              << req->debug_string();
-    } else {
+    if (req->RespondSuccessfully(body, api_, src)) {
       if (state_.end() != i) {
         i->second.hit(req_type, *req);
       }
@@ -173,7 +163,6 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
   req->failures.insert(gw);
   if (status == 408 || status == 504 || status == 429 || status == 110 ||
       timed_out) {
-    VLOG(2) << gw << " timed out on request " << req->debug_string();
     if (req->type == GatewayRequestType::Block) {
       if (state_.end() != i) {
         i->second.timed_out();

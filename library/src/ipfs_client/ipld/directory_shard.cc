@@ -17,6 +17,7 @@ using Self = ipfs::ipld::DirShard;
 
 auto Self::resolve(ResolutionState& parms) -> ResolveResult {
   if (parms.IsFinalComponent()) {
+    // index.html hashes A0 6D 7E C8 78 79 38 1D B3 8D 36 0D 76 FA 7B BF
     auto index_parm = parms.WithPath("index.html"sv);
     auto result = resolve(index_parm);
     // TODO generate index.html if not present

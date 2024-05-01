@@ -72,7 +72,7 @@ void Self::SetGatewayRate(std::string_view k, unsigned val) {
       save();
     } else {
       changes = delt / 2;
-      VLOG(1) << "Rate changes total (delta) " << delt;
+      VLOG(2) << "Rate changes total (delta) " << delt;
     }
   }
 }
@@ -82,8 +82,8 @@ void Self::AddGateway(std::string_view k, unsigned r) {
     d->Set(kRateKey, d->FindInt(kRateKey).value_or(r) + 1);
   } else {
     auto j = AsJson(GatewaySpec{k, r});
-    LOG(INFO) << static_cast<void*>(this) << " Adding " << k << " @ " << r
-              << " = " << j;
+    VLOG(2) << static_cast<void*>(this) << " Adding " << k << " @ " << r
+            << " = " << j;
     curr_.Set(k, std::move(j));
   }
 }
@@ -124,15 +124,11 @@ std::size_t Self::delta() const {
       p = prev_dict->FindInt(kRateKey).value_or(0);
     }
     auto off = std::abs(c - p);
-    if (off) {
-      VLOG(2) << k << " : " << p << " to " << c << " : absdiff=" << off;
-      rv += static_cast<std::size_t>(off);
-    }
+    rv += static_cast<std::size_t>(off);
   }
   return rv;
 }
 void Self::save() {
-  VLOG(2) << "Saving preferences. Threshold: " << update_thresh;
   // Should be called on UI thread
   changes = 0;
   last_ = curr_.Clone();

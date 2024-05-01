@@ -13,7 +13,7 @@ namespace ipfs::ctx {
 class BoostBeastHttp : public HttpApi {
   boost::asio::io_context& io_;
   boost::asio::ssl::context mutable ssl_ctx_ =
-      boost::asio::ssl::context{boost::asio::ssl::context::tls_client};
+      boost::asio::ssl::context{boost::asio::ssl::context::sslv23_client};
 
  public:
   BoostBeastHttp(boost::asio::io_context&);

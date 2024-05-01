@@ -54,10 +54,6 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
   if (response) {
     if (response->mime_.empty() && !response->body_.empty()) {
       if (response->location_.empty()) {
-        VLOG(2) << "Request for " << req->path()
-                << " returned no location, so sniffing from request path and "
-                   "body of "
-                << response->body_.size() << "B.";
         response->mime_ = sniff(req->path(), response->body_);
       } else {
         std::string hit_path{req->path().pop_n(2)};
@@ -66,10 +62,6 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
           hit_path.push_back('/');
         }
         hit_path.append(response->location_);
-        VLOG(2) << "Request for " << req->path() << " returned a location of "
-                << response->location_ << " and a body of "
-                << response->body_.size() << " bytes, sniffing mime from "
-                << hit_path;
         response->mime_ = sniff(SlashDelimited{hit_path}, response->body_);
       }
     }
@@ -117,11 +109,10 @@ bool Self::add_node(std::string key, ipfs::ipld::NodePtr p) {
   }
   auto [it, first] = dags_.insert({key, p});
   if (first) {
-    VLOG(2) << "First node showed up for [" << key << "].";
+    // VLOG(2) << "First node showed up for [" << key << "].";
   } else if (p->PreferOver(*it->second)) {
     it->second = p;
   } else {
-    //    VLOG(2) << "Already had a [" << key << "] node that was as good.";
     return false;
   }
   p->set_api(api_);
@@ -137,8 +128,6 @@ std::string Self::sniff(ipfs::SlashDelimited p, std::string const& body) const {
     ext.assign(file_name, dot + 1);
   }
   auto result = api_->MimeType(ext, body, fake_url);
-  VLOG(2) << "Deduced mime from (ext=" << ext << " body of " << body.size()
-          << " bytes, 'url'=" << fake_url << ")=" << result;
   return result;
 }
 
