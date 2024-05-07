@@ -17,7 +17,7 @@ except ModuleNotFoundError:
     import requests
 
 
-FUDGE = 59917
+VERSION_CLOSE_ENOUGH = 59918
 
 
 def osname():
@@ -270,10 +270,10 @@ class Patcher:
         version_set = {}
         def check(version, version_set, s):
             i = as_int(version)
-            by = (FUDGE,0)
+            by = (VERSION_CLOSE_ENOUGH,0)
             for a in avail:
                 d = abs(a-i)
-                if d < FUDGE:
+                if d < VERSION_CLOSE_ENOUGH:
                     return True
                 elif d < by[0]:
                     by = ( d, a )
@@ -345,7 +345,7 @@ class Patcher:
         oldest = self.oldest()
         verbose(f'Oldest supportable version: {oldest}')
         for p in to_check:
-            if (as_int(p) + FUDGE * 2 < oldest[0] or self.out_of_date(p)) == sense:
+            if (as_int(p) + VERSION_CLOSE_ENOUGH * 2 < oldest[0] or self.out_of_date(p)) == sense:
                 print(p)
 
 

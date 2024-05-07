@@ -39,7 +39,6 @@ std::string DeduceMimeType(std::string extension,
                      net::ForceSniffFileUrlsForHtml::kDisabled, &result);
   if (result.empty() || result == "application/octet-stream") {
     net::SniffMimeTypeFromLocalData({content.data(), head_size}, &result);
-    VLOG(2) << "Falling all the way back to content type " << result;
   }
   return result;
 }

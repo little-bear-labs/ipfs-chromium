@@ -39,7 +39,6 @@ Self::~CacheRequestor() noexcept = default;
 void Self::Assign(dc::BackendResult res) {
   startup_pending_ = false;
   if (res.net_error == net::OK) {
-    VLOG(2) << "Initialized disk cache";
     cache_.swap(res.backend);
   } else {
     LOG(ERROR) << "Trouble opening " << name() << ": " << res.net_error;
@@ -142,7 +141,7 @@ void Self::OnBodyRead(Task task, int code) {
     bool valid = false;
     task.request->RespondSuccessfully(task.body, api_, task.orig_src, &valid);
     if (!valid) {
-      LOG(WARNING) << "Had a bad or expired cached response for " << task.key;
+      LOG(INFO) << "Had a bad or expired cached response for " << task.key;
       Expire(task.key);
       Miss(task);
     }

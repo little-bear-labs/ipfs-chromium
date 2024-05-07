@@ -100,7 +100,9 @@ add_custom_target(in_tree_build
   )
 add_custom_target(chromium_ordering_issue
     COMMENT "For some versions of Chromium the internal build dependency order isn't perfect."
-    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" ui/webui/resources/cr_components/color_change_listener:mojom
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}"
+        ui/webui/resources/cr_components/color_change_listener:mojom
+        components/reporting/proto:configuration_file_proto
     DEPENDS in_tree_build
   )
 add_custom_target(build_browser

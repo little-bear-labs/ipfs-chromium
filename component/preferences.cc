@@ -72,7 +72,6 @@ void Self::SetGatewayRate(std::string_view k, unsigned val) {
       save();
     } else {
       changes = delt / 2;
-      VLOG(2) << "Rate changes total (delta) " << delt;
     }
   }
 }
