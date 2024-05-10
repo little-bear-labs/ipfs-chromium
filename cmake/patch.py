@@ -345,7 +345,7 @@ class Patcher:
         oldest = self.oldest()
         verbose(f'Oldest supportable version: {oldest}')
         for p in to_check:
-            if (as_int(p) + VERSION_CLOSE_ENOUGH * 2 < oldest[0] or self.out_of_date(p)) == sense:
+            if (as_int(p) + VERSION_CLOSE_ENOUGH * 3 < oldest[0] or self.out_of_date(p)) == sense:
                 print(p)
 
 
