@@ -17,7 +17,7 @@ except ModuleNotFoundError:
     import requests
 
 
-VERSION_CLOSE_ENOUGH = 59918
+VERSION_CLOSE_ENOUGH = 59919
 
 
 def osname():
@@ -250,11 +250,23 @@ class Patcher:
         self.up_rels[key] = result
         return result
 
+    def most(self, ch, pfs, idx):
+        vs = []
+        for pf in pfs:
+            vs = vs + self.release_versions(ch, pf)
+        vs = list(map(lambda x: (as_int(x[1]), x[1], x[0]), vs))
+        vs.sort()
+        return vs[idx]
+
+    def newest(self):
+        return self.most('Dev', ['Linux', 'Mac', 'Windows'], -1)
+
     def oldest(self):
-        evs = self.release_versions('Extended', 'Mac') + self.release_versions('Extended', 'Windows')
-        evs = list(map(lambda x: (as_int(x[1]), x[1], x[0]), evs))
-        evs.sort()
-        return evs[0]
+        return self.most('Extended', ['Mac', 'Windows'], 0)
+        # evs = self.release_versions('Extended', 'Mac') + self.release_versions('Extended', 'Windows')
+        # evs = list(map(lambda x: (as_int(x[1]), x[1], x[0]), evs))
+        # evs.sort()
+        # return evs[0]
 
     def electron_version(self, branch='main'):
         if 'electron-main' in self.up_rels:
@@ -343,9 +355,11 @@ class Patcher:
     def list_ood(self, to_check: list[str], sense: bool):
         to_check.sort()
         oldest = self.oldest()
-        verbose(f'Oldest supportable version: {oldest}')
+        newest = self.newest()
+        min = oldest[0] - (newest[0] - oldest[0])
+        verbose(f'Oldest supportable version: {oldest} -> {min}')
         for p in to_check:
-            if (as_int(p) + VERSION_CLOSE_ENOUGH * 3 < oldest[0] or self.out_of_date(p)) == sense:
+            if (as_int(p) < min or self.out_of_date(p)) == sense:
                 print(p)
 
 
@@ -376,6 +390,9 @@ if __name__ == '__main__':
         o = p.oldest()
         d = ctime(o[2])
         print("Oldest maintained Extended:", o[1], f'({d})')
+        n = p.newest()
+        d = ctime(n[2])
+        print("Development at:", n[1], f'({d})')
     elif argv[1] == 'available':
         pr = Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug')
         print(list(pr.available()))

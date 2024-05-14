@@ -28,7 +28,6 @@ void Self::Start() {
       //      dc::ResetHandling::kNeverReset,
       dc::ResetHandling::kResetOnError, nullptr,
       base::BindOnce(&Self::Assign, base::Unretained(this)));
-  VLOG(2) << "Start(" << result.net_error << ')' << result.net_error;
   startup_pending_ = result.net_error == net::ERR_IO_PENDING;
   if (!startup_pending_) {
     Assign(std::move(result));
@@ -141,7 +140,7 @@ void Self::OnBodyRead(Task task, int code) {
     bool valid = false;
     task.request->RespondSuccessfully(task.body, api_, task.orig_src, &valid);
     if (!valid) {
-      LOG(INFO) << "Had a bad or expired cached response for " << task.key;
+      VLOG(1) << "Had a bad or expired cached response for " << task.key;
       Expire(task.key);
       Miss(task);
     }
