@@ -17,7 +17,7 @@ except ModuleNotFoundError:
     import requests
 
 
-VERSION_CLOSE_ENOUGH = 59919
+VERSION_CLOSE_ENOUGH = 59920
 
 
 def osname():
@@ -44,7 +44,11 @@ def content_differs(ap,bp):
         return True
     with open(ap) as a:
         with open(bp) as b:
-            return a.read() != b.read()
+            try:
+                return a.read() != b.read()
+            except Exception as e:
+                print(f"Error diffing {ap} against {bp}: {e}", file=stderr)
+                exit(7)
 
 class Result(Enum):
     Output = auto()
@@ -76,6 +80,9 @@ class Patcher:
             verbose('Unversioned', lin[3:])
             paths.append( lin[3:] )
         for path in paths:
+            if path.endswith('.gz'):
+                verbose(f"We don't record changes to archives. {path}")
+                continue
             from_path = join(self.csrc, path)
             to_path = join(write_dir, path)
             to_dir = dirname(to_path)
@@ -164,7 +171,7 @@ class Patcher:
         else:
             with open(join(self.csrc,src)) as target_file:
                 text = target_file.read()
-                if 'ipfs' in text or 'ReadTagContent' in text:
+                if 'ipfs' in text or 'ReadTagContent' in text or 'SetTag(' in text:
                     print("Patch file", patch_path, 'may have already been applied, or otherwise hand-edited. Ignoring.')
                 else:
                     print("Failed to patch", src, '( at', join(self.csrc,src), ') with', patch_path)
@@ -356,7 +363,7 @@ class Patcher:
         to_check.sort()
         oldest = self.oldest()
         newest = self.newest()
-        min = oldest[0] - (newest[0] - oldest[0])
+        min = oldest[0] - (newest[0] - oldest[0]) * 2
         verbose(f'Oldest supportable version: {oldest} -> {min}')
         for p in to_check:
             if (as_int(p) < min or self.out_of_date(p)) == sense:
