@@ -17,7 +17,7 @@ except ModuleNotFoundError:
     import requests
 
 
-VERSION_CLOSE_ENOUGH = 59920
+VERSION_CLOSE_ENOUGH = 59922
 
 
 def osname():
@@ -363,7 +363,7 @@ class Patcher:
         to_check.sort()
         oldest = self.oldest()
         newest = self.newest()
-        min = oldest[0] - (newest[0] - oldest[0]) * 2
+        min = oldest[0] - (newest[0] - oldest[0]) - VERSION_CLOSE_ENOUGH;
         verbose(f'Oldest supportable version: {oldest} -> {min}')
         for p in to_check:
             if (as_int(p) < min or self.out_of_date(p)) == sense:
