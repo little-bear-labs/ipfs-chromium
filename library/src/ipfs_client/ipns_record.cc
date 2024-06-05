@@ -144,8 +144,6 @@ auto ipfs::ValidateIpnsRecord(ipfs::ByteView top_level_bytes,
     LOG(ERROR) << "Failed to parse public key bytes";
     return {};
   }
-  VLOG(2) << "Record contains a public key of type " << pk.type()
-          << " and points to " << entry.value();
   auto& signature_str = entry.signaturev2();
   ByteView signature{reinterpret_cast<ipfs::Byte const*>(signature_str.data()),
                      signature_str.size()};
