@@ -140,7 +140,7 @@ void Self::OnBodyRead(Task task, int code) {
     bool valid = false;
     task.request->RespondSuccessfully(task.body, api_, task.orig_src, &valid);
     if (!valid) {
-      VLOG(1) << "Had a bad or expired cached response for " << task.key;
+      VLOG(2) << "Had a bad or expired cached response for " << task.key;
       Expire(task.key);
       Miss(task);
     }
