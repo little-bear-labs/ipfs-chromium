@@ -382,7 +382,18 @@ bool Self::Finished() const {
   if (type == GatewayRequestType::Providers) {
     return false;
   }
-  return !dependent || dependent->done();
+  if (!dependent) {
+    LOG(WARNING) << "Gateway request considered finished, because it has no "
+                    "dependent request. Unusual case.";
+    return true;
+  }
+  if (dependent->done()) {
+    LOG(INFO) << "Gateway request finished because the dependent request is "
+                 "already handled (I am redundant).";
+    return true;
+  }
+  VLOG(2) << "Gateway request continues: " << debug_string();
+  return false;
 }
 void Self::FleshOut(ipld::BlockSource& s) const {
   if (cid.has_value() && cid->valid()) {

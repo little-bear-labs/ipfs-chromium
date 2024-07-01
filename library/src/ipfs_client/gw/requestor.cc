@@ -26,9 +26,14 @@ Self& Self::or_else(std::shared_ptr<Self> p) {
 }
 
 void Self::request(ReqPtr req) {
-  if (!req || req->Finished()) {
+  if (!req) {
     return;
   }
+  if (req->Finished()) {
+    VLOG(2) << "Dropping a finished/zombie request.";
+    return;
+  }
+  VLOG(1) << name() << " handling " << req->debug_string();
   switch (handle(req)) {
     case HandleOutcome::MAYBE_LATER:
       // TODO

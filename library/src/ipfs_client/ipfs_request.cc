@@ -8,8 +8,6 @@
 
 using Self = ipfs::IpfsRequest;
 
-// Self::IpfsRequest(std::string path_p)
-//     : path_{path_p}, callback_([](auto&, auto&) {}) {}
 Self::IpfsRequest(std::string path_p, Finisher f)
     : path_{path_p}, callback_{f} {}
 
@@ -22,6 +20,7 @@ std::shared_ptr<Self> Self::fromUrl(std::string url, ipfs::IpfsRequest::Finisher
 void Self::finish(ipfs::Response& r) {
   if (callback_) {
     callback_(*this, r);
+    LOG(INFO) << "Request finished.";
     // TODO - cancel other gw req pointing into this
     callback_ = {};
   }
