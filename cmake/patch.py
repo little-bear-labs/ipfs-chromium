@@ -3,7 +3,7 @@
 from enum import auto, Enum
 from glob import glob
 from os import listdir, makedirs, remove
-from os.path import exists, dirname, isdir, isfile, join, realpath, relpath, splitext
+from os.path import basename, exists, dirname, isdir, isfile, join, realpath, relpath, splitext
 from shutil import copyfile, rmtree
 from subprocess import call, check_call, check_output, DEVNULL
 from sys import argv, executable, platform, stderr
@@ -17,7 +17,7 @@ except ModuleNotFoundError:
     import requests
 
 
-VERSION_CLOSE_ENOUGH = 59922
+VERSION_CLOSE_ENOUGH = 59924
 
 
 def osname():
@@ -80,8 +80,8 @@ class Patcher:
             verbose('Unversioned', lin[3:])
             paths.append( lin[3:] )
         for path in paths:
-            if path.endswith('.gz'):
-                verbose(f"We don't record changes to archives. {path}")
+            if path.endswith('.gz') or not '.' in basename(path):
+                verbose(f"File change not recorded because the path doesn't seem to be one we should: {path}")
                 continue
             from_path = join(self.csrc, path)
             to_path = join(write_dir, path)
@@ -111,11 +111,6 @@ class Patcher:
                         to_f.write(diff_out)
                         print(to_path)
         self.git(['add', 'url/url_canon_ipfs.cc'], Result.OrDie)
-        # diff = self.git(['diff', '--patch', tag], Result.RawOutput)
-        # file_name = join(self.pdir, name+'.patch')
-        # print('Old patch file:', file_name)
-        # with open(file_name, 'w') as patch_file:
-        #     patch_file.write(diff+"\n")
 
     def file_in_branch(self, ref: str, path: str):
         out = self.git(['ls-tree', '--name-only', ref, path], Result.Output)
