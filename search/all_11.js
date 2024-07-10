@@ -6,8 +6,11 @@ var searchData=
   ['signatureverifier_118',['SignatureVerifier',['../classipfs_1_1crypto_1_1SignatureVerifier.html',1,'ipfs::crypto']]],
   ['slashdelimited_119',['SlashDelimited',['../structipfs_1_1SlashDelimited.html',1,'ipfs']]],
   ['smalldirectory_120',['SmallDirectory',['../classipfs_1_1ipld_1_1SmallDirectory.html',1,'ipfs::ipld']]],
-  ['stoplistening_121',['StopListening',['../classipfs_1_1BlockStorage.html#aedca96e0978a421fc5d117d967eba22a',1,'ipfs::BlockStorage']]],
-  ['store_122',['Store',['../classipfs_1_1BlockStorage.html#a733a983a43f52ee176a1001bcd8303ff',1,'ipfs::BlockStorage']]],
-  ['stream_5ftag_123',['stream_tag',['../classmultibase_1_1algorithm_1_1stream__tag.html',1,'multibase::algorithm']]],
-  ['symlink_124',['Symlink',['../classipfs_1_1ipld_1_1Symlink.html',1,'ipfs::ipld']]]
+  ['softwareoutputdevice_121',['SoftwareOutputDevice',['../classSoftwareOutputDevice.html',1,'']]],
+  ['softwareoutputdevicebase_122',['SoftwareOutputDeviceBase',['../classviz_1_1SoftwareOutputDeviceBase.html',1,'viz']]],
+  ['softwareoutputdeviceproxy_123',['SoftwareOutputDeviceProxy',['../classviz_1_1SoftwareOutputDeviceProxy.html',1,'viz']]],
+  ['stoplistening_124',['StopListening',['../classipfs_1_1BlockStorage.html#aedca96e0978a421fc5d117d967eba22a',1,'ipfs::BlockStorage']]],
+  ['store_125',['Store',['../classipfs_1_1BlockStorage.html#a733a983a43f52ee176a1001bcd8303ff',1,'ipfs::BlockStorage']]],
+  ['stream_5ftag_126',['stream_tag',['../classmultibase_1_1algorithm_1_1stream__tag.html',1,'multibase::algorithm']]],
+  ['symlink_127',['Symlink',['../classipfs_1_1ipld_1_1Symlink.html',1,'ipfs::ipld']]]
 ];
