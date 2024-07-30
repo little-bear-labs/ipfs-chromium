@@ -100,8 +100,15 @@ Example Demos</h2>
 <p>So what demonstrations did I cook up, just to whet your appetite?</p>
 <h3><a class="anchor" id="autotoc_md76"></a>
 Rendering Markdown</h3>
-<p><a href="https://github.com/John-LittleBearLabs/markdown-electron">This</a> spin on Electron uses a URL Loader Request interceptor that kicks in when a user navigates (e.g. clicks a link to) a raw Markdown document. It uses <a href="https://github.com/commonmark/cmark">CMark</a> to convert it to HTML, and renders that.</p>
-<p><img src="img/elecmd.png" alt="screenshot" class="inline"/> </p>
+<p><a href="https://github.com/John-LittleBearLabs/markdown-electron">This</a> spin on Electron uses a URL Loader Request interceptor that kicks in when a user navigates (e.g. clicks a link to) a raw Markdown document. It uses <a href="https://github.com/commonmark/cmark">CMark</a> to convert it to HTML, and renders that. One can also substitute <code>cmark-gfm</code> if one prefers GitHub-flavored markdown.</p>
+<p><img src="img/elecmd.png" alt="screenshot" class="inline"/></p>
+<h3><a class="anchor" id="autotoc_md77"></a>
+Replacing resources with static data.</h3>
+<p><a href="https://github.com/John-LittleBearLabs/jpegified_electron_spin">This</a> electron tweak replaces uses a sub-resources URL Loader to intercept requests from <code>&lt;img&gt;</code>, fetch, etc. whose URLs end in ".jpg"... and respond to them with a chunk of static data. Obviously this is a silly toy example, but replacing HTTP requests with static resources could have uses.</p>
+<p><img src="img/elecjpg.png" alt="screenshot" class="inline"/></p>
+<h3><a class="anchor" id="autotoc_md78"></a>
+IPFS</h3>
+<p><a href="https://github.com/little-bear-labs/ipfs-chromium/pull/107/files#diff-e390c84b9e1ba2826cd2ce771bedc81b9d5a65fc95f134403fd141f864137b4b">This</a> variant of electron uses all 5 of the above hooks and fully supports <code>ipfs://</code> and <code>ipns://</code> URLs. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
