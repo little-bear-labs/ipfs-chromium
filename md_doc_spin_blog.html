@@ -71,7 +71,7 @@ The situation</h1>
 <p>You can't upstream everything you'd want to do with it, as your needs are not necessarily the needs of everyone everwhere. Chromium would be a chaotic mess if everyone did this, so it's no surprise</p>
 <p>It is also very, very active with code changes happening nearly constantly, and some of them quite important. So forking Chromium isn't attractive, since you'd want to benefit from the rest of the community.</p>
 <p>This leaves a number of projects in the sometimes-hairy situation of being "downstream", defining their code as a series of patches, file additions, and/or file deletions on top of Chromium's code base. And of course this means a fair amount of work needs to be done to accomodate upstream changes. Electron is in this camp, and as a very active project in its own right they do an excellent job of it.</p>
-<p>So what if someone wanted a slightly modified Electron, perhaps adding some feature(s) that are too specific to be in-scope for upstream &ndash; creating their own flavor of Electron? They need to ask themselves a very serious question: are they really going to maintain a project that is a set of patches on top of a rapidly-moving set of patches on top of a rapidly-moving upstream? How difficult is this? Could we make it easier?</p>
+<p>So what if someone wanted a slightly modified Electron, perhaps adding some feature(s) that are too specific to be in-scope for upstream, but make sense for their specific application? Create their own flavor of Electron? They need to ask themselves a very serious question: are they really going to maintain a project that is a set of patches on top of a rapidly-moving set of patches on top of a rapidly-moving upstream? How difficult is this? Could we make it easier?</p>
 <h1><a class="anchor" id="autotoc_md73"></a>
 One approach</h1>
 <p>What if, instead of upstreaming all our niche changes, we could upstream some extension points to make this process easier?</p>
@@ -80,7 +80,7 @@ One approach</h1>
 <li>Add a directory for your module, complete with it's own BUILD.gn</li>
 <li>Include a source file (header) with a pre-defined name that implements a pre-defined function signature, for each hook you want to use.</li>
 </ul>
-<p>On the upstream (electron) side, this means:</p><ul>
+<p>On the <a href="https://github.com/little-bear-labs/ipfs-electron/pull/2">upstream</a> (electron) side, this means:</p><ul>
 <li>The build script notes the presence of your BUILD.gn and adds a dependency so it can call into your code</li>
 <li>For each pre-defined header file name, if it exists the build script flips a build flag</li>
 <li>In the appropriate part of the build, if the compile-time flag is set, it includes your header and compiles a call into your function.</li>
@@ -108,7 +108,10 @@ Replacing resources with static data.</h3>
 <p><img src="img/elecjpg.png" alt="screenshot" class="inline"/></p>
 <h3><a class="anchor" id="autotoc_md78"></a>
 IPFS</h3>
-<p><a href="https://github.com/little-bear-labs/ipfs-chromium/pull/107/files#diff-e390c84b9e1ba2826cd2ce771bedc81b9d5a65fc95f134403fd141f864137b4b">This</a> variant of electron uses all 5 of the above hooks and fully supports <code>ipfs://</code> and <code>ipns://</code> URLs. </p>
+<p><a href="https://github.com/little-bear-labs/ipfs-chromium/pull/107/files#diff-e390c84b9e1ba2826cd2ce771bedc81b9d5a65fc95f134403fd141f864137b4b">This</a> variant of electron uses all 5 of the above hooks and fully supports <code>ipfs://</code> and <code>ipns://</code> URLs.</p>
+<h1><a class="anchor" id="autotoc_md79"></a>
+Feedback</h1>
+<p>What use-case-specific functionality would you like your app to have? What do you think about this approach? Don't be afraid to join <a href="https://github.com/electron/electron/issues/42455">the conversation</a>. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
