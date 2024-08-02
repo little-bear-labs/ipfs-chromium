@@ -17,7 +17,8 @@ except ModuleNotFoundError:
     import requests
 
 
-VERSION_CLOSE_ENOUGH = 59934
+VERSION_CLOSE_ENOUGH = 30100
+here = dirname(__file__)
 
 
 def osname():
@@ -61,8 +62,8 @@ class Result(Enum):
 class Patcher:
     def __init__(self, chromium_source_dir, git_bin, build_type):
         self.csrc = chromium_source_dir
-        self.pdir = realpath(join(dirname(__file__), '..', 'component', 'patches'))
-        self.edir = realpath(join(dirname(__file__), '..', 'chromium_edits'))
+        self.pdir = realpath(join(here, '..', 'component', 'patches'))
+        self.edir = realpath(join(here, '..', 'chromium_edits'))
         self.gbin = git_bin
         self.btyp = build_type
         self.up_rels = {}
@@ -267,29 +268,35 @@ class Patcher:
 
     def oldest(self):
         return self.most('Extended', ['Mac', 'Windows'], 0)
-        # evs = self.release_versions('Extended', 'Mac') + self.release_versions('Extended', 'Windows')
-        # evs = list(map(lambda x: (as_int(x[1]), x[1], x[0]), evs))
-        # evs.sort()
-        # return evs[0]
+
+    def recent_electron_branch_version(self):
+      with open(join(here,'recent-electron.txt')) as revf:
+          return int(revf.read())
+
+    def set_recent_electron_branch_version(self, v):
+      with open(join(here,'recent-electron.txt'), 'w') as revf:
+        revf.write(str(v))
+        call([self.gbin, 'add', join('cmake', 'recent-electron.txt')])
 
     def electron_version(self, branch='main'):
-        if 'electron-main' in self.up_rels:
-            return self.up_rels['electron-main']
+        if f'electron-{branch}' in self.up_rels:
+            return self.up_rels[f'electron-{branch}']
         resp = requests.get(f'https://raw.githubusercontent.com/electron/electron/{branch}/DEPS')
         toks = resp.text.split("'")
         i = toks.index('chromium_version') + 2
-        self.up_rels['electron-main'] = toks[i]
+        self.up_rels[f'electron-{branch}'] = toks[i]
         return toks[i]
 
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
-        def check(version, version_set, s):
+        def check(version, version_set, s, close):
+            verbose('For ', s, " close enough is ", close)
             i = as_int(version)
-            by = (VERSION_CLOSE_ENOUGH,0)
+            by = (close,0)
             for a in avail:
                 d = abs(a-i)
-                if d < VERSION_CLOSE_ENOUGH:
+                if d < close:
                     return True
                 elif d < by[0]:
                     by = ( d, a )
@@ -300,16 +307,30 @@ class Patcher:
                 #print('2 Adding',version,s)
                 version_set[version].append(s)
             return False
-        for channel in ['Dev', 'Beta', 'Stable', 'Extended']:
-            for pfrm in ['Linux', 'Mac', 'Windows']:
+        for (ci,channel) in enumerate(['Extended', 'Stable', 'Beta', 'Dev' ]):
+            for (pi, pfrm) in enumerate(['Linux', 'Mac', 'Windows']):
                 try:
                     when, version = self.release_versions(channel, pfrm)[0]
                     s = f"{channel}-{pfrm}-{when}"
-                    check(version, version_set, s)
+                    close = VERSION_CLOSE_ENOUGH * (ci + 1) * (pi + 1)
+                    check(version, version_set, s, close)
                 except IndexError:
                     pass  # One may assume this is Linux Extended
-        e = self.electron_version()
-        check(e, version_set, 'electron-main')
+        rebv = self.recent_electron_branch_version()
+        for i in range(-3, 1):
+          ev = i + rebv
+          e = self.electron_version(f'{ev}-x-y')
+          close = VERSION_CLOSE_ENOUGH * (i + 7)
+          check(e, version_set, f'electron-{ev}', close)
+        try:
+          ev = rebv + 1
+          e = self.electron_version(f'{ev}-x-y')
+          verbose('New electron version!', ev, e)
+          close = VERSION_CLOSE_ENOUGH * 9
+          check(e, version_set, f'electron-{ev}', close)
+          self.set_recent_electron_branch_version(ev)
+        except:
+          pass
         result = list(version_set.values())
         result.sort(reverse=True)
         return map(lambda x: x[1:], result)
@@ -360,7 +381,7 @@ class Patcher:
         to_check.sort()
         oldest = self.oldest()
         newest = self.newest()
-        min = oldest[0] - (newest[0] - oldest[0]) - VERSION_CLOSE_ENOUGH * 2
+        min = oldest[0] - (newest[0] - oldest[0]) - VERSION_CLOSE_ENOUGH * 3
         verbose(f'Oldest supportable version: {oldest} -> {min}')
         for p in to_check:
             if (as_int(p) < min or self.out_of_date(p)) == sense:
