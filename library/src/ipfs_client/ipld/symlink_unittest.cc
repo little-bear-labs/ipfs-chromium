@@ -6,10 +6,14 @@
 
 #include <ipfs_client/ipld/dag_node.h>
 #include <ipfs_client/pb_dag.h>
+#include <ipfs_client/response_semantic.h>
 
 using namespace std::literals;
 namespace i = ipfs;
 namespace ii = i::ipld;
+
+using RS = ipfs::ResponseSemantic;
+using SD = ipfs::SlashDelimited;
 
 TEST(SymlinkTest, fromBlock) {
   i::Cid cid("bafybeia4wauf6z6lnnnszia6upqr5jsq7nack5nnrubf333lfg2vlabtd4");
@@ -20,7 +24,8 @@ TEST(SymlinkTest, fromBlock) {
   auto node = ii::DagNode::fromBlock(b);
   EXPECT_TRUE(node);
   auto blu = [](std::string const&) { return ii::NodePtr{}; };
-  auto result = node->resolve(i::SlashDelimited{"d/e"}, blu);
+  ii::ResolutionState state{i::SlashDelimited{"d/e"}, i::ResponseSemantic::Http, blu};
+  auto result = node->Resolve(state);
   auto actual = std::get<ii::PathChange>(result);
   auto expect = "/a/d/e";
   EXPECT_EQ(actual.new_path, expect);
@@ -42,7 +47,8 @@ TEST(SymlinkTest, rooted) {
     EXPECT_EQ("bafyaacakayeaieqcf5ra", block_key);
     return sub;
   };
-  auto res = t.resolve(i::SlashDelimited{}, blu);
+  ipfs::ipld::ResolutionState state{i::SlashDelimited{}, RS::Http, blu};
+  auto res = t.Resolve(state);
   EXPECT_TRUE(std::holds_alternative<ii::PathChange>(res));
   EXPECT_EQ(std::get<ii::PathChange>(res).new_path, target);
 }
@@ -50,7 +56,7 @@ TEST(SymlinkTest, relative) {
   auto sub = std::make_shared<ii::Symlink>("c");
   ii::DagNode& super = *sub;
   auto blu = [sub](std::string const& block_key) -> ii::NodePtr { return {}; };
-  ii::ResolutionState state{"/a/b", blu};
+  ii::ResolutionState state{SD{"/a/b"}, RS::Http, blu};
   state.Descend();
   state.Descend();
   auto res = super.Resolve(state);
@@ -61,7 +67,7 @@ TEST(SymlinkTest, relative_with_dotdot) {
   auto sub = std::make_shared<ii::Symlink>("../X");
   ii::DagNode& super = *sub;
   auto blu = [sub](std::string const& block_key) -> ii::NodePtr { return {}; };
-  ii::ResolutionState state{"/a/b/c", blu};
+  ii::ResolutionState state{SD{"/a/b/c"}, RS::Http, blu};
   state.Descend();
   state.Descend();
   auto res = super.Resolve(state);

@@ -16,6 +16,8 @@ class DirShard : public DagNode {
                                  HashIter,
                                  std::string_view,
                                  ResolutionState&);
+  std::size_t hex_width() const;
+  std::string listing_json() const;
 
  public:
   explicit DirShard(std::uint64_t fanout = 256UL);

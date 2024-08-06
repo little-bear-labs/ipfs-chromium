@@ -9,7 +9,7 @@
 using Self = ipfs::IpfsRequest;
 
 Self::IpfsRequest(std::string path_p, Finisher f)
-    : path_{path_p}, callback_{f} {}
+    : path_{path_p}, callback_{f}, semantic_{ResponseSemantic::Http} {}
 
 std::shared_ptr<Self> Self::fromUrl(std::string url, ipfs::IpfsRequest::Finisher f) {
   url.erase(4UL, 2UL );
@@ -29,4 +29,12 @@ void Self::new_path(std::string_view sv) {
 }
 bool Self::done() const {
   return !callback_;
+}
+Self& Self::semantic(std::string_view sem) {
+  if (sem.find("isting") == 1UL) {
+    semantic_ = ResponseSemantic::Listing;
+  } else {
+    semantic_ = ResponseSemantic::Http;
+  }
+  return *this;
 }

@@ -155,11 +155,13 @@ std::shared_ptr<Node> Node::rooted() {
 void Node::set_api(std::shared_ptr<Client> api) {
   api_ = api;
 }
+/*
 auto Node::resolve(SlashDelimited initial_path, BlockLookup blu)
     -> ResolveResult {
-  ResolutionState state{initial_path, blu};
+  ResolutionState state{initial_path, ResponseSemantic::Http, blu};
   return Resolve(state);
 }
+*/
 auto Node::Resolve(ResolutionState& params) -> ResolveResult {
   if (source_.cid.size()) {
     params.headers.Add(source_);

@@ -4,12 +4,12 @@
 
 using Self = ipfs::ipld::ResolutionState;
 
-Self::ResolutionState(std::string_view path, ipfs::ipld::BlockLookup blu)
-    : ResolutionState(SlashDelimited{path}, blu) {}
 Self::ResolutionState(SlashDelimited path_to_resolve,
+                      ResponseSemantic sem,
                       ipfs::ipld::BlockLookup blu)
     : resolved_path_components{},
       unresolved_path(path_to_resolve),
+      semantic_{sem},
       get_available_block(blu) {}
 
 bool Self::IsFinalComponent() const {
@@ -42,7 +42,6 @@ auto Self::RestartResolvedPath() const -> ResolutionState {
   rv.resolved_path_components.clear();
   return rv;
 }
-
 void Self::Descend() {
   auto next = unresolved_path.pop();
   if (next.empty()) {
@@ -52,4 +51,7 @@ void Self::Descend() {
     resolved_path_components.push_back('/');
   }
   resolved_path_components.append(next);
+}
+auto Self::Semantic() const -> ResponseSemantic {
+  return semantic_;
 }

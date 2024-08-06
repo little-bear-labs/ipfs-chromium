@@ -81,7 +81,7 @@ class DagNode : public std::enable_shared_from_this<DagNode> {
                           std::string_view block_key);
   
  public:
-  ResolveResult resolve(SlashDelimited initial_path, BlockLookup);
+  // ResolveResult resolve(SlashDelimited initial_path, BlockLookup);
   ResolveResult Resolve(ResolutionState& params);
 
   static NodePtr fromBytes(std::shared_ptr<Client> const& api,

@@ -1,6 +1,7 @@
 #ifndef IPFS_IPFS_REQUEST_H_
 #define IPFS_IPFS_REQUEST_H_
 
+#include <ipfs_client/response_semantic.h>
 #include <vocab/slash_delimited.h>
 
 #include <functional>
@@ -16,13 +17,18 @@ class IpfsRequest {
  private:
   std::string path_;
   Finisher callback_;
+  ResponseSemantic semantic_;
 
  public:
   IpfsRequest(std::string path, Finisher);
+
   SlashDelimited path() const { return SlashDelimited{path_}; }
+  ResponseSemantic semantic() const { return semantic_; }
+  bool done() const;
+
+  IpfsRequest& semantic(std::string_view);
   void finish(Response& r);
   void new_path(std::string_view);
-  bool done() const;
 
   static std::shared_ptr<IpfsRequest> fromUrl(std::string url, Finisher);
 };
