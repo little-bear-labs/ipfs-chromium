@@ -14,8 +14,7 @@ class ChromiumHttp : public ctx::HttpApi {
   raw_ptr<network::mojom::URLLoaderFactory> loader_factory_ = nullptr;
 
  public:
-  void SendHttpRequest(HttpRequestDescription,
-                       HttpCompleteCallback cb) const override;
+  Canceller SendHttpRequest(ReqDesc, OnComplete cb) const override;
   ChromiumHttp(network::mojom::URLLoaderFactory&);
 };
 }  // namespace ipfs

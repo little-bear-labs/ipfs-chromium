@@ -1,4 +1,4 @@
-find_package(Doxygen)
+find_package(Doxygen QUIET)
 if (DOXYGEN_FOUND)
     set(DOXYGEN_IN ${CMAKE_CURRENT_LIST_DIR}/../doc/Doxyfile.in)
     set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)

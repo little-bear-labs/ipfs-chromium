@@ -164,6 +164,10 @@ add_library(out_of_tree
   EXCLUDE_FROM_ALL
   ${srcs}
   )
+target_compile_definitions(out_of_tree
+  PRIVATE
+    OPENSSL_EXPORT=
+)
 target_compile_features(out_of_tree
   PUBLIC
     #cxx_std_${CXX_VERSION}
@@ -173,8 +177,9 @@ target_compile_options(out_of_tree
   PUBLIC
     ${WARNING_FLAGS}
   )
-find_package(Protobuf)
+find_package(Protobuf QUIET)
 find_package(OpenSSL
+    QUIET
     COMPONENTS
         Crypto
 )
@@ -188,7 +193,7 @@ target_include_directories(out_of_tree
   SYSTEM
   BEFORE
   PUBLIC
-    "../chromium_tree/oot"
+    "../test_data/include"
     "${protobuf_INCLUDE_DIR}"
     "${CMAKE_CURRENT_BINARY_DIR}/inc_link"
   )

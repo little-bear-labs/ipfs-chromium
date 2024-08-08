@@ -5,7 +5,7 @@
 
 namespace ipfs::ctx {
 class NullHttpProvider : public HttpApi {
-  void SendHttpRequest(HttpRequestDescription, HttpCompleteCallback cb) const;
+  Canceller SendHttpRequest(ReqDesc, OnComplete cb) const;
 };
 }  // namespace ipfs::ctx
 

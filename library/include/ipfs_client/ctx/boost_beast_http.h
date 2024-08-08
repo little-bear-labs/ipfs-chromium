@@ -18,8 +18,7 @@ class BoostBeastHttp : public HttpApi {
  public:
   BoostBeastHttp(boost::asio::io_context&);
   ~BoostBeastHttp() noexcept override {}
-  void SendHttpRequest(HttpRequestDescription,
-                       HttpCompleteCallback cb) const override;
+  Canceller SendHttpRequest(ReqDesc, OnComplete) const override;
 };
 }  // namespace ipfs::ctx
 

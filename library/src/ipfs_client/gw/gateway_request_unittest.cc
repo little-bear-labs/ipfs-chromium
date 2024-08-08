@@ -60,6 +60,11 @@ struct GatewayRequestTest : public testing::Test {
     t_.orchestrator(orc);
     t_.main_param = "main";
   }
+  short timeout(RT t) {
+   T gr;
+   gr.type = t;
+   return gr.timeout_seconds();
+  }
 };
 }  // namespace
 
@@ -105,4 +110,9 @@ TEST_F(GatewayRequestTest, accept_param) {
   EXPECT_EQ(t_.accept(), "");
   t_.type = RT::Zombie;
   EXPECT_EQ(t_.accept(), "");
+}
+TEST_F(GatewayRequestTest, timeouts_ordinal) {
+ EXPECT_LT(timeout(RT::Identity), timeout(RT::DnsLink));
+ EXPECT_LT(timeout(RT::Providers), timeout(RT::Block));
+ EXPECT_LT(timeout(RT::Car), timeout(RT::Ipns));
 }

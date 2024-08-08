@@ -31,7 +31,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
   boost::beast::flat_buffer buffer_;  // (Must persist between reads)
   http::request<http::empty_body> req_;
   using api = ipfs::ctx::HttpApi;
-  api::HttpCompleteCallback cb_;
+  api::OnComplete cb_;
   int expiry_seconds_ = 91;
   std::string host_, port_, target_;
   ipfs::HttpRequestDescription desc_;
@@ -75,7 +75,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
   explicit HttpSession(boost::asio::io_context& ioc,
                        boost::asio::ssl::context& ssc,
                        ipfs::HttpRequestDescription& desc,
-                       api::HttpCompleteCallback cb)
+                       api::OnComplete cb)
       : ioc_{ioc},
         strand_{boost::asio::make_strand(ioc)},
         resolver_(strand_),
@@ -203,7 +203,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     if (ec)
       return fail(ec, "read");
     res_ = response_parser_.release();
-    api::HeaderAccess get_hdr = [this](std::string_view k) -> std::string {
+    api::Hdrs get_hdr = [this](std::string_view k) -> std::string {
       std::string rv{(*res_)[k]};
       return rv;
     };
@@ -290,10 +290,15 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
 std::map<std::string, boost::asio::ip::tcp::resolver::results_type>
     HttpSession::resolutions_;
 
-void Self::SendHttpRequest(HttpRequestDescription desc,
-                           HttpCompleteCallback cb) const {
+auto Self::SendHttpRequest(ReqDesc desc, OnComplete cb) const -> Canceller {
   auto sess = std::make_shared<HttpSession>(io_, ssl_ctx_, desc, cb);
   sess->run();
+  std::weak_ptr<HttpSession> w = sess;
+  return [w](){
+    if (auto p = w.lock()) {
+      p->close();
+    }
+  };
 }
 
 #endif

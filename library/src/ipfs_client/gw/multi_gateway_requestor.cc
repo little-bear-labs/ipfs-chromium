@@ -1,8 +1,9 @@
 #include "multi_gateway_requestor.h"
 
 #include <ipfs_client/gw/gateway_request.h>
+#include <ipfs_client/gw/gateway_request_type.h>
+#include <ipfs_client/ipfs_request.h>
 
-#include "ipfs_client/gw/gateway_request_type.h"
 #include "log_macros.h"
 
 #include <algorithm>
@@ -119,7 +120,8 @@ void Self::DoSend(RequestPtr req, std::string const& gw, GatewayState& state) {
     HandleResponse(*desc, req, gw, s, b, h, timed_out, start);
   };
   state.just_sent_one();
-  api_->http().SendHttpRequest(*desc, cb);
+  auto cancel = api_->http().SendHttpRequest(*desc, cb);
+  req->dependent->to_cleanup(cancel);
 }
 void Self::HandleResponse(HttpRequestDescription const& desc,
                           RequestPtr req,

@@ -12,12 +12,14 @@ namespace ipfs {
 struct Response;
 class IpfsRequest {
  public:
+  using Cleanup = std::function<void()>;
   using Finisher = std::function<void(IpfsRequest const&, Response const&)>;
 
  private:
   std::string path_;
   Finisher callback_;
   ResponseSemantic semantic_;
+  std::vector<Cleanup> cleanups_;
 
  public:
   IpfsRequest(std::string path, Finisher);
@@ -29,6 +31,7 @@ class IpfsRequest {
   IpfsRequest& semantic(std::string_view);
   void finish(Response& r);
   void new_path(std::string_view);
+  void to_cleanup(Cleanup);
 
   static std::shared_ptr<IpfsRequest> fromUrl(std::string url, Finisher);
 };

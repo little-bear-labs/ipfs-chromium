@@ -107,8 +107,8 @@ void Self::CAresProcess() {
   FD_ZERO(&writers);
   auto nfds = ares_fds(ares_channel_, &readers, &writers);
   if (nfds) {
-    tvp = ares_timeout(ares_channel_, NULL, &tv);
-    auto count = select(nfds, &readers, &writers, NULL, tvp);
+    tvp = ares_timeout(ares_channel_, nullptr, &tv);
+    auto count = select(nfds, &readers, &writers, nullptr, tvp);
     ares_process(ares_channel_, &readers, &writers);
     nfds += count;
   }

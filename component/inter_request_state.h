@@ -2,6 +2,7 @@
 #define IPFS_INTER_REQUEST_STATE_H_
 
 #include "cache_requestor.h"
+#include "export.h"
 
 #include "ipfs_client/ctx/default_gateways.h"
 #include "ipfs_client/ipns_names.h"

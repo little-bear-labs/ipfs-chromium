@@ -18,21 +18,21 @@ class GURL;
 
 namespace ipfs {
 class BlockHttpRequest : public std::enable_shared_from_this<BlockHttpRequest> {
-  // TODO ween oneself off of SimpleURLLoader
   std::unique_ptr<network::SimpleURLLoader> loader_;
 
  public:
-  using HttpCompleteCallback = ctx::HttpApi::HttpCompleteCallback;
+  using HttpCompleteCallback = ctx::HttpApi::OnComplete;
   BlockHttpRequest(ipfs::HttpRequestDescription, HttpCompleteCallback);
   ~BlockHttpRequest() noexcept;
 
-  void send(raw_ptr<network::mojom::URLLoaderFactory>);
+  void Send(raw_ptr<network::mojom::URLLoaderFactory>);
+  void Cancel();
 
  private:
   ipfs::HttpRequestDescription const inf_;
   HttpCompleteCallback callback_;
   std::string status_line_;
-  ctx::HttpApi::HeaderAccess header_accessor_ = [](auto) {
+  ctx::HttpApi::Hdrs header_accessor_ = [](auto) {
     return std::string{};
   };
 

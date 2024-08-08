@@ -2,37 +2,49 @@
 
 from enum import auto, Enum
 from glob import glob
-from os import listdir, makedirs, remove
-from os.path import basename, exists, dirname, isdir, isfile, join, realpath, relpath, splitext
+import os
+from os.path import (
+    basename,
+    exists,
+    dirname,
+    isdir,
+    isfile,
+    join,
+    realpath,
+    relpath,
+    splitext,
+)
 from shutil import copyfile, rmtree
-from subprocess import call, check_call, check_output, DEVNULL
-from sys import argv, executable, platform, stderr
-from time import ctime, gmtime, strftime, time
+from subprocess import call, CalledProcessError, check_call, check_output, DEVNULL
+from sys import argv, executable, exit, platform, stderr
+from time import ctime, time
 from verbose import verbose
 
 try:
     import requests
-except ModuleNotFoundError:
-    check_call([executable, '-m', 'pip', 'install', 'requests'])
+except Exception as ex:
+    check_call([executable, "-m", "pip", "install", "requests"])
     import requests
+    verbose('Installed requests because of', ex)
 
 
-VERSION_CLOSE_ENOUGH = 30100
+VERSION_CLOSE_ENOUGH = 30102
+LARGE_INT = 9876543210
 here = dirname(__file__)
 
 
-def osname():
-    if platform == 'linux':
-        return 'Linux'
-    if platform == 'darwin':
-        return 'Mac'
-    return 'Windows'
+def osname() -> str:
+    if platform == "linux":
+        return "Linux"
+    if platform == "darwin":
+        return "Mac"
+    return "Windows"
 
 
 def as_int(v):
     result = 0
     try:
-        for c in v.split('.'):
+        for c in v.split("."):
             result *= 10000
             result += int(c)
     except ValueError:
@@ -40,7 +52,12 @@ def as_int(v):
     return result
 
 
-def content_differs(ap,bp):
+def closest_by_version(needle, haystack):
+    i = as_int(needle)
+    return min(map(lambda x: (abs(as_int(x) - i), x), haystack))
+
+
+def content_differs(ap, bp):
     if not isfile(ap) or not isfile(bp):
         return True
     with open(ap) as a:
@@ -51,6 +68,7 @@ def content_differs(ap,bp):
                 print(f"Error diffing {ap} against {bp}: {e}", file=stderr)
                 exit(7)
 
+
 class Result(Enum):
     Output = auto()
     RawOutput = auto()
@@ -59,11 +77,12 @@ class Result(Enum):
     ExitCodeOnly = auto()
     StrippedOutput = Output
 
+
 class Patcher:
-    def __init__(self, chromium_source_dir, git_bin, build_type):
+    def __init__(self, chromium_source_dir, git_bin='git', build_type=None):
         self.csrc = chromium_source_dir
-        self.pdir = realpath(join(here, '..', 'component', 'patches'))
-        self.edir = realpath(join(here, '..', 'chromium_edits'))
+        self.pdir = realpath(join(here, "..", "component", "patches"))
+        self.edir = realpath(join(here, "..", "chromium_edits"))
         self.gbin = git_bin
         self.btyp = build_type
         self.up_rels = {}
@@ -74,110 +93,139 @@ class Patcher:
         write_dir = join(self.edir, name)
         if exists(write_dir):
             rmtree(write_dir)
-        paths = self.git(['diff', tag, '--name-only'], Result.RawOutput).splitlines()
-        for lin in self.git(['status', '--porcelain'], Result.RawOutput).splitlines():
-            if lin[0:3] != '?? ':
+        paths = self.git(["diff", tag, "--name-only"], Result.RawOutput).splitlines()
+        for lin in self.git(["status", "--porcelain"], Result.RawOutput).splitlines():
+            if lin[0:3] != "?? ":
                 continue
-            verbose('Unversioned', lin[3:])
-            paths.append( lin[3:] )
+            verbose("Unversioned", lin[3:])
+            paths.append(lin[3:])
         for path in paths:
-            if path.endswith('.gz') or not '.' in basename(path):
-                verbose(f"File change not recorded because the path doesn't seem to be one we should: {path}")
+            if path.endswith(".gz") or "." not in basename(path):
+                verbose(
+                    f"File change not recorded because the path doesn't seem to be one we should: {path}"
+                )
                 continue
             from_path = join(self.csrc, path)
             to_path = join(write_dir, path)
             to_dir = dirname(to_path)
-            if 'components/ipfs' in path:
-                verbose('Not putting component into edit tree')
-            elif 'third_party/ipfs_client' in path:
-                verbose('Not putting library into edit tree')
-            elif 'electron' in path:
-                verbose('electron and electron-spin are handled separately')
+            if "components/ipfs" in path:
+                verbose("Not putting component into edit tree")
+            elif "third_party/ipfs_client" in path:
+                verbose("Not putting library into edit tree")
+            elif "electron" in path:
+                verbose("electron and electron-spin are handled separately")
             elif isdir(from_path):
-                verbose('Ignoring unversioned directory, since that is not a kind of edit I do.')
-            elif not self.file_in_branch(tag, path):
-                print('Copy', from_path, '->', to_path)
-                makedirs(to_dir, exist_ok=True)
+                verbose(
+                    "Ignoring unversioned directory, since that is not a kind of edit I do."
+                )
+            elif not self.__file_in_branch(tag, path):
+                print("Copy", from_path, "->", to_path)
+                os.makedirs(to_dir, exist_ok=True)
                 copyfile(from_path, to_path)
-            elif not self.file_in_branch('HEAD', path):
-                to_path += '.rm'
-                print('Remembering the removal of', from_path, 'with', to_path)
-                makedirs(to_dir, exist_ok=True)
-                with open(to_path, 'w') as rm_f:
-                    rm_f.write('//Remember to remove the corresponding file from the Chromium source tree')
+            elif not self.__file_in_branch("HEAD", path):
+                to_path += ".rm"
+                print("Remembering the removal of", from_path, "with", to_path)
+                os.makedirs(to_dir, exist_ok=True)
+                with open(to_path, "w") as rm_f:
+                    rm_f.write(
+                        "//Remember to remove the corresponding file from the Chromium source tree"
+                    )
             else:
-                diff_out = self.git(['diff', '--patch', tag, path], Result.RawOutput)
+                diff_out = self.git(["diff", "--patch", tag, path], Result.RawOutput)
                 if diff_out:
-                    makedirs(to_dir, exist_ok=True)
-                    to_path += '.patch'
-                    with open(to_path, 'w') as to_f:
+                    os.makedirs(to_dir, exist_ok=True)
+                    to_path += ".patch"
+                    with open(to_path, "w") as to_f:
                         to_f.write(diff_out)
                         print(to_path)
-        self.git(['add', 'url/url_canon_ipfs.cc'], Result.OrDie)
+        self.git(["add", "url/url_canon_ipfs.cc"], Result.OrDie)
 
-    def file_in_branch(self, ref: str, path: str):
-        out = self.git(['ls-tree', '--name-only', ref, path], Result.Output)
-        verbose('ls-tree gave me', out)
+    def __file_in_branch(self, ref: str, path: str):
+        out = self.git(["ls-tree", "--name-only", ref, path], Result.Output)
+        verbose("ls-tree gave me", out)
         return out == path
 
-    def apply(self):
-        win = ''
-        win_dist = 9876543210
+    def __closest_by_git(self):
+        win = ""
+        win_dist = LARGE_INT
         for ref in self.available():
             d = self.distance(ref)
-            verbose(d, 'commits away from', ref)
+            verbose(d, "commits away from", ref)
             if d < win_dist or (d == win_dist and len(ref) < len(win)):
                 win_dist = d
                 win = ref
-        edits_dir = join(self.edir, win)
-        edit_glob = f'{edits_dir}/**/*'
-        print('Best edits version is', win, 'look for edits by', edit_glob, file=stderr)
+        verbose("Best edits version is", win)
+        return win
+
+    def apply(self):
+        edits_dir = join(self.edir, self.__closest_by_git())
+        edit_glob = f"{edits_dir}/**/*"
+        print("Look for edits by", edit_glob, file=stderr)
         for edit in glob(edit_glob, recursive=True):
             if not isfile(edit):
                 continue
-            verbose('Have edit:', edit)
+            verbose("Have edit:", edit)
             ext = splitext(edit)[1]
             rel = relpath(edit, edits_dir)
             to_path = join(self.csrc, rel)
-            if ext == '.patch':
+            if ext == ".patch":
                 self.check_patch(edit, rel, to_path)
-            elif ext == '.rm':
+            elif ext == ".rm":
                 if isfile(to_path):
-                    print("Remove", to_path, 'due to', edit)
-                    remove(to_path)
+                    print("Remove", to_path, "due to", edit)
+                    os.remove(to_path)
                 else:
                     verbose(f"{to_path} already removed")
             elif not isfile(to_path):
-                print('Copy', edit, '->', to_path)
+                print("Copy", edit, "->", to_path)
                 copyfile(edit, to_path)
             elif content_differs(edit, to_path):
-                print('Warning:', to_path, 'exists, is different from ', edit, ' and is not being overwritten.')
+                print(
+                    "Warning:",
+                    to_path,
+                    "exists, is different from ",
+                    edit,
+                    " and is not being overwritten.",
+                )
             else:
                 verbose(f"{to_path} already copied")
-        verbose('Done patching')
-
+        verbose("Done patching")
 
     def check_patch(self, patch_path: str, relative: str, target_path: str):
-        if 0 == self.git(['apply', '--check', '--reverse', '--verbose', patch_path], Result.ExitCodeOnly):
-            verbose(patch_path, 'already applied.')
+        if 0 == self.git(
+            ["apply", "--check", "--reverse", "--verbose", patch_path],
+            Result.ExitCodeOnly,
+        ):
+            verbose(patch_path, "already applied.")
             return
         src = splitext(relative)[0]
-        ec = self.git(['apply', '--verbose', patch_path], Result.ExitCode)
-        verbose('Applying patch', patch_path, 'gave exit code', ec)
+        ec = self.git(["apply", "--verbose", patch_path], Result.ExitCode)
+        verbose("Applying patch", patch_path, "gave exit code", ec)
         if ec == 0:
-            print('Patched', src, 'with', patch_path)
+            print("Patched", src, "with", patch_path)
         else:
-            with open(join(self.csrc,src)) as target_file:
+            with open(join(self.csrc, src)) as target_file:
                 text = target_file.read()
-                if 'ipfs' in text or 'ReadTagContent' in text or 'SetTag(' in text:
-                    print("Patch file", patch_path, 'may have already been applied, or otherwise hand-edited. Ignoring.')
+                if "ipfs" in text or "ReadTagContent" in text or "SetTag(" in text:
+                    print(
+                        "Patch file",
+                        patch_path,
+                        "may have already been applied, or otherwise hand-edited. Ignoring.",
+                    )
                 else:
-                    print("Failed to patch", src, '( at', join(self.csrc,src), ') with', patch_path)
+                    print(
+                        "Failed to patch",
+                        src,
+                        "( at",
+                        join(self.csrc, src),
+                        ") with",
+                        patch_path,
+                    )
                     exit(8)
 
     def git(self, args: list[str], result: Result) -> str:
-        a = [self.gbin, '-C', self.csrc] + args
-        verbose('Running', a)
+        a = [self.gbin, "-C", self.csrc] + args
+        verbose("Running", a)
         match result:
             case Result.RawOutput:
                 return check_output(a, text=True)
@@ -190,46 +238,61 @@ class Patcher:
             case Result.ExitCodeOnly:
                 return call(a, stdout=DEVNULL, stderr=DEVNULL)
             case _:
-                raise RuntimeError('result type not handled')
+                raise RuntimeError("result type not handled")
 
     def tag_name(self) -> str:
-        return self.git(['describe', '--tags', '--abbrev=0'], Result.Output)
+        return self.git(["describe", "--tags", "--abbrev=0"], Result.Output)
 
     def curr_hash(self) -> str:
-        return self.hash_of('HEAD')
+        return self.hash_of("HEAD")
 
     def hash_of(self, ref) -> str:
-        return self.git(['rev-parse', ref], Result.Output)
+        '''Get the hash of a Git ref from the Chromium tree'''
+        return self.git(["rev-parse", ref], Result.Output)
 
     def distance(self, ref) -> int:
         try:
-            a, b = self.distances('HEAD', ref)
+            a, b = self.distances("HEAD", ref)
             return a + b
-        except:
+        except CalledProcessError:
             return 1_234_567_890
 
     def recommend(self) -> str:
-        channels = ['Dev', 'Beta', 'Stable', 'Extended']
+        channels = ["Dev", "Beta", "Stable", "Extended"]
         avail = list(self.available())
-        if self.btyp == 'Release':
+        if self.btyp == "Release":
             channels.reverse()
-        print('Avail:', avail)
+        verbose("Avail:", avail)
+        win_cand = ""
+        win_dist = LARGE_INT
         for channel in channels:
             print("Considering channel", channel, file=stderr)
             versions = self.release_versions(channel)
             for when, version in versions:
-                print(f"Found a release version: '{version}'", file=stderr)
-                if version in avail:
-                    print('Suggesting version', version, 'which was the', osname(), channel, 'channel as of', ctime(when), file=stderr)
-                    return version
-        raise EnvironmentError(f"Can't find an appropriate tag for {osname()}, anymore!")
+                verbose(f"Found a release version: '{version}' from {ctime(when)}")
+                dist, cand = closest_by_version(version, avail)
+                if dist < win_dist:
+                    t = f"Suggesting {cand} which is {dist} close to {version} which was {channel} @ {ctime(when)}"
+                    print(t, file=stderr)
+                    win_dist = dist
+                    win_cand = cand
+                else:
+                    win_dist -= 9
+            if win_dist < LARGE_INT / 2:
+                break
+        if win_cand:
+            return win_cand
+        else:
+            raise EnvironmentError(
+                f"Can't find an appropriate tag for {osname()}, anymore!"
+            )
 
     def available(self):
-        return listdir(self.edir)
+        return os.listdir(self.edir)
 
     def distances(self, frm, ref):
-        a = int(self.git(['rev-list', '--count', frm+'..'+ref], Result.Output))
-        b = int(self.git(['rev-list', '--count', ref+'..'+frm], Result.Output))
+        a = int(self.git(["rev-list", "--count", frm + ".." + ref], Result.Output))
+        b = int(self.git(["rev-list", "--count", ref + ".." + frm], Result.Output))
         return (a, b)
 
     def maybe_newer(self, x, y):
@@ -245,11 +308,11 @@ class Patcher:
         key = pfrm + channel
         if key in self.up_rels:
             return self.up_rels[key]
-        parms = {'platform': pfrm, 'channel': channel}
-        chrom_url = 'https://chromiumdash.appspot.com/fetch_releases'
+        parms = {"platform": pfrm, "channel": channel}
+        chrom_url = "https://chromiumdash.appspot.com/fetch_releases"
         resp = requests.get(url=chrom_url, params=parms)
-        result = list(map(lambda x: (x['time'] / 1000, x['version']), resp.json()))
-        elec_url = 'https://raw.githubusercontent.com/electron/electron/main/DEPS'
+        result = list(map(lambda x: (x["time"] / 1000, x["version"]), resp.json()))
+        elec_url = "https://raw.githubusercontent.com/electron/electron/main/DEPS"
         resp = requests.get(url=elec_url)
         result.sort(reverse=True)
         self.up_rels[key] = result
@@ -257,139 +320,161 @@ class Patcher:
 
     def date_of(self, v):
         try:
-          git_time = self.git(['log', '--max-count=1', '--format=%at', v], Result.StrippedOutput)
-          verbose('Git time of', v, 'is', git_time)
-          return float(git_time)
-        except:
-          return time()
+            git_time = self.git(
+                ["log", "--max-count=1", "--format=%at", v], Result.StrippedOutput
+            )
+            verbose("Git time of", v, "is", git_time)
+            return float(git_time)
+        except CalledProcessError:
+            return time()
 
     def most(self, ch, pfs, idx):
         vs = []
         for pf in pfs:
             vs = vs + self.release_versions(ch, pf)
         vs = list(map(lambda x: (as_int(x[1]), x[1], x[0]), vs))
-        vs += list(map(lambda x: (as_int(x), x, self.date_of(x)), self.electron_versions().values()))
+        vs += list(
+            map(
+                lambda x: (as_int(x), x, self.date_of(x)),
+                self.electron_versions().values(),
+            )
+        )
         vs.sort()
         verbose(f"'Most' ({idx}) versions:", vs)
         return vs[idx]
 
     def newest(self):
-        return self.most('Dev', ['Linux', 'Mac', 'Windows'], -1)
+        return self.most("Dev", ["Linux", "Mac", "Windows"], -1)
 
     def oldest(self):
-        return self.most('Extended', ['Mac', 'Windows'], 0)
+        return self.most("Extended", ["Mac", "Windows"], 0)
 
     def recent_electron_branch_version(self):
-      with open(join(here,'recent-electron.txt')) as revf:
-          return int(revf.read())
+        with open(join(here, "recent-electron.txt")) as revf:
+            return int(revf.read())
 
     def set_recent_electron_branch_version(self, v):
-      with open(join(here,'recent-electron.txt'), 'w') as revf:
-        revf.write(str(v))
-        call([self.gbin, 'add', join('cmake', 'recent-electron.txt')])
+        with open(join(here, "recent-electron.txt"), "w") as revf:
+            revf.write(str(v))
+            call([self.gbin, "add", join("cmake", "recent-electron.txt")])
 
-    def electron_version(self, branch='main'):
-        if f'electron-{branch}' in self.up_rels:
-            return self.up_rels[f'electron-{branch}']
-        resp = requests.get(f'https://raw.githubusercontent.com/electron/electron/{branch}/DEPS')
+    def electron_version(self, branch="main"):
+        if f"electron-{branch}" in self.up_rels:
+            return self.up_rels[f"electron-{branch}"]
+        resp = requests.get(
+            f"https://raw.githubusercontent.com/electron/electron/{branch}/DEPS"
+        )
         toks = resp.text.split("'")
-        i = toks.index('chromium_version') + 2
-        self.up_rels[f'electron-{branch}'] = toks[i]
+        i = toks.index("chromium_version") + 2
+        self.up_rels[f"electron-{branch}"] = toks[i]
         return toks[i]
 
     def electron_versions(self):
         rebv = self.recent_electron_branch_version()
         try:
-          ev = rebv + 1
-          self.electron_version(f'{ev}-x-y')
-          verbose('New electron version!', ev, e)
-          self.set_recent_electron_branch_version(ev)
-          rebv = ev
-        except:
-          pass
+            ev = rebv + 1
+            self.electron_version(f"{ev}-x-y")
+            verbose("New electron version!", ev)
+            self.set_recent_electron_branch_version(ev)
+            rebv = ev
+        except ValueError as e:
+            verbose("Couldn't get next, possibly-nonexistent, electron version's chromium version.", e, type(e))
+            pass
         result = {}
         for i in range(-3, 1):
-          ev = i + rebv
-          result[ev] = self.electron_version(f'{ev}-x-y')
-        verbose('Electron versions:', result)
+            ev = i + rebv
+            result[ev] = self.electron_version(f"{ev}-x-y")
+        verbose("Electron versions:", result)
         return result
 
     def unavailable(self):
         avail = list(map(as_int, self.available()))
         version_set = {}
+
         def check(version, version_set, s, close):
-            verbose('For ', s, " close enough is ", close)
+            verbose("For ", s, " close enough is ", close)
             i = as_int(version)
-            by = (close,0)
+            by = (close, 0)
             for a in avail:
-                d = abs(a-i)
+                d = abs(a - i)
                 if d < close:
                     return True
                 elif d < by[0]:
-                    by = ( d, a )
+                    by = (d, a)
             if version not in version_set:
-                sortable = [int(c) for c in version.split('.')]
+                sortable = [int(c) for c in version.split(".")]
                 version_set[version] = [sortable, version, s]
             elif s not in version_set[version]:
-                #print('2 Adding',version,s)
                 version_set[version].append(s)
             return False
-        for (ci,channel) in enumerate(['Extended', 'Stable', 'Beta', 'Dev' ]):
-            for (pi, pfrm) in enumerate(['Linux', 'Mac', 'Windows']):
+
+        for ci, channel in enumerate(["Extended", "Stable", "Beta", "Dev"]):
+            for pi, pfrm in enumerate(["Linux", "Mac", "Windows"]):
                 try:
                     when, version = self.release_versions(channel, pfrm)[0]
                     s = f"{channel}-{pfrm}-{when}"
-                    close = VERSION_CLOSE_ENOUGH * (ci + 1) * (pi + 1)
+                    close = VERSION_CLOSE_ENOUGH * (ci + 0.001) * (pi + 1)
                     check(version, version_set, s, close)
                 except IndexError:
                     pass  # One may assume this is Linux Extended
-        close = VERSION_CLOSE_ENOUGH
-        for (ev, e) in self.electron_versions().items():
-          close += VERSION_CLOSE_ENOUGH
-          check(e, version_set, f'electron-{ev}', close)
+        close = VERSION_CLOSE_ENOUGH / 100
+        for ev, e in self.electron_versions().items():
+            close += VERSION_CLOSE_ENOUGH
+            check(e, version_set, f"electron-{ev}", close)
         result = list(version_set.values())
         result.sort(reverse=True)
         return map(lambda x: x[1:], result)
 
     def out_of_date(self, p):
-        dir_path = f'{self.edir}/{p}'
+        dir_path = f"{self.edir}/{p}"
         if not isdir(dir_path):
             return True
-        file_path = join(dir_path,'components/cbor/reader_unittest.cc.patch')
+        file_path = join(dir_path, "components/cbor/reader_unittest.cc.patch")
         if not isfile(file_path):
             return True
         with open(file_path) as f:
             lines = list(map(lambda x: x.strip(), f.readlines()))
-            if '+  absl::optional<Value> cbor = Reader::Read(kTaggedCbor, config);' in lines:
-                verbose(p, 'Still relying on absl::optional in unit tests', file_path)
+            if (
+                "+  absl::optional<Value> cbor = Reader::Read(kTaggedCbor, config);"
+                in lines
+            ):
+                verbose(p, "Still relying on absl::optional in unit tests", file_path)
                 return True
-        file_path = f'{self.pdir}/{p}.patch'
+        file_path = f"{self.pdir}/{p}.patch"
         if not isfile(file_path):
             return False
         with open(file_path) as f:
             lines = list(map(lambda x: x.strip(), f.readlines()))
-            if not Patcher.has_file_line(lines, 'chrome/browser/flag-metadata.json', '+    "name": "enable-ipfs",'):
-                verbose(p, 'does not have enable-ipfs in flag-metadata.json', file_path)
+            if not Patcher.has_file_line(
+                lines,
+                "chrome/browser/flag-metadata.json",
+                '+    "name": "enable-ipfs",',
+            ):
+                verbose(p, "does not have enable-ipfs in flag-metadata.json", file_path)
                 return True
-            if not Patcher.has_file_line(lines, 'chrome/browser/chrome_content_browser_client.cc', '+    main_parts->AddParts(std::make_unique<IpfsExtraParts>());'):
-                verbose(p, 'does not have enable-ipfs in flag-metadata.json', file_path)
+            if not Patcher.has_file_line(
+                lines,
+                "chrome/browser/chrome_content_browser_client.cc",
+                "+    main_parts->AddParts(std::make_unique<IpfsExtraParts>());",
+            ):
+                verbose(p, "does not have enable-ipfs in flag-metadata.json", file_path)
                 return True
         return False
 
     @staticmethod
     def has_file_line(lines: list[str], path: str, line: str):
         fl = Patcher.file_lines(lines, path)
-        return (line + '\n') in fl
+        return (line + "\n") in fl
 
     @staticmethod
     def file_lines(lines: list[str], path):
-        start = f'diff --git a/{path} b/{path}\n'
-        if not start in lines:
+        start = f"diff --git a/{path} b/{path}\n"
+        if start not in lines:
             # print('Did not find',start,'in',lines)
             return []
         i = lines.index(start) + 1
         for j in range(i, i + 9999):
-            if len(lines) == j or lines[j].startswith('diff --git'):
+            if len(lines) == j or lines[j].startswith("diff --git"):
                 return lines[i:j]
         return []
 
@@ -400,79 +485,82 @@ class Patcher:
         gap = newest[0] - oldest[0] + VERSION_CLOSE_ENOUGH
         min = oldest[0] - gap
         min_date = time() - 3600 * 24 * 31 * 6
-        verbose(f'Oldest supportable version: {oldest} , newest was: {newest} , gap: {gap} -> {min}')
+        verbose(
+            f"Oldest supportable version: {oldest} , newest was: {newest} , gap: {gap} -> {min}"
+        )
         for p in to_check:
             d = self.date_of(p)
-            verbose('Checking', p, d, ctime(d))
+            verbose("Checking", p, d, ctime(d))
             if self.out_of_date(p):
-              verbose(p, 'failed compatibility checks')
-              is_ood = True
+                verbose(p, "failed compatibility checks")
+                is_ood = True
             elif d < min_date and as_int(p) < min:
-              verbose(d, '<', min_date, 'and', as_int(p), '<', min)
-              is_ood = True
+                verbose(d, "<", min_date, "and", as_int(p), "<", min)
+                is_ood = True
             else:
-              is_ood = False
+                is_ood = False
             if is_ood == sense:
                 print(p)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if len(argv) < 2:
-        print('Give an argument to indicate what you\'d like to do.')
-    elif argv[1] == 'apply':
-        Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug').apply()
-    elif argv[1] == 'rec':
+        print("Give an argument to indicate what you'd like to do.")
+    elif argv[1] == "apply":
+        Patcher("/mnt/big/lbl/code/chromium/src", "git", "Debug").apply()
+    elif argv[1] == "rec":
         print(osname())
-        print(Patcher('/mnt/big/lbl/code/chromium/src', 'git', argv[2]).recommend())
-    elif argv[1] == 'missing':
-        missing = Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug').unavailable()
+        BT = "Release" if len(argv) == 2 else argv[2]
+        print(Patcher("/mnt/big/lbl/code/chromium/src", "git", BT).recommend())
+    elif argv[1] == "missing":
+        missing = Patcher(
+            "/mnt/big/lbl/code/chromium/src", "git", "Debug"
+        ).unavailable()
         for m in missing:
             print(m)
-    elif argv[1] == 'releases':
-        p = Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug')
-        for chan in ['Dev', 'Beta', 'Stable', 'Extended']:
-            for os in ['Linux', 'Mac', 'Windows']:
-                rels = p.release_versions(chan, os)
+    elif argv[1] == "releases":
+        per = Patcher("/mnt/big/lbl/code/chromium/src", "git", "Debug")
+        for chan in ["Dev", "Beta", "Stable", "Extended"]:
+            for os in ["Linux", "Mac", "Windows"]:
+                rels = per.release_versions(chan, os)
                 if len(rels) > 0:
-                    print(f'Curr {chan:9}{os:7}', rels[0][1])
+                    print(f"Curr {chan:9}{os:7}", rels[0][1])
                 if len(rels) > 1:
-                    print(f'Prev {chan:9}{os:7}', rels[1][1])
+                    print(f"Prev {chan:9}{os:7}", rels[1][1])
                 if len(rels) > 2:
-                    print(f'Old  {chan:9}{os:7}', rels[2][1])
-        print("Electron's main branch:", p.electron_version())
-        o = p.oldest()
-        d = ctime(o[2])
-        print("Oldest maintained Extended:", o[1], f'({d})')
-        n = p.newest()
-        d = ctime(n[2])
-        print("Development at:", n[1], f'({d})')
-    elif argv[1] == 'available':
-        pr = Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug')
+                    print(f"Old  {chan:9}{os:7}", rels[2][1])
+        print("Electron's main branch:", per.electron_version())
+        o = per.oldest()
+        print("Oldest maintained Extended:", o[1], f"({ctime(o[2])})")
+        n = per.newest()
+        print("Development at:", n[1], f"({ctime(n[2])})")
+    elif argv[1] == "available":
+        pr = Patcher("/mnt/big/lbl/code/chromium/src", "git", "Debug")
         print(list(pr.available()))
         print(pr.edir)
-    elif argv[1] == 'old':
-        pr = Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug')
+    elif argv[1] == "old":
+        pr = Patcher("/mnt/big/lbl/code/chromium/src", "git", "Debug")
         if len(argv) > 2:
             pr.list_ood(argv[2:], True)
         else:
             pr.list_ood(list(pr.available()), True)
-    elif argv[1] == 'new':
-        pr = Patcher('/mnt/big/lbl/code/chromium/src', 'git', 'Debug')
+    elif argv[1] == "new":
+        pr = Patcher("/mnt/big/lbl/code/chromium/src", "git", "Debug")
         if len(argv) > 2:
             pr.list_ood(argv[2:], False)
         else:
             pr.list_ood(list(pr.available()), False)
-    elif argv[1] == 'git':
-        pr = Patcher(realpath(join(dirname(__file__), '..')), 'git', 'Debug')
-        pre = '?? component/patches/'
-        suf = 'patch'
-        for line in pr.git(['status','--porcelain'], Result.RawOutput).splitlines():
-            if line.startswith(pre) and line.endswith(suf):
-                end = len(line) - len(suf) - 1
-                pch = line[len(pre):end]
+    elif argv[1] == "git":
+        pr = Patcher(realpath(join(dirname(__file__), "..")), "git", "Debug")
+        PREFIX = "?? component/patches/"
+        SUFFIX = "patch"
+        for line in pr.git(["status", "--porcelain"], Result.RawOutput).splitlines():
+            if line.startswith(PREFIX) and line.endswith(SUFFIX):
+                end = len(line) - len(SUFFIX) - 1
+                pch = line[len(PREFIX): end]
                 if pr.out_of_date(pch):
                     exit(9)
                 else:
-                    pr.git(['add', line[3:]], Result.OrDie)
+                    pr.git(["add", line[3:]], Result.OrDie)
     else:
         Patcher(*argv[1:]).create_patch_file()

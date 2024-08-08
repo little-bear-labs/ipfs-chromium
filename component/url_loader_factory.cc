@@ -14,7 +14,6 @@ void ipfs::IpfsURLLoaderFactory::Create(
     new IpfsURLLoaderFactory(scheme, pending.InitWithNewPipeAndPassReceiver(),
                              context, default_factory, net_ctxt, pref_svc);
     in_out->emplace(scheme, std::move(pending));
-    VLOG(2) << "Registered subresource loader factory for " << scheme;
   }
 }
 
@@ -24,7 +23,7 @@ ipfs::IpfsURLLoaderFactory::IpfsURLLoaderFactory(
     content::BrowserContext* context,
     URLLoaderFactory* default_factory,
     network::mojom::NetworkContext* net_ctxt,
-    PrefService* pref_svc)
+    PrefService*)
     : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
       scheme_{scheme},
       context_{context},

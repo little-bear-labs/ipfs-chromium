@@ -16,7 +16,7 @@ Found in the library/ directory, ipfs_client is a library with a fairly standard
 As for dependencies, you have some choices: 
 
 ### With Python
-If you have python3 and installed and findable, it will use [Conan](https://docs.conan.io/en/latest/introduction.html) to manage dependencies.
+If you have python3 (and and pip) installed and findable, it will use [Conan](https://docs.conan.io/en/latest/introduction.html) to manage dependencies.
 
 See also: docker/debian-python
 
@@ -29,7 +29,7 @@ Otherwise, follow the next subsection.
 ### With system-installed or otherwise CMake-findable dependencies
 Required dependencies as they exist today:
 * protobuf (both compiler and library)
-* OpenSSL - TODO probably should de-require, easiest path is disabling sha at runtime. Also, alternatives.
+* OpenSSL
 * vocabulary types: one of the following
     - boost (See also: docker/debian-boost)
     - abseil & boost (will prefer Abseil, fills in gap with boost)
