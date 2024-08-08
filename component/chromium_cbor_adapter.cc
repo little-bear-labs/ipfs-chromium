@@ -74,8 +74,8 @@ auto Self::as_link() const -> std::optional<Cid> {
     return std::nullopt;
   }
   auto& bytes = cbor_.GetBytestring();
-  auto* byte_ptr = reinterpret_cast<Byte const*>(bytes.data()) + 1;
-  auto result = Cid(ByteView{byte_ptr, bytes.size() - 1UL});
+  auto no_mb = ipfs::as_bytes(bytes).subspan(1);//drop the multibase prefix, which is 1B for all supported multibases
+  auto result = Cid(no_mb);
   if (result.valid()) {
     return result;
   } else {

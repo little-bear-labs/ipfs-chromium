@@ -122,9 +122,7 @@ r::File::File(std::string_view to_parse) {
     } else if (directives_.empty()) {
       LOG(ERROR) << "Expected to have a directive after parsing line #"
                  << line_number << ": " << line;
-    } else if (directives_.back().valid()) {
-      VLOG(2) << "Line #" << line_number << " parsed. " << line;
-    } else {
+    } else if (!directives_.back().valid()) {
       error_ = "FAILURE PARSING LINE # " + std::to_string(line_number);
       error_.append(": ")
           .append(directives_.back().error())

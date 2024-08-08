@@ -17,7 +17,7 @@ class MultiGatewayRequestor : public Requestor {
   std::deque<RequestPtr> q;
   bool Process(RequestPtr const&);
   void DoSend(RequestPtr, std::string const&, GatewayState&);
-  using HeaderAccess = ctx::HttpApi::HeaderAccess;
+  using HeaderAccess = ctx::HttpApi::Hdrs;
   void HandleResponse(HttpRequestDescription const&,
                       RequestPtr,
                       std::string const&,

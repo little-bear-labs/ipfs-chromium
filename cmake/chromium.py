@@ -6,7 +6,7 @@ from patch import Patcher
 
 from glob import glob
 from os import environ, makedirs, remove
-from os.path import basename, dirname, getmtime, isdir, isfile, join, pathsep, relpath, splitext
+from os.path import basename, dirname, getmtime, isdir, isfile, join, pathsep, realpath, relpath, splitext
 from shutil import copyfile, which
 from sys import argv, executable, stderr
 
@@ -35,6 +35,13 @@ if isfile(electron_args_file):
     toks = filter(lambda x: not x.startswith('is_debug'), toks)
     gnargs = ' '.join(toks) + f' import(\"//electron/build/args/testing.gn\") '
 
+def into_repo(p):
+  for (f, t) in [('../../components/ipfs/','component'),('../../third_party/ipfs_client/','library')]:
+    if p.startswith(f):
+      verbose(p, 'instead of', f, 'find in', t)
+      return join(t, p[len(f):])
+  return p
+
 def run(args, fail_ok=False, cwd=None):
     if cwd:
         print('Run in', cwd)
@@ -46,11 +53,22 @@ def run(args, fail_ok=False, cwd=None):
     else:
         cwd = None
     verbose('Run', args, 'in', cwd)
-    res = subprocess.run(args=args, cwd=cwd)
+    res = subprocess.run(args=args, cwd=cwd, capture_output=True, text=True)
     # print(res)
     ec = res.returncode
     if ec == 0:
         return True
+    in_repo = join(ipfs_chromium_source_dir,'library','src')
+    ds = [in_repo, cwd, join(src, 'out', profile), '.', ipfs_chromium_source_dir]
+    for line in res.stdout.split("\n"):
+      p = into_repo(line.split(':')[0])
+      rem = ':' + ':'.join(line.split(':')[1:])
+      file_there = lambda x: isfile(join(x,p))
+      d = next(filter(file_there, ds), None)
+      if d:
+        print(realpath(join(d,p))+rem)
+      else:
+        print(p+rem)
     print('Command failed with exit code', ec, ':', args, file=stderr)
     if fail_ok:
         return False

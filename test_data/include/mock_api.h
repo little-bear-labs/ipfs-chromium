@@ -55,7 +55,7 @@ struct MockApi final : public i::Client {
   }
   ~MockApi() noexcept override {}
   std::vector<i::HttpRequestDescription> mutable http_requests_sent;
-  std::vector<ic::HttpApi::HttpCompleteCallback> mutable cbs;
+  std::vector<ic::HttpApi::OnComplete> mutable cbs;
   std::string MimeType(std::string extension,
                        std::string_view content,
                        std::string const& url) const {

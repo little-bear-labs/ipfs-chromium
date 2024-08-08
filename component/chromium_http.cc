@@ -2,13 +2,23 @@
 
 #include "block_http_request.h"
 
+#include <base/logging.h>
+
 using Self = ipfs::ChromiumHttp;
 
 Self::ChromiumHttp(network::mojom::URLLoaderFactory& lf)
     : loader_factory_{&lf} {}
 
-void Self::SendHttpRequest(ipfs::ctx::HttpApi::HttpRequestDescription desc,
-                           ipfs::ctx::HttpApi::HttpCompleteCallback cb) const {
+auto Self::SendHttpRequest(ReqDesc desc, OnComplete cb) const -> Canceller {
   auto ptr = std::make_shared<BlockHttpRequest>(desc, cb);
-  ptr->send(loader_factory_);
+  ptr->Send(loader_factory_);
+  std::weak_ptr<BlockHttpRequest> w = ptr;
+  return [w](){
+    auto p = w.lock();
+    if (p) {
+      p->Cancel();
+    } else {
+      VLOG(2) << "Not cancelling already-dead HTTP request.";
+    }
+  };
 }

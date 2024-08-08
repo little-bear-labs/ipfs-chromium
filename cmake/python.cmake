@@ -1,8 +1,9 @@
-find_package (Python3 COMPONENTS Interpreter)
+find_package(Python3 QUIET COMPONENTS Interpreter)
 if(Python3_EXECUTABLE)
     execute_process(
         COMMAND ${Python3_EXECUTABLE} -m pip --version
         RESULT_VARIABLE pip_result
+        OUTPUT_QUIET
     )
     if(pip_result EQUAL 0)
         set(HAVE_PIP TRUE)

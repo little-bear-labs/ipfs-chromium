@@ -1,8 +1,9 @@
 #include "block_http_request.h"
-
 #include <services/network/public/cpp/resource_request.h>
 #include <services/network/public/cpp/simple_url_loader.h>
 #include <services/network/public/mojom/url_response_head.mojom.h>
+#include <base/strings/string_number_conversions.h>
+
 
 using Self = ipfs::BlockHttpRequest;
 
@@ -30,7 +31,7 @@ Self::BlockHttpRequest(ipfs::HttpRequestDescription req_inf,
     : inf_{req_inf}, callback_{cb} {}
 Self::~BlockHttpRequest() noexcept {}
 
-void Self::send(raw_ptr<network::mojom::URLLoaderFactory> loader_factory) {
+void Self::Send(raw_ptr<network::mojom::URLLoaderFactory> loader_factory) {
   auto req = std::make_unique<network::ResourceRequest>();
   req->url = GURL{inf_.url};
   req->priority = net::HIGHEST;  // TODO
@@ -76,7 +77,12 @@ void Self::OnResponse(std::shared_ptr<Self>,
   }
   auto sp = status_line_.find(' ');
   if (sp < status_line_.size()) {
-    status = std::atoi(status_line_.c_str() + sp + 1);
+    // status = std::atoi(status_line_.c_str() + sp + 1);
+    auto status_code_str = std::string_view{status_line_}.substr(sp + 1);
+    // status = std::atoi(status_code_str.data());
+    if (!base::StringToInt(status_code_str, &status)) {
+      status = 0;
+    }
   }
   if (body) {
     callback_(status, *body, header_accessor_);
@@ -97,4 +103,7 @@ void Self::OnResponseHead(
     head->EnumerateHeader(nullptr, k, &val);
     return val;
   };
+}
+void Self::Cancel() {
+  loader_.reset();
 }

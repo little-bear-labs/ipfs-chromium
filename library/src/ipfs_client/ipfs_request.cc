@@ -20,8 +20,10 @@ std::shared_ptr<Self> Self::fromUrl(std::string url, ipfs::IpfsRequest::Finisher
 void Self::finish(ipfs::Response& r) {
   if (callback_) {
     callback_(*this, r);
-    // TODO - cancel other gw req pointing into this
     callback_ = {};
+  }
+  for (auto& cleanup : cleanups_) {
+    cleanup();
   }
 }
 void Self::new_path(std::string_view sv) {
@@ -37,4 +39,7 @@ Self& Self::semantic(std::string_view sem) {
     semantic_ = ResponseSemantic::Http;
   }
   return *this;
+}
+void Self::to_cleanup(Cleanup c) {
+  cleanups_.push_back(std::move(c));
 }

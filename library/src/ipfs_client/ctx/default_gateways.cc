@@ -29,29 +29,36 @@ bool ctx::LoadGatewaysFromEnvironmentVariable(ipfs::ctx::GatewayConfig& cfg) {
 
 void ctx::LoadStaticGatewayList(ipfs::ctx::GatewayConfig& cfg) {
   auto static_list = {
-      std::pair<std::string_view, int>{"http://127.0.0.1:8080/", 11'900},
-      {"https://gateway.ipfs.io/", 485},
-      {"https://ipfs.eth.aragon.network/", 294},
-      {"https://cloudflare-ipfs.com/", 263},
-      {"https://ipfs.io/", 262},
-      {"https://human.mypinata.cloud/", 200},
-      {"https://cf-ipfs.com/", 140},
-      {"https://jcsl.hopto.org/", 100},
-      {"https://delegated-ipfs.dev/", 80},
-      {"https://ipfs.fleek.co/", 71},
-      {"https://trustless-gateway.link/", 68},
-      {"https://dweb.link/", 60},
-      {"https://data.filstorage.io/", 59},
-      {"https://hardbin.com/", 54},
-      {"https://dag.w3s.link/", 48},
-      {"https://permaweb.eu.org/", 42},
-      {"https://ipfs.joaoleitao.org/", 36},
-      {"https://ipfs.runfission.com/", 30},
-      {"https://ipfs.greyh.at/", 26},
-      {"https://gateway.pinata.cloud/", 19},
-      {"https://w3s.link/", 14},
-      {"https://nftstorage.link/", 10},
-      {"https://4everland.io/", 9}};
+      std::pair<std::string_view, int>{"http://127.0.0.1:8080/", 6'698},
+      {"https://ipfs.io/", 460},
+      {"https://dweb.link/", 182},
+      {"https://hardbin.com/", 167},
+      {"https://ipfs.greyh.at/", 153},
+      {"https://ipfs.joaoleitao.org/", 88},
+      {"https://ipfs.eth.aragon.network/", 60},
+      {"https://gateway.pinata.cloud/", 50},
+      {"https://human.mypinata.cloud/", 42},
+      {"https://data.filstorage.io/", 30},
+      {"https://trustless-gateway.link/", 29},
+      {"https://delegated-ipfs.dev/", 28},
+      {"https://dag.w3s.link/", 21},
+      {"https://ipfs.runfission.com/", 16},
+      {"https://storry.tv/", 11},
+      {"https://jcsl.hopto.org/", 10},
+      {"https://4everland.io/", 9},
+
+      //Currently redirects to https://ipfs.io
+      {"https://cloudflare-ipfs.com/", 8},
+      {"https://cf-ipfs.com/", 7},
+      {"https://fleek.ipfs.io/", 6},
+      {"https://ipfs.fleek.co/", 5},
+      {"https://permaweb.eu.org/", 4},
+      {"https://gateway.ipfs.io/", 3},
+
+      //Currently redirects to https://dweb.link/
+      {"https://nftstorage.link/", 2},
+      {"https://w3s.link/", 1}
+    };
   for (auto [gw, rt] : static_list) {
     cfg.AddGateway(gw, rt);
   }

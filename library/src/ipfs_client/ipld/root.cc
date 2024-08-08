@@ -52,7 +52,7 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
       Response* resp = nullptr;
       auto status = redirects_.value().rewrite(location);
       if (location.find("://") < location.size()) {
-        VLOG(1) << "_redirects file sent us to a whole URL, scheme-and-all: "
+        VLOG(2) << "_redirects file sent us to a whole URL, scheme-and-all: "
                 << location << " status=" << status;
         return Response{"", status, "", location, params.headers};
       }

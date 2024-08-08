@@ -16,4 +16,4 @@ void Self::SendDnsTextRequest(std::string host,
       std::make_unique<DnsTxtRequest>(host, res, don_wrap, nc));
 }
 Self::ChromiumDnsTxtLookup(InterRequestState& st) : state_{&st} {}
-Self::~ChromiumDnsTxtLookup() {}
+Self::~ChromiumDnsTxtLookup() noexcept {}

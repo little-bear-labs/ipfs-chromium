@@ -115,8 +115,6 @@ void ipfs::IpfsUrlLoader::StartRequest(
     if (resource_request.headers.GetHeader("Semantic", &semantic_header)) {
       LOG(WARNING) << "Setting semantic header: '" << semantic_header << "'.";
       me->ipfs_request_->semantic(semantic_header);
-    } else {
-      LOG(INFO) << "Semantic not set.";
     }
     me->stepper_ = std::make_unique<base::RepeatingTimer>();
     me->stepper_->Start(FROM_HERE, base::Seconds(2), me.get(),
@@ -149,8 +147,8 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type,
   }
   auto byte_count = static_cast<PipeByteCount>(partial_block_.size());
 #if SPAN_ARG
-  auto* p = reinterpret_cast<uint8_t const*>(partial_block_.data());
-  pipe_prod_->WriteData({p, byte_count}, MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE,
+  pipe_prod_->WriteData(base::as_bytes(base::make_span(partial_block_)),
+                        MOJO_BEGIN_WRITE_DATA_FLAG_ALL_OR_NONE,
                         byte_count);
 #else
   pipe_prod_->WriteData(partial_block_.data(), &byte_count,

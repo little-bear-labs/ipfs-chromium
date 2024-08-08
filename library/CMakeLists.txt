@@ -11,10 +11,10 @@ if(IN_WORKSPACE)
     list(APPEND CMAKE_MODULE_PATH ${old_path})
 else()
     set(CXX_VERSION 20)
-    find_package(absl REQUIRED CONFIG)
-    find_package(Boost REQUIRED CONFIG)
-    find_package(c-ares REQUIRED CONFIG)
-    find_package(nlohmann_json REQUIRED CONFIG)
+    find_package(absl QUIET REQUIRED CONFIG)
+    find_package(Boost QUIET REQUIRED CONFIG)
+    find_package(c-ares QUIET REQUIRED CONFIG)
+    find_package(nlohmann_json QUIET REQUIRED CONFIG)
 endif()
 
 file(GLOB_RECURSE
@@ -37,7 +37,7 @@ file(GLOB_RECURSE
   proto/*.proto
 )
 
-find_package(Protobuf REQUIRED)
+find_package(Protobuf QUIET REQUIRED)
 foreach(proto ${protos})
     get_filename_component(base "${proto}" NAME_WE)
     set(d "${CMAKE_CURRENT_BINARY_DIR}/gen")
@@ -61,6 +61,12 @@ add_library(ipfs_client
       ${headers} #Mostly for IDEs' sake - this used to be considered bad practice but... generator expressions and such
       ${pb_gen}
   )
+if(CLANG_TIDY_EXE)
+  set_target_properties(ipfs_client
+    PROPERTIES
+      CXX_CLANG_TIDY "${CLANG_TIDY_EXE};--config-file=${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy"
+    )
+endif()
 add_library(ipfs_client_covered
   EXCLUDE_FROM_ALL
       ${sources}
@@ -150,7 +156,7 @@ file(GLOB_RECURSE
     CONFIGURE_DEPENDS
     src/*_unittest.cc
 )
-find_package(GTest)
+find_package(GTest QUIET)
 if(GTest_FOUND AND IN_WORKSPACE)
     enable_testing()
     add_executable(unit_test_runner

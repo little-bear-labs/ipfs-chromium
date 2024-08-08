@@ -21,10 +21,15 @@ namespace boost::asio {
 class io_context;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
 namespace google::protobuf {
-constexpr LogLevel LOGLEVEL_DEBUG = static_cast<LogLevel>(-1);
-constexpr LogLevel LOGLEVEL_TRACE = static_cast<LogLevel>(-2);
+  namespace {
+    LogLevel LOGLEVEL_DEBUG = static_cast<LogLevel>(-1);
+    LogLevel LOGLEVEL_TRACE = static_cast<LogLevel>(-2);
+  }
 }  // namespace google::protobuf
+#pragma GCC diagnostic pop
 
 class HttpSession;
 

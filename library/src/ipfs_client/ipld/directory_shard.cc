@@ -30,7 +30,7 @@ auto Self::resolve(ResolutionState& parms) -> ResolveResult {
     auto result = resolve(index_parm);
     auto resp = std::get_if<Response>(&result);
     if (resp) {
-      LOG(INFO) << "Hit index.html in HAMT";
+      VLOG(2) << "Hit index.html in HAMT";
       resp->mime_ = "text/html";
     } else if (std::holds_alternative<ProvenAbsent>(result)){
       LOG(WARNING) << "HAMT returning dynamic listing HTML page.";
@@ -141,7 +141,7 @@ std::vector<std::string> Self::hexhash(std::string_view path_element) const {
 }
 
 Self::DirShard(std::uint64_t fanout) : fanout_{fanout} {}
-Self::~DirShard() noexcept {}
+Self::~DirShard() noexcept = default;
 Self* Self::as_hamt() {
   return this;
 }
