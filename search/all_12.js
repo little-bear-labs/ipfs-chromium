@@ -13,6 +13,6 @@ var searchData=
   ['traits_3c_3a_3amultibase_3a_3aencoding_3a_3abase_5f32_5fupper_20_3e_139',['traits&lt;::multibase::encoding::base_32_upper &gt;',['../structmultibase_1_1traits_3_1_1multibase_1_1encoding_1_1base__32__upper_01_4.html',1,'multibase']]],
   ['transitorygatewayconfig_140',['TransitoryGatewayConfig',['../classipfs_1_1ctx_1_1TransitoryGatewayConfig.html',1,'ipfs::ctx']]],
   ['ttl_141',['ttl',['../structipfs_1_1IpnsCborEntry.html#a9ed80270b760af94c80aaff2ed3c7525',1,'ipfs::IpnsCborEntry']]],
-  ['type_142',['Type',['../classipfs_1_1PbDag.html#a401a2cf804668c81e23beeaef9534865',1,'ipfs::PbDag']]],
-  ['type_143',['type',['../classipfs_1_1PbDag.html#a63aa49ace3d5750a6eae1eb713ce4462',1,'ipfs::PbDag']]]
+  ['type_142',['type',['../classipfs_1_1PbDag.html#a63aa49ace3d5750a6eae1eb713ce4462',1,'ipfs::PbDag']]],
+  ['type_143',['Type',['../classipfs_1_1PbDag.html#a401a2cf804668c81e23beeaef9534865',1,'ipfs::PbDag']]]
 ];
