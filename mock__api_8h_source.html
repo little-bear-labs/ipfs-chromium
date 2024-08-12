@@ -126,7 +126,7 @@ $(function() {
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  }</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  ~MockApi() noexcept<span class="keyword"> override </span>{}</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  std::vector&lt;i::HttpRequestDescription&gt; <span class="keyword">mutable</span> http_requests_sent;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  std::vector&lt;ic::HttpApi::HttpCompleteCallback&gt; <span class="keyword">mutable</span> cbs;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  std::vector&lt;ic::HttpApi::OnComplete&gt; <span class="keyword">mutable</span> cbs;</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  std::string MimeType(std::string extension,</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                       std::string_view content,</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                       std::string <span class="keyword">const</span>&amp; url)<span class="keyword"> const </span>{</div>

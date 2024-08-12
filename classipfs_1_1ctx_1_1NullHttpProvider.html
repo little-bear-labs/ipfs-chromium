@@ -93,15 +93,18 @@ Collaboration diagram for ipfs::ctx::NullHttpProvider:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_types_classipfs_1_1ctx_1_1HttpApi"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classipfs_1_1ctx_1_1HttpApi')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classipfs_1_1ctx_1_1HttpApi.html">ipfs::ctx::HttpApi</a></td></tr>
-<tr class="memitem:ae2bdb2dcde181f13a895d3f1c33e1320 inherit pub_types_classipfs_1_1ctx_1_1HttpApi"><td class="memItemLeft" align="right" valign="top"><a id="ae2bdb2dcde181f13a895d3f1c33e1320"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>HttpRequestDescription</b> = ::<a class="el" href="structipfs_1_1HttpRequestDescription.html">ipfs::HttpRequestDescription</a></td></tr>
-<tr class="separator:ae2bdb2dcde181f13a895d3f1c33e1320 inherit pub_types_classipfs_1_1ctx_1_1HttpApi"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a10fc33376adbffc41633235403d0d6e2 inherit pub_types_classipfs_1_1ctx_1_1HttpApi"><td class="memItemLeft" align="right" valign="top"><a id="a10fc33376adbffc41633235403d0d6e2"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>HeaderAccess</b> = std::function&lt; std::string(std::string_view)&gt;</td></tr>
-<tr class="separator:a10fc33376adbffc41633235403d0d6e2 inherit pub_types_classipfs_1_1ctx_1_1HttpApi"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a09d5917aa9febb081cc2dc12923e3750 inherit pub_types_classipfs_1_1ctx_1_1HttpApi"><td class="memItemLeft" align="right" valign="top"><a id="a09d5917aa9febb081cc2dc12923e3750"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>HttpCompleteCallback</b> = std::function&lt; void(std::int16_t, std::string_view, HeaderAccess)&gt;</td></tr>
-<tr class="separator:a09d5917aa9febb081cc2dc12923e3750 inherit pub_types_classipfs_1_1ctx_1_1HttpApi"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4316df6ed302d63ffa29115177303bd3 inherit pub_types_classipfs_1_1ctx_1_1HttpApi"><td class="memItemLeft" align="right" valign="top"><a id="a4316df6ed302d63ffa29115177303bd3"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ReqDesc</b> = ::<a class="el" href="structipfs_1_1HttpRequestDescription.html">ipfs::HttpRequestDescription</a></td></tr>
+<tr class="separator:a4316df6ed302d63ffa29115177303bd3 inherit pub_types_classipfs_1_1ctx_1_1HttpApi"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae6b89ac5261835a34b27ba5d8cae1b2 inherit pub_types_classipfs_1_1ctx_1_1HttpApi"><td class="memItemLeft" align="right" valign="top"><a id="aae6b89ac5261835a34b27ba5d8cae1b2"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>Hdrs</b> = std::function&lt; std::string(std::string_view)&gt;</td></tr>
+<tr class="separator:aae6b89ac5261835a34b27ba5d8cae1b2 inherit pub_types_classipfs_1_1ctx_1_1HttpApi"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f2576f0135f53230b2da05f255cfc44 inherit pub_types_classipfs_1_1ctx_1_1HttpApi"><td class="memItemLeft" align="right" valign="top"><a id="a6f2576f0135f53230b2da05f255cfc44"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>OnComplete</b> = std::function&lt; void(std::int16_t, std::string_view, Hdrs)&gt;</td></tr>
+<tr class="separator:a6f2576f0135f53230b2da05f255cfc44 inherit pub_types_classipfs_1_1ctx_1_1HttpApi"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96015be3aa11085ecf3737a20f37af02 inherit pub_types_classipfs_1_1ctx_1_1HttpApi"><td class="memItemLeft" align="right" valign="top"><a id="a96015be3aa11085ecf3737a20f37af02"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>Canceller</b> = std::function&lt; void()&gt;</td></tr>
+<tr class="separator:a96015be3aa11085ecf3737a20f37af02 inherit pub_types_classipfs_1_1ctx_1_1HttpApi"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/ctx/<a class="el" href="null__http__provider_8h_source.html">null_http_provider.h</a></li>

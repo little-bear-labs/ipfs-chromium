@@ -85,13 +85,12 @@ $(function() {
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  <a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr&lt;network::mojom::URLLoaderFactory&gt;</a> loader_factory_ = <span class="keyword">nullptr</span>;</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keywordtype">void</span> SendHttpRequest(<a class="code" href="structipfs_1_1HttpRequestDescription.html">HttpRequestDescription</a>,</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                       HttpCompleteCallback cb) <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <a class="code" href="classipfs_1_1ChromiumHttp.html">ChromiumHttp</a>(network::mojom::URLLoaderFactory&amp;);</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;};</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_CHROMIUM_CHROMIUM_HTTP_H</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  Canceller SendHttpRequest(<a class="code" href="structipfs_1_1HttpRequestDescription.html">ReqDesc</a>, OnComplete cb) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <a class="code" href="classipfs_1_1ChromiumHttp.html">ChromiumHttp</a>(network::mojom::URLLoaderFactory&amp;);</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;};</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_CHROMIUM_CHROMIUM_HTTP_H</span></div>
 <div class="ttc" id="aclassipfs_1_1ChromiumHttp_html"><div class="ttname"><a href="classipfs_1_1ChromiumHttp.html">ipfs::ChromiumHttp</a></div><div class="ttdef"><b>Definition:</b> chromium_http.h:13</div></div>
 <div class="ttc" id="aclassipfs_1_1ctx_1_1HttpApi_html"><div class="ttname"><a href="classipfs_1_1ctx_1_1HttpApi.html">ipfs::ctx::HttpApi</a></div><div class="ttdef"><b>Definition:</b> http_api.h:8</div></div>
 <div class="ttc" id="aclassipfs_1_1raw__ptr_html"><div class="ttname"><a href="classipfs_1_1raw__ptr.html">ipfs::raw_ptr&lt; network::mojom::URLLoaderFactory &gt;</a></div></div>

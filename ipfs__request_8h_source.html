@@ -83,29 +83,32 @@ $(function() {
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">struct </span>Response;</div>
 <div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="classipfs_1_1IpfsRequest.html">   13</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1IpfsRequest.html">IpfsRequest</a> {</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keyword">using</span> Finisher = std::function&lt;void(<a class="code" href="classipfs_1_1IpfsRequest.html">IpfsRequest</a> <span class="keyword">const</span>&amp;, <a class="code" href="structipfs_1_1Response.html">Response</a> <span class="keyword">const</span>&amp;)&gt;;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  std::string path_;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  Finisher callback_;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  ResponseSemantic semantic_;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; </div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <a class="code" href="classipfs_1_1IpfsRequest.html">IpfsRequest</a>(std::string path, Finisher);</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; </div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> path()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a>{path_}; }</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  ResponseSemantic semantic()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> semantic_; }</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keywordtype">bool</span> done() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160; </div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <a class="code" href="classipfs_1_1IpfsRequest.html">IpfsRequest</a>&amp; semantic(std::string_view);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordtype">void</span> finish(<a class="code" href="structipfs_1_1Response.html">Response</a>&amp; r);</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordtype">void</span> new_path(std::string_view);</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160; </div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keyword">static</span> std::shared_ptr&lt;IpfsRequest&gt; fromUrl(std::string url, Finisher);</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;};</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_IPFS_REQUEST_H_</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keyword">using</span> Cleanup = std::function&lt;void()&gt;;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <span class="keyword">using</span> Finisher = std::function&lt;void(<a class="code" href="classipfs_1_1IpfsRequest.html">IpfsRequest</a> <span class="keyword">const</span>&amp;, <a class="code" href="structipfs_1_1Response.html">Response</a> <span class="keyword">const</span>&amp;)&gt;;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  std::string path_;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  Finisher callback_;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  ResponseSemantic semantic_;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  std::vector&lt;Cleanup&gt; cleanups_;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <a class="code" href="classipfs_1_1IpfsRequest.html">IpfsRequest</a>(std::string path, Finisher);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> path()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a>{path_}; }</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  ResponseSemantic semantic()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> semantic_; }</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keywordtype">bool</span> done() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <a class="code" href="classipfs_1_1IpfsRequest.html">IpfsRequest</a>&amp; semantic(std::string_view);</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordtype">void</span> finish(<a class="code" href="structipfs_1_1Response.html">Response</a>&amp; r);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordtype">void</span> new_path(std::string_view);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keywordtype">void</span> to_cleanup(Cleanup);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; </div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keyword">static</span> std::shared_ptr&lt;IpfsRequest&gt; fromUrl(std::string url, Finisher);</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;};</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_IPFS_REQUEST_H_</span></div>
 <div class="ttc" id="aclassipfs_1_1IpfsRequest_html"><div class="ttname"><a href="classipfs_1_1IpfsRequest.html">ipfs::IpfsRequest</a></div><div class="ttdef"><b>Definition:</b> ipfs_request.h:13</div></div>
 <div class="ttc" id="astructipfs_1_1Response_html"><div class="ttname"><a href="structipfs_1_1Response.html">ipfs::Response</a></div><div class="ttdef"><b>Definition:</b> response.h:14</div></div>
 <div class="ttc" id="astructipfs_1_1SlashDelimited_html"><div class="ttname"><a href="structipfs_1_1SlashDelimited.html">ipfs::SlashDelimited</a></div><div class="ttdef"><b>Definition:</b> slash_delimited.h:13</div></div>
