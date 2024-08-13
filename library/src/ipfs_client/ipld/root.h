@@ -13,6 +13,7 @@ class Root : public DagNode {
   ResolveResult resolve(ResolutionState& params) override;
   std::shared_ptr<DagNode> rooted() override;
   std::shared_ptr<DagNode> deroot() override;
+  bool expired() const override;
 
  public:
   Root(std::shared_ptr<DagNode>);

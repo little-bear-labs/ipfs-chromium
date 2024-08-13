@@ -6,7 +6,7 @@ using Self = ipfs::ipld::Symlink;
 
 Self::Symlink(std::string target) : target_{target} {}
 
-Self::~Symlink() {}
+Self::~Symlink() noexcept {}
 
 auto Self::resolve(ResolutionState& params) -> ResolveResult {
   std::string result;
@@ -42,7 +42,7 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
   } else if (result.ends_with('/')) {
     result.resize(result.size() - 1);
   }
-  LOG(INFO) << "symlink: '" << params.MyPath() << "' -> '" << result << "'.";
+  VLOG(1) << "symlink: '" << params.MyPath() << "' -> '" << result << "'.";
   return PathChange{result};
 }
 

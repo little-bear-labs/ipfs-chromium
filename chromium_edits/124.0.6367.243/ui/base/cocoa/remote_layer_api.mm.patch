@@ -1,0 +1,33 @@
+diff --git a/ui/base/cocoa/remote_layer_api.mm b/ui/base/cocoa/remote_layer_api.mm
+index fc25ba79d2b0e..962df2d65d61e 100644
+--- a/ui/base/cocoa/remote_layer_api.mm
++++ b/ui/base/cocoa/remote_layer_api.mm
+@@ -10,6 +10,7 @@
+ 
+ namespace ui {
+ 
++#if !IS_MAS_BUILD()
+ namespace {
+ // Control use of cross-process CALayers to display content directly from the
+ // GPU process on Mac.
+@@ -17,8 +18,10 @@ BASE_FEATURE(kRemoteCoreAnimationAPI,
+              "RemoteCoreAnimationAPI",
+              base::FEATURE_ENABLED_BY_DEFAULT);
+ }  // namespace
++#endif
+ 
+ bool RemoteLayerAPISupported() {
++#if !IS_MAS_BUILD()
+   if (!base::FeatureList::IsEnabled(kRemoteCoreAnimationAPI))
+     return false;
+ 
+@@ -55,6 +58,9 @@ bool RemoteLayerAPISupported() {
+ 
+   // If everything is there, we should be able to use the API.
+   return true;
++#else
++  return false;
++#endif  // MAS_BUILD
+ }
+ 
+ }  // namespace

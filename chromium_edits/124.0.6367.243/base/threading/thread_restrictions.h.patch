@@ -1,0 +1,38 @@
+diff --git a/base/threading/thread_restrictions.h b/base/threading/thread_restrictions.h
+index e9b8366361706..ebc1b54cd7029 100644
+--- a/base/threading/thread_restrictions.h
++++ b/base/threading/thread_restrictions.h
+@@ -136,6 +136,7 @@ class KeyStorageLinux;
+ class NativeBackendKWallet;
+ class NativeDesktopMediaList;
+ class PartnerBookmarksReader;
++class ProcessSingleton;
+ class Profile;
+ class ProfileImpl;
+ class ScopedAllowBlockingForProfile;
+@@ -276,6 +277,9 @@ class BackendImpl;
+ class InFlightIO;
+ bool CleanupDirectorySync(const base::FilePath&);
+ }  // namespace disk_cache
++namespace electron {
++class ScopedAllowBlockingForElectron;
++}  // namespace electron
+ namespace enterprise_connectors {
+ class LinuxKeyRotationCommand;
+ }  // namespace enterprise_connectors
+@@ -576,6 +580,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
+   friend class ::DesktopNotificationBalloon;
+   friend class ::FirefoxProfileLock;
+   friend class ::GaiaConfig;
++  friend class ::ProcessSingleton;
+   friend class ::ProfileImpl;
+   friend class ::ScopedAllowBlockingForProfile;
+   friend class ::StartupTabProviderImpl;
+@@ -615,6 +620,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
+   friend class crosapi::LacrosThreadTypeDelegate;
+   friend class crypto::ScopedAllowBlockingForNSS;  // http://crbug.com/59847
+   friend class drive::FakeDriveService;
++  friend class electron::ScopedAllowBlockingForElectron;
+   friend class extensions::InstalledLoader;
+   friend class extensions::UnpackedInstaller;
+   friend class font_service::internal::MappedFontFile;

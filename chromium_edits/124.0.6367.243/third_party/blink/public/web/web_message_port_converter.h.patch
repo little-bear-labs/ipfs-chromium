@@ -1,0 +1,22 @@
+diff --git a/third_party/blink/public/web/web_message_port_converter.h b/third_party/blink/public/web/web_message_port_converter.h
+index e7c4464f1b5aa..bd804d509ad5f 100644
+--- a/third_party/blink/public/web/web_message_port_converter.h
++++ b/third_party/blink/public/web/web_message_port_converter.h
+@@ -13,6 +13,7 @@
+ namespace v8 {
+ class Isolate;
+ class Value;
++class Context;
+ }  // namespace v8
+ 
+ namespace blink {
+@@ -25,6 +26,9 @@ class BLINK_EXPORT WebMessagePortConverter {
+   // neutered, it will return nullopt.
+   static std::optional<MessagePortChannel>
+   DisentangleAndExtractMessagePortChannel(v8::Isolate*, v8::Local<v8::Value>);
++
++  BLINK_EXPORT static v8::Local<v8::Value>
++  EntangleAndInjectMessagePortChannel(v8::Local<v8::Context>, MessagePortChannel);
+ };
+ 
+ }  // namespace blink

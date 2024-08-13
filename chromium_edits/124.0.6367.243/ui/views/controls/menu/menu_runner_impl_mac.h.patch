@@ -1,0 +1,12 @@
+diff --git a/ui/views/controls/menu/menu_runner_impl_mac.h b/ui/views/controls/menu/menu_runner_impl_mac.h
+index db81eab045142..2852652a7989a 100644
+--- a/ui/views/controls/menu/menu_runner_impl_mac.h
++++ b/ui/views/controls/menu/menu_runner_impl_mac.h
+@@ -39,6 +39,7 @@ class VIEWS_EXPORT MenuRunnerImplMac : public MenuRunnerImplInterface {
+       const gfx::Rect& bounds,
+       MenuAnchorPosition anchor,
+       int32_t run_types,
++      ui::MenuSourceType source_type,
+       gfx::NativeView native_view_for_gestures,
+       std::optional<gfx::RoundedCornersF> corners,
+       std::optional<std::string> show_menu_host_duration_histogram) override;

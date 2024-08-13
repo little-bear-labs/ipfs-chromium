@@ -1,0 +1,56 @@
+diff --git a/ui/gtk/select_file_dialog_linux_gtk.h b/ui/gtk/select_file_dialog_linux_gtk.h
+index 53ae15f14c45e..af181afd9db13 100644
+--- a/ui/gtk/select_file_dialog_linux_gtk.h
++++ b/ui/gtk/select_file_dialog_linux_gtk.h
+@@ -15,6 +15,13 @@
+ 
+ namespace gtk {
+ 
++struct ExtraSettings {
++  std::string button_label;
++  bool show_overwrite_confirmation = true;
++  bool show_hidden = false;
++  bool allow_multiple_selection = false;
++};
++
+ // Implementation of SelectFileDialog that shows a Gtk common dialog for
+ // choosing a file or folder. This acts as a modal dialog.
+ class SelectFileDialogLinuxGtk : public ui::SelectFileDialogLinux,
+@@ -90,19 +97,23 @@ class SelectFileDialogLinuxGtk : public ui::SelectFileDialogLinux,
+   GtkWidget* CreateSelectFolderDialog(Type type,
+                                       const std::string& title,
+                                       const base::FilePath& default_path,
+-                                      gfx::NativeWindow parent);
++                                      gfx::NativeWindow parent,
++                                      const ExtraSettings& settings);
+ 
+   GtkWidget* CreateFileOpenDialog(const std::string& title,
+                                   const base::FilePath& default_path,
+-                                  gfx::NativeWindow parent);
++                                  gfx::NativeWindow parent,
++                                  const ExtraSettings& settings);
+ 
+   GtkWidget* CreateMultiFileOpenDialog(const std::string& title,
+                                        const base::FilePath& default_path,
+-                                       gfx::NativeWindow parent);
++                                       gfx::NativeWindow parent,
++                                       const ExtraSettings& settings);
+ 
+   GtkWidget* CreateSaveAsDialog(const std::string& title,
+                                 const base::FilePath& default_path,
+-                                gfx::NativeWindow parent);
++                                gfx::NativeWindow parent,
++                                const ExtraSettings& settings);
+ 
+   // Removes and returns the |params| associated with |dialog| from
+   // |params_map_|.
+@@ -121,7 +132,8 @@ class SelectFileDialogLinuxGtk : public ui::SelectFileDialogLinux,
+   // Common function for CreateFileOpenDialog and CreateMultiFileOpenDialog.
+   GtkWidget* CreateFileOpenHelper(const std::string& title,
+                                   const base::FilePath& default_path,
+-                                  gfx::NativeWindow parent);
++                                  gfx::NativeWindow parent,
++                                  const ExtraSettings& settings);
+ 
+   // Callback for when the user responds to a Save As or Open File dialog.
+   void OnSelectSingleFileDialogResponse(GtkWidget* dialog, int response_id);

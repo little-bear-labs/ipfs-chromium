@@ -8,10 +8,10 @@
 #include <optional>
 
 namespace ipfs {
-class ContextApi;
+class Client;
 class Car {
  public:
-  Car(ByteView, ContextApi const&);
+  Car(ByteView, Client&);
   struct Block {
     Cid cid;
     ByteView bytes;

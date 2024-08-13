@@ -1,6 +1,19 @@
 #!/bin/bash -ex
 echo Clone tester repo.
-git clone --single-branch --branch newmain https://github.com/John-LittleBearLabs/ipfs_client_clitester.git
+git clone https://github.com/John-LittleBearLabs/ipfs_client_clitester.git
+for e in "${GITHUB_HEAD_REF}" "${GITHUB_REF}"
+do
+  if ! [ "${e}" ] && git -C ipfs_client_clitester checkout "compat/${e}"
+  then
+    echo "Using compat/${e}"
+    break
+  fi
+  echo "No compat branch for ${e}. Remaining mainly on the main."
+done
+
+grep -n . ipfs_client_clitester/conanfile.txt
+sed -i "s,ipfs_client/[0-9].*$,ipfs_client/$(./ipfs_chromium/cmake/version.py)," ipfs_client_clitester/conanfile.txt
+grep -n . ipfs_client_clitester/conanfile.txt
 
 echo Install dependencies.
 sudo apt-get update
@@ -42,9 +55,9 @@ function url_case() {
   echo "path remaining =${2}"
   echo "output hash =${3}"
   echo "test case description =${4}"
-  ll="${5-debug}"
+  ll="${5-note}"
   echo "log level = ${ll}"
-  if timeout 360 ./tester_build/clitester "${ll}" "${1}://${2}"
+  if timeout 420 ./tester_build/clitester "${ll}" "${1}://${2}"
   then
     echo clitester exited with successful status
   else

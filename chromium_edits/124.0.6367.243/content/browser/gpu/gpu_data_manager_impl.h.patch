@@ -1,0 +1,12 @@
+diff --git a/content/browser/gpu/gpu_data_manager_impl.h b/content/browser/gpu/gpu_data_manager_impl.h
+index 08c9940799c93..ced6f932b5bb0 100644
+--- a/content/browser/gpu/gpu_data_manager_impl.h
++++ b/content/browser/gpu/gpu_data_manager_impl.h
+@@ -117,6 +117,7 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
+   bool Dx12Requested() const;
+   bool VulkanRequested() const;
+   void TerminateInfoCollectionGpuProcess();
++  bool DxdiagDx12VulkanRequested() const;
+ #endif
+   // Called from BrowserMainLoop::PostCreateThreads().
+   // TODO(content/browser/gpu/OWNERS): This should probably use a

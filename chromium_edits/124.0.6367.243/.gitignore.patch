@@ -1,0 +1,12 @@
+diff --git a/.gitignore b/.gitignore
+index a55c4c5bbbb29..e6ffcfcefd2aa 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -212,6 +212,7 @@ vs-chromium-project.txt
+ /data
+ /delegate_execute
+ /device/serial/device_serial_mojo.xml
++/electron
+ /google_apis/gcm/gcm.xml
+ /googleurl
+ /gpu/gles2_conform_test

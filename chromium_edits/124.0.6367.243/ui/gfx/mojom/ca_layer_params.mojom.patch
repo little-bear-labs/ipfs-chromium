@@ -1,0 +1,11 @@
+diff --git a/ui/gfx/mojom/ca_layer_params.mojom b/ui/gfx/mojom/ca_layer_params.mojom
+index 1944ef571b1f1..529296cbf858d 100644
+--- a/ui/gfx/mojom/ca_layer_params.mojom
++++ b/ui/gfx/mojom/ca_layer_params.mojom
+@@ -18,5 +18,6 @@ struct CALayerParams {
+   bool is_empty;
+   CALayerContent content;
+   gfx.mojom.Size pixel_size;
++  gfx.mojom.Rect damage;
+   float scale_factor;
+ };

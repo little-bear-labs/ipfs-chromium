@@ -1,0 +1,13 @@
+diff --git a/third_party/blink/renderer/core/frame/local_dom_window.cc b/third_party/blink/renderer/core/frame/local_dom_window.cc
+index 86d62960d31c3..813d4713fac7d 100644
+--- a/third_party/blink/renderer/core/frame/local_dom_window.cc
++++ b/third_party/blink/renderer/core/frame/local_dom_window.cc
+@@ -2231,6 +2231,8 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
+   WebWindowFeatures window_features =
+       GetWindowFeaturesFromString(features, entered_window);
+ 
++  window_features.raw_features = features;
++
+   // In fenced frames, we should always use `noopener`.
+   if (GetFrame()->IsInFencedFrameTree()) {
+     window_features.noopener = true;

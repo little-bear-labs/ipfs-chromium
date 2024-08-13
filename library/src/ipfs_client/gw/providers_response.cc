@@ -1,6 +1,6 @@
 #include "providers_response.h"
 
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/client.h>
 #include <ipfs_client/dag_json_value.h>
 
 #include <vocab/slash_delimited.h>
@@ -24,16 +24,17 @@ bool default_port(std::string_view scheme, std::string_view port) {
     return false;
   }
 }
-std::string MultiaddrToGatewayPrefix(ipfs::SlashDelimited ma) {
-  auto addr_proto = ma.pop();
-  VLOG(2)
-      << "Protocol expected to be one of ip4|ip6|dnsaddr|dns|dns4|dns6 , is:"
-      << addr_proto;
+std::string MultiaddrToGatewayPrefix(ipfs::SlashDelimited ma, bool http) {
+  /* auto addr_proto = */ ma.pop();
   auto host = ma.pop();
   auto tcp = ma.pop();
   DCHECK_EQ(tcp, "tcp");
   auto port = ma.pop();
   auto app_proto = ma.pop();
+  if (app_proto == "http" && !http) {
+    LOG(INFO) << "Rejecting http:// gateway discovery due to config.";
+    return "";
+  }
   DCHECK_EQ(app_proto.substr(0, 4), "http");
   std::string rv{app_proto};
   rv.append("://").append(host);
@@ -44,7 +45,7 @@ std::string MultiaddrToGatewayPrefix(ipfs::SlashDelimited ma) {
   return rv;
 }
 
-bool ParseProvider(ipfs::DagJsonValue const& provider, ipfs::ContextApi& api) {
+bool ParseProvider(ipfs::DagJsonValue const& provider, ipfs::Client& api) {
   auto proto = provider["Protocol"sv];
   if (!proto) {
     // Perhaps Schema == peer. Not an error, but not used as of now.
@@ -68,10 +69,14 @@ bool ParseProvider(ipfs::DagJsonValue const& provider, ipfs::ContextApi& api) {
   bool rv = false;
   auto handle_addr = [&api, &rv](ipfs::DagJsonValue const& addr) {
     if (auto s = addr.get_if_string()) {
-      auto gw_pre = MultiaddrToGatewayPrefix(ipfs::SlashDelimited{s.value()});
-      LOG(INFO) << "'" << *s << "' -> '" << gw_pre << "'.";
-      api.AddGateway(gw_pre);
-      rv = true;
+      auto& c = api.gw_cfg();
+      auto http = c.RoutingApiDiscoveryOfUnencryptedGateways();
+      ipfs::SlashDelimited sd{s.value()};
+      auto gw_pre = MultiaddrToGatewayPrefix(sd, http);
+      if (gw_pre.size()) {
+        c.AddGateway(gw_pre, c.RoutingApiDiscoveryDefaultRate());
+        rv = true;
+      }
     } else {
       LOG(ERROR) << ".Providers[x].Addrs[x] is not a string";
     }
@@ -83,8 +88,12 @@ bool ParseProvider(ipfs::DagJsonValue const& provider, ipfs::ContextApi& api) {
 }
 }  // namespace
 
-bool prov::ProcessResponse(std::string_view json_str, ContextApi& api) {
-  auto parsed = api.ParseJson(json_str);
+bool prov::ProcessResponse(std::string_view json_str, Client& api) {
+  if (json_str.empty()) {
+    LOG(ERROR) << "Empty body in response to routing/v1 providers request.";
+    return false;
+  }
+  auto parsed = api.json().Parse(json_str);
   if (!parsed) {
     LOG(ERROR)
         << "Response to routing/v1 providers request did not parse as JSON: "
@@ -101,7 +110,7 @@ bool prov::ProcessResponse(std::string_view json_str, ContextApi& api) {
   bool rv = false;
   auto parse_one = [&rv, &api](auto& p) { rv = ParseProvider(p, api) || rv; };
   if (!list->iterate_list(parse_one)) {
-    LOG(ERROR) << ".Providers was not a list.";
+    VLOG(2) << ".Providers was not a list.";
   }
   return rv;
 }

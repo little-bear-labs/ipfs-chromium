@@ -1,0 +1,12 @@
+diff --git a/services/network/public/cpp/url_request_mojom_traits.cc b/services/network/public/cpp/url_request_mojom_traits.cc
+index aa3d03142152a..bea0ddcdf60f2 100644
+--- a/services/network/public/cpp/url_request_mojom_traits.cc
++++ b/services/network/public/cpp/url_request_mojom_traits.cc
+@@ -93,6 +93,7 @@ bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
+   out->disable_secure_dns = data.disable_secure_dns();
+   out->has_user_activation = data.has_user_activation();
+   out->allow_cookies_from_browser = data.allow_cookies_from_browser();
++  out->report_raw_headers = data.report_raw_headers();
+   out->cookie_observer = data.TakeCookieObserver<
+       mojo::PendingRemote<network::mojom::CookieAccessObserver>>();
+   out->trust_token_observer = data.TakeTrustTokenObserver<

@@ -1,0 +1,15 @@
+diff --git a/chrome/browser/win/titlebar_config.cc b/chrome/browser/win/titlebar_config.cc
+index f088a7071b1e0..8d411e550f6a8 100644
+--- a/chrome/browser/win/titlebar_config.cc
++++ b/chrome/browser/win/titlebar_config.cc
+@@ -19,8 +19,10 @@ BASE_FEATURE(kWindows11MicaTitlebar,
+ 
+ bool ShouldBrowserCustomDrawTitlebar(BrowserView* browser_view) {
+   return !ShouldDefaultThemeUseMicaTitlebar() ||
++#if 0
+          !ThemeServiceFactory::GetForProfile(browser_view->GetProfile())
+               ->UsingSystemTheme() ||
++#endif
+          (!browser_view->browser()->is_type_normal() &&
+           !browser_view->browser()->is_type_popup() &&
+           !browser_view->browser()->is_type_devtools());

@@ -4,13 +4,13 @@
 #include "dag_cbor_node.h"
 #include "dag_json_node.h"
 #include "directory_shard.h"
-#include "ipns_name.h"
+#include "dnslink_name.h"
 #include "root.h"
 #include "small_directory.h"
 #include "symlink.h"
 #include "unixfs_file.h"
 
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/client.h>
 #include <ipfs_client/ipns_record.h>
 #include <ipfs_client/pb_dag.h>
 
@@ -21,12 +21,12 @@
 
 using Node = ipfs::ipld::DagNode;
 
-std::shared_ptr<Node> Node::fromBytes(std::shared_ptr<ContextApi> const& api,
+std::shared_ptr<Node> Node::fromBytes(std::shared_ptr<Client> const& api,
                                       Cid const& cid,
                                       std::string_view bytes) {
   return fromBytes(api, cid, as_bytes(bytes));
 }
-auto Node::fromBytes(std::shared_ptr<ContextApi> const& api,
+auto Node::fromBytes(std::shared_ptr<Client> const& api,
                      ipfs::Cid const& cid,
                      ipfs::ByteView bytes) -> NodePtr {
   std::shared_ptr<Node> result = nullptr;
@@ -56,7 +56,7 @@ auto Node::fromBytes(std::shared_ptr<ContextApi> const& api,
   switch (cid.codec()) {
     case MultiCodec::DAG_CBOR: {
       auto p = reinterpret_cast<Byte const*>(bytes.data());
-      auto cbor = api->ParseCbor({p, bytes.size()});
+      auto cbor = api->cbor().Parse({p, bytes.size()});
       if (cbor) {
         result = std::make_shared<DagCborNode>(std::move(cbor));
       } else {
@@ -66,7 +66,7 @@ auto Node::fromBytes(std::shared_ptr<ContextApi> const& api,
     } break;
     case MultiCodec::DAG_JSON: {
       auto p = reinterpret_cast<char const*>(bytes.data());
-      auto json = api->ParseJson({p, bytes.size()});
+      auto json = api->json().Parse({p, bytes.size()});
       if (json) {
         result = std::make_shared<DagJsonNode>(std::move(json));
       } else {
@@ -107,11 +107,14 @@ std::shared_ptr<Node> Node::fromBlock(ipfs::PbDag const& block) {
   std::shared_ptr<Node> result;
   switch (block.type()) {
     case PbDag::Type::FileChunk:
-      return std::make_shared<Chunk>(block.chunk_data());
+      result = std::make_shared<Chunk>(block.chunk_data());
+      break;
     case PbDag::Type::NonFs:
-      return std::make_shared<Chunk>(block.unparsed());
+      result = std::make_shared<Chunk>(block.unparsed());
+      break;
     case PbDag::Type::Symlink:
-      return std::make_shared<Symlink>(block.chunk_data());
+      result = std::make_shared<Symlink>(block.chunk_data());
+      break;
     case PbDag::Type::Directory:
       result = std::make_shared<SmallDirectory>();
       break;
@@ -143,26 +146,25 @@ std::shared_ptr<Node> Node::fromBlock(ipfs::PbDag const& block) {
   return result;
 }
 
-auto Node::fromIpnsRecord(ipfs::ValidatedIpns const& v) -> NodePtr {
-  return std::make_shared<IpnsName>(v.value);
-}
-
 std::shared_ptr<Node> Node::deroot() {
   return shared_from_this();
 }
 std::shared_ptr<Node> Node::rooted() {
   return std::make_shared<Root>(shared_from_this());
 }
-auto Node::as_hamt() -> DirShard* {
-  return nullptr;
-}
-void Node::set_api(std::shared_ptr<ContextApi> api) {
+void Node::set_api(std::shared_ptr<Client> api) {
   api_ = api;
 }
 auto Node::resolve(SlashDelimited initial_path, BlockLookup blu)
     -> ResolveResult {
   ResolutionState state{initial_path, blu};
-  return resolve(state);
+  return Resolve(state);
+}
+auto Node::Resolve(ResolutionState& params) -> ResolveResult {
+  if (source_.cid.size()) {
+    params.headers.Add(source_);
+  }
+  return resolve(params);
 }
 auto Node::CallChild(ipfs::ipld::ResolutionState& state) -> ResolveResult {
   return CallChild(state, state.NextComponent(api_.get()));
@@ -188,7 +190,7 @@ auto Node::CallChild(ResolutionState& state, std::string_view link_key)
   }
   if (node) {
     state.Descend();
-    return node->resolve(state);
+    return node->Resolve(state);
   } else {
     std::string needed{"/ipfs/"};
     needed.append(child->cid);
@@ -219,7 +221,7 @@ auto Node::CallChild(ResolutionState& state,
     }
   }
   state.Descend();
-  return node->resolve(state);
+  return node->Resolve(state);
 }
 auto Node::FindChild(std::string_view link_key) -> Link* {
   for (auto& [name, link] : links_) {
@@ -228,6 +230,12 @@ auto Node::FindChild(std::string_view link_key) -> Link* {
     }
   }
   return nullptr;
+}
+bool Node::expired() const {
+  return false;
+}
+bool Node::PreferOver(Node const&) const {
+  return false;
 }
 
 std::ostream& operator<<(std::ostream& s, ipfs::ipld::PathChange const& c) {

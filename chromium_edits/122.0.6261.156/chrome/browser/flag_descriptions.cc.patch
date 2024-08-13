@@ -1,0 +1,16 @@
+diff --git a/chrome/browser/flag_descriptions.cc b/chrome/browser/flag_descriptions.cc
+index 8385c597f050e..e2794545964a0 100644
+--- a/chrome/browser/flag_descriptions.cc
++++ b/chrome/browser/flag_descriptions.cc
+@@ -292,6 +292,11 @@ const char kEnableBenchmarkingChoiceDefaultFeatureStates[] =
+ const char kEnableBenchmarkingChoiceMatchFieldTrialTestingConfig[] =
+     "Match Field Trial Testing Config";
+ 
++#if BUILDFLAG(ENABLE_IPFS)
++extern const char kEnableIpfsName[] = "Enable IPFS";
++extern const char kEnableIpfsDescription[] = "Enable ipfs:// and ipns:// URLs";
++#endif
++
+ const char kPreloadingOnPerformancePageName[] =
+     "Preloading Settings on Performance Page";
+ const char kPreloadingOnPerformancePageDescription[] =

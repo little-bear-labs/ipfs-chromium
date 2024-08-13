@@ -1,0 +1,14 @@
+diff --git a/ui/linux/linux_ui.h b/ui/linux/linux_ui.h
+index b940382678ba7..4477a1012fef5 100644
+--- a/ui/linux/linux_ui.h
++++ b/ui/linux/linux_ui.h
+@@ -304,7 +304,8 @@ class COMPONENT_EXPORT(LINUX_UI) LinuxUiTheme {
+   // The returned object is not owned by the caller and will remain alive until
+   // the process ends.
+   virtual WindowFrameProvider* GetWindowFrameProvider(bool solid_frame,
+-                                                      bool tiled) = 0;
++                                                      bool tiled,
++                                                      bool maximized) = 0;
+ 
+  protected:
+   LinuxUiTheme();

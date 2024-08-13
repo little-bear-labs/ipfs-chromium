@@ -1,0 +1,62 @@
+diff --git a/content/browser/media/media_keys_listener_manager_impl.cc b/content/browser/media/media_keys_listener_manager_impl.cc
+index 47a0cdee2c7c2..63f5450a90bab 100644
+--- a/content/browser/media/media_keys_listener_manager_impl.cc
++++ b/content/browser/media/media_keys_listener_manager_impl.cc
+@@ -88,7 +88,11 @@ bool MediaKeysListenerManagerImpl::StartWatchingMediaKey(
+       CanActiveMediaSessionControllerReceiveEvents();
+ 
+   // Tell the underlying MediaKeysListener to listen for the key.
+-  if (should_start_watching && media_keys_listener_ &&
++  if (
++#if BUILDFLAG(IS_MAC)
++      !media_key_handling_enabled_ &&
++#endif  // BUILDFLAG(IS_MAC)
++      should_start_watching && media_keys_listener_ &&
+       !media_keys_listener_->StartWatchingMediaKey(key_code)) {
+     return false;
+   }
+@@ -354,6 +358,20 @@ void MediaKeysListenerManagerImpl::StartListeningForMediaKeysIfNecessary() {
+         this, ui::MediaKeysListener::Scope::kGlobal);
+     DCHECK(media_keys_listener_);
+   }
++
++#if BUILDFLAG(IS_MAC)
++  // Chromium's implementation of SystemMediaControls falls
++  // down into MPRemoteCommandCenter, which makes it such that an app will not
++  // will not receive remote control events until it begins playing audio.
++  // If there's not already a MediaKeysListener instance, create one so
++  // that globalShortcuts work correctly.
++  if (!media_keys_listener_) {
++    media_keys_listener_ = ui::MediaKeysListener::Create(
++        this, ui::MediaKeysListener::Scope::kGlobal);
++    DCHECK(media_keys_listener_);
++  }
++#endif
++
+   EnsureAuxiliaryServices();
+ }
+ 
+@@ -405,6 +423,11 @@ void MediaKeysListenerManagerImpl::UpdateSystemMediaControlsEnabledControls() {
+         case ui::VKEY_MEDIA_STOP:
+           browser_system_media_controls_->SetIsStopEnabled(should_enable);
+           break;
++        case ui::VKEY_VOLUME_DOWN:
++        case ui::VKEY_VOLUME_UP:
++        case ui::VKEY_VOLUME_MUTE:
++          // Do nothing.
++          break;
+         default:
+           NOTREACHED();
+       }
+@@ -447,6 +470,11 @@ void MediaKeysListenerManagerImpl::UpdateSystemMediaControlsEnabledControls() {
+         case ui::VKEY_MEDIA_STOP:
+           smc->SetIsStopEnabled(should_enable);
+           break;
++        case ui::VKEY_VOLUME_DOWN:
++        case ui::VKEY_VOLUME_UP:
++        case ui::VKEY_VOLUME_MUTE:
++          // Do nothing.
++          break;
+         default:
+           NOTREACHED();
+       }

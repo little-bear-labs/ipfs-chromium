@@ -1,0 +1,23 @@
+diff --git a/content/public/app/content_main_delegate.cc b/content/public/app/content_main_delegate.cc
+index 610938d92786c..11797f0429845 100644
+--- a/content/public/app/content_main_delegate.cc
++++ b/content/public/app/content_main_delegate.cc
+@@ -5,6 +5,7 @@
+ #include "content/public/app/content_main_delegate.h"
+ 
+ #include "base/check.h"
++#include "base/strings/string_piece.h"
+ #include "build/build_config.h"
+ #include "content/public/browser/content_browser_client.h"
+ #include "content/public/common/content_client.h"
+@@ -87,6 +88,10 @@ std::optional<int> ContentMainDelegate::PostEarlyInitialization(
+   return std::nullopt;
+ }
+ 
++base::StringPiece ContentMainDelegate::GetBrowserV8SnapshotFilename() {
++  return base::StringPiece();
++}
++
+ ContentClient* ContentMainDelegate::CreateContentClient() {
+   return new ContentClient();
+ }

@@ -1,0 +1,26 @@
+diff --git a/components/crash/core/app/crashpad_win.cc b/components/crash/core/app/crashpad_win.cc
+index 15addd5c5e663..f31ae6b9e8bfd 100644
+--- a/components/crash/core/app/crashpad_win.cc
++++ b/components/crash/core/app/crashpad_win.cc
+@@ -91,6 +91,7 @@ bool PlatformCrashpadInitialization(
+ 
+     std::map<std::string, std::string> process_annotations;
+     GetPlatformCrashpadAnnotations(&process_annotations);
++    crash_reporter_client->GetProcessSimpleAnnotations(&process_annotations);
+ 
+     std::string url = crash_reporter_client->GetUploadUrl();
+ 
+@@ -129,6 +130,13 @@ bool PlatformCrashpadInitialization(
+ 
+     std::vector<std::string> arguments(start_arguments);
+ 
++    if (!crash_reporter_client->GetShouldRateLimit()) {
++      arguments.push_back("--no-rate-limit");
++    }
++    if (!crash_reporter_client->GetShouldCompressUploads()) {
++      arguments.push_back("--no-upload-gzip");
++    }
++
+     if (crash_reporter_client->ShouldMonitorCrashHandlerExpensively()) {
+       arguments.push_back("--monitor-self");
+       for (const std::string& start_argument : start_arguments) {

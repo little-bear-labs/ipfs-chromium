@@ -106,10 +106,10 @@ class Command:
         if not exists( dirname(target) ):
             makedirs(dirname(target))
         if 'openssl' in target:
-            with open(target, 'w') as tgt:
-                print("//This file included and probably not provided by the conan (newer) version of openssl", file=tgt)
-                print('Stubbed',tgt)
-                return True
+            # with open(target, 'w') as tgt:
+            #     print("//This file included and probably not provided by the conan (newer) version of openssl", file=tgt)
+            #     print('Stubbed',tgt)
+            return False
         for base in source_bases:
             source = join(base,inc)
             if exists(source):
@@ -172,6 +172,8 @@ def search() -> bool:
                 verbose('existing_dir_map=',existing_dir_map)
             elif len(existing_dir_map):
                 t, f = existing_dir_map.pop()
+                if not isdir(f):
+                    continue
                 for entry in listdir(f):
                     source = join(f,entry)
                     target = join(t,entry)
@@ -197,6 +199,8 @@ def flesh_out() -> bool:
             t = readlink(f)
             existing_dir_map.add( (dirname(f), dirname(t)) )
     for t, f in existing_dir_map:
+        if not isdir(f):
+            continue
         for entry in listdir(f):
             source = join(f,entry)
             target = join(t,entry)

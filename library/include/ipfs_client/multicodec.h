@@ -8,7 +8,7 @@
 
 namespace ipfs {
 enum class MultiCodec : std::uint32_t {
-  INVALID = std::numeric_limits<std::uint32_t>::max(),
+  INVALID = 0xFFFF,
   IDENTITY = 0x00,
   RAW = 0x55,
   DAG_PB = 0x70,

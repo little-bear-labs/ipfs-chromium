@@ -1,11 +1,17 @@
 #include "ipns_name.h"
 
+#include <ipfs_client/ipns_record.h>
+
 #include "log_macros.h"
 
 using Self = ipfs::ipld::IpnsName;
+namespace ch = std::chrono;
 
-Self::IpnsName(std::string_view target_abs_path) {
-  SlashDelimited target{target_abs_path};
+Self::IpnsName(ValidatedIpns const& record)
+    : expiration_{ch::system_clock::from_time_t(
+          std::min(record.use_until, record.cache_until))},
+      serial_{record.sequence} {
+  SlashDelimited target{record.value};
   target_namespace_ = target.pop();
   target_root_ = target.pop();
   links_.emplace_back("", Link{target_root_, nullptr});
@@ -21,7 +27,7 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
     return MoreDataNeeded(target_namespace_ + "/" + target_root_);
   }
   if (target_path_.empty()) {
-    return node->resolve(params);
+    return node->Resolve(params);
   }
   auto path = target_path_;
   path.append("/").append(params.PathToResolve().to_view());
@@ -30,5 +36,22 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
                << target_namespace_ << '/' << target_root_ << '/'
                << target_path_ << "): " << params.MyPath()
                << " will be resolved as " << path;
-  return node->resolve(params);
+  auto lower = node->Resolve(params);
+  if (auto* mdn = std::get_if<MoreDataNeeded>(&lower)) {
+    if (expired()) {
+      auto refresh_path = "/ipns/" + params.MyPath().pop_back();
+      mdn->ipfs_abs_paths_.push_back(refresh_path);
+    }
+  }
+  return lower;
+}
+bool Self::expired() const {
+  return expiration_ < ch::system_clock::now();
+}
+bool Self::PreferOver(DagNode const& another) const {
+  auto other = another.as_ipns();
+  if (!other) {
+    return true;
+  }
+  return serial_ > other->serial_;
 }

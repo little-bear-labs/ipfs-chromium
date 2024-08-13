@@ -1,0 +1,13 @@
+diff --git a/tools/clang/scripts/update.py b/tools/clang/scripts/update.py
+index 1c9c6fcc4dda9..299d765be8856 100755
+--- a/tools/clang/scripts/update.py
++++ b/tools/clang/scripts/update.py
+@@ -306,6 +306,8 @@ def GetDefaultHostOs():
+       'win32': 'win',
+   }
+   default_host_os = _PLATFORM_HOST_OS_MAP.get(sys.platform, sys.platform)
++  if "host_os=mac" in os.environ.get('GCLIENT_EXTRA_ARGS', ''):
++    default_host_os = 'mac'
+   if default_host_os == 'mac' and platform.machine() == 'arm64':
+     default_host_os = 'mac-arm64'
+   return default_host_os

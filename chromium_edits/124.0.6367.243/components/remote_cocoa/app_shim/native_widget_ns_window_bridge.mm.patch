@@ -1,0 +1,17 @@
+diff --git a/components/remote_cocoa/app_shim/native_widget_ns_window_bridge.mm b/components/remote_cocoa/app_shim/native_widget_ns_window_bridge.mm
+index 5535f9c56113f..2845da60cf229 100644
+--- a/components/remote_cocoa/app_shim/native_widget_ns_window_bridge.mm
++++ b/components/remote_cocoa/app_shim/native_widget_ns_window_bridge.mm
+@@ -620,10 +620,12 @@ void NativeWidgetNSWindowBridge::CreateContentView(uint64_t ns_view_id,
+   // this should be treated as an error and caught early.
+   CHECK(bridged_view_);
+ 
++#if !IS_MAS_BUILD()
+   // Send the accessibility tokens for the NSView now that it exists.
+   host_->SetRemoteAccessibilityTokens(
+       ui::RemoteAccessibility::GetTokenForLocalElement(window_),
+       ui::RemoteAccessibility::GetTokenForLocalElement(bridged_view_));
++#endif
+ 
+   // Beware: This view was briefly removed (in favor of a bare CALayer) in
+   // https://crrev.com/c/1236675. The ordering of unassociated layers relative

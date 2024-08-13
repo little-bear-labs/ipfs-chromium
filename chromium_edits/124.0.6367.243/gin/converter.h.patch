@@ -1,0 +1,20 @@
+diff --git a/gin/converter.h b/gin/converter.h
+index 88ed39f337d5e..175817151bfb8 100644
+--- a/gin/converter.h
++++ b/gin/converter.h
+@@ -190,6 +190,15 @@ struct GIN_EXPORT Converter<v8::Local<v8::ArrayBuffer> > {
+                      v8::Local<v8::ArrayBuffer>* out);
+ };
+ 
++template<>
++struct GIN_EXPORT Converter<v8::Local<v8::ArrayBufferView> > {
++  static v8::Local<v8::Value> ToV8(v8::Isolate* isolate,
++                                    v8::Local<v8::ArrayBufferView> val);
++  static bool FromV8(v8::Isolate* isolate,
++                     v8::Local<v8::Value> val,
++                     v8::Local<v8::ArrayBufferView>* out);
++};
++
+ template<>
+ struct GIN_EXPORT Converter<v8::Local<v8::External> > {
+   static v8::Local<v8::Value> ToV8(v8::Isolate* isolate,

@@ -1,0 +1,12 @@
+diff --git a/printing/printing_context.cc b/printing/printing_context.cc
+index 87ffdf6f44029..ea407211ca4e3 100644
+--- a/printing/printing_context.cc
++++ b/printing/printing_context.cc
+@@ -154,7 +154,6 @@ void PrintingContext::UsePdfSettings() {
+ 
+ mojom::ResultCode PrintingContext::UpdatePrintSettings(
+     base::Value::Dict job_settings) {
+-  ResetSettings();
+   {
+     std::unique_ptr<PrintSettings> settings =
+         PrintSettingsFromJobSettings(job_settings);

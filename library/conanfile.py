@@ -27,7 +27,9 @@ class IpfsChromium(ConanFile):
         'bzip2/1.0.8',
         'c-ares/1.22.1',
         'nlohmann_json/3.11.2',
-        'openssl/1.1.1t',
+        # 'openssl/3.2.1',
+        # 'openssl/1.1.1t',
+        'openssl/1.1.1w',
         _PB,
     ]
     # default_options = {"boost/*:header_only": True}

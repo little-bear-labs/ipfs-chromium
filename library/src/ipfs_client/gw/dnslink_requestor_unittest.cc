@@ -4,7 +4,7 @@
 
 #include <ipfs_client/gw/gateway_request.h>
 #include <ipfs_client/gw/terminating_requestor.h>
-#include <ipfs_client/orchestrator.h>
+#include <ipfs_client/partition.h>
 
 using T = ig::DnsLinkRequestor;
 
@@ -15,15 +15,19 @@ struct DnslinkRequestorTest : public testing::Test {
   std::shared_ptr<ig::GatewayRequest> r_ =
       ig::GatewayRequest::fromIpfsPath(i::SlashDelimited{"/ipns/not_a_cid"});
   ig::Requestor& t() { return *t_; }
-  std::shared_ptr<i::Orchestrator> orc_ = std::make_shared<i::Orchestrator>(
-      std::make_shared<ig::TerminatingRequestor>());
-  DnslinkRequestorTest() { r_->orchestrator(orc_); }
+  std::shared_ptr<ig::Requestor> rtor_;
+  std::shared_ptr<i::Partition> orc_;
+  DnslinkRequestorTest() {
+    rtor_ = std::make_shared<ig::TerminatingRequestor>();
+    orc_ = api->with(rtor_).partition({});
+    r_->orchestrator(orc_);
+  }
 };
 }  // namespace
 
 TEST_F(DnslinkRequestorTest, basic) {
-  api->expected_dns.push_back({"_dnslink.not_a_cid",
-                               {"dnslinks=/ipfs/nonotthis"s,
+  api->dns_->expected_dns.push_back({"_dnslink.not_a_cid",
+                                     {"dnslinks=/ipfs/nonotthis"s,
                                 "dnslink=/ipfs/yesthis"s
                                 ""s}});
   EXPECT_FALSE(orc_->has_key("not_a_cid"));

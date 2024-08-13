@@ -1,0 +1,12 @@
+diff --git a/gpu/ipc/service/BUILD.gn b/gpu/ipc/service/BUILD.gn
+index 6716bd24f4bed..b8c268ce7b04d 100644
+--- a/gpu/ipc/service/BUILD.gn
++++ b/gpu/ipc/service/BUILD.gn
+@@ -134,6 +134,7 @@ component("service") {
+       "QuartzCore.framework",
+     ]
+     defines += [ "GL_SILENCE_DEPRECATION" ]
++    configs += ["//electron/build/config:mas_build"]
+   }
+   if (is_ios) {
+     sources += [ "image_transport_surface_ios.mm" ]

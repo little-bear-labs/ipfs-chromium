@@ -1,8 +1,20 @@
 #include "chromium_cbor_adapter.h"
 
 #include <base/logging.h>
+#include <components/cbor/reader.h>
 
 using Self = ipfs::ChromiumCborAdapter;
+
+auto Self::Parse(ipfs::ByteView bytes) -> std::unique_ptr<DagCborValue> {
+  cbor::Reader::Config cfg;
+  cfg.parse_tags = true;
+  auto parsed = cbor::Reader::Read(as_octets(bytes), cfg);
+  if (parsed.has_value()) {
+    return std::make_unique<ChromiumCborAdapter>(std::move(parsed.value()));
+  }
+  LOG(ERROR) << "Failed to parse CBOR.";
+  return {};
+}
 
 bool Self::is_map() const {
   return cbor_.is_map();
@@ -13,7 +25,13 @@ bool Self::is_array() const {
 auto Self::at(std::string_view key) const -> std::unique_ptr<DagCborValue> {
   if (is_map()) {
     auto& m = cbor_.GetMap();
-    auto it = m.find(cbor::Value{base::StringPiece{key}});
+    auto it = m.find(cbor::Value{
+#ifdef BASE_STRINGS_STRING_PIECE_H_
+        base::StringPiece{key}
+#else
+        key
+#endif
+    });
     if (m.end() != it) {
       return std::make_unique<Self>(it->second.Clone());
     }
@@ -49,7 +67,8 @@ auto Self::as_bytes() const -> std::optional<std::vector<std::uint8_t>> {
   return std::nullopt;
 }
 auto Self::as_link() const -> std::optional<Cid> {
-  VLOG(1) << "Trying to do an as_link(" << static_cast<int>(cbor_.type()) << ',' << std::boolalpha << cbor_.has_tag() << ")";
+  VLOG(2) << "Trying to do an as_link(" << static_cast<int>(cbor_.type()) << ','
+          << std::boolalpha << cbor_.has_tag() << ")";
   if (!cbor_.has_tag() || cbor_.GetTag() != 42UL || !cbor_.is_bytestring()) {
     VLOG(1) << "This is not a link.";
     return std::nullopt;
@@ -83,6 +102,7 @@ void Self::iterate_array(ArrayElementCallback cb) const {
   }
 }
 
+Self::ChromiumCborAdapter() : cbor_{cbor::Value::SimpleValue::UNDEFINED} {}
 Self::ChromiumCborAdapter(cbor::Value const& v) : cbor_{v.Clone()} {}
 Self::ChromiumCborAdapter(cbor::Value&& v) : cbor_{std::move(v)} {}
 Self::ChromiumCborAdapter(ChromiumCborAdapter const& rhs)

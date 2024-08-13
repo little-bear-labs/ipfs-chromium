@@ -1,0 +1,26 @@
+diff --git a/content/browser/renderer_host/render_widget_host_view_mac.h b/content/browser/renderer_host/render_widget_host_view_mac.h
+index 5497f4e3faa66..a768ff0ad1fd0 100644
+--- a/content/browser/renderer_host/render_widget_host_view_mac.h
++++ b/content/browser/renderer_host/render_widget_host_view_mac.h
+@@ -49,7 +49,9 @@ class ScopedPasswordInputEnabler;
+ 
+ @protocol RenderWidgetHostViewMacDelegate;
+ 
++#if !IS_MAS_BUILD()
+ @class NSAccessibilityRemoteUIElement;
++#endif
+ @class RenderWidgetHostViewCocoa;
+ @class CursorAccessibilityScaleFactorObserver;
+ 
+@@ -682,9 +684,11 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
+   // EnsureSurfaceSynchronizedForWebTest().
+   uint32_t latest_capture_sequence_number_ = 0u;
+ 
++#if !IS_MAS_BUILD()
+   // Remote accessibility objects corresponding to the NSWindow that this is
+   // displayed to the user in.
+   NSAccessibilityRemoteUIElement* __strong remote_window_accessible_;
++#endif
+ 
+   // Used to force the NSApplication's focused accessibility element to be the
+   // content::BrowserAccessibilityCocoa accessibility tree when the NSView for

@@ -19,7 +19,7 @@ void ig::Requestor::TestAccess(void* p) {
 TEST(DefaultRequestorTest, name_check) {
   auto early = std::make_shared<MockRequestor>();
   auto api = std::make_shared<MockApi>();
-  auto result = ig::default_requestor({}, early, api);
+  auto result = ig::default_requestor(early, api);
   Arg a;
   result->TestAccess(&a);
   EXPECT_EQ(a.name, "InlineRequestHandler");

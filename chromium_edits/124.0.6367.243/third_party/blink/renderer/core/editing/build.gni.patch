@@ -1,0 +1,20 @@
+diff --git a/third_party/blink/renderer/core/editing/build.gni b/third_party/blink/renderer/core/editing/build.gni
+index f12dd0a759fd8..63ae0ca4f63e6 100644
+--- a/third_party/blink/renderer/core/editing/build.gni
++++ b/third_party/blink/renderer/core/editing/build.gni
+@@ -354,10 +354,14 @@ blink_core_sources_editing = [
+ if (is_mac) {
+   blink_core_sources_editing += [
+     "commands/smart_replace_cf.cc",
+-    "kill_ring_mac.mm",
+     "substring_util.h",
+     "substring_util.mm",
+   ]
++  if (is_mas_build) {
++    blink_core_sources_editing += [ "kill_ring_mac.mm" ]
++  } else {
++    blink_core_sources_editing += [ "kill_ring_none.cc" ]
++  }
+ } else {
+   blink_core_sources_editing += [ "kill_ring_none.cc" ]
+ }

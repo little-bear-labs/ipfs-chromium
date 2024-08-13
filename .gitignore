@@ -5,3 +5,4 @@ CMakeUserPresets.json
 *.orig
 .*.swp
 gotit.json
+.kdev4/ipfs-chromium.kdev4

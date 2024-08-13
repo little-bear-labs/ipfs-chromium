@@ -1,0 +1,12 @@
+diff --git a/extensions/browser/script_injection_tracker.cc b/extensions/browser/script_injection_tracker.cc
+index 90c14e9712497..6f2082daef563 100644
+--- a/extensions/browser/script_injection_tracker.cc
++++ b/extensions/browser/script_injection_tracker.cc
+@@ -170,7 +170,6 @@ std::vector<const UserScript*> GetLoadedDynamicScripts(
+   UserScriptManager* manager =
+       ExtensionSystem::Get(process.GetBrowserContext())->user_script_manager();
+   if (!manager) {
+-    CHECK_IS_TEST();
+     return std::vector<const UserScript*>();
+   }
+ 

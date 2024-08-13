@@ -1,0 +1,12 @@
+diff --git a/build/config/linux/gtk/BUILD.gn b/build/config/linux/gtk/BUILD.gn
+index 355067ea178be..1b385d12692de 100644
+--- a/build/config/linux/gtk/BUILD.gn
++++ b/build/config/linux/gtk/BUILD.gn
+@@ -27,6 +27,7 @@ pkg_config("gtk_internal_config") {
+ 
+ group("gtk") {
+   visibility = [
++    "//electron:*",
+     # These are allow-listed for WebRTC builds.  Nothing in else should depend
+     # on GTK.
+     "//examples:peerconnection_client",

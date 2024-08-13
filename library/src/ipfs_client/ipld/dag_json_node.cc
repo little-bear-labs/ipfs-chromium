@@ -24,7 +24,7 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
     return respond_as_link;
   }
   if (params.IsFinalComponent()) {
-    return Response{"text/html", 200, html(), params.MyPath().to_string()};
+    return Response::html(html(), params.MyPath().to_string());
   }
   return CallChild(params, [this](std::string_view name) -> NodePtr {
     auto child_data = (*data_)[name];

@@ -68,15 +68,19 @@ foreach(proto ${protos} )
     set(gn_protos "${gn_protos}  \"${basename}\",\n  ")
 endforeach()
 
-add_custom_target(patch_file
+add_custom_target(record_edits
   COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/patch.py" "${CHROMIUM_SOURCE_TREE}" "${GIT_EXECUTABLE}" "${CMAKE_BUILD_TYPE}"
-  COMMENT "Creating patch file (will overwrite if already present)."
+  COMMENT "Creating patch files and such (will overwrite if already present)."
   )
 
 add_custom_target(setup_in_tree
     COMMENT "Preparing the Chromium repository & build directory, but not building any targets."
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" base
   )
+add_custom_target(pull_clang_config
+    COMMAND "${CMAKE_COMMAND}" -E copy "${CHROMIUM_SOURCE_TREE}/.clang-format" "${CMAKE_SOURCE_DIR}/"
+    COMMAND "${CMAKE_COMMAND}" -E copy "${CHROMIUM_SOURCE_TREE}/.clang-tidy"   "${CMAKE_SOURCE_DIR}/"
+)
 #Chromium ninja.py targets:
 add_custom_target(in_tree_gen
     COMMENT "Building targets necessary to have generated headers...."
@@ -96,7 +100,9 @@ add_custom_target(in_tree_build
   )
 add_custom_target(chromium_ordering_issue
     COMMENT "For some versions of Chromium the internal build dependency order isn't perfect."
-    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" ui/webui/resources/cr_components/color_change_listener:mojom
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}"
+        ui/webui/resources/cr_components/color_change_listener:mojom
+        components/reporting/proto:configuration_file_proto
     DEPENDS in_tree_build
   )
 add_custom_target(build_browser
@@ -104,6 +110,11 @@ add_custom_target(build_browser
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" chrome
     DEPENDS chromium_ordering_issue
   )
+add_custom_target(build_electron
+        COMMENT "Building 'electron' in Chromium source tree, output in out/${CHROMIUM_PROFILE}"
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" electron
+        DEPENDS chromium_ordering_issue
+)
 
 if(CHROMIUM_PROFILE STREQUAL win)
     set(CHROMIUM_PACKAGE_TARGET mini_installer)
@@ -122,14 +133,24 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
       COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/upload.py" "${CMAKE_PROJECT_VERSION}"
       WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
     )
+    add_custom_target(package_electron
+        COMMAND "${Python3_EXECUTABLE}" "${CHROMIUM_SOURCE_TREE}/electron/script/strip-binaries.py" -d "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" "electron:electron_dist_zip"
+        DEPENDS build_electron
+    )
 endif()
 
-#Symlink for convenience
+#Symlinks for convenience
 add_custom_command(
   TARGET build_browser
   POST_BUILD
   COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome" "${CMAKE_BINARY_DIR}/browser"
   COMMENT "Symlinking... your browser can be found here: ${CMAKE_BINARY_DIR}/browser or ${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome"
+)
+add_custom_command(
+  TARGET build_electron
+  POST_BUILD
+  COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/electron" "${CMAKE_BINARY_DIR}/electron"
 )
 
 add_custom_target(inc_link
@@ -153,23 +174,27 @@ target_compile_options(out_of_tree
     ${WARNING_FLAGS}
   )
 find_package(Protobuf)
+find_package(OpenSSL
+    COMPONENTS
+        Crypto
+)
 target_link_libraries(out_of_tree
   PUBLIC
     protobuf::libprotobuf
     ipfs_client
+    OpenSSL::SSL
   )
 target_include_directories(out_of_tree
   SYSTEM
   BEFORE
-  PRIVATE
+  PUBLIC
     "../chromium_tree/oot"
     "${protobuf_INCLUDE_DIR}"
     "${CMAKE_CURRENT_BINARY_DIR}/inc_link"
   )
-
 target_include_directories(out_of_tree
   PUBLIC
   ../library/src
   )
-add_dependencies(out_of_tree inc_link)
 
+add_dependencies(out_of_tree inc_link)

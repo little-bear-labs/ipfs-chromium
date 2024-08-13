@@ -1,6 +1,6 @@
 #include "car.h"
 
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/client.h>
 
 #include <libp2p/multi/uvarint.hpp>
 
@@ -14,16 +14,16 @@ using ByteView = ipfs::ByteView;
 using VarInt = libp2p::multi::UVarint;
 
 namespace {
-short ReadHeader(ByteView&, ipfs::ContextApi const&);
+short ReadHeader(ByteView&, ipfs::Client&);
 std::pair<std::uint64_t, std::uint64_t> GetV1PayloadPos(ByteView);
 }  // namespace
 
-Self::Car(ByteView bytes, ContextApi const& api) {
+Self::Car(ByteView bytes, Client& api) {
   auto after_header = bytes;
   auto version = ReadHeader(after_header, api);
   switch (version) {
     case 0:
-      LOG(ERROR) << "Problem parsing CAR header.";
+      VLOG(2) << "Problem parsing CAR header.";
       break;
     case 1:
       data_ = after_header;
@@ -31,8 +31,14 @@ Self::Car(ByteView bytes, ContextApi const& api) {
     case 2: {
       auto [off, siz] = GetV1PayloadPos(after_header);
       LOG(INFO) << "CARv2 carries a payload of " << siz << "B @ " << off;
-      // TODO validate off and siz are sane, e.g. not pointing back into pragma
-      // or whatever
+      if (bytes.size() - after_header.size() > off) {
+        LOG(ERROR) << "CARv2 payload is supposedly offset into the V1 header";
+        break;
+      }
+      if (siz > after_header.size()) {
+        LOG(ERROR) << "Payload size indicated by V1 header too large.";
+        break;
+      }
       data_ = bytes.subspan(off, siz);
       ReadHeader(data_, api);
       break;
@@ -65,7 +71,7 @@ auto Self::NextBlock() -> std::optional<Block> {
 
 namespace {
 // https://ipld.io/specs/transport/car/carv2/
-short ReadHeader(ByteView& bytes, ipfs::ContextApi const& api) {
+short ReadHeader(ByteView& bytes, ipfs::Client& api) {
   auto header_len = VarInt::create(bytes);
   if (!header_len ||
       header_len->toUInt64() + header_len->size() > bytes.size()) {
@@ -73,7 +79,7 @@ short ReadHeader(ByteView& bytes, ipfs::ContextApi const& api) {
   }
   bytes = bytes.subspan(header_len->size());
   auto header_bytes = bytes.subspan(0UL, header_len->toUInt64());
-  auto header = api.ParseCbor(header_bytes);
+  auto header = api.cbor().Parse(header_bytes);
   if (!header) {
     return 0;
   }

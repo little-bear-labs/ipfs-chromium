@@ -96,7 +96,6 @@ However, this also leaves value on the table.
 
 Our approach raise the browser to a first-class citizen of the IPFS ecosystem (doing its own content verification).
 It enables taking advantage of characteristics built into the protocol, for example caching (in the case of an IPFS block, indefinitely; in the case of an IPNS record, until the specified expiration) by binary CID rather than gateway- and multibase-specific URLs.
-It also provides for opportunities down the road for natural synergies, for example using Chromium's mDNS abilities to discover [nearby Kubo](https://github.com/ipfs/kubo/blob/master/docs/config.md#discoverymdnsenabled) gateways.
 
 ## Key differences with this approach
 
@@ -108,7 +107,7 @@ It also provides for opportunities down the road for natural synergies, for exam
 
 At a high level, the most important features for compatibility are those analagous to [subdomain gateway](https://specs.ipfs.tech/http-gateways/subdomain-gateway/) 
 features, but implemented in the client obviating the need for a separate HTTP server,
-using data from [trustless gateways](https://specs.ipfs.tech/http-gateways/trustless-gateway/).
+using data from [trustless gateways](https://specs.ipfs.tech/http-gateways/trustless-gateway/) and performing hash verification on end user's machine (Chromium).
 
 As discussed in the proposal, for the purposes of cross-implementation compatibility, we'll seek a common subset of URLs that all implementations support. 
 This implies a common universally-supported-as-input subset of:

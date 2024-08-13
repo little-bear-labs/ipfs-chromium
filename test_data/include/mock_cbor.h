@@ -1,7 +1,7 @@
 #ifndef IPFS_MOCK_BOR_H_
 #define IPFS_MOCK_BOR_H_
 
-#include "ipfs_client/context_api.h"
+#include "ipfs_client/client.h"
 
 #include <gtest/gtest.h>
 

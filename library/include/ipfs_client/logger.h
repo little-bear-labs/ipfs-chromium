@@ -6,13 +6,13 @@
 namespace ipfs::log {
 
 enum class Level {
-  TRACE = -2,
-  DEBUG = -1,
-  INFO = 0,
-  WARN = 1,
-  ERROR = 2,
-  FATAL = 3,
-  OFF
+  Trace = -2,
+  Debug = -1,
+  Info = 0,
+  Warn = 1,
+  Error = 2,
+  Fatal = 3,
+  Off
 };
 
 void SetLevel(Level);

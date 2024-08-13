@@ -1,0 +1,69 @@
+diff --git a/ui/views/cocoa/native_widget_mac_ns_window_host.mm b/ui/views/cocoa/native_widget_mac_ns_window_host.mm
+index 7201c4c13c1b2..a88c37536e546 100644
+--- a/ui/views/cocoa/native_widget_mac_ns_window_host.mm
++++ b/ui/views/cocoa/native_widget_mac_ns_window_host.mm
+@@ -345,7 +345,11 @@ gfx::NativeViewAccessible
+ NativeWidgetMacNSWindowHost::GetNativeViewAccessibleForNSView() const {
+   if (in_process_ns_window_bridge_)
+     return in_process_ns_window_bridge_->ns_view();
++#if !IS_MAS_BUILD()
+   return remote_view_accessible_;
++#else
++  return nullptr;
++#endif
+ }
+ 
+ gfx::NativeViewAccessible
+@@ -360,7 +364,11 @@ NativeWidgetMacNSWindowHost::GetNativeViewAccessibleForNSWindow() const {
+     return [in_process_ns_window_bridge_->ns_view() window];
+   }
+ 
++#if !IS_MAS_BUILD()
+   return remote_window_accessible_;
++#else
++  return nullptr;
++#endif
+ }
+ 
+ remote_cocoa::mojom::NativeWidgetNSWindow*
+@@ -1263,9 +1271,11 @@ void NativeWidgetMacNSWindowHost::OnWindowKeyStatusChanged(
+   // for PWAs. However this breaks accessibility on in-process windows,
+   // so set it back to NO when a local window gains focus. See
+   // https://crbug.com/41485830.
++#if !IS_MAS_BUILD()
+   if (is_key && features::IsAccessibilityRemoteUIAppEnabled()) {
+     [NSAccessibilityRemoteUIElement setRemoteUIApp:!!application_host_];
+   }
++#endif
+   // Explicitly set the keyboard accessibility state on regaining key
+   // window status.
+   if (is_key && is_content_first_responder)
+@@ -1418,17 +1428,20 @@ void NativeWidgetMacNSWindowHost::OnFocusWindowToolbar() {
+ void NativeWidgetMacNSWindowHost::SetRemoteAccessibilityTokens(
+     const std::vector<uint8_t>& window_token,
+     const std::vector<uint8_t>& view_token) {
++#if !IS_MAS_BUILD()
+   remote_window_accessible_ =
+       ui::RemoteAccessibility::GetRemoteElementFromToken(window_token);
+   remote_view_accessible_ =
+       ui::RemoteAccessibility::GetRemoteElementFromToken(view_token);
+   [remote_view_accessible_ setWindowUIElement:remote_window_accessible_];
+   [remote_view_accessible_ setTopLevelUIElement:remote_window_accessible_];
++#endif
+ }
+ 
+ bool NativeWidgetMacNSWindowHost::GetRootViewAccessibilityToken(
+     base::ProcessId* pid,
+     std::vector<uint8_t>* token) {
++#if !IS_MAS_BUILD()
+   *pid = getpid();
+   id element_id = GetNativeViewAccessible();
+ 
+@@ -1441,6 +1454,7 @@ bool NativeWidgetMacNSWindowHost::GetRootViewAccessibilityToken(
+   }
+ 
+   *token = ui::RemoteAccessibility::GetTokenForLocalElement(element_id);
++#endif
+   return true;
+ }
+ 

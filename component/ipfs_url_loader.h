@@ -1,6 +1,8 @@
 #ifndef COMPONENTS_IPFS_URL_LOADER_H_
 #define COMPONENTS_IPFS_URL_LOADER_H_ 1
 
+#include "virtual_optional.h"
+
 #include "base/debug/debugging_buildflags.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -13,7 +15,11 @@
 #include <list>
 
 namespace ipfs {
-class ChromiumIpfsContext;
+class Client;
+class IpfsRequest;
+namespace ipld {
+class DagHeaders;
+}
 }  // namespace ipfs
 
 namespace network::mojom {
@@ -33,7 +39,7 @@ class IpfsUrlLoader final : public network::mojom::URLLoader {
       std::vector<std::string> const& removed_headers,
       net::HttpRequestHeaders const& modified_headers,
       net::HttpRequestHeaders const& modified_cors_exempt_headers,
-      absl::optional<::GURL> const& new_url) override;
+      VirtualOptional<::GURL> const& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -68,26 +74,19 @@ class IpfsUrlLoader final : public network::mojom::URLLoader {
   mojo::ScopedDataPipeProducerHandle pipe_prod_ = {};
   mojo::ScopedDataPipeConsumerHandle pipe_cons_ = {};
   bool complete_ = false;
-  std::shared_ptr<ChromiumIpfsContext> api_;
+  std::shared_ptr<Client> api_;
   std::string original_url_;
   std::string partial_block_;
-  std::vector<std::pair<std::string,std::string>> additional_outgoing_headers_;
   std::shared_ptr<network::mojom::URLLoader> extra_;
   std::unique_ptr<base::RepeatingTimer> stepper_;
   std::string root_;
   int status_ = 200;
   std::string resp_loc_;
-
-  void CreateBlockRequest(std::string cid);
+  std::shared_ptr<IpfsRequest> ipfs_request_;
 
   void ReceiveBlockBytes(std::string_view);
-  void BlocksComplete(std::string mime_type);
+  void BlocksComplete(std::string mime_type, ipld::DagHeaders const&);
   void DoesNotExist(std::string_view cid, std::string_view path);
-  void NotHere(std::string_view cid, std::string_view path);
-
-  void StartUnixFsProc(ptr, std::string_view);
-  void AppendGatewayHeaders(std::vector<std::string> const& cids, net::HttpResponseHeaders&);
-  void AppendGatewayInfoHeader(std::string const&, net::HttpResponseHeaders&);
   void TakeStep();
 };
 

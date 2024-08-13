@@ -1,0 +1,21 @@
+#ifndef IPFS_CHROMIUM_DNS_TXT_LOOKUP_H
+#define IPFS_CHROMIUM_DNS_TXT_LOOKUP_H
+
+#include <functional>
+#include <string>
+
+namespace ipfs::ctx {
+class DnsTxtLookup {
+ public:
+  using DnsTextResultsCallback =
+      std::function<void(std::vector<std::string> const&)>;
+  using DnsTextCompleteCallback = std::function<void(void)>;
+  virtual void SendDnsTextRequest(std::string hostname,
+                                  DnsTextResultsCallback,
+                                  DnsTextCompleteCallback) = 0;
+
+  virtual ~DnsTxtLookup() noexcept {}
+};
+}  // namespace ipfs::ctx
+
+#endif  // IPFS_CHROMIUM_DNS_TXT_LOOKUP_H

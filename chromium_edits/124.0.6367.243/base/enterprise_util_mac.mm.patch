@@ -1,0 +1,26 @@
+diff --git a/base/enterprise_util_mac.mm b/base/enterprise_util_mac.mm
+index 2bad2ed2f5205..ab3d4c953556d 100644
+--- a/base/enterprise_util_mac.mm
++++ b/base/enterprise_util_mac.mm
+@@ -115,6 +115,14 @@ DeviceUserDomainJoinState AreDeviceAndUserJoinedToDomain() {
+     DeviceUserDomainJoinState state{.device_joined = false,
+                                     .user_joined = false};
+ 
++#if IS_MAS_BUILD()
++    return state;
++  }();
++
++  return state;
++}
++#else
++
+     @autoreleasepool {
+       ODSession* session = [ODSession defaultSession];
+       if (session == nil) {
+@@ -218,5 +226,6 @@ DeviceUserDomainJoinState AreDeviceAndUserJoinedToDomain() {
+ 
+   return state;
+ }
++#endif
+ 
+ }  // namespace base

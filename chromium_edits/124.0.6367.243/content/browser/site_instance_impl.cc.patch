@@ -1,0 +1,13 @@
+diff --git a/content/browser/site_instance_impl.cc b/content/browser/site_instance_impl.cc
+index c7cb7a275e885..91a19974c6ec1 100644
+--- a/content/browser/site_instance_impl.cc
++++ b/content/browser/site_instance_impl.cc
+@@ -211,7 +211,7 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::CreateForGuest(
+     BrowserContext* browser_context,
+     const StoragePartitionConfig& partition_config) {
+   DCHECK(browser_context);
+-  DCHECK(!partition_config.is_default());
++  // DCHECK(!partition_config.is_default());
+ 
+   auto guest_site_info =
+       SiteInfo::CreateForGuest(browser_context, partition_config);

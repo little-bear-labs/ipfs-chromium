@@ -1,0 +1,14 @@
+diff --git a/chrome/browser/media/webrtc/fake_desktop_media_list.cc b/chrome/browser/media/webrtc/fake_desktop_media_list.cc
+index 16c21bb299683..43bbc94f68c45 100644
+--- a/chrome/browser/media/webrtc/fake_desktop_media_list.cc
++++ b/chrome/browser/media/webrtc/fake_desktop_media_list.cc
+@@ -79,7 +79,8 @@ void FakeDesktopMediaList::StartUpdating(DesktopMediaListObserver* observer) {
+   thumbnail_ = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+ }
+ 
+-void FakeDesktopMediaList::Update(UpdateCallback callback) {
++void FakeDesktopMediaList::Update(UpdateCallback callback,
++                                  bool refresh_thumbnails) {
+   std::move(callback).Run();
+ }
+ 

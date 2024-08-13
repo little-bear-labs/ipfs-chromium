@@ -1,0 +1,15 @@
+diff --git a/content/public/gpu/content_gpu_client.h b/content/public/gpu/content_gpu_client.h
+index 3020e59f491f9..b25140275ce63 100644
+--- a/content/public/gpu/content_gpu_client.h
++++ b/content/public/gpu/content_gpu_client.h
+@@ -30,6 +30,10 @@ class CONTENT_EXPORT ContentGpuClient {
+  public:
+   virtual ~ContentGpuClient() {}
+ 
++  // Allows the embedder to perform platform-specific initialization before
++  // creating the message loop.
++  virtual void PreCreateMessageLoop() {}
++
+   // Called during initialization once the GpuService has been initialized.
+   virtual void GpuServiceInitialized() {}
+ 

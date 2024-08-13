@@ -1,0 +1,13 @@
+diff --git a/chrome/browser/media/webrtc/desktop_media_list_base.h b/chrome/browser/media/webrtc/desktop_media_list_base.h
+index cb9be1e80b11c..7aa54e5cb77b5 100644
+--- a/chrome/browser/media/webrtc/desktop_media_list_base.h
++++ b/chrome/browser/media/webrtc/desktop_media_list_base.h
+@@ -39,7 +39,7 @@ class DesktopMediaListBase : public DesktopMediaList {
+   void SetThumbnailSize(const gfx::Size& thumbnail_size) override;
+   void SetViewDialogWindowId(content::DesktopMediaID dialog_id) override;
+   void StartUpdating(DesktopMediaListObserver* observer) override;
+-  void Update(UpdateCallback callback) override;
++  void Update(UpdateCallback callback, bool refresh_thumbnails) override;
+   int GetSourceCount() const override;
+   const Source& GetSource(int index) const override;
+   DesktopMediaList::Type GetMediaListType() const override;

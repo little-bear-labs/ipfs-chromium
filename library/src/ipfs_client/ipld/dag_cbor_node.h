@@ -3,7 +3,7 @@
 
 #include <ipfs_client/ipld/dag_node.h>
 
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/client.h>
 
 namespace ipfs::ipld {
 class DagCborNode final : public DagNode {

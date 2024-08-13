@@ -3,7 +3,7 @@
 
 #include <ipfs_client/gw/gateway_request.h>
 
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/ctx/http_api.h>
 #include <vocab/raw_ptr.h>
 
 namespace network {
@@ -19,11 +19,10 @@ class GURL;
 namespace ipfs {
 class BlockHttpRequest : public std::enable_shared_from_this<BlockHttpRequest> {
   // TODO ween oneself off of SimpleURLLoader
-  //  std::array<char, gw::BLOCK_RESPONSE_BUFFER_SIZE> buffer_;
   std::unique_ptr<network::SimpleURLLoader> loader_;
 
  public:
-  using HttpCompleteCallback = ipfs::ContextApi::HttpCompleteCallback;
+  using HttpCompleteCallback = ctx::HttpApi::HttpCompleteCallback;
   BlockHttpRequest(ipfs::HttpRequestDescription, HttpCompleteCallback);
   ~BlockHttpRequest() noexcept;
 
@@ -33,7 +32,7 @@ class BlockHttpRequest : public std::enable_shared_from_this<BlockHttpRequest> {
   ipfs::HttpRequestDescription const inf_;
   HttpCompleteCallback callback_;
   std::string status_line_;
-  ContextApi::HeaderAccess header_accessor_ = [](auto) {
+  ctx::HttpApi::HeaderAccess header_accessor_ = [](auto) {
     return std::string{};
   };
 

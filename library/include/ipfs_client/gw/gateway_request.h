@@ -1,8 +1,10 @@
 #ifndef IPFS_TRUSTLESS_REQUEST_H_
 #define IPFS_TRUSTLESS_REQUEST_H_
 
+#include <ipfs_client/ipld/block_source.h>
+
 #include <ipfs_client/cid.h>
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/client.h>
 
 #include <vocab/flat_mapset.h>
 #include <vocab/slash_delimited.h>
@@ -11,10 +13,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include "gateway_request_type.h"
 
 namespace ipfs {
 class IpfsRequest;
-class Orchestrator;
+class Partition;
 namespace ipld {
 class DagNode;
 }
@@ -23,27 +26,24 @@ class DagNode;
 namespace ipfs::gw {
 class Requestor;
 
-enum class Type : char {
-  Block,
-  Car,
-  Ipns,
-  DnsLink,
-  Providers,
-  Identity,
-  Zombie
-};
-std::string_view name(Type);
+std::string_view name(GatewayRequestType);
 
 constexpr std::size_t BLOCK_RESPONSE_BUFFER_SIZE = 2 * 1024 * 1024;
 
-class GatewayRequest {
-  std::shared_ptr<Orchestrator> orchestrator_;
-  std::vector<std::function<void(std::string_view)>> bytes_received_hooks;
+class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
+ public:
+  // TODO add BlockSource param
+  using BytesReceivedHook =
+      std::function<void(std::string_view, ByteView, ipld::BlockSource const&)>;
 
-  void ParseNodes(std::string_view, ContextApi* api);
+ private:
+  std::shared_ptr<Partition> orchestrator_;
+  std::vector<BytesReceivedHook> bytes_received_hooks;
+
+  void FleshOut(ipld::BlockSource&) const;
 
  public:
-  Type type = Type::Zombie;
+  GatewayRequestType type = GatewayRequestType::Zombie;
   std::string main_param;  ///< CID, IPNS name, hostname
   std::string path;        ///< For CAR requests
   std::shared_ptr<IpfsRequest> dependent;
@@ -60,11 +60,14 @@ class GatewayRequest {
   std::optional<std::size_t> max_response_size() const;
   std::optional<HttpRequestDescription> describe_http(std::string_view) const;
   std::string debug_string() const;
-  void orchestrator(std::shared_ptr<Orchestrator> const&);
+  void orchestrator(std::shared_ptr<Partition> const&);
+  bool cachable() const;
 
   bool RespondSuccessfully(std::string_view,
-                           std::shared_ptr<ContextApi> const& api);
-  void Hook(std::function<void(std::string_view)>);
+                           std::shared_ptr<Client> const& api,
+                           ipld::BlockSource src,
+                           bool* valid = nullptr);
+  void Hook(BytesReceivedHook);
   bool PartiallyRedundant() const;
   std::string Key() const;
   bool Finished() const;
@@ -74,7 +77,8 @@ class GatewayRequest {
 
 }  // namespace ipfs::gw
 
-inline std::ostream& operator<<(std::ostream& s, ipfs::gw::Type t) {
+inline std::ostream& operator<<(std::ostream& s,
+                                ipfs::gw::GatewayRequestType t) {
   return s << name(t);
 }
 

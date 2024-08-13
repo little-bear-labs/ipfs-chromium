@@ -1,0 +1,47 @@
+diff --git a/components/cbor/reader_unittest.cc b/components/cbor/reader_unittest.cc
+index e5c02ceea3402..f26b8e77f6da3 100644
+--- a/components/cbor/reader_unittest.cc
++++ b/components/cbor/reader_unittest.cc
+@@ -1449,5 +1449,42 @@ TEST(CBORReaderTest, AllowInvalidUTF8) {
+   EXPECT_FALSE(cbor);
+   EXPECT_EQ(Reader::DecoderError::INVALID_UTF8, error);
+ }
++TEST(CBORReaderTest, RejectsTagUnderDefaultConfig) {
++  static const uint8_t kTaggedCbor[] = {
++    0xd8, 0x2a, 0x58, 0x25, 0x00, 0x01, 0x71, 0x12, 0x20, 0x69, 0xea, 0x07,
++    0x40, 0xf9, 0x80, 0x7a, 0x28, 0xf4, 0xd9, 0x32, 0xc6, 0x2e, 0x7c, 0x1c,
++    0x83, 0xbe, 0x05, 0x5e, 0x55, 0x07, 0x2c, 0x90, 0x26, 0x6a, 0xb3, 0xe7,
++    0x9d, 0xf6, 0x3a, 0x36, 0x5b
++  };
++  Reader::Config config;
++  auto cbor = Reader::Read(kTaggedCbor, config);
++  EXPECT_FALSE(cbor.has_value());
++}
++TEST(CBORReaderTest, ReadsTagWhenConfiguredToDoSo) {
++  static const uint8_t kTaggedCbor[] = {
++    0xd8, 0x2a, 0x58, 0x25, 0x00, 0x01, 0x71, 0x12, 0x20, 0x69, 0xea, 0x07,
++    0x40, 0xf9, 0x80, 0x7a, 0x28, 0xf4, 0xd9, 0x32, 0xc6, 0x2e, 0x7c, 0x1c,
++    0x83, 0xbe, 0x05, 0x5e, 0x55, 0x07, 0x2c, 0x90, 0x26, 0x6a, 0xb3, 0xe7,
++    0x9d, 0xf6, 0x3a, 0x36, 0x5b
++  };
++  Reader::Config config;
++  config.parse_tags = true;
++  auto cbor = Reader::Read(kTaggedCbor, config);
++  EXPECT_TRUE(cbor.has_value());
++  auto& v = cbor.value();
++  EXPECT_TRUE(v.has_tag());
++  EXPECT_EQ(v.GetTag(),42UL);
++  EXPECT_TRUE(v.is_bytestring());
++  EXPECT_EQ(v.type(), Value::Type::BYTE_STRING);
++  auto& bytes = v.GetBytestring();
++  EXPECT_EQ(bytes.size(), 37UL);
++  EXPECT_EQ(bytes.at(0), 0x00);//identity multibase (e.g. not base-encoded, bytes are themselves)
++  EXPECT_EQ(bytes.at(1), 0x01);//CID version 1
++  EXPECT_EQ(bytes.at(2), 0x71);//codec = dag-cbor
++  EXPECT_EQ(bytes.at(3), 0x12);//multihash = 18 = sha2-256
++  EXPECT_EQ(bytes.at(4), 0x20);//hash length = 32 bytes
++  EXPECT_EQ(bytes.at(5), 0x69);//first byte of hash digest
++  EXPECT_EQ(bytes.at(36),0x5b);//last  byte of hash digest
++}
+ 
+ }  // namespace cbor

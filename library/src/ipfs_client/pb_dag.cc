@@ -1,6 +1,6 @@
 #include "ipfs_client/pb_dag.h"
 
-#include <ipfs_client/context_api.h>
+#include <ipfs_client/client.h>
 
 #include "log_macros.h"
 
@@ -151,7 +151,7 @@ std::string ipfs::PbDag::LinkCid(ipfs::ByteView binary_link_hash) const {
   return str_res;
 }
 
-bool ipfs::PbDag::cid_matches_data(ContextApi& api) const {
+bool ipfs::PbDag::cid_matches_data(Client& api) const {
   if (!cid_) {
     return true;
   }
@@ -169,7 +169,7 @@ bool ipfs::PbDag::cid_matches_data(ContextApi& api) const {
                     hashed.end());
 }
 
-std::vector<ipfs::Byte> ipfs::PbDag::binary_hash(ContextApi& api,
+std::vector<ipfs::Byte> ipfs::PbDag::binary_hash(Client& api,
                                                  HashType algo) const {
   if (algo == HashType::INVALID) {
     algo = cid().hash_type();

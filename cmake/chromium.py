@@ -27,9 +27,18 @@ python = executable
 patcher = Patcher(src, git_binary, build_type)
 UPDATED = 'chromium_source_updated'
 
+prof_gn = profile.lower()
+electron_args_file = join(src, 'electron', 'build', 'args', prof_gn + '.gn')
+if isfile(electron_args_file):
+    toks = gnargs.split()
+    #electron defines is_debug by profile convention, and unfortunately they disagree with me
+    toks = filter(lambda x: not x.startswith('is_debug'), toks)
+    gnargs = ' '.join(toks) + f' import(\"//electron/build/args/testing.gn\") '
 
-def run(args, fail_ok=False):
-    if isdir(src):
+def run(args, fail_ok=False, cwd=None):
+    if cwd:
+        print('Run in', cwd)
+    elif isdir(src):
         verbose(src, 'exists. Run command there.')
         cwd = src
     elif isdir(chromium_dir):
@@ -48,8 +57,10 @@ def run(args, fail_ok=False):
     exit(ec)
 
 
-def out(args):
-    if isdir(src):
+def out(args, cwd=None):
+    if cwd:
+        print('Run in', cwd)
+    elif isdir(src):
         cwd = src
     elif isdir(chromium_dir):
         cwd = chromium_dir
@@ -64,11 +75,11 @@ def out(args):
     return output
 
 
-def runpy(args, silent=False):
+def runpy(args, silent=False, cwd=None):
     if silent:
-        out([python] + args)
+        out([python] + args, cwd)
     else:
-        run([python] + args)
+        run([python] + args, False, cwd)
 
 
 if depot_tools_dir == 'DETECT_FROM_PATH':
@@ -98,7 +109,7 @@ if not isdir(src):
 
 if isfile(join(build_dir, 'fresh')):
     if not isdir(join(src, '.git')):
-        runpy([join(depot_tools_dir, 'fetch.py'), '--nohooks', 'chromium'])
+        runpy([join(depot_tools_dir, 'fetch.py'), '--nohooks', 'chromium'], False, chromium_dir)
     branch = out([git_binary, 'rev-parse', '--abbrev-ref', 'HEAD'])
     tag = patcher.recommend()
     target_branch = 'ipfs-chromium/' + tag
@@ -118,7 +129,7 @@ if not isfile(join(src, '.landmines')):
 patcher.apply()
 
 ipfs_dir = join(src, 'components', 'ipfs')
-
+elec_dir = join(src, 'electron')
 
 def files_content_differ(a, b):
     try:
@@ -150,7 +161,7 @@ def copy_missing_and_changed_files(source, target):
             if not isdir(t):
                 makedirs(t)
             continue
-        if s.endswith('_unittest.cc') or basename(s).startswith('test_'):
+        if s.endswith('_unittest.cc') or basename(s).startswith('opinionated_'):
             continue
         ext = splitext(s)[-1]
         if ext in ignore_exts:
@@ -216,6 +227,9 @@ def sync_dir(source_relative, target_relative, complete=True):
 
 sync_dir('component', 'components/ipfs')
 sync_dir('library', 'third_party/ipfs_client')
+if isdir(elec_dir):
+    sync_dir('electron-spin', 'electron-spin')
+
 if 'branding' in argv:
     argv.remove('branding')
     sync_dir('component/branding', 'chrome', False)

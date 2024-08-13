@@ -7,7 +7,7 @@
 #include <string>
 
 namespace ipfs {
-class ContextApi;
+class Client;
 }
 
 namespace ipfs::gw {

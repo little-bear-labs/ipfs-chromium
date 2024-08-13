@@ -4,7 +4,7 @@
 #include <ipfs_client/ipld/dag_node.h>
 
 #include <ipfs_client/ipfs_request.h>
-#include <ipfs_client/orchestrator.h>
+#include <ipfs_client/partition.h>
 #include <ipfs_client/pb_dag.h>
 #include <ipfs_client/response.h>
 
@@ -20,14 +20,17 @@ Self& Self::or_else(std::shared_ptr<Self> p) {
     next_ = p;
   }
   if (api_ && !p->api_) {
-    VLOG(2) << name() << " granting context to " << p->name();
     p->api_ = api_;
   }
   return *this;
 }
 
 void Self::request(ReqPtr req) {
-  if (!req || req->Finished()) {
+  if (!req) {
+    return;
+  }
+  if (req->Finished()) {
+    VLOG(2) << "Dropping a finished/zombie request.";
     return;
   }
   switch (handle(req)) {
@@ -64,6 +67,7 @@ void Self::forward(ipfs::gw::RequestPtr req) const {
     next_->request(req);
   }
 }
-void Self::api(std::shared_ptr<ContextApi> a) {
+Self& Self::api(std::shared_ptr<Client> a) {
   api_ = a;
+  return *this;
 }

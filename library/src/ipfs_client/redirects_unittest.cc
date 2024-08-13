@@ -9,7 +9,7 @@ using namespace std::literals;
 
 namespace {
 struct RedirectsTest : public ::testing::Test {
-  RedirectsTest() { ipfs::log::SetLevel(ipfs::log::Level::OFF); }
+  RedirectsTest() { ipfs::log::SetLevel(ipfs::log::Level::Off); }
   // Sample files for various test cases can be found in QmQyqMY5vUBSbSxyitJqthgwZunCQjDVtNd8ggVCxzuPQ4. Implementations should use it for internal testing.
   r::File sample_file_{
       R"SAMPLE(

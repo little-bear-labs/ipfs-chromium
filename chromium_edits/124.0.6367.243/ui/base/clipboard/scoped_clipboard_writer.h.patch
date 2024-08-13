@@ -1,0 +1,15 @@
+diff --git a/ui/base/clipboard/scoped_clipboard_writer.h b/ui/base/clipboard/scoped_clipboard_writer.h
+index 08fce03a51ded..ffbd0cbff14ae 100644
+--- a/ui/base/clipboard/scoped_clipboard_writer.h
++++ b/ui/base/clipboard/scoped_clipboard_writer.h
+@@ -89,6 +89,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
+   // This is only used to write custom format data.
+   void WriteData(const std::u16string& format, mojo_base::BigBuffer data);
+ 
++  // write raw (non-pickled) data to the clipboard
++  void WriteUnsafeRawData(const std::u16string& format,
++                          mojo_base::BigBuffer data);
++
+   void WriteImage(const SkBitmap& bitmap);
+ 
+ #if BUILDFLAG(IS_CHROMEOS_LACROS)

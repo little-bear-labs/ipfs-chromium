@@ -1,0 +1,13 @@
+diff --git a/chrome/browser/ui/webui/print_preview/fake_print_render_frame.cc b/chrome/browser/ui/webui/print_preview/fake_print_render_frame.cc
+index ac54519f611f7..89055b6df7438 100644
+--- a/chrome/browser/ui/webui/print_preview/fake_print_render_frame.cc
++++ b/chrome/browser/ui/webui/print_preview/fake_print_render_frame.cc
+@@ -21,7 +21,7 @@ FakePrintRenderFrame::FakePrintRenderFrame(
+ 
+ FakePrintRenderFrame::~FakePrintRenderFrame() = default;
+ 
+-void FakePrintRenderFrame::PrintRequestedPages() {}
++void FakePrintRenderFrame::PrintRequestedPages(bool /*silent*/, ::base::Value::Dict /*settings*/) {}
+ 
+ void FakePrintRenderFrame::PrintWithParams(mojom::PrintPagesParamsPtr params,
+                                            PrintWithParamsCallback callback) {

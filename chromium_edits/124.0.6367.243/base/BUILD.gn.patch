@@ -1,0 +1,12 @@
+diff --git a/base/BUILD.gn b/base/BUILD.gn
+index 25356ec40cdbf..0c347ca1a75a9 100644
+--- a/base/BUILD.gn
++++ b/base/BUILD.gn
+@@ -1058,6 +1058,7 @@ component("base") {
+     "//build/config/compiler:prevent_unsafe_narrowing",
+     "//build/config/compiler:wexit_time_destructors",
+     "//build/config/compiler:wglobal_constructors",
++    "//electron/build/config:mas_build",
+   ]
+ 
+   deps = [

@@ -21,9 +21,10 @@ void Interceptor::MaybeCreateLoader(network::ResourceRequest const& req,
   auto& state = InterRequestState::FromBrowserContext(context);
   state.network_context(network_context_);
   if (req.url.SchemeIs("ipfs") || req.url.SchemeIs("ipns")) {
+    VLOG(2) << "Intercepting " << req.url.spec()
+      << " because scheme is " << req.url.scheme();
     auto hdr_str = req.headers.ToString();
     std::replace(hdr_str.begin(), hdr_str.end(), '\r', ' ');
-    VLOG(2) << req.url.spec() << " getting intercepted! Headers: \n" << hdr_str;
     DCHECK(context);
     auto loader =
         std::make_shared<ipfs::IpfsUrlLoader>(*loader_factory_, state);
@@ -31,6 +32,8 @@ void Interceptor::MaybeCreateLoader(network::ResourceRequest const& req,
         .Run(base::BindOnce(&ipfs::IpfsUrlLoader::StartRequest, loader));
 
   } else {
-    std::move(loader_callback).Run({});  // SEP
+    VLOG(2) << "Not intercepting " << req.url.spec()
+      << " because scheme is " << req.url.scheme();
+    std::move(loader_callback).Run({});
   }
 }

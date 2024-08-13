@@ -293,8 +293,14 @@ function(setup_target_for_coverage_lcov)
     )
     # Generate HTML output
     set(LCOV_GEN_HTML_CMD
-        ${GENHTML_PATH} ${GENHTML_EXTRA_ARGS} ${Coverage_GENHTML_ARGS} --prefix "${BASEDIR}" -o
-        ${Coverage_NAME} ${Coverage_NAME}.info
+        ${GENHTML_PATH}
+            ${GENHTML_EXTRA_ARGS}
+            ${Coverage_GENHTML_ARGS}
+            --rc genhtml_hi_limit=88
+            --rc genhtml_med_limit=73
+            --prefix "${BASEDIR}"
+            -o ${Coverage_NAME}
+            ${Coverage_NAME}.info
     )
     if(${Coverage_SONARQUBE})
         # Generate SonarQube output

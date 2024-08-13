@@ -1,0 +1,12 @@
+diff --git a/third_party/blink/renderer/core/BUILD.gn b/third_party/blink/renderer/core/BUILD.gn
+index 45f575dead4a0..627c68574176a 100644
+--- a/third_party/blink/renderer/core/BUILD.gn
++++ b/third_party/blink/renderer/core/BUILD.gn
+@@ -311,6 +311,7 @@ component("core") {
+   configs -= core_config_remove
+   configs += core_config_add
+   configs += [ "//v8:external_startup_data" ]
++  configs += ["//electron/build/config:mas_build"]
+ 
+   public_deps = [
+     ":core_generated",

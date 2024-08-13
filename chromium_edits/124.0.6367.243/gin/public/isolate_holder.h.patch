@@ -1,0 +1,34 @@
+diff --git a/gin/public/isolate_holder.h b/gin/public/isolate_holder.h
+index c19eb72e8d37f..1368ab8bfbf9e 100644
+--- a/gin/public/isolate_holder.h
++++ b/gin/public/isolate_holder.h
+@@ -85,7 +85,8 @@ class GIN_EXPORT IsolateHolder {
+       v8::CreateHistogramCallback create_histogram_callback = nullptr,
+       v8::AddHistogramSampleCallback add_histogram_sample_callback = nullptr,
+       scoped_refptr<base::SingleThreadTaskRunner> low_priority_task_runner =
+-          nullptr);
++          nullptr,
++      v8::Isolate* isolate = nullptr);
+   IsolateHolder(
+       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+       AccessMode access_mode,
+@@ -93,7 +94,8 @@ class GIN_EXPORT IsolateHolder {
+       std::unique_ptr<v8::Isolate::CreateParams> params,
+       IsolateCreationMode isolate_creation_mode = IsolateCreationMode::kNormal,
+       scoped_refptr<base::SingleThreadTaskRunner> low_priority_task_runner =
+-          nullptr);
++          nullptr,
++      v8::Isolate* isolate = nullptr);
+   IsolateHolder(const IsolateHolder&) = delete;
+   IsolateHolder& operator=(const IsolateHolder&) = delete;
+   ~IsolateHolder();
+@@ -113,7 +115,8 @@ class GIN_EXPORT IsolateHolder {
+                          const intptr_t* reference_table = nullptr,
+                          const std::string js_command_line_flags = {},
+                          v8::FatalErrorCallback fatal_error_callback = nullptr,
+-                         v8::OOMErrorCallback oom_error_callback = nullptr);
++                         v8::OOMErrorCallback oom_error_callback = nullptr,
++                         bool create_v8_platform = true);
+ 
+   // Returns whether `Initialize` has already been invoked in the process.
+   // Initialization is a one-way operation (i.e., this method cannot return

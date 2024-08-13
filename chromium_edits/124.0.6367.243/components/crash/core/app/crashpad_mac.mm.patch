@@ -1,0 +1,27 @@
+diff --git a/components/crash/core/app/crashpad_mac.mm b/components/crash/core/app/crashpad_mac.mm
+index eb5bcfe0234c3..8480d07e2607e 100644
+--- a/components/crash/core/app/crashpad_mac.mm
++++ b/components/crash/core/app/crashpad_mac.mm
+@@ -87,6 +87,8 @@ std::map<std::string, std::string> GetProcessSimpleAnnotations() {
+     }  // @autoreleasepool
+     return process_annotations;
+   }();
++  CrashReporterClient* crash_reporter_client = GetCrashReporterClient();
++  crash_reporter_client->GetProcessSimpleAnnotations(&annotations);
+   return annotations;
+ }
+ 
+@@ -157,6 +159,13 @@ bool PlatformCrashpadInitialization(
+ 
+       std::vector<std::string> arguments;
+ 
++      if (!crash_reporter_client->GetShouldRateLimit()) {
++        arguments.push_back("--no-rate-limit");
++      }
++      if (!crash_reporter_client->GetShouldCompressUploads()) {
++        arguments.push_back("--no-upload-gzip");
++      }
++
+       if (crash_reporter_client->ShouldMonitorCrashHandlerExpensively()) {
+         arguments.push_back("--monitor-self");
+       }

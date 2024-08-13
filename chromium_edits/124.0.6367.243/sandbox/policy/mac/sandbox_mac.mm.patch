@@ -1,0 +1,15 @@
+diff --git a/sandbox/policy/mac/sandbox_mac.mm b/sandbox/policy/mac/sandbox_mac.mm
+index e89fd87753bad..2b433a0705234 100644
+--- a/sandbox/policy/mac/sandbox_mac.mm
++++ b/sandbox/policy/mac/sandbox_mac.mm
+@@ -38,6 +38,10 @@
+ #include "sandbox/policy/mac/utility.sb.h"
+ #include "sandbox/policy/mojom/sandbox.mojom.h"
+ 
++#if BUILDFLAG(ENABLE_PRINTING)
++#include "sandbox/policy/mac/print_backend.sb.h"
++#endif
++
+ namespace sandbox::policy {
+ 
+ base::FilePath GetCanonicalPath(const base::FilePath& path) {

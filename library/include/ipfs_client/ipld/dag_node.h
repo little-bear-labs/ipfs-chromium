@@ -4,8 +4,10 @@
 #include "link.h"
 #include "resolution_state.h"
 
-#include <ipfs_client/cid.h>
 #include <ipfs_client/gw/gateway_request.h>
+#include <ipfs_client/ipld/block_source.h>
+
+#include <ipfs_client/cid.h>
 #include <ipfs_client/response.h>
 #include <vocab/slash_delimited.h>
 
@@ -20,7 +22,7 @@
 
 namespace ipfs {
 class PbDag;
-class ContextApi;
+class Client;
 struct ValidatedIpns;
 }  // namespace ipfs
 namespace libp2p::multi {
@@ -30,6 +32,8 @@ namespace ipfs::ipld {
 
 using NodePtr = std::shared_ptr<DagNode>;
 class DirShard;
+class DnsLinkName;
+class IpnsName;
 
 struct MoreDataNeeded {
   MoreDataNeeded(std::string one) : ipfs_abs_paths_{{one}} {}
@@ -51,10 +55,13 @@ using ResolveResult =
  */
 class DagNode : public std::enable_shared_from_this<DagNode> {
   Link* FindChild(std::string_view);
+  BlockSource source_;
+
+  virtual ResolveResult resolve(ResolutionState& params) = 0;
 
  protected:
   std::vector<std::pair<std::string, Link>> links_;
-  std::shared_ptr<ContextApi> api_;
+  std::shared_ptr<Client> api_;
 
   ///< When the next path element is what's needed, and it should already be a
   ///< link known about...
@@ -72,27 +79,34 @@ class DagNode : public std::enable_shared_from_this<DagNode> {
   ResolveResult CallChild(ResolutionState&,
                           std::string_view link_key,
                           std::string_view block_key);
-
+  
  public:
-  virtual ResolveResult resolve(ResolutionState& params) = 0;
   ResolveResult resolve(SlashDelimited initial_path, BlockLookup);
+  ResolveResult Resolve(ResolutionState& params);
 
-  static NodePtr fromBytes(std::shared_ptr<ContextApi> const& api,
+  static NodePtr fromBytes(std::shared_ptr<Client> const& api,
                            Cid const&,
                            ByteView bytes);
-  static NodePtr fromBytes(std::shared_ptr<ContextApi> const& api,
+  static NodePtr fromBytes(std::shared_ptr<Client> const& api,
                            Cid const&,
                            std::string_view bytes);
   static NodePtr fromBlock(PbDag const&);
-  static NodePtr fromIpnsRecord(ValidatedIpns const&);
 
   virtual ~DagNode() noexcept {}
 
   virtual NodePtr rooted();
   virtual NodePtr deroot();
-  virtual DirShard* as_hamt();  // Wish I had access to dynamic_cast
 
-  void set_api(std::shared_ptr<ContextApi>);
+  // Wish I had access to dynamic_cast
+  virtual DnsLinkName const* as_dnslink() const { return nullptr; }
+  virtual DirShard* as_hamt() { return nullptr; }
+  virtual IpnsName const* as_ipns() const { return nullptr; }
+
+  virtual bool expired() const;
+  virtual bool PreferOver(DagNode const& another) const;
+
+  void set_api(std::shared_ptr<Client>);
+  void source(BlockSource src) { source_ = src; }
 };
 }  // namespace ipfs::ipld
 

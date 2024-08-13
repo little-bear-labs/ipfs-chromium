@@ -10,7 +10,7 @@ using Ptr = std::shared_ptr<ipfs::ipld::DagNode>;
 Self::Root(std::shared_ptr<DagNode> under) {
   links_.push_back({{}, Link{{}, under}});
 }
-Self::~Root() {}
+Self::~Root() noexcept {}
 
 Ptr Self::deroot() {
   return links_.at(0).second.node;
@@ -18,10 +18,15 @@ Ptr Self::deroot() {
 Ptr Self::rooted() {
   return shared_from_this();
 }
+bool Self::expired() const {
+  auto n = links_.at(0).second.node;
+  return n ? n->expired() : true;
+}
 
 auto Self::resolve(ResolutionState& params) -> ResolveResult {
   auto location = params.PathToResolve().to_string();
-  auto result = deroot()->resolve(params);
+  auto result = deroot()->Resolve(params);
+  params.headers.Finish();
   if (auto pc = std::get_if<PathChange>(&result)) {
     auto lower = params.WithPath(pc->new_path);
     result = resolve(lower);
@@ -47,30 +52,31 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
       Response* resp = nullptr;
       auto status = redirects_.value().rewrite(location);
       if (location.find("://") < location.size()) {
-        LOG(INFO) << "_redirects file sent us to a whole URL, scheme-and-all: "
-                  << location << " status=" << status;
-        return Response{"", status, "", location};
+        VLOG(1) << "_redirects file sent us to a whole URL, scheme-and-all: "
+                << location << " status=" << status;
+        return Response{"", status, "", location, params.headers};
       }
       auto lower_parm = params.WithPath(location).RestartResolvedPath();
       switch (status / 100) {
         case 0:  // no rewrites available
           break;
         case 2:
-          result = deroot()->resolve(lower_parm);
+          result = deroot()->Resolve(lower_parm);
           location.assign(lower_parm.MyPath().to_view());
           break;
         case 3:
           // Let the redirect happen
-          return Response{"", status, "", location};
+          return Response{"", status, "", location, params.headers};
         case 4: {
-          result = deroot()->resolve(lower_parm);
+          result = deroot()->Resolve(lower_parm);
           location.assign(lower_parm.MyPath().to_view());
           if (std::get_if<ProvenAbsent>(&result)) {
-            return Response{"", 500, "", location};
+            return Response{"", 500, "", location, params.headers};
           }
           resp = std::get_if<Response>(&result);
           if (resp) {
             resp->status_ = status;
+            resp->headers_ = params.headers;
             return *resp;
           }
           break;  // MoreDataNeeded to fetch e.g. custom 404 page
@@ -83,8 +89,11 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
     }
   }
   auto resp = std::get_if<Response>(&result);
-  if (resp && resp->location_.empty()) {
-    resp->location_ = location;
+  if (resp) {
+    if (resp->location_.empty()) {
+      resp->location_ = location;
+    }
+    resp->headers_ = params.headers;
   }
   return result;
 }

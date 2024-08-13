@@ -1,13 +1,15 @@
 #ifndef IPFS_RESOLUTION_STATE_H_
 #define IPFS_RESOLUTION_STATE_H_
 
+#include <ipfs_client/ipld/dag_headers.h>
+
 #include <vocab/slash_delimited.h>
 
 #include <functional>
 #include <memory>
 
 namespace ipfs {
-class ContextApi;
+class Client;
 }
 
 namespace ipfs::ipld {
@@ -27,13 +29,15 @@ class ResolutionState {
   SlashDelimited MyPath() const;
   SlashDelimited PathToResolve() const;
   bool IsFinalComponent() const;
-  std::string NextComponent(ContextApi const*) const;
+  std::string NextComponent(Client*) const;
   NodePtr GetBlock(std::string const& block_key) const;
 
   ResolutionState WithPath(std::string_view) const;
   ResolutionState RestartResolvedPath() const;
 
   void Descend();
+
+  ipld::DagHeaders headers;
 };
 }  // namespace ipfs::ipld
 
