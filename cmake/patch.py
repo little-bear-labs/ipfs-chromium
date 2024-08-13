@@ -7,7 +7,7 @@ from os.path import basename, exists, dirname, isdir, isfile, join, realpath, re
 from shutil import copyfile, rmtree
 from subprocess import call, check_call, check_output, DEVNULL
 from sys import argv, executable, platform, stderr
-from time import ctime, gmtime, strftime
+from time import ctime, gmtime, strftime, time
 from verbose import verbose
 
 try:
@@ -255,12 +255,22 @@ class Patcher:
         self.up_rels[key] = result
         return result
 
+    def date_of(self, v):
+        try:
+          git_time = self.git(['log', '--max-count=1', '--format=%at', v], Result.StrippedOutput)
+          verbose('Git time of', v, 'is', git_time)
+          return float(git_time)
+        except:
+          return time()
+
     def most(self, ch, pfs, idx):
         vs = []
         for pf in pfs:
             vs = vs + self.release_versions(ch, pf)
         vs = list(map(lambda x: (as_int(x[1]), x[1], x[0]), vs))
+        vs += list(map(lambda x: (as_int(x), x, self.date_of(x)), self.electron_versions().values()))
         vs.sort()
+        verbose(f"'Most' ({idx}) versions:", vs)
         return vs[idx]
 
     def newest(self):
@@ -286,6 +296,23 @@ class Patcher:
         i = toks.index('chromium_version') + 2
         self.up_rels[f'electron-{branch}'] = toks[i]
         return toks[i]
+
+    def electron_versions(self):
+        rebv = self.recent_electron_branch_version()
+        try:
+          ev = rebv + 1
+          self.electron_version(f'{ev}-x-y')
+          verbose('New electron version!', ev, e)
+          self.set_recent_electron_branch_version(ev)
+          rebv = ev
+        except:
+          pass
+        result = {}
+        for i in range(-3, 1):
+          ev = i + rebv
+          result[ev] = self.electron_version(f'{ev}-x-y')
+        verbose('Electron versions:', result)
+        return result
 
     def unavailable(self):
         avail = list(map(as_int, self.available()))
@@ -316,21 +343,10 @@ class Patcher:
                     check(version, version_set, s, close)
                 except IndexError:
                     pass  # One may assume this is Linux Extended
-        rebv = self.recent_electron_branch_version()
-        for i in range(-3, 1):
-          ev = i + rebv
-          e = self.electron_version(f'{ev}-x-y')
-          close = VERSION_CLOSE_ENOUGH * (i + 7)
+        close = VERSION_CLOSE_ENOUGH
+        for (ev, e) in self.electron_versions().items():
+          close += VERSION_CLOSE_ENOUGH
           check(e, version_set, f'electron-{ev}', close)
-        try:
-          ev = rebv + 1
-          e = self.electron_version(f'{ev}-x-y')
-          verbose('New electron version!', ev, e)
-          close = VERSION_CLOSE_ENOUGH * 9
-          check(e, version_set, f'electron-{ev}', close)
-          self.set_recent_electron_branch_version(ev)
-        except:
-          pass
         result = list(version_set.values())
         result.sort(reverse=True)
         return map(lambda x: x[1:], result)
@@ -381,10 +397,22 @@ class Patcher:
         to_check.sort()
         oldest = self.oldest()
         newest = self.newest()
-        min = oldest[0] - (newest[0] - oldest[0]) - VERSION_CLOSE_ENOUGH * 3
-        verbose(f'Oldest supportable version: {oldest} -> {min}')
+        gap = newest[0] - oldest[0] + VERSION_CLOSE_ENOUGH
+        min = oldest[0] - gap
+        min_date = time() - 3600 * 24 * 31 * 6
+        verbose(f'Oldest supportable version: {oldest} , newest was: {newest} , gap: {gap} -> {min}')
         for p in to_check:
-            if (as_int(p) < min or self.out_of_date(p)) == sense:
+            d = self.date_of(p)
+            verbose('Checking', p, d, ctime(d))
+            if self.out_of_date(p):
+              verbose(p, 'failed compatibility checks')
+              is_ood = True
+            elif d < min_date and as_int(p) < min:
+              verbose(d, '<', min_date, 'and', as_int(p), '<', min)
+              is_ood = True
+            else:
+              is_ood = False
+            if is_ood == sense:
                 print(p)
 
 

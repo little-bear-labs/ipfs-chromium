@@ -28,3 +28,11 @@ TEST(MultiGatewayRequestor, FailsIfNotHttp) {
   auto o = t.handle(r);
   EXPECT_TRUE(o == ig::Requestor::HandleOutcome::NOT_HANDLED);
 }
+TEST(MultiGatewayRequestor, PendingIfHttp) {
+  ig::MultiGatewayRequestor t;
+  t.api(std::make_shared<MockApi>());
+  auto r = block_req();
+  r->type = RT::Block;
+  auto o = t.handle(r);
+  EXPECT_TRUE(o == ig::Requestor::HandleOutcome::PENDING);
+}

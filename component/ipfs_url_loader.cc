@@ -111,12 +111,14 @@ void ipfs::IpfsUrlLoader::StartRequest(
       DCHECK(me->complete_);
     };
     me->ipfs_request_ = std::make_shared<IpfsRequest>(abs_path, whendone);
+    std::string semantic_header;
+    if (resource_request.headers.GetHeader("Semantic", &semantic_header)) {
+      LOG(WARNING) << "Setting semantic header: '" << semantic_header << "'.";
+      me->ipfs_request_->semantic(semantic_header);
+    } else {
+      LOG(INFO) << "Semantic not set.";
+    }
     me->stepper_ = std::make_unique<base::RepeatingTimer>();
-    //    auto f = [](std::shared_ptr<IpfsUrlLoader> m) { m->TakeStep(); };
-    //    auto cb = base::BindOnce(f, me);
-    //    content::GetIOThreadTaskRunner({})->PostTask(FROM_HERE,
-    //    std::move(cb));
-    //    base::ThreadPool::PostTask(FROM_HERE, std::move(cb));
     me->stepper_->Start(FROM_HERE, base::Seconds(2), me.get(),
                         &ipfs::IpfsUrlLoader::TakeStep);
     me->TakeStep();

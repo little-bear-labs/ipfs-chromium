@@ -49,7 +49,8 @@ void Self::from_tree(std::shared_ptr<IpfsRequest> req,
     return i == dags_.end() ? ipld::NodePtr{} : i->second;
   };
   auto start = std::string{req->path().pop_n(2)};
-  auto result = root->resolve(relative_path, block_look_up);
+  ipfs::ipld::ResolutionState state{relative_path, req->semantic(), block_look_up};
+  auto result = root->Resolve(state);
   auto response = std::get_if<Response>(&result);
   if (response) {
     if (response->mime_.empty() && !response->body_.empty()) {

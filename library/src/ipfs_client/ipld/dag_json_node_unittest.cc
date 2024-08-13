@@ -68,7 +68,8 @@ struct DagJsonNodeTest : public ::testing::Test {
 
 TEST_F(DagJsonNodeTest, preview) {
   std::string p;
-  auto result = super().resolve(i::SlashDelimited{""}, noop_blu());
+  ipfs::ipld::ResolutionState state{i::SlashDelimited{""}, ipfs::ResponseSemantic::Http, noop_blu()};
+  auto result = super().Resolve(state);
   auto& resp = std::get<i::Response>(result);
   EXPECT_EQ(resp.status_, 200);
   EXPECT_EQ(resp.mime_, "text/html");
