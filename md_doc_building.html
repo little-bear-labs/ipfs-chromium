@@ -81,7 +81,7 @@ ipfs_client (without Chromium)</h1>
 <p>As for dependencies, you have some choices:</p>
 <h2><a class="anchor" id="autotoc_md11"></a>
 With Python</h2>
-<p>If you have python3 and installed and findable, it will use <a href="https://docs.conan.io/en/latest/introduction.html">Conan</a> to manage dependencies.</p>
+<p>If you have python3 (and and pip) installed and findable, it will use <a href="https://docs.conan.io/en/latest/introduction.html">Conan</a> to manage dependencies.</p>
 <p>See also: docker/debian-python</p>
 <h2><a class="anchor" id="autotoc_md12"></a>
 With C++23 (standard library in particular, but assuming the compiler too)</h2>
@@ -90,7 +90,7 @@ With C++23 (standard library in particular, but assuming the compiler too)</h2>
 With system-installed or otherwise CMake-findable dependencies</h2>
 <p>Required dependencies as they exist today:</p><ul>
 <li>protobuf (both compiler and library)</li>
-<li>OpenSSL - TODO probably should de-require, easiest path is disabling sha at runtime. Also, alternatives.</li>
+<li>OpenSSL</li>
 <li>vocabulary types: one of the following<ul>
 <li>boost (See also: docker/debian-boost)</li>
 <li>abseil &amp; boost (will prefer Abseil, fills in gap with boost)</li>
