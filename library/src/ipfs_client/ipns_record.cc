@@ -198,9 +198,6 @@ auto ipfs::ValidateIpnsRecord(ipfs::ByteView top_level_bytes,
                << ") and V2(" << result.ttl << ')';
     return {};
   }
-  VLOG(2) << "IPNS record verification passes for " << name.to_string()
-          << " sequence: " << result.sequence << " points at "
-            << result.value;
   return result;
 }
 
@@ -220,7 +217,6 @@ ipfs::ValidatedIpns::ValidatedIpns(IpnsCborEntry const& e)
 #else
   use_until = timegm(&t);
 #endif
-  VLOG(2) << "use_until=" << use_until << " based on " << e.validity;
   cache_until = std::time(nullptr) + ttl;
 }
 

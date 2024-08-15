@@ -4,7 +4,7 @@
 
 using Self = ipfs::DagJsonValue;
 
-Self::~DagJsonValue() noexcept {}
+Self::~DagJsonValue() noexcept = default;
 auto Self::get_if_link() const -> std::optional<Cid> {
   auto slash = (*this)["/"];
   if (!slash) {

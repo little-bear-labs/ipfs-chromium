@@ -17,8 +17,6 @@ auto Self::SendHttpRequest(ReqDesc desc, OnComplete cb) const -> Canceller {
     auto p = w.lock();
     if (p) {
       p->Cancel();
-    } else {
-      VLOG(2) << "Not cancelling already-dead HTTP request.";
     }
   };
 }

@@ -55,23 +55,37 @@ foreach(proto ${protos})
 endforeach()
 set_source_files_properties(${pb_gen} PROPERTIES GENERATED ON)
 
+add_library(ic_proto
+    ${pb_gen}
+)
+target_compile_features(ic_proto
+    PUBLIC
+        cxx_std_${CXX_VERSION}
+)
+target_include_directories(ic_proto
+    PUBLIC
+        "${CMAKE_CURRENT_BINARY_DIR}/gen"
+)
+target_link_libraries(ic_proto
+  PUBLIC
+    protobuf::protobuf
+)
+
 add_library(ipfs_client
   STATIC
       ${sources}
       ${headers} #Mostly for IDEs' sake - this used to be considered bad practice but... generator expressions and such
-      ${pb_gen}
   )
 if(CLANG_TIDY_EXE)
   set_target_properties(ipfs_client
     PROPERTIES
-      CXX_CLANG_TIDY "${CLANG_TIDY_EXE};--config-file=${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy"
+      CXX_CLANG_TIDY "${CLANG_TIDY_EXE};--config-file=${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy;--fix"
     )
 endif()
 add_library(ipfs_client_covered
   EXCLUDE_FROM_ALL
       ${sources}
       ${headers}
-      ${pb_gen}
   )
 foreach(libname ipfs_client ipfs_client_covered)
     target_compile_features(${libname}
@@ -89,18 +103,25 @@ foreach(libname ipfs_client ipfs_client_covered)
     target_include_directories(${libname}
         PUBLIC
             include/
+    )
+    target_include_directories(${libname}
+        SYSTEM
+        PUBLIC
             "${CMAKE_CURRENT_BINARY_DIR}/gen"
     )
     target_include_directories(${libname}
       PRIVATE
         src/
     )
+    target_link_libraries(${libname}
+      PUBLIC
+        ic_proto
+    )
     if (IN_WORKSPACE)
         with_vocab(${libname})
     else()
         target_link_libraries(${libname}
           PUBLIC
-            protobuf::protobuf
             absl::strings
             boost::boost
             c-ares::cares
@@ -118,6 +139,7 @@ install(
   DIRECTORY ${pub_incs}
   TYPE INCLUDE
 )
+install(TARGETS ic_proto)
 install(TARGETS ipfs_client)
 
 set(CPACK_GENERATOR TGZ;ZIP)
@@ -158,6 +180,7 @@ file(GLOB_RECURSE
 )
 find_package(GTest QUIET)
 if(GTest_FOUND AND IN_WORKSPACE)
+    get_target_property(links ipfs_client_covered INTERFACE_LINK_LIBRARIES)
     enable_testing()
     add_executable(unit_test_runner
       EXCLUDE_FROM_ALL
@@ -247,3 +270,4 @@ if(GTest_FOUND AND IN_WORKSPACE)
 else()
     message(WARNING "Not running tests - no gtest available.")
 endif()#GTest_FOUND
+

@@ -23,6 +23,7 @@ class IpfsRequest {
 
  public:
   IpfsRequest(std::string path, Finisher);
+  ~IpfsRequest() noexcept;
 
   SlashDelimited path() const { return SlashDelimited{path_}; }
   ResponseSemantic semantic() const { return semantic_; }

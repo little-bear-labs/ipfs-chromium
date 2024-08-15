@@ -288,8 +288,6 @@ bool Self::RespondSuccessfully(std::string_view bytes,
           success = orchestrator_->add_node(main_param, node);
           if (valid) {
             *valid = !node->expired();
-            VLOG(2) << "IPNS node created " << main_param << ' ' << success
-                    << " vs. " << *valid;
           }
         } else {
           LOG(ERROR) << "IPNS record failed to validate!";

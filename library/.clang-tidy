@@ -61,4 +61,5 @@
       value:        base::Reversed
     - key:          modernize-loop-convert.MakeReverseRangeHeader
       value:        base/containers/adapters.h
+WarningsAsErrors: '*'
 ...

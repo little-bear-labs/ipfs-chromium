@@ -97,5 +97,5 @@ auto Self::Entry(std::string const& name) -> ValidatedIpns const* {
   return it == names_.end() ? nullptr : &(it->second);
 }
 
-Self::IpnsNames() {}
-Self::~IpnsNames() {}
+Self::IpnsNames() = default;
+Self::~IpnsNames() = default;

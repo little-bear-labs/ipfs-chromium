@@ -111,7 +111,6 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     req_.target(target_);
     req_.set(http::field::host, parsed_host_);
     if (desc_.accept.size()) {
-      //      std::clog << "Setting Accept: " << desc_.accept << '\n';
       req_.set("Accept", desc_.accept);
     }
     extend_time();
@@ -265,13 +264,17 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
       return 1 + prev->redirect_count(comp);
     }
   }
+  bool closed_ = false;
   void close() {
-    if (use_ssl()) {
-      stream_.async_shutdown(boost::beast::bind_front_handler(
-          &HttpSession::on_shutdown, shared_from_this()));
-    } else {
-      boost::beast::get_lowest_layer(stream_).close();
+    if (closed_) {
+      return;
     }
+    closed_ = true;
+    boost::system::error_code ec;
+    stream_.shutdown(ec);
+    auto& ll = boost::beast::get_lowest_layer(stream_);
+    ll.cancel();
+    ll.close();
   }
   void on_shutdown(boost::beast::error_code ec) {
     namespace E = boost::asio::error;

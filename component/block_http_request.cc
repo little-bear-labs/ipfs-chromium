@@ -77,9 +77,7 @@ void Self::OnResponse(std::shared_ptr<Self>,
   }
   auto sp = status_line_.find(' ');
   if (sp < status_line_.size()) {
-    // status = std::atoi(status_line_.c_str() + sp + 1);
     auto status_code_str = std::string_view{status_line_}.substr(sp + 1);
-    // status = std::atoi(status_code_str.data());
     if (!base::StringToInt(status_code_str, &status)) {
       status = 0;
     }

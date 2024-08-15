@@ -51,7 +51,7 @@ void Self::Add(BlockSource const& src) {
     headers_.emplace_back("Server-Timing", value.str());
     if (src.cid.size()) {
       auto from = src.cat.cached ? std::string{"cache"} : src.cat.gateway_url;
-      headers_.push_back({"IPFS-Source-" + src.cid, from});
+      headers_.emplace_back("IPFS-Source-" + src.cid, from);
     }
   }
 }
@@ -63,5 +63,5 @@ void Self::Finish() {
   value << "other-blocks;desc=\"Time used to fetch " << other_count_
         << " unlisted blocks.\";dur="
         << c::duration_cast<c::milliseconds>(other_sum_).count();
-  headers_.push_back({"Server-Timing", value.str()});
+  headers_.emplace_back("Server-Timing", value.str());
 }
