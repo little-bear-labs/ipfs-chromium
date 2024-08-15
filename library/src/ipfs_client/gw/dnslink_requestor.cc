@@ -57,12 +57,9 @@ bool parse_results(ipfs::gw::RequestPtr req,
                    std::shared_ptr<ipfs::Client> const& api,
                    Source::Clock::time_point start) {
   constexpr auto prefix = "dnslink="sv;
-  VLOG(2) << "Scanning " << results.size() << " DNS TXT records for "
-          << req->main_param << " looking for dnslink...";
   auto t = Source::Clock::now();
   for (auto& result : results) {
     if (starts_with(result, prefix)) {
-      VLOG(2) << "DNSLink result=" << result;
       Source src;
       src.fetched_at = t;
       src.load_duration = t - start;

@@ -9,7 +9,7 @@ using Self = ipfs::crypto::OpensslSha2_256;
 #include <openssl/evp.h>
 #include <openssl/sha.h>
 
-Self::~OpensslSha2_256() noexcept {}
+Self::~OpensslSha2_256() noexcept = default;
 auto Self::hash(ipfs::ByteView data) -> std::optional<std::vector<Byte>> {
   SHA256_CTX ctx;
   if (1 != SHA256_Init(&ctx)) {

@@ -113,7 +113,7 @@ void ipfs::IpfsUrlLoader::StartRequest(
     me->ipfs_request_ = std::make_shared<IpfsRequest>(abs_path, whendone);
     std::string semantic_header;
     if (resource_request.headers.GetHeader("Semantic", &semantic_header)) {
-      LOG(WARNING) << "Setting semantic header: '" << semantic_header << "'.";
+      LOG(INFO) << "Setting semantic header: '" << semantic_header << "'.";
       me->ipfs_request_->semantic(semantic_header);
     }
     me->stepper_ = std::make_unique<base::RepeatingTimer>();
@@ -176,9 +176,9 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type,
   }
   if (resp_loc_.size()) {
     head->headers->AddHeader("Location", resp_loc_);
-    LOG(INFO) << "Sending response for " << original_url_ << " with mime type "
-              << head->mime_type << " and status line '" << status_line
-              << "' @location '" << resp_loc_ << "'";
+    VLOG(1) << "Sending response for " << original_url_ << " with mime type "
+            << head->mime_type << " and status line '" << status_line
+            << "' @location '" << resp_loc_ << "'";
   }
   head->parsed_headers =
       network::PopulateParsedHeaders(head->headers.get(), GURL{original_url_});
@@ -201,7 +201,6 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type,
 }
 void ipfs::IpfsUrlLoader::DoesNotExist(std::string_view cid,
                                        std::string_view path) {
-  VLOG(2) << "Immutable data 404 for " << cid << '/' << path;
   complete_ = true;
   client_->OnComplete(
       network::URLLoaderCompletionStatus{net::ERR_FILE_NOT_FOUND});

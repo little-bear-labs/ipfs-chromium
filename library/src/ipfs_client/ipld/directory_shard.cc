@@ -22,7 +22,6 @@ namespace {
 auto Self::resolve(ResolutionState& parms) -> ResolveResult {
   if (parms.IsFinalComponent()) {
     if (parms.Semantic() == ResponseSemantic::Listing) {
-      LOG(WARNING) << "HAMT Listing requested.";
       return Response{"application/json", 200, listing_json(), {}, {}};
     }
     // index.html hashes A0 6D 7E C8 78 79 38 1D B3 8D 36 0D 76 FA 7B BF
@@ -30,10 +29,9 @@ auto Self::resolve(ResolutionState& parms) -> ResolveResult {
     auto result = resolve(index_parm);
     auto resp = std::get_if<Response>(&result);
     if (resp) {
-      VLOG(2) << "Hit index.html in HAMT";
       resp->mime_ = "text/html";
     } else if (std::holds_alternative<ProvenAbsent>(result)){
-      LOG(WARNING) << "HAMT returning dynamic listing HTML page.";
+      VLOG(1) << "HAMT returning dynamic listing HTML page.";
       return DynamicListingHtml(parms.MyPath().to_view());
     }
     return result;

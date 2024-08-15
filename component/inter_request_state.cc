@@ -5,7 +5,8 @@
 #include "preferences.h"
 
 #include <base/logging.h>
-#include "content/public/browser/browser_context.h"
+#include <content/public/browser/browser_context.h>
+#include <content/browser/child_process_security_policy_impl.h>
 
 #include <ipfs_client/gw/default_requestor.h>
 #include <ipfs_client/ipfs_request.h>
@@ -23,9 +24,17 @@ void Self::CreateForBrowserContext(content::BrowserContext* c, PrefService* p) {
   DCHECK(p);
   auto owned = std::make_unique<ipfs::InterRequestState>(c->GetPath(), p);
   c->SetUserData(user_data_key, std::move(owned));
+  auto* cpsp = content::ChildProcessSecurityPolicy::GetInstance();
+  cpsp->RegisterWebSafeScheme("ipfs");
+  cpsp->RegisterWebSafeScheme("ipns");
 }
 auto Self::FromBrowserContext(content::BrowserContext* context)
     -> InterRequestState& {
+  auto* cpsp = content::ChildProcessSecurityPolicy::GetInstance();
+  if (! cpsp->IsWebSafeScheme("ipfs")) {
+    cpsp->RegisterWebSafeScheme("ipfs");
+    cpsp->RegisterWebSafeScheme("ipns");
+  }
   if (!context) {
     LOG(WARNING) << "No browser context! Using a default IPFS state.";
     static ipfs::InterRequestState static_state({}, {});

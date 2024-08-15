@@ -47,4 +47,4 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
   return result;
 }
 
-Self::~UnixfsFile() noexcept {}
+Self::~UnixfsFile() noexcept = default;

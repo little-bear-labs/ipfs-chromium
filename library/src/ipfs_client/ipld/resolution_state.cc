@@ -7,7 +7,7 @@ using Self = ipfs::ipld::ResolutionState;
 Self::ResolutionState(SlashDelimited path_to_resolve,
                       ResponseSemantic sem,
                       ipfs::ipld::BlockLookup blu)
-    : resolved_path_components{},
+    : 
       unresolved_path(path_to_resolve),
       semantic_{sem},
       get_available_block(blu) {}

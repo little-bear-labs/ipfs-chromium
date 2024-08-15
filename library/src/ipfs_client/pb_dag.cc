@@ -93,7 +93,7 @@ ipfs::PbDag::PbDag(PbDag const& rhs)
 
 ipfs::PbDag::PbDag() = default;
 
-ipfs::PbDag::~PbDag() noexcept {}
+ipfs::PbDag::~PbDag() noexcept = default;
 
 bool ipfs::PbDag::valid() const {
   return valid_;

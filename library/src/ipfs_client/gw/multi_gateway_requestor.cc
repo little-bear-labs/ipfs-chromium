@@ -68,8 +68,8 @@ bool Self::Process(RequestPtr const& req) {
         over_rate = std::make_tuple(score, gw->prefix, &(state_iter->second));
       }
     } else {
-      candidates.push_back({state_iter->second.score(*req, gw->rate),
-                            gw->prefix, &(state_iter->second)});
+      candidates.emplace_back(state_iter->second.score(*req, gw->rate),
+                            gw->prefix, &(state_iter->second));
       if (state_iter->second.bored()) {
         ++bored;
       }
@@ -85,13 +85,23 @@ bool Self::Process(RequestPtr const& req) {
     return false;
   }
   auto min_plel = req->type == GatewayRequestType::Block ? 4UL : 1UL;
-  auto to_send = std::max(bored / 4UL, min_plel);
+  auto to_send = std::max(bored / 2UL, min_plel);
   std::sort(candidates.begin(), candidates.end(), std::greater{});
-  for (auto& [score, prefix, state] : candidates) {
-    DCHECK(!prefix.empty());
-    DoSend(req, prefix, *state);
-    if (!--to_send) {
+  static std::size_t extra = 0UL;
+  auto send = [&](auto i){
+      auto [score, prefix, state] = candidates[i];
+      DoSend(req, prefix, *state);
+  };
+  for (auto idx = 0UL; idx < candidates.size(); ++idx) {
+    if (idx > to_send) {
+      if (idx + extra < candidates.size()) {
+        send(idx + extra++);
+      } else {
+        extra = 0;
+      }
       return true;
+    } else {
+      send(idx);
     }
   }
   q.push_back(req);
@@ -137,7 +147,7 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
     return;
   }
   auto i = state_.find(gw);
-  if (status == 200) {
+  if (status == 200 || !status) {
     auto ct = hdrs("content-type");
     std::transform(ct.begin(), ct.end(), ct.begin(), ::tolower);
     if (ct.empty()) {
@@ -146,6 +156,8 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
                ct.find(desc.accept) == std::string::npos) {
       if (state_.end() != i) {
         i->second.miss(req_type, *req);
+      } else {
+        LOG(WARNING) << "No state for " << gw << " to record hit on " << desc.url;
       }
       Next();
       return;
@@ -156,12 +168,13 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
     if (req->RespondSuccessfully(body, api_, src)) {
       if (state_.end() != i) {
         i->second.hit(req_type, *req);
+      } else {
+          LOG(WARNING) << "No state to boost for " << gw;
       }
       Next();
       return;
     }
   }
-  i->second.miss(req_type, *req);
   req->failures.insert(gw);
   if (status == 408 || status == 504 || status == 429 || status == 110 ||
       timed_out) {
@@ -170,6 +183,9 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
         i->second.timed_out();
       }
     }
+  }
+  if (hdrs("X-Ipfs-Path").empty()) {
+    i->second.miss(req_type, *req);
   }
   Process(req);
 }

@@ -10,7 +10,7 @@ using Ptr = std::shared_ptr<ipfs::ipld::DagNode>;
 Self::Root(std::shared_ptr<DagNode> under) {
   links_.push_back({{}, Link{{}, under}});
 }
-Self::~Root() noexcept {}
+Self::~Root() noexcept = default;
 
 Ptr Self::deroot() {
   return links_.at(0).second.node;

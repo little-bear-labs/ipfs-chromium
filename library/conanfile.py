@@ -19,7 +19,6 @@ class IpfsChromium(ConanFile):
     name = "ipfs_client"
     version = VERSION
     settings = "os", "compiler", "build_type", "arch"
-    # generators = "CMakeDeps", 'CMakeToolchain'
     _PB = 'protobuf/3.20.0'
     require_transitively = [
         'abseil/20230125.3',
@@ -27,12 +26,9 @@ class IpfsChromium(ConanFile):
         'bzip2/1.0.8',
         'c-ares/1.22.1',
         'nlohmann_json/3.11.2',
-        # 'openssl/3.2.1',
-        # 'openssl/1.1.1t',
         'openssl/1.1.1w',
         _PB,
     ]
-    # default_options = {"boost/*:header_only": True}
     default_options = {
         "boost/*:bzip2": True,
         "boost/*:with_stacktrace_backtrace": True
@@ -68,7 +64,7 @@ class IpfsChromium(ConanFile):
         print(self.cpp_info.objects)
 
     def package_info(self):
-        self.cpp_info.libs = ["ipfs_client"]
+        self.cpp_info.libs = ["ipfs_client", "ic_proto"]
 
     # def build_requirements(self):
     #     if not which("doxygen"):

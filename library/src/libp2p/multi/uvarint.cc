@@ -7,7 +7,7 @@
 
 namespace libp2p::multi {
 
-UVarint::UVarint(UVarint const& rhs) : bytes_(rhs.bytes_) {}
+UVarint::UVarint(UVarint const& rhs)  = default;
 UVarint::UVarint(uint64_t number) {
   do {
     auto byte = static_cast<ipfs::Byte>(number) & ipfs::Byte{0x7f};
@@ -59,10 +59,7 @@ size_t UVarint::size() const {
   return bytes_.size();
 }
 
-UVarint& UVarint::operator=(UVarint const& rhs) {
-  bytes_ = rhs.bytes_;  // actually OK even if &rhs == this
-  return *this;
-}
+UVarint& UVarint::operator=(UVarint const& rhs) = default;
 UVarint& UVarint::operator=(uint64_t n) {
   *this = UVarint(n);
   return *this;
@@ -102,6 +99,6 @@ size_t UVarint::calculateSize(ipfs::ByteView varint_bytes) {
   return last_byte_found ? size : 0;
 }
 
-UVarint::~UVarint() noexcept {}
+UVarint::~UVarint() noexcept = default;
 
 }  // namespace libp2p::multi

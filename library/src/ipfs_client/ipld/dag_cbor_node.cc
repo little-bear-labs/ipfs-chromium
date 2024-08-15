@@ -21,4 +21,4 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
 }
 
 Self::DagCborNode(std::unique_ptr<Data> p) : doc_{std::move(p)} {}
-Self::~DagCborNode() noexcept {}
+Self::~DagCborNode() noexcept = default;

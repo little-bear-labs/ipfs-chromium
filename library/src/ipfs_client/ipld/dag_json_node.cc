@@ -16,7 +16,7 @@ Self::DagJsonNode(std::unique_ptr<DagJsonValue> j) : data_(std::move(j)) {
     links_.emplace_back("", Link(cid_str));
   }
 }
-Self::~DagJsonNode() noexcept {}
+Self::~DagJsonNode() noexcept = default;
 
 auto Self::resolve(ResolutionState& params) -> ResolveResult {
   auto respond_as_link = CallChild(params, "");

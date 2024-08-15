@@ -11,6 +11,18 @@ using Self = ipfs::IpfsRequest;
 Self::IpfsRequest(std::string path_p, Finisher f)
     : path_{path_p}, callback_{f}, semantic_{ResponseSemantic::Http} {}
 
+Self::~IpfsRequest() noexcept {
+  for (auto& cleanup : cleanups_) {
+#if __cpp_exceptions
+    try {
+        cleanup();
+    } catch (...) {}
+#else
+    cleanup();
+#endif
+  }
+}
+
 std::shared_ptr<Self> Self::fromUrl(std::string url, ipfs::IpfsRequest::Finisher f) {
   url.erase(4UL, 2UL );
   url.insert(0UL, 1UL, '/');
