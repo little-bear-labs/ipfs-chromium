@@ -72,16 +72,15 @@ std::string Self::url_suffix() const {
     case GatewayRequestType::Providers:
       return "/routing/v1/providers/" + main_param;
     case GatewayRequestType::DnsLink:
-      LOG(FATAL) << "Don't try to use HTTP(s) for DNS TXT records.";
-#ifdef __clang__
-#pragma clang diagnostic ignored "-Wunreachable-code-return"
-#endif
-      return {};
+      return "/ipns/" + main_param;
     case GatewayRequestType::Identity:
     case GatewayRequestType::Zombie:
       return {};
   }
   LOG(FATAL) << "Unhandled gateway request type: " << static_cast<int>(type);
+    #ifdef __clang__
+    #pragma clang diagnostic ignored "-Wunreachable-code-return"
+    #endif
   return {};
 }
 std::string_view Self::accept() const {
@@ -95,15 +94,7 @@ std::string_view Self::accept() const {
     case GatewayRequestType::Providers:
       return "application/json"sv;
     case GatewayRequestType::DnsLink:
-      // TODO : not sure this advice is 100% good, actually.
-      //   If the user's system setup allows for text records to actually work,
-      //   it would be good to respect their autonomy and try to follow the
-      //   system's DNS setup. However, it's extremely easy to get yourself in a
-      //   situation where Chromium _cannot_ access text records. If you're in
-      //   that scenario, it might be better to try to use an IPFS gateway with
-      //   DNSLink capability.
-      LOG(FATAL) << "Don't try to use HTTP(s) for DNS TXT records.";
-      return {};
+      return "application/vnd.ipld.raw"sv;
     case GatewayRequestType::Identity:
     case GatewayRequestType::Zombie:
       return {};
@@ -114,7 +105,7 @@ std::string_view Self::accept() const {
 short Self::timeout_seconds() const {
   switch (type) {
     case GatewayRequestType::DnsLink:
-      return 8;
+      return 33;
     case GatewayRequestType::Providers:
       return 16;
     case GatewayRequestType::Block:
@@ -147,9 +138,9 @@ bool Self::is_http() const {
     case GatewayRequestType::Car:
     case GatewayRequestType::Block:
     case GatewayRequestType::Providers:
+    case GatewayRequestType::DnsLink:
       return true;
     case GatewayRequestType::Identity:
-    case GatewayRequestType::DnsLink:
     case GatewayRequestType::Zombie:
       return false;
   }
@@ -176,7 +167,7 @@ std::optional<std::size_t> Self::max_response_size() const {
     case GatewayRequestType::Identity:
       return 0;
     case GatewayRequestType::DnsLink:
-      return std::nullopt;
+      return BLOCK_RESPONSE_BUFFER_SIZE;
     case GatewayRequestType::Ipns:
       return MAX_IPNS_PB_SERIALIZED_SIZE;
     case GatewayRequestType::Block:
@@ -237,6 +228,7 @@ std::string Self::Key() const {
 bool Self::RespondSuccessfully(std::string_view bytes,
                                std::shared_ptr<Client> const& api,
                                ipld::BlockSource src,
+                               std::string_view roots,
                                bool* valid) {
   using namespace ipfs::ipld;
   bool success = false;
@@ -246,22 +238,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
   FleshOut(src);
   switch (type) {
     case GatewayRequestType::Block: {
-      DCHECK(cid.has_value());
-      if (!cid.has_value()) {
-        LOG(ERROR) << "Your CID doesn't even have a value!";
-        return false;
-      }
-      DCHECK(api);
-      auto node = DagNode::fromBytes(api, cid.value(), bytes);
-      if (!node) {
-        return false;
-      } else {
-        node->source(src);
-        if (valid) {
-          *valid = true;
-        }
-      }
-      success = orchestrator_->add_node(main_param, node);
+      AddBlock(bytes, success, src, api, valid);
     } break;
     case GatewayRequestType::Identity: {
       auto node = std::make_shared<Chunk>(std::string{bytes});
@@ -296,17 +273,13 @@ bool Self::RespondSuccessfully(std::string_view bytes,
       }
       break;
     case GatewayRequestType::DnsLink: {
-      auto node = std::make_shared<ipld::DnsLinkName>(bytes);
-      if (node) {
-        node->source(src);
-      }
-      if (orchestrator_) {
-        success = orchestrator_->add_node(main_param, node);
+      Cid c{roots};
+      if (c.valid()) {
+        AddDnsLink("/ipfs/" + c.to_string(), success, src);
+        cid = c;
+        AddBlock(bytes, success, src, api, valid);
       } else {
-        LOG(FATAL) << "I have no orchestrator!!";
-      }
-      if (valid) {
-        *valid = !node->expired();
+        AddDnsLink(bytes, success, src);
       }
     } break;
     case GatewayRequestType::Car: {
@@ -397,4 +370,40 @@ void Self::FleshOut(ipld::BlockSource& s) const {
     s.cid = main_param;
   }
   s.cat.request_type = type;
+}
+void Self::AddDnsLink(std::string_view target, bool& success, ipld::BlockSource src) {
+    auto node = std::make_shared<ipld::DnsLinkName>(target);
+    if (node) {
+        node->source(src);
+        VLOG(2) << "Added a DNSLink node pointing to " << target;
+    }
+    if (orchestrator_) {
+        success = orchestrator_->add_node(main_param, node) || success;
+    } else {
+        LOG(ERROR) << "I have no orchestrator!!";
+    }
+}
+void Self::AddBlock(std::string_view bytes,
+                    bool& success,
+                    ipld::BlockSource src,
+                    std::shared_ptr<Client> const& api,
+                    bool* valid) {
+    DCHECK(cid.has_value());
+    if (!cid.has_value()) {
+        LOG(ERROR) << "Your CID doesn't even have a value!";
+        success = false;
+        return;
+    }
+    DCHECK(api);
+    auto node = ipld::DagNode::fromBytes(api, cid.value(), bytes);
+    if (!node) {
+        success = false;
+        VLOG(1) << "Added a block with CID " << cid->to_string();
+    } else {
+        node->source(src);
+        if (valid) {
+            *valid = true;
+        }
+        success = orchestrator_->add_node(main_param, node) || success;
+    }
 }

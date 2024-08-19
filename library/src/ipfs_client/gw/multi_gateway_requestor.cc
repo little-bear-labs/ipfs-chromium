@@ -142,6 +142,7 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
                           bool timed_out,
                           std::chrono::system_clock::time_point start) {
   auto req_type = req->type;
+  VLOG(2) << "Request status " << status << " for " << desc.url;
   if (req->Finished() ||
       (req->PartiallyRedundant() && req_type == GatewayRequestType::Block)) {
     return;
@@ -149,23 +150,33 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
   auto i = state_.find(gw);
   if (status == 200 || !status) {
     auto ct = hdrs("content-type");
+    auto roots = hdrs("X-Ipfs-Roots");
     std::transform(ct.begin(), ct.end(), ct.begin(), ::tolower);
+    ipfs::ipld::BlockSource src;
+    src.load_duration = src.fetched_at - start;
+    src.cat.gateway_url = gw;
     if (ct.empty()) {
       LOG(ERROR) << "No content-type header?";
     } else if (desc.accept.size() &&
                ct.find(desc.accept) == std::string::npos) {
+      if (roots.size() && req->type == GatewayRequestType::DnsLink && req->RespondSuccessfully("", api_, src, roots)) {
+        LOG(INFO) << "Wrong accept on a DNSLink request, but we still got the resolution.";
+        return;
+      }
       if (state_.end() != i) {
+        VLOG(1) << "Wrong accept (" << ct << ") on " << req->debug_string();
         i->second.miss(req_type, *req);
+        req->failures.insert(gw);
       } else {
         LOG(WARNING) << "No state for " << gw << " to record hit on " << desc.url;
       }
       Next();
       return;
     }
-    ipfs::ipld::BlockSource src;
-    src.load_duration = src.fetched_at - start;
-    src.cat.gateway_url = gw;
-    if (req->RespondSuccessfully(body, api_, src)) {
+    if (req->RespondSuccessfully(body, api_, src, roots)) {
+      if (gw.find("dag.w3s.link") < gw.size()) {
+        LOG(INFO) << "Success on " << desc.url;
+      }
       if (state_.end() != i) {
         i->second.hit(req_type, *req);
       } else {
