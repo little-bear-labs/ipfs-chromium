@@ -116,3 +116,14 @@ TEST_F(GatewayRequestTest, timeouts_ordinal) {
  EXPECT_LT(timeout(RT::Providers), timeout(RT::Block));
  EXPECT_LT(timeout(RT::Car), timeout(RT::Ipns));
 }
+TEST_F(GatewayRequestTest, describe_block_http) {
+ t_.type = RT::Block;
+ auto o = t_.describe_http("http://gate.way/");
+ ASSERT_TRUE(o.has_value());
+ auto& d = *o;
+ EXPECT_EQ(d.url, "http://gate.way/ipfs/main");
+ EXPECT_EQ(d.accept, "application/vnd.ipld.raw");
+ EXPECT_EQ(d.timeout_seconds, 32);
+ ASSERT_TRUE(d.max_response_size.has_value());
+ EXPECT_EQ(d.max_response_size.value(), 2097152);
+}

@@ -440,6 +440,15 @@ class Patcher:
             ):
                 verbose(p, "Still relying on absl::optional in unit tests", file_path)
                 return True
+        file_path = join(dir_path, "chrome/installer/linux/common/desktop.template.patch")
+        if not isfile(file_path):
+            verbose('No patching of', file_path)
+            return True
+        with open(file_path) as f:
+            lines = list(map(lambda x: x.strip(), f.readlines()))
+            if not any(map(lambda x: 'x-scheme-handler/ipfs' in x, lines)):
+                verbose(p, "No ipfs scheme in Linux installer", file_path)
+                return True
         file_path = f"{self.pdir}/{p}.patch"
         if not isfile(file_path):
             return False
