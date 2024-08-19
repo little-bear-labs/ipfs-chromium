@@ -98,7 +98,7 @@ url_case ipfs bafkqacdjmrsw45djor4q ff483d1ff591898a9942916050d2ca3f 'Identity (
 url_case ipfs baguqeerah2nswg7r2pvlpbnsz5y4c4pr4wsgbzixdl632w5qxvedqzryf54q 7750fd7b0928f007e1d181763c0dbdb5 'A DAG-JSON document. The block itself md5s to b92348005af4ae4795e6f312844fb359, but the response we are hashing here is an HTML preview page. This does mean this test breaks if you make the preview less ugly.'
 url_case ipns en.wikipedia-on-ipfs.org/I/HFE_Too_Slow_1.JPG.webp 09c09b2654e8529740b5a7625e39e0c8 'An image fetched through DNSLink and HAMT sharded directories.' note
 echo 'Skip as it takes too long.' url_case ipfs bafybeieb33pqideyl5ncd33kho622thym5rqv6sujrmelcuhkjlf2hdpu4/Big%20Buck%20Bunny.webm 06d51286e56badb4455594ebed6daba2 'A large UnixFS file - several hundred blocks.' error
-url_case ipns k51qzi5uqu5dijv526o4z2z10ejylnel0bfvrtw53itcmsecffo8yf0zb4g9gi/symlinks/relative_link.txt cfe9b69523140b5b5e63874a8e4997e4 'A relative symlink resolves successfully to the file pointed to.'
+url_case ipfs bafybeihmq5rnk5i4gwljixz64dns3pxt7ep2i3x7eylyfq7mkzgh4gtfh4/relative_link.txt cfe9b69523140b5b5e63874a8e4997e4 'A relative symlink resolves successfully to the file pointed to.'
 
 echo Stop test server.
 killall python3 2>/dev/null || true
