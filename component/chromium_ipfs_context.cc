@@ -64,6 +64,8 @@ auto ipfs::CreateContext(InterRequestState& stat, PrefService* pref)
       .with(K::RSA,
             std::make_unique<crypto::OpensslSignatureVerifier>(EVP_PKEY_RSA))
       .with(K::Ed25519, std::make_unique<crypto::OpensslSignatureVerifier>(
-                            EVP_PKEY_ED25519));
+                            EVP_PKEY_ED25519))
+      .with([pref](){return DnsFallbackPref(pref);})
+      ;
   return result;
 }

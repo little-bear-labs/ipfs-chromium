@@ -14,7 +14,9 @@ auto ipfs::start_default(boost::asio::io_context& io)
       .with(SKT::RSA,
             std::make_unique<crypto::OpensslSignatureVerifier>(EVP_PKEY_RSA))
       .with(SKT::Ed25519, std::make_unique<crypto::OpensslSignatureVerifier>(
-                              EVP_PKEY_ED25519));
+                              EVP_PKEY_ED25519))
+      .with([](){return true;})
+      ;
   auto rtor = gw::default_requestor({}, api);
   api->with(rtor);
   //  auto orc = std::make_shared<Partition>(rtor, api);

@@ -45,6 +45,7 @@ class Client : public std::enable_shared_from_this<Client> {
   using MimeTypeDeduction = std::function<
       std::string(std::string, std::string_view, std::string const&)>;
   using UrlUnescaping = std::function<std::string(std::string_view)>;
+  using DnslinkFallbackSwitch = std::function<bool()>;
 
   Client();
   virtual ~Client() noexcept {}
@@ -66,6 +67,7 @@ class Client : public std::enable_shared_from_this<Client> {
   Client& with(SigningKeyType, std::unique_ptr<crypto::SignatureVerifier>);
   Client& with(MimeTypeDeduction);
   Client& with(UrlUnescaping);
+  Client& with(DnslinkFallbackSwitch);
 
   /*!
    * \brief Determine a mime type for a given file.
@@ -93,6 +95,8 @@ class Client : public std::enable_shared_from_this<Client> {
 
   std::optional<std::vector<Byte>> Hash(HashType, ByteView data);
 
+  bool DnslinkFallback() const;
+
  protected:
   std::unordered_map<HashType, std::unique_ptr<crypto::Hasher>> hashers_;
   std::unordered_map<SigningKeyType, std::unique_ptr<crypto::SignatureVerifier>>
@@ -106,6 +110,7 @@ class Client : public std::enable_shared_from_this<Client> {
   UrlUnescaping unescape_;
   std::shared_ptr<gw::Requestor> rtor_;
   std::unordered_map<std::string, std::shared_ptr<Partition>> partitions_;
+  DnslinkFallbackSwitch dns_fb_;
 };
 
 }  // namespace ipfs

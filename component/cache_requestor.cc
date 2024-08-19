@@ -138,7 +138,7 @@ void Self::OnBodyRead(Task task, int code) {
     task.orig_src.load_duration = std::chrono::system_clock::now() - task.start;
     task.orig_src.cat.cached = true;
     bool valid = false;
-    task.request->RespondSuccessfully(task.body, api_, task.orig_src, &valid);
+    task.request->RespondSuccessfully(task.body, api_, task.orig_src, "", &valid);
     if (!valid) {
       VLOG(2) << "Had a bad or expired cached response for " << task.key;
       Expire(task.key);

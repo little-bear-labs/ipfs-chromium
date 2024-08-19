@@ -69,6 +69,12 @@ std::string Self::UnescapeUrlComponent(std::string_view url_comp) {
   }
   return unescape_(url_comp);
 }
+bool Self::DnslinkFallback() const {
+  if (dns_fb_) {
+    return dns_fb_();
+  }
+  return false;
+}
 
 auto Self::partition(std::string key) -> std::shared_ptr<Partition> {
   auto& part = partitions_[key];
@@ -165,5 +171,9 @@ Self& Self::with(std::unique_ptr<ctx::GatewayConfig> p) {
 }
 Self& Self::with(std::shared_ptr<gw::Requestor> p) {
   rtor_ = p;
+  return *this;
+}
+Self& Self::with(DnslinkFallbackSwitch sw) {
+  dns_fb_ = sw;
   return *this;
 }

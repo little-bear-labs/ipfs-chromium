@@ -42,9 +42,13 @@ auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
   auto res = [req, success, a, start](std::vector<std::string> const& results) {
     *success = *success || parse_results(req, results, a, start);
   };
-  auto don = [success, req]() {
+  auto don = [this,success, req]() {
     if (!*success) {
-      req->dependent->finish(ipfs::Response::HOST_NOT_FOUND_RESPONSE);
+      if (api_->DnslinkFallback()) {
+        forward(req);
+      } else {
+        req->dependent->finish(ipfs::Response::HOST_NOT_FOUND_RESPONSE);
+      }
     }
   };
   api_->dns_txt().SendDnsTextRequest("_dnslink." + req->main_param, res,

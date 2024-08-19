@@ -30,7 +30,7 @@ void Self::request(ReqPtr req) {
     return;
   }
   if (req->Finished()) {
-    VLOG(2) << "Dropping a finished/zombie request.";
+    LOG(INFO) << "Dropping a finished/zombie request " << req->debug_string();
     return;
   }
   switch (handle(req)) {
@@ -59,7 +59,11 @@ void Self::request(ReqPtr req) {
 void Self::definitive_failure(ipfs::gw::RequestPtr r) const {
   DCHECK(r);
   DCHECK(r->dependent);
-  r->dependent->finish(Response::PLAIN_NOT_FOUND);
+  if (r->type == GatewayRequestType::DnsLink) {
+    r->dependent->finish(Response::HOST_NOT_FOUND_RESPONSE);
+  } else {
+    r->dependent->finish(Response::PLAIN_NOT_FOUND);
+  }
 }
 
 void Self::forward(ipfs::gw::RequestPtr req) const {
