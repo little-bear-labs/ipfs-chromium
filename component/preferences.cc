@@ -11,6 +11,7 @@
 
 namespace {
 std::string const kGateway{"ipfs.gateway"};
+std::string const kDnslinkFallback{"ipfs.dnslink.fallback_to_gateway"};
 std::string const kDiscoveryRate{"ipfs.discovery.rate"};
 std::string const kDiscoveryOfUnencrypted{"ipfs.discovery.http"};
 
@@ -35,7 +36,16 @@ void ipfs::RegisterPreferences(PrefRegistrySimple* service) {
   service->RegisterDictionaryPref(kGateway, std::move(vals));
   service->RegisterIntegerPref(kDiscoveryRate, 120);
   service->RegisterBooleanPref(kDiscoveryOfUnencrypted, true);
+  service->RegisterBooleanPref(kDnslinkFallback, true);
 }
+bool ipfs::DnsFallbackPref(PrefService const* p) {
+  if (!p) {
+    LOG(ERROR) << "No preferences available, assuming we don't fallback to DNSLink-over-gateway.";
+    return false;
+  }
+  return p->GetBoolean(kDnslinkFallback);
+}
+
 using Self = ipfs::ChromiumIpfsGatewayConfig;
 Self::ChromiumIpfsGatewayConfig(PrefService* prefs) : prefs_{prefs} {
   if (prefs) {

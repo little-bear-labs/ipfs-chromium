@@ -30,9 +30,10 @@ std::string_view name(GatewayRequestType);
 
 constexpr std::size_t BLOCK_RESPONSE_BUFFER_SIZE = 2 * 1024 * 1024;
 
+// TODO this class has gotten large enough that it should probably be a base class
+ //  with subclasses instead of switch statements on type
 class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
  public:
-  // TODO add BlockSource param
   using BytesReceivedHook =
       std::function<void(std::string_view, ByteView, ipld::BlockSource const&)>;
 
@@ -41,9 +42,17 @@ class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
   std::vector<BytesReceivedHook> bytes_received_hooks;
 
   void FleshOut(ipld::BlockSource&) const;
+  void AddDnsLink(std::string_view target, bool& success, ipld::BlockSource src);
+  void AddBlock(std::string_view bytes,
+                bool& success,
+                ipld::BlockSource src,
+                std::shared_ptr<Client> const& api,
+                bool* valid);
 
  public:
   GatewayRequestType type = GatewayRequestType::Zombie;
+
+  // TODO - encapsulate. It's not that these public data members are directly accessed everywhere
   std::string main_param;  ///< CID, IPNS name, hostname
   std::string path;        ///< For CAR requests
   std::shared_ptr<IpfsRequest> dependent;
@@ -66,6 +75,7 @@ class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
   bool RespondSuccessfully(std::string_view,
                            std::shared_ptr<Client> const& api,
                            ipld::BlockSource src,
+                           std::string_view roots = "",
                            bool* valid = nullptr);
   void Hook(BytesReceivedHook);
   bool PartiallyRedundant() const;
