@@ -1,15 +1,16 @@
 <map id="ipfs::Client" name="ipfs::Client">
-<area shape="rect" id="node1" title="Interface that provides functionality from whatever environment you&#39;re using this library in." alt="" coords="439,415,531,442"/>
+<area shape="rect" id="node1" title="Interface that provides functionality from whatever environment you&#39;re using this library in." alt="" coords="439,429,531,455"/>
 <area shape="rect" id="node2" title=" " alt="" coords="49,5,207,47"/>
 <area shape="rect" id="node3" title=" " alt="" coords="49,71,207,112"/>
 <area shape="rect" id="node4" title=" " alt="" coords="5,137,251,193"/>
-<area shape="rect" id="node5" title=" " alt="" coords="49,217,207,259"/>
-<area shape="rect" id="node6" title=" " alt="" coords="39,283,217,339"/>
-<area shape="rect" id="node7" title=" " alt="" coords="25,363,231,419"/>
-<area shape="rect" id="node8" title=" " alt="" coords="51,444,205,485"/>
-<area shape="rect" id="node9" title=" " alt="" coords="49,509,207,551"/>
-<area shape="rect" id="node10" title=" " alt="" coords="49,575,207,616"/>
-<area shape="rect" id="node11" title=" " alt="" coords="49,640,207,681"/>
-<area shape="rect" id="node12" title=" " alt="" coords="49,705,207,747"/>
-<area shape="rect" id="node13" title=" " alt="" coords="27,771,229,827"/>
+<area shape="rect" id="node5" title=" " alt="" coords="59,217,197,243"/>
+<area shape="rect" id="node6" title=" " alt="" coords="49,268,207,309"/>
+<area shape="rect" id="node7" title=" " alt="" coords="39,334,217,390"/>
+<area shape="rect" id="node8" title=" " alt="" coords="25,414,231,470"/>
+<area shape="rect" id="node9" title=" " alt="" coords="51,495,205,536"/>
+<area shape="rect" id="node10" title=" " alt="" coords="49,560,207,601"/>
+<area shape="rect" id="node11" title=" " alt="" coords="49,625,207,667"/>
+<area shape="rect" id="node12" title=" " alt="" coords="49,691,207,732"/>
+<area shape="rect" id="node13" title=" " alt="" coords="49,756,207,797"/>
+<area shape="rect" id="node14" title=" " alt="" coords="27,822,229,878"/>
 </map>

@@ -110,60 +110,65 @@ $(function() {
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keyword">using</span> MimeTypeDeduction = std::function&lt;</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      std::string(std::string, std::string_view, std::string <span class="keyword">const</span>&amp;)&gt;;</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keyword">using</span> UrlUnescaping = std::function&lt;std::string(std::string_view)&gt;;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>();</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classipfs_1_1Client.html">Client</a>() noexcept {}</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  std::shared_ptr&lt;Partition&gt; partition(std::string key);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <a class="code" href="classipfs_1_1ctx_1_1HttpApi.html">ctx::HttpApi</a>&amp; http();</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <a class="code" href="classipfs_1_1ctx_1_1DnsTxtLookup.html">ctx::DnsTxtLookup</a>&amp; dns_txt();</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <a class="code" href="classipfs_1_1ctx_1_1GatewayConfig.html">ctx::GatewayConfig</a>&amp; gw_cfg();</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <a class="code" href="classipfs_1_1ctx_1_1JsonParser.html">ctx::JsonParser</a>&amp; json();</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <a class="code" href="classipfs_1_1ctx_1_1CborParser.html">ctx::CborParser</a>&amp; cbor();</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  std::shared_ptr&lt;gw::Requestor&gt; requestor();</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(std::unique_ptr&lt;ctx::HttpApi&gt;);</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(std::unique_ptr&lt;ctx::DnsTxtLookup&gt;);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(std::unique_ptr&lt;ctx::GatewayConfig&gt;);</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(std::unique_ptr&lt;ctx::JsonParser&gt;);</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(std::unique_ptr&lt;ctx::CborParser&gt;);</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(std::shared_ptr&lt;gw::Requestor&gt;);</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(SigningKeyType, std::unique_ptr&lt;crypto::SignatureVerifier&gt;);</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(MimeTypeDeduction);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(UrlUnescaping);</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="classipfs_1_1Client.html#a062c3273e71f61ebc1ddde7a5b77dce7">   76</a></span>&#160;  std::string <a class="code" href="classipfs_1_1Client.html#a062c3273e71f61ebc1ddde7a5b77dce7">MimeType</a>(std::string extension,</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;                       std::string_view content,</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                       std::string <span class="keyword">const</span>&amp; url);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
-<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="classipfs_1_1Client.html#a1b5fc981f81d33e3c6172c938a8cd92f">   86</a></span>&#160;  std::string <a class="code" href="classipfs_1_1Client.html#a1b5fc981f81d33e3c6172c938a8cd92f">UnescapeUrlComponent</a>(std::string_view url_comp);</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keyword">using</span> ByteView = ::ipfs::ByteView;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordtype">bool</span> VerifyKeySignature(SigningKeyType,</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                          ByteView signature,</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                          ByteView data,</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                          ByteView key_bytes) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160; </div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  std::optional&lt;std::vector&lt;Byte&gt;&gt; Hash(HashType, ByteView data);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keyword">using</span> DnslinkFallbackSwitch = std::function&lt;bool()&gt;;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>();</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classipfs_1_1Client.html">Client</a>() noexcept {}</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  std::shared_ptr&lt;Partition&gt; partition(std::string key);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <a class="code" href="classipfs_1_1ctx_1_1HttpApi.html">ctx::HttpApi</a>&amp; http();</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <a class="code" href="classipfs_1_1ctx_1_1DnsTxtLookup.html">ctx::DnsTxtLookup</a>&amp; dns_txt();</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <a class="code" href="classipfs_1_1ctx_1_1GatewayConfig.html">ctx::GatewayConfig</a>&amp; gw_cfg();</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <a class="code" href="classipfs_1_1ctx_1_1JsonParser.html">ctx::JsonParser</a>&amp; json();</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <a class="code" href="classipfs_1_1ctx_1_1CborParser.html">ctx::CborParser</a>&amp; cbor();</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  std::shared_ptr&lt;gw::Requestor&gt; requestor();</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(std::unique_ptr&lt;ctx::HttpApi&gt;);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(std::unique_ptr&lt;ctx::DnsTxtLookup&gt;);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(std::unique_ptr&lt;ctx::GatewayConfig&gt;);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(std::unique_ptr&lt;ctx::JsonParser&gt;);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(std::unique_ptr&lt;ctx::CborParser&gt;);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(std::shared_ptr&lt;gw::Requestor&gt;);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(SigningKeyType, std::unique_ptr&lt;crypto::SignatureVerifier&gt;);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(MimeTypeDeduction);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(UrlUnescaping);</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <a class="code" href="classipfs_1_1Client.html">Client</a>&amp; with(DnslinkFallbackSwitch);</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
+<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="classipfs_1_1Client.html#a062c3273e71f61ebc1ddde7a5b77dce7">   78</a></span>&#160;  std::string <a class="code" href="classipfs_1_1Client.html#a062c3273e71f61ebc1ddde7a5b77dce7">MimeType</a>(std::string extension,</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                       std::string_view content,</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                       std::string <span class="keyword">const</span>&amp; url);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
+<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="classipfs_1_1Client.html#a1b5fc981f81d33e3c6172c938a8cd92f">   88</a></span>&#160;  std::string <a class="code" href="classipfs_1_1Client.html#a1b5fc981f81d33e3c6172c938a8cd92f">UnescapeUrlComponent</a>(std::string_view url_comp);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keyword">using</span> ByteView = ::ipfs::ByteView;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keywordtype">bool</span> VerifyKeySignature(SigningKeyType,</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                          ByteView signature,</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                          ByteView data,</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                          ByteView key_bytes) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160; </div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  std::unordered_map&lt;HashType, std::unique_ptr&lt;crypto::Hasher&gt;&gt; hashers_;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  std::unordered_map&lt;SigningKeyType, std::unique_ptr&lt;crypto::SignatureVerifier&gt;&gt;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;      verifiers_;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  std::unique_ptr&lt;ctx::HttpApi&gt; http_api_;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  std::unique_ptr&lt;ctx::DnsTxtLookup&gt; dns_txt_;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  std::unique_ptr&lt;ctx::GatewayConfig&gt; gateway_config_;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  std::unique_ptr&lt;ctx::JsonParser&gt; json_parser_;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  std::unique_ptr&lt;ctx::CborParser&gt; cbor_parser_;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  MimeTypeDeduction deduce_mime_type_;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  UrlUnescaping unescape_;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  std::shared_ptr&lt;gw::Requestor&gt; rtor_;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  std::unordered_map&lt;std::string, std::shared_ptr&lt;Partition&gt;&gt; partitions_;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;};</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160; </div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160; </div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  std::optional&lt;std::vector&lt;Byte&gt;&gt; Hash(HashType, ByteView data);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; </div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keywordtype">bool</span> DnslinkFallback() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; </div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  std::unordered_map&lt;HashType, std::unique_ptr&lt;crypto::Hasher&gt;&gt; hashers_;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  std::unordered_map&lt;SigningKeyType, std::unique_ptr&lt;crypto::SignatureVerifier&gt;&gt;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;      verifiers_;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  std::unique_ptr&lt;ctx::HttpApi&gt; http_api_;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  std::unique_ptr&lt;ctx::DnsTxtLookup&gt; dns_txt_;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  std::unique_ptr&lt;ctx::GatewayConfig&gt; gateway_config_;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  std::unique_ptr&lt;ctx::JsonParser&gt; json_parser_;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  std::unique_ptr&lt;ctx::CborParser&gt; cbor_parser_;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  MimeTypeDeduction deduce_mime_type_;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  UrlUnescaping unescape_;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  std::shared_ptr&lt;gw::Requestor&gt; rtor_;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  std::unordered_map&lt;std::string, std::shared_ptr&lt;Partition&gt;&gt; partitions_;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  DnslinkFallbackSwitch dns_fb_;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;};</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160; </div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; </div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aclassipfs_1_1Client_html"><div class="ttname"><a href="classipfs_1_1Client.html">ipfs::Client</a></div><div class="ttdoc">Interface that provides functionality from whatever environment you're using this library in.</div><div class="ttdef"><b>Definition:</b> client.h:42</div></div>
 <div class="ttc" id="aclassipfs_1_1Client_html_a062c3273e71f61ebc1ddde7a5b77dce7"><div class="ttname"><a href="classipfs_1_1Client.html#a062c3273e71f61ebc1ddde7a5b77dce7">ipfs::Client::MimeType</a></div><div class="ttdeci">std::string MimeType(std::string extension, std::string_view content, std::string const &amp;url)</div><div class="ttdoc">Determine a mime type for a given file.</div></div>
 <div class="ttc" id="aclassipfs_1_1Client_html_a1b5fc981f81d33e3c6172c938a8cd92f"><div class="ttname"><a href="classipfs_1_1Client.html#a1b5fc981f81d33e3c6172c938a8cd92f">ipfs::Client::UnescapeUrlComponent</a></div><div class="ttdeci">std::string UnescapeUrlComponent(std::string_view url_comp)</div><div class="ttdoc">Remove URL escaping, e.g. %20.</div></div>

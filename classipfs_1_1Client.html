@@ -93,19 +93,20 @@ Collaboration diagram for ipfs::Client:</div>
 <div class="dyncontent">
 <div class="center"><img src="classipfs_1_1Client__coll__graph.png" border="0" usemap="#aipfs_1_1Client_coll__map" alt="Collaboration graph"/></div>
 <map name="aipfs_1_1Client_coll__map" id="aipfs_1_1Client_coll__map">
-<area shape="rect" title="Interface that provides functionality from whatever environment you&#39;re using this library in." alt="" coords="439,415,531,442"/>
+<area shape="rect" title="Interface that provides functionality from whatever environment you&#39;re using this library in." alt="" coords="439,429,531,455"/>
 <area shape="rect" title=" " alt="" coords="49,5,207,47"/>
 <area shape="rect" title=" " alt="" coords="49,71,207,112"/>
 <area shape="rect" title=" " alt="" coords="5,137,251,193"/>
-<area shape="rect" title=" " alt="" coords="49,217,207,259"/>
-<area shape="rect" title=" " alt="" coords="39,283,217,339"/>
-<area shape="rect" title=" " alt="" coords="25,363,231,419"/>
-<area shape="rect" title=" " alt="" coords="51,444,205,485"/>
-<area shape="rect" title=" " alt="" coords="49,509,207,551"/>
-<area shape="rect" title=" " alt="" coords="49,575,207,616"/>
-<area shape="rect" title=" " alt="" coords="49,640,207,681"/>
-<area shape="rect" title=" " alt="" coords="49,705,207,747"/>
-<area shape="rect" title=" " alt="" coords="27,771,229,827"/>
+<area shape="rect" title=" " alt="" coords="59,217,197,243"/>
+<area shape="rect" title=" " alt="" coords="49,268,207,309"/>
+<area shape="rect" title=" " alt="" coords="39,334,217,390"/>
+<area shape="rect" title=" " alt="" coords="25,414,231,470"/>
+<area shape="rect" title=" " alt="" coords="51,495,205,536"/>
+<area shape="rect" title=" " alt="" coords="49,560,207,601"/>
+<area shape="rect" title=" " alt="" coords="49,625,207,667"/>
+<area shape="rect" title=" " alt="" coords="49,691,207,732"/>
+<area shape="rect" title=" " alt="" coords="49,756,207,797"/>
+<area shape="rect" title=" " alt="" coords="27,822,229,878"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -120,6 +121,9 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>MimeTypeDeduction</b
 <tr class="memitem:af54adb2f4dcca975bd48fe85b8512a36"><td class="memItemLeft" align="right" valign="top"><a id="af54adb2f4dcca975bd48fe85b8512a36"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>UrlUnescaping</b> = std::function&lt; std::string(std::string_view)&gt;</td></tr>
 <tr class="separator:af54adb2f4dcca975bd48fe85b8512a36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88d883f4a3cdc2844dc3fd0f2e34dbfd"><td class="memItemLeft" align="right" valign="top"><a id="a88d883f4a3cdc2844dc3fd0f2e34dbfd"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>DnslinkFallbackSwitch</b> = std::function&lt; bool()&gt;</td></tr>
+<tr class="separator:a88d883f4a3cdc2844dc3fd0f2e34dbfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3967ca996200b8b9d4fc2b20e7ff422d"><td class="memItemLeft" align="right" valign="top"><a id="a3967ca996200b8b9d4fc2b20e7ff422d"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>ByteView</b> = ::ipfs::ByteView</td></tr>
 <tr class="separator:a3967ca996200b8b9d4fc2b20e7ff422d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -174,6 +178,9 @@ std::shared_ptr&lt; <a class="el" href="classipfs_1_1gw_1_1Requestor.html">gw::R
 <tr class="memitem:a0b9fcc7f6d98a83bcb3dcc6c7ccfa33f"><td class="memItemLeft" align="right" valign="top"><a id="a0b9fcc7f6d98a83bcb3dcc6c7ccfa33f"></a>
 <a class="el" href="classipfs_1_1Client.html">Client</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>with</b> (UrlUnescaping)</td></tr>
 <tr class="separator:a0b9fcc7f6d98a83bcb3dcc6c7ccfa33f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a999133acc654a0764476d9b8a32f9224"><td class="memItemLeft" align="right" valign="top"><a id="a999133acc654a0764476d9b8a32f9224"></a>
+<a class="el" href="classipfs_1_1Client.html">Client</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>with</b> (DnslinkFallbackSwitch)</td></tr>
+<tr class="separator:a999133acc654a0764476d9b8a32f9224"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a062c3273e71f61ebc1ddde7a5b77dce7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Client.html#a062c3273e71f61ebc1ddde7a5b77dce7">MimeType</a> (std::string extension, std::string_view content, std::string const &amp;url)</td></tr>
 <tr class="memdesc:a062c3273e71f61ebc1ddde7a5b77dce7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine a mime type for a given file.  <a href="classipfs_1_1Client.html#a062c3273e71f61ebc1ddde7a5b77dce7">More...</a><br /></td></tr>
 <tr class="separator:a062c3273e71f61ebc1ddde7a5b77dce7"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -186,6 +193,9 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>VerifyKeySignature</b
 <tr class="memitem:a7a009e778fb2d41294a9f7965011fdd2"><td class="memItemLeft" align="right" valign="top"><a id="a7a009e778fb2d41294a9f7965011fdd2"></a>
 std::optional&lt; std::vector&lt; Byte &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Hash</b> (HashType, ByteView data)</td></tr>
 <tr class="separator:a7a009e778fb2d41294a9f7965011fdd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa9c55e73475e02a8bb107437b9e862a"><td class="memItemLeft" align="right" valign="top"><a id="afa9c55e73475e02a8bb107437b9e862a"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>DnslinkFallback</b> () const</td></tr>
+<tr class="separator:afa9c55e73475e02a8bb107437b9e862a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -222,6 +232,9 @@ std::shared_ptr&lt; <a class="el" href="classipfs_1_1gw_1_1Requestor.html">gw::R
 <tr class="memitem:ae62bed8f8bc814bc4f53d2474af06e7b"><td class="memItemLeft" align="right" valign="top"><a id="ae62bed8f8bc814bc4f53d2474af06e7b"></a>
 std::unordered_map&lt; std::string, std::shared_ptr&lt; <a class="el" href="classipfs_1_1Partition.html">Partition</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>partitions_</b></td></tr>
 <tr class="separator:ae62bed8f8bc814bc4f53d2474af06e7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71fdbafff10a06b07bf41d9897307d5f"><td class="memItemLeft" align="right" valign="top"><a id="a71fdbafff10a06b07bf41d9897307d5f"></a>
+DnslinkFallbackSwitch&#160;</td><td class="memItemRight" valign="bottom"><b>dns_fb_</b></td></tr>
+<tr class="separator:a71fdbafff10a06b07bf41d9897307d5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface that provides functionality from whatever environment you're using this library in. </p>
