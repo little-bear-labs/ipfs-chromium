@@ -28,7 +28,7 @@ except Exception as ex:
     verbose('Installed requests because of', ex)
 
 
-VERSION_CLOSE_ENOUGH = 30102
+VERSION_CLOSE_ENOUGH = 30104
 LARGE_INT = 9876543210
 here = dirname(__file__)
 
@@ -101,9 +101,7 @@ class Patcher:
             paths.append(lin[3:])
         for path in paths:
             if path.endswith(".gz") or "." not in basename(path):
-                verbose(
-                    f"File change not recorded because the path doesn't seem to be one we should: {path}"
-                )
+                verbose(f"Not recorded because the path doesn't seem to be one we should: {path}")
                 continue
             from_path = join(self.csrc, path)
             to_path = join(write_dir, path)
@@ -115,9 +113,9 @@ class Patcher:
             elif "electron" in path:
                 verbose("electron and electron-spin are handled separately")
             elif isdir(from_path):
-                verbose(
-                    "Ignoring unversioned directory, since that is not a kind of edit I do."
-                )
+                verbose("Ignoring unversioned directory.")
+            elif '/theme/' in path or path.endswith('.info'):
+                verbose("Ignoring branding.", path)
             elif not self.__file_in_branch(tag, path):
                 print("Copy", from_path, "->", to_path)
                 os.makedirs(to_dir, exist_ok=True)
@@ -381,7 +379,7 @@ class Patcher:
             verbose("Couldn't get next, possibly-nonexistent, electron version's chromium version.", e, type(e))
             pass
         result = {}
-        for i in range(-3, 1):
+        for i in range(-2, 1):
             ev = i + rebv
             result[ev] = self.electron_version(f"{ev}-x-y")
         verbose("Electron versions:", result)
@@ -419,7 +417,7 @@ class Patcher:
                     pass  # One may assume this is Linux Extended
         close = VERSION_CLOSE_ENOUGH / 100
         for ev, e in self.electron_versions().items():
-            close += VERSION_CLOSE_ENOUGH
+            close += VERSION_CLOSE_ENOUGH * 2
             check(e, version_set, f"electron-{ev}", close)
         result = list(version_set.values())
         result.sort(reverse=True)

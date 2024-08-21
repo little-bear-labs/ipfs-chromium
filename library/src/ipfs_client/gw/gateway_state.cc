@@ -14,10 +14,10 @@ Self::GatewayState(std::string_view prefix, std::shared_ptr<Client> api)
 }
 long Self::score(GatewayRequest const& req, unsigned baseline) const {
   auto result = static_cast<long>(baseline);
-  result += 4L * cfg().GetTypeAffinity(prefix_, req.type);
+  result += 7L * cfg().GetTypeAffinity(prefix_, req.type);
   auto i = affinity_success.find(req.affinity);
   if (i != affinity_success.end()) {
-    result += 3L * i->second;
+    result += 8L * i->second;
   }
   return result;
 }

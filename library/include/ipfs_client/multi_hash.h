@@ -22,6 +22,7 @@ class MultiHash {
   bool valid() const;
   HashType type() const { return type_; }
   ByteView digest() const { return hash_; }
+  bool operator==(MultiHash const&) const = default;
 
  private:
   HashType type_ = HashType::INVALID;

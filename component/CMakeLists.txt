@@ -105,16 +105,16 @@ add_custom_target(chromium_ordering_issue
         components/reporting/proto:configuration_file_proto
     DEPENDS in_tree_build
   )
+add_custom_target(build_electron
+    COMMENT "Building 'chrome' in Chromium source tree, output in out/${CHROMIUM_PROFILE}"
+    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" electron
+    DEPENDS chromium_ordering_issue
+  )
 add_custom_target(build_browser
     COMMENT "Building 'chrome' in Chromium source tree, output in out/${CHROMIUM_PROFILE}"
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" chrome
     DEPENDS chromium_ordering_issue
   )
-add_custom_target(build_electron
-        COMMENT "Building 'electron' in Chromium source tree, output in out/${CHROMIUM_PROFILE}"
-        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" electron
-        DEPENDS chromium_ordering_issue
-)
 
 if(CHROMIUM_PROFILE STREQUAL win)
     set(CHROMIUM_PACKAGE_TARGET mini_installer)
@@ -122,10 +122,31 @@ else()
     set(CHROMIUM_PACKAGE_TARGET chrome/installer)
 endif()
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_custom_target(build_stripped_browser
+      COMMENT "Stripping browser, output is out/${CHROMIUM_PROFILE}/chrome.stripped"
+      COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" chrome.stripped
+      DEPENDS build_browser
+    )
+    foreach(suffix "" _sandbox)
+      add_custom_command(
+        TARGET build_browser
+        POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E copy
+          "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome${suffix}"
+          "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/ipfs_chromium${suffix}"
+      )
+      add_custom_command(
+        TARGET build_stripped_browser
+        POST_BUILD
+        COMMAND "${CMAKE_COMMAND}" -E copy
+          "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome${suffix}.stripped"
+          "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/ipfs_chromium${suffix}.stripped "
+      )
+    endforeach()
     add_custom_target(package_browser
         COMMENT "Packaging"
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" ${CHROMIUM_PACKAGE_TARGET}
-        DEPENDS build_browser
+        DEPENDS build_stripped_browser
       )
     add_custom_target(upload_browser
       DEPENDS package_browser
