@@ -10,6 +10,7 @@ from os.path import basename, dirname, getmtime, isdir, isfile, join, pathsep, r
 from shutil import copyfile, which
 from sys import argv, executable, stderr
 
+import filecmp
 import subprocess
 
 depot_tools_dir = vars['DEPOT_TOOLS_DIRECTORY']
@@ -23,6 +24,7 @@ git_binary = vars['GIT_EXECUTABLE']
 jobs = vars['parallel_jobs']
 gnargs = vars['GN_ARGS']
 build_type = vars['CMAKE_BUILD_TYPE']
+branding_dir = vars['BRANDING_DIR']
 python = executable
 patcher = Patcher(src, git_binary, build_type)
 UPDATED = 'chromium_source_updated'
@@ -31,16 +33,18 @@ prof_gn = profile.lower()
 electron_args_file = join(src, 'electron', 'build', 'args', prof_gn + '.gn')
 if isfile(electron_args_file):
     toks = gnargs.split()
-    #electron defines is_debug by profile convention, and unfortunately they disagree with me
+    # electron defines is_debug by profile convention, and unfortunately they disagree with me
     toks = filter(lambda x: not x.startswith('is_debug'), toks)
     gnargs = ' '.join(toks) + f' import(\"//electron/build/args/testing.gn\") '
 
+
 def into_repo(p):
-  for (f, t) in [('../../components/ipfs/','component'),('../../third_party/ipfs_client/','library')]:
-    if p.startswith(f):
-      verbose(p, 'instead of', f, 'find in', t)
-      return join(t, p[len(f):])
-  return p
+    for (f, t) in [('../../components/ipfs/', 'component'), ('../../third_party/ipfs_client/', 'library')]:
+        if p.startswith(f):
+            verbose(p, 'instead of', f, 'find in', t)
+            return join(t, p[len(f):])
+    return p
+
 
 def run(args, fail_ok=False, cwd=None):
     if cwd:
@@ -58,17 +62,19 @@ def run(args, fail_ok=False, cwd=None):
     ec = res.returncode
     if ec == 0:
         return True
-    in_repo = join(ipfs_chromium_source_dir,'library','src')
+    in_repo = join(ipfs_chromium_source_dir, 'library', 'src')
     ds = [in_repo, cwd, join(src, 'out', profile), '.', ipfs_chromium_source_dir]
     for line in res.stdout.split("\n"):
-      p = into_repo(line.split(':')[0])
-      rem = ':' + ':'.join(line.split(':')[1:])
-      file_there = lambda x: isfile(join(x,p))
-      d = next(filter(file_there, ds), None)
-      if d:
-        print(realpath(join(d,p))+rem)
-      else:
-        print(p+rem)
+        p = into_repo(line.split(':')[0])
+        rem = ':' + ':'.join(line.split(':')[1:])
+
+        def file_there(x):
+            return isfile(join(x, p))
+        d = next(filter(file_there, ds), None)
+        if d:
+            print(realpath(join(d, p)) + rem)
+        else:
+            print(p + rem)
     print('Command failed with exit code', ec, ':', args, file=stderr)
     if fail_ok:
         return False
@@ -149,15 +155,15 @@ patcher.apply()
 ipfs_dir = join(src, 'components', 'ipfs')
 elec_dir = join(src, 'electron')
 
+
 def files_content_differ(a, b):
-    try:
-        with open(a) as af:
-            with open(b) as bf:
-                ac = af.read()
-                bc = bf.read()
-                return ac != bc
-    except FileNotFoundError:
-        return True
+    if isfile(a):
+        if isfile(b):
+            return not filecmp.cmp(a, b, shallow=False)
+        else:
+            return True
+    else:
+        return isfile(b)
 
 
 source_exts = ['.h', '.cc', '.hpp']
@@ -195,7 +201,7 @@ def copy_missing_and_changed_files(source, target):
             print('Copying', s, 'to', t, 'while synchronizing', source, 'to', target)
             if not isdir(dirname(t)):
                 makedirs(dirname(t))
-            touch_update(s+t)
+            touch_update(s + t)
             copyfile(s, t)
     return (sources, protos)
 
@@ -210,12 +216,15 @@ def remove_danglers(source, target, sources, protos):
         s = join(source, rel)
         if not isfile(s) and rel not in protos:
             print('Removing dangling file', rel, 'while synchronizing', source, 'into', target)
-            touch_update('rm '+t)
+            touch_update('rm ' + t)
             remove(t)
 
 
 def sync_dir(source_relative, target_relative, complete=True):
     source = join(ipfs_chromium_source_dir, source_relative)
+    if not isdir(source):
+        print(f"Can't sync from dir '{source}', as it does not exist!!", file=stderr)
+        exit(9)
     target = join(src, target_relative)
     (sources, protos) = copy_missing_and_changed_files(source, target)
     if complete:
@@ -248,9 +257,14 @@ sync_dir('library', 'third_party/ipfs_client')
 if isdir(elec_dir):
     sync_dir('electron-spin', 'electron-spin')
 
-if 'branding' in argv:
-    argv.remove('branding')
-    sync_dir('component/branding', 'chrome', False)
+if not branding_dir:
+    verbose("Branding turned off via emptyBRANDING_DIR.")
+elif isdir(branding_dir):
+    sync_dir(join(branding_dir, 'installer'), join('chrome', 'installer'), False)
+    sync_dir(join(branding_dir, 'theme'), join('chrome', 'app', 'theme', 'chromium'), False)
+else:
+    print("BRANDING_DIR", branding_dir, "does not point to a directory.", file=stderr)
+    exit(8)
 if 'PYTHONPATH' in environ:
     environ['PYTHONPATH'] = src + '/third_party/protobuf/python' + pathsep + environ['PYTHONPATH']
 else:
@@ -261,7 +275,7 @@ if not isdir(out):
     makedirs(out)
 n = join(out, 'obj', 'components', 'ipfs', 'ipfs.ninja')
 if not isfile(n) or (isfile(UPDATED) and getmtime(UPDATED) > getmtime(n)):
-    a = [python, join(depot_tools_dir, 'gn.py'), 'gen', '--args='+gnargs.replace("'", ""), out]
+    a = [python, join(depot_tools_dir, 'gn.py'), 'gen', '--args=' + gnargs.replace("'", ""), out]
     verbose('Running gn gen', a)
     run(a)
 

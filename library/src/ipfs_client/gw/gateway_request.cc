@@ -398,7 +398,7 @@ void Self::AddBlock(std::string_view bytes,
     auto node = ipld::DagNode::fromBytes(api, cid.value(), bytes);
     if (!node) {
         success = false;
-        VLOG(1) << "Added a block with CID " << cid->to_string();
+        VLOG(2) << "Added a block with CID " << cid->to_string();
     } else {
         node->source(src);
         if (valid) {

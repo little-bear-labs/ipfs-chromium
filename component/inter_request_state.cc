@@ -7,6 +7,7 @@
 #include <base/logging.h>
 #include <content/public/browser/browser_context.h>
 #include <content/browser/child_process_security_policy_impl.h>
+#include <third_party/blink/renderer/platform/weborigin/scheme_registry.h>
 
 #include <ipfs_client/gw/default_requestor.h>
 #include <ipfs_client/ipfs_request.h>
@@ -25,15 +26,20 @@ void Self::CreateForBrowserContext(content::BrowserContext* c, PrefService* p) {
   auto owned = std::make_unique<ipfs::InterRequestState>(c->GetPath(), p);
   c->SetUserData(user_data_key, std::move(owned));
   auto* cpsp = content::ChildProcessSecurityPolicy::GetInstance();
-  cpsp->RegisterWebSafeScheme("ipfs");
-  cpsp->RegisterWebSafeScheme("ipns");
+  for (std::string scheme : {"ipfs", "ipns"}) {
+    cpsp->RegisterWebSafeScheme(scheme);
+  }
 }
 auto Self::FromBrowserContext(content::BrowserContext* context)
     -> InterRequestState& {
   auto* cpsp = content::ChildProcessSecurityPolicy::GetInstance();
-  if (! cpsp->IsWebSafeScheme("ipfs")) {
-    cpsp->RegisterWebSafeScheme("ipfs");
-    cpsp->RegisterWebSafeScheme("ipns");
+  for (std::string scheme : {"ipfs", "ipns"}) {
+    if (!(cpsp->IsWebSafeScheme(scheme))) {
+      cpsp->RegisterWebSafeScheme(scheme);
+    }
+    // auto s = WTF::String::FromUTF8(scheme);
+    // blink::SchemeRegistry::RegisterURLSchemeAsAllowedForReferrer(s);
+    // blink::SchemeRegistry::RegisterURLSchemeAsSupportingFetchAPI(s);
   }
   if (!context) {
     LOG(WARNING) << "No browser context! Using a default IPFS state.";

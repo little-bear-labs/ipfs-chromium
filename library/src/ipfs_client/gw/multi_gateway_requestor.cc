@@ -84,7 +84,7 @@ bool Self::Process(RequestPtr const& req) {
     forward(req);
     return false;
   }
-  auto min_plel = req->type == GatewayRequestType::Block ? 4UL : 1UL;
+  auto min_plel = req->type == GatewayRequestType::Block ? 2UL : 1UL;
   auto to_send = std::max(bored / 2UL, min_plel);
   std::sort(candidates.begin(), candidates.end(), std::greater{});
   static std::size_t extra = 0UL;
@@ -142,7 +142,6 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
                           bool timed_out,
                           std::chrono::system_clock::time_point start) {
   auto req_type = req->type;
-  VLOG(2) << "Request status " << status << " for " << desc.url;
   if (req->Finished() ||
       (req->PartiallyRedundant() && req_type == GatewayRequestType::Block)) {
     return;
@@ -164,7 +163,7 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
         return;
       }
       if (state_.end() != i) {
-        VLOG(1) << "Wrong accept (" << ct << ") on " << req->debug_string();
+        VLOG(2) << "Wrong accept (" << ct << ") on " << req->debug_string();
         i->second.miss(req_type, *req);
         req->failures.insert(gw);
       } else {
@@ -174,7 +173,7 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
       return;
     }
     if (req->RespondSuccessfully(body, api_, src, roots)) {
-      if (gw.find("dag.w3s.link") < gw.size()) {
+      if (gw.find("ipfs.eth.aragon.network") < gw.size()) {
         LOG(INFO) << "Success on " << desc.url;
       }
       if (state_.end() != i) {

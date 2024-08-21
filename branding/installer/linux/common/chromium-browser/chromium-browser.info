@@ -1,0 +1,36 @@
+# Copyright 2009 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# This file provides common configuration information for building
+# chromium-browser packages for various platforms.
+
+# Base name of the package.
+PACKAGE="ipfs-chromium-browser"
+
+# Base name of the snap package
+SNAPNAME="chromium-snapbad"
+
+# Filename of the main executable (for generating launcher scripts, etc.)
+PROGNAME=ipfs_chromium
+
+# Base directory for package installation.
+INSTALLDIR=/opt/chromium.org/ipfs-chromium
+
+# Directory for device policy enrollments.
+ENROLLMENTDIR=/etc/chromium/policies/enrollment
+
+# Display string for desktop menu/icon.
+MENUNAME="IPFS+Chromium"
+
+# Brief package description.
+SHORTDESC="Experimental variant of Chromium adding native IPFS multigateway client"
+
+# Detailed package description.
+FULLDESC="Chromium is a browser that combines a minimal design with sophisticated technology to make the web faster, safer, and easier. This varient contains support for ipfs:// and ipns:// URLs."
+
+# Package maintainer information.
+# TODO(mmoss) Setup a mailbox for this address
+MAINTNAME="Downstream: John, Upstream: Chromium Linux Team"
+MAINTMAIL="john@littlebearlabs.io"
+PRODUCTURL="https://github.com/little-bear-labs/ipfs-chromium"

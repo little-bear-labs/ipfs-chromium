@@ -28,6 +28,7 @@ class Cid {
   HashType hash_type() const;
 
   std::string to_string() const;
+  bool operator==(Cid const&) const = default;
 
   constexpr static std::size_t MinSerializedLength =
       1 /*cid version*/ + 1 /*codec*/ + 1 /*hash type*/ +
