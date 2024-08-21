@@ -2,6 +2,7 @@
 
 #include <mock_api.h>
 
+#include <gen/ipfs_client/unix_fs.pb.h>
 #include <vocab/stringify.h>
 #include "log_macros.h"
 
@@ -43,6 +44,28 @@ TEST(BlockTest, IdentityBlockValidates) {
   MockApi api;
   // if this fails, awesome. Change the block_bytes to "Ipsum lorem"
   EXPECT_TRUE(block.cid_matches_data(api));
+}
+TEST(BlockTest, ReaccessInput) {
+  std::string block_bytes(
+      "\x0a\x08\x08\x02\x12\x02"
+      "a\n"
+      "\x18\x02",
+      10UL);
+  auto cid = Cid{"bafybeigj4sef5qdwdxisatzjdoetjcfdyfqvzuhmstrj5o2ibkbix6vs5i"};
+  ipfs::PbDag block{cid, ipfs::as_bytes(block_bytes)};
+  EXPECT_TRUE(cid == block.cid()) << block.cid().to_string();
+  EXPECT_TRUE(block_bytes.find(block.unparsed()) < block_bytes.size());
+  ipfs::unix_fs::Data fs_dat;
+  EXPECT_TRUE(fs_dat.ParseFromString(block.unparsed()));
+  EXPECT_TRUE(fs_dat.has_type());
+  EXPECT_EQ(fs_dat.type(), 2);
+  EXPECT_FALSE(fs_dat.has_mode());
+  EXPECT_TRUE(fs_dat.has_filesize());
+  EXPECT_TRUE(fs_dat.has_data());
+  EXPECT_EQ(fs_dat.data().size(),2U);
+  EXPECT_EQ(fs_dat.data().at(0),'a');
+  EXPECT_EQ(fs_dat.data().at(1),'\n');
+
 }
 TEST(BlockTest, DirectoryCopiedIsStillDirectory) {
   std::string block_bytes("\x0a\x02\x08\x01");

@@ -26,6 +26,7 @@ set(DEPOT_TOOLS_DIRECTORY "${default_dt}" CACHE PATH
 )
 set(TEST_BY_DEFAULT FALSE CACHE BOOL "Update unit tests as part of the 'all' default target.")
 set(USE_DOXYGEN TRUE CACHE BOOL "If we should attempt to use Doxygen to generate documentation.")
+set(BRANDING_DIR "branding" CACHE PATH "Directory conataining branding files to synchronize. If empty, don't apply any branding changes.")
 #End of user-configuration cache variables.
 
 if(CXX_VERSION GREATER_EQUAL 20)

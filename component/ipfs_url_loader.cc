@@ -36,6 +36,24 @@ using PipeByteCount = size_t;
 #define SPAN_ARG 1
 #endif
 
+namespace {
+    template<class T>
+    concept OptionalGetHeader = requires(T& t,std::string_view k) {
+        { t.GetHeader(k) } -> std::same_as<std::optional<std::string>>;
+    };
+    std::optional<std::string> GetHeader(OptionalGetHeader auto& h, std::string_view k) {
+        return h.GetHeader(k);
+    }
+    template<class T>
+    std::optional<std::string> GetHeader(T& h, std::string_view k) requires (!OptionalGetHeader<T>) {
+        std::string v;
+        if (h.GetHeader(k, &v)) {
+          return v;
+        }
+        return std::nullopt;
+    }
+}
+
 ipfs::IpfsUrlLoader::IpfsUrlLoader(
     network::mojom::URLLoaderFactory& handles_http,
     InterRequestState& state)
@@ -111,10 +129,9 @@ void ipfs::IpfsUrlLoader::StartRequest(
       DCHECK(me->complete_);
     };
     me->ipfs_request_ = std::make_shared<IpfsRequest>(abs_path, whendone);
-    std::string semantic_header;
-    if (resource_request.headers.GetHeader("Semantic", &semantic_header)) {
-      LOG(INFO) << "Setting semantic header: '" << semantic_header << "'.";
-      me->ipfs_request_->semantic(semantic_header);
+    if (auto sh = GetHeader(resource_request.headers, "Semantic")) {
+      LOG(INFO) << "Setting semantic header: '" << *sh << "'.";
+      me->ipfs_request_->semantic(*sh);
     }
     me->stepper_ = std::make_unique<base::RepeatingTimer>();
     me->stepper_->Start(FROM_HERE, base::Seconds(2), me.get(),
