@@ -530,15 +530,13 @@ if __name__ == "__main__":
         for chan in ["Dev", "Beta", "Stable", "Extended"]:
             for os in ["Linux", "Mac", "Windows"]:
                 rels = per.release_versions(chan, os)
-                if len(rels) > 0:
-                    print(f"Curr {chan:9}{os:7}", rels[0][1])
-                if len(rels) > 1:
-                    print(f"Prev {chan:9}{os:7}", rels[1][1])
-                if len(rels) > 2:
-                    print(f"Old  {chan:9}{os:7}", rels[2][1])
-        print("Electron's main branch:", per.electron_version())
+                for (n,v) in zip(['Cur', 'Prv', 'Old'], rels):
+                    print(f"{v[1]:15} {n} {chan:9}{os:7}")
+        for (elec_br,chrom_ver) in per.electron_versions().items():
+            print(f"{chrom_ver:15} Electron {elec_br}")
+        print(f"{per.electron_version():15} Electron main")
         o = per.oldest()
-        print("Oldest maintained Extended:", o[1], f"({ctime(o[2])})")
+        print(f"{o[1]:15} Oldest maintained Extended:", f"({ctime(o[2])})")
         n = per.newest()
         print("Development at:", n[1], f"({ctime(n[2])})")
     elif argv[1] == "available":

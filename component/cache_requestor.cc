@@ -129,7 +129,6 @@ void Self::OnHeaderRead(Task task, int code) {
 }
 void Self::OnBodyRead(Task task, int code) {
   if (code <= 0) {
-    VLOG(2) << "Failed to read body for entry " << task.key << " in " << name();
     Miss(task);
     return;
   }
