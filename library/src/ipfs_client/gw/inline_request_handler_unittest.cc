@@ -1,6 +1,7 @@
 #include <ipfs_client/gw/inline_request_handler.h>
 
 #include <mock_api.h>
+#include <log_recorder.h>
 
 #include <ipfs_client/gw/gateway_request.h>
 #include <ipfs_client/gw/terminating_requestor.h>
@@ -17,6 +18,7 @@ using RT = ig::GatewayRequestType;
 using ipfs::Cid;
 
 TEST(InlineRequestHanlder, bluesky) {
+  LogRecorder lr;
   T t;
   auto api = std::make_shared<MockApi>();
   auto rtor = std::make_shared<ig::TerminatingRequestor>();

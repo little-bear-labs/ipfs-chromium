@@ -2,6 +2,7 @@
 #include <ipfs_client/partition.h>
 
 #include <mock_api.h>
+#include <log_recorder.h>
 #include <mock_requestor.h>
 #include "ipfs_client/gw/gateway_request_type.h"
 
@@ -69,6 +70,7 @@ struct GatewayRequestTest : public testing::Test {
 }  // namespace
 
 TEST_F(GatewayRequestTest, RespondsToCar) {
+  LogRecorder lr;
   t_.cid =
       i::Cid{"bafybeibwfakyszctcz54dungqay7jae35agjjhokltvvtboospgo6napxy"};
   t_.type = RT::Car;

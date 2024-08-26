@@ -1,8 +1,7 @@
 #include "symlink.h"
 
-#include "small_directory.h"
-
 #include <mock_api.h>
+#include <log_recorder.h>
 
 #include <ipfs_client/ipld/dag_node.h>
 #include <ipfs_client/pb_dag.h>
@@ -31,6 +30,7 @@ TEST(SymlinkTest, fromBlock) {
   EXPECT_EQ(actual.new_path, expect);
 }
 TEST(SymlinkTest, rooted) {
+  LogRecorder lr;
   auto target = "/b";
   auto sub = std::make_shared<ii::Symlink>(target);
   // This dir actually contains an inlined symlink which points to /b/c, but

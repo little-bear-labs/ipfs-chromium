@@ -199,7 +199,6 @@ namespace {
 std::pair<int, std::string> parse_status(std::string_view line,
                                          std::size_t col) {
   if (col >= line.size()) {
-    VLOG(2) << " No status specified, using default.";
     return {DEFAULT_STATUS, ""};
   }
   auto b = line.find_first_not_of(WHITESPACE, col);

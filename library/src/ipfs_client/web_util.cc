@@ -25,10 +25,10 @@ std::string u::RoughlyUnescapeUrlComponent(std::string_view url_comp) {
     if (c <= '9') {
       return c - '0';
     }
-    if (c <= 'Z') {
-      return c - 'A';
+    if (c <= 'F') {
+      return c - 'A' + 10;
     }
-    return c - 'a';
+    return c - 'a' + 10;
   };
   for (auto i = 0UL; i + 1UL < rv.size(); ++i) {
     if (rv[i] != '%') {
