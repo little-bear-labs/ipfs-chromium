@@ -2,6 +2,7 @@
 
 #include <mock_api.h>
 #include <mock_cbor.h>
+#include <log_recorder.h>
 
 #include <ipfs_client/cid.h>
 #include <ipfs_client/dag_json_value.h>
@@ -165,6 +166,7 @@ TEST(IpnsRecordTest, TooBig) {
   EXPECT_TRUE(cid.hash_type() == i::HashType::IDENTITY);
   EXPECT_TRUE(cid.valid());
   Api api;
+  LogRecorder lr;
   auto actual = ipfs::ValidateIpnsRecord({p, 12345}, cid, api);
   EXPECT_FALSE(actual.has_value());
 }

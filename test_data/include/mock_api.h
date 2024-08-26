@@ -6,6 +6,7 @@
 #include <ipfs_client/client.h>
 #include <ipfs_client/json_cbor_adapter.h>
 
+#include "mock_http_provider.h"
 #include "mock_gw_cfg.h"
 #include "mock_sig_vtor.h"
 
@@ -43,6 +44,7 @@ struct MockDnsTxt : public i::ctx::DnsTxtLookup {
 struct MockApi final : public i::Client {
   MockDnsTxt* dns_;
   MockGwCfg* gw_;
+  MockHttpProvider* h_;
   MockApi() {
     auto dns = std::make_unique<MockDnsTxt>();
     dns_ = dns.get();
@@ -50,6 +52,9 @@ struct MockApi final : public i::Client {
     auto g = std::make_unique<MockGwCfg>();
     gw_ = g.get();
     with(std::move(g));
+    auto h = std::make_unique<MockHttpProvider>();
+    h_ = h.get();
+    with(std::move(h));
     with(i::crypto::SigningKeyType::RSA, std::make_unique<MockSigVtor>());
     with(i::crypto::SigningKeyType::Ed25519, std::make_unique<MockSigVtor>());
   }

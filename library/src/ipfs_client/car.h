@@ -9,6 +9,10 @@
 
 namespace ipfs {
 class Client;
+/*! A (C)ontent-addressed (A)(r)chive
+ *  Archive in the same sense as tape archive (.tar), Java archive (.jar), archive (.a) etc.
+ *  However contains metadata not related to a filesystem, but to an IPLD DAG (or part of one)
+ */
 class Car {
  public:
   Car(ByteView, Client&);

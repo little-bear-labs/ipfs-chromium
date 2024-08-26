@@ -36,3 +36,17 @@ TEST(MultiGatewayRequestor, PendingIfHttp) {
   auto o = t.handle(r);
   EXPECT_TRUE(o == ig::Requestor::HandleOutcome::PENDING);
 }
+TEST(MultiGatewayRequestor, SendsRequestIfGatewayThereWithAnHttpRequest) {
+  auto t = std::make_shared<ig::MultiGatewayRequestor>();
+  auto api = std::make_shared<MockApi>();
+  api->gw_->index_gettable_gateways.emplace_back("telnet://::1/", 9);
+  t->api(api);
+  auto r = block_req();
+  r->type = RT::Block;
+  auto o = t->handle(r);
+  EXPECT_TRUE(o == ig::Requestor::HandleOutcome::PENDING);
+  EXPECT_EQ(api->h_->requests_sent.size(),1UL);
+  auto& rs = api->h_->requests_sent.at(0);
+  auto url_sent_to = rs.first.url;
+  EXPECT_LT(url_sent_to.find("bafybeid4dzlxm6h"),999UL) << url_sent_to;
+}

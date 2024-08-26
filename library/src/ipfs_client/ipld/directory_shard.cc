@@ -31,7 +31,6 @@ auto Self::resolve(ResolutionState& parms) -> ResolveResult {
     if (resp) {
       resp->mime_ = "text/html";
     } else if (std::holds_alternative<ProvenAbsent>(result)){
-      VLOG(1) << "HAMT returning dynamic listing HTML page.";
       return DynamicListingHtml(parms.MyPath().to_view());
     }
     return result;
@@ -45,11 +44,12 @@ auto Self::resolve_internal(ipfs::ipld::DirShard::HashIter hash_b,
                             std::string_view human_name,
                             ResolutionState& parms) -> ResolveResult {
   auto hash_chunk = hash_b == hash_e ? std::string{} : *hash_b;
+  auto needed_size = hash_chunk.size() + human_name.size();
   for (auto& [name, link] : links_) {
     if (!starts_with(name, hash_chunk)) {
       continue;
     }
-    if (ends_with(name, human_name)) {
+    if (name.size() == needed_size && ends_with(name, human_name)) {
       return CallChild(parms, name);
     }
     auto node = parms.GetBlock(link.cid);
