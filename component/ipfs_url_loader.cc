@@ -130,7 +130,7 @@ void ipfs::IpfsUrlLoader::StartRequest(
     };
     me->ipfs_request_ = std::make_shared<IpfsRequest>(abs_path, whendone);
     if (auto sh = GetHeader(resource_request.headers, "Semantic")) {
-      LOG(INFO) << "Setting semantic header: '" << *sh << "'.";
+      VLOG(2) << "Setting semantic header: '" << *sh << "'.";
       me->ipfs_request_->semantic(*sh);
     }
     me->stepper_ = std::make_unique<base::RepeatingTimer>();
@@ -193,7 +193,7 @@ void ipfs::IpfsUrlLoader::BlocksComplete(std::string mime_type,
   }
   if (resp_loc_.size()) {
     head->headers->AddHeader("Location", resp_loc_);
-    VLOG(1) << "Sending response for " << original_url_ << " with mime type "
+    VLOG(2) << "Sending response for " << original_url_ << " with mime type "
             << head->mime_type << " and status line '" << status_line
             << "' @location '" << resp_loc_ << "'";
   }

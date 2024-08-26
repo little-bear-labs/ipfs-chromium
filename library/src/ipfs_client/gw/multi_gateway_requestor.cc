@@ -131,7 +131,9 @@ void Self::DoSend(RequestPtr req, std::string const& gw, GatewayState& state) {
   };
   state.just_sent_one();
   auto cancel = api_->http().SendHttpRequest(*desc, cb);
-  req->dependent->to_cleanup(cancel);
+  if (req->dependent) {
+    req->dependent->to_cleanup(cancel);
+  }
 }
 void Self::HandleResponse(HttpRequestDescription const& desc,
                           RequestPtr req,
@@ -163,7 +165,6 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
         return;
       }
       if (state_.end() != i) {
-        VLOG(2) << "Wrong accept (" << ct << ") on " << req->debug_string();
         i->second.miss(req_type, *req);
         req->failures.insert(gw);
       } else {

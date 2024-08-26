@@ -297,7 +297,7 @@ function(setup_target_for_coverage_lcov)
             ${GENHTML_EXTRA_ARGS}
             ${Coverage_GENHTML_ARGS}
             --rc genhtml_hi_limit=88
-            --rc genhtml_med_limit=73
+            --rc genhtml_med_limit=73.4
             --prefix "${BASEDIR}"
             -o ${Coverage_NAME}
             ${Coverage_NAME}.info

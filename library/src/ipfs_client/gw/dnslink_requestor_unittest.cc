@@ -1,6 +1,7 @@
 #include <ipfs_client/gw/dnslink_requestor.h>
 
 #include <mock_api.h>
+#include <log_recorder.h>
 
 #include <ipfs_client/gw/gateway_request.h>
 #include <ipfs_client/gw/terminating_requestor.h>
@@ -10,6 +11,7 @@ using T = ig::DnsLinkRequestor;
 
 namespace {
 struct DnslinkRequestorTest : public testing::Test {
+  LogRecorder logs_;
   std::shared_ptr<MockApi> api = std::make_shared<MockApi>();
   std::shared_ptr<T> t_ = std::make_shared<T>(api);
   std::shared_ptr<ig::GatewayRequest> r_ =

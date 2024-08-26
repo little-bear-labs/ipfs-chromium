@@ -30,7 +30,7 @@ void Self::request(ReqPtr req) {
     return;
   }
   if (req->Finished()) {
-    VLOG(1) << "Dropping a finished/zombie request " << req->debug_string();
+    VLOG(2) << "Dropping a finished/zombie request " << req->debug_string();
     return;
   }
   switch (handle(req)) {

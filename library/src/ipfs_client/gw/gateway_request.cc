@@ -375,7 +375,6 @@ void Self::AddDnsLink(std::string_view target, bool& success, ipld::BlockSource 
     auto node = std::make_shared<ipld::DnsLinkName>(target);
     if (node) {
         node->source(src);
-        VLOG(2) << "Added a DNSLink node pointing to " << target;
     }
     if (orchestrator_) {
         success = orchestrator_->add_node(main_param, node) || success;

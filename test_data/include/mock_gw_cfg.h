@@ -8,7 +8,11 @@ namespace ig = i::gw;
 
 namespace {
 struct MockGwCfg final : public ipfs::ctx::GatewayConfig {
-  std::optional<i::GatewaySpec> GetGateway(std::size_t) const {
+  std::vector<i::GatewaySpec> index_gettable_gateways;
+  std::optional<i::GatewaySpec> GetGateway(std::size_t i) const {
+    if (i < index_gettable_gateways.size()) {
+      return index_gettable_gateways.at(i);
+    }
     return std::nullopt;
   }
   unsigned GetGatewayRate(std::string_view) { return 120U; }
