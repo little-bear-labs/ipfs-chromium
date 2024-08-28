@@ -8,7 +8,7 @@ from glob import glob
 from os import environ, makedirs, remove
 from os.path import basename, dirname, getmtime, isdir, isfile, join, pathsep, realpath, relpath, splitext
 from shutil import copyfile, which
-from sys import argv, executable, stderr
+from sys import argv, stderr
 
 import filecmp
 import subprocess
@@ -25,12 +25,16 @@ jobs = vars['parallel_jobs']
 gnargs = vars['GN_ARGS']
 build_type = vars['CMAKE_BUILD_TYPE']
 branding_dir = vars['BRANDING_DIR']
-python = executable
+python = vars['_Python3_EXECUTABLE']
 patcher = Patcher(src, git_binary, build_type)
 UPDATED = 'chromium_source_updated'
 
 prof_gn = profile.lower()
-electron_args_file = join(src, 'electron', 'build', 'args', prof_gn + '.gn')
+if 'test' in prof_gn or 'debug' in prof_gn:
+  gn_inc = 'testing'
+else:
+  gn_inc = 'release'
+electron_args_file = join(src, 'electron', 'build', 'args', gn_inc + '.gn')
 if isfile(electron_args_file):
     toks = gnargs.split()
     # electron defines is_debug by profile convention, and unfortunately they disagree with me
@@ -257,13 +261,13 @@ sync_dir('library', 'third_party/ipfs_client')
 if isdir(elec_dir):
     sync_dir('electron-spin', 'electron-spin')
 
-if not branding_dir:
-    verbose("Branding turned off via emptyBRANDING_DIR.")
+if not branding_dir or len(branding_dir) == 0:
+    verbose("Branding turned off via empty BRANDING_DIR.")
 elif isdir(branding_dir):
     sync_dir(join(branding_dir, 'installer'), join('chrome', 'installer'), False)
     sync_dir(join(branding_dir, 'theme'), join('chrome', 'app', 'theme', 'chromium'), False)
 else:
-    print("BRANDING_DIR", branding_dir, "does not point to a directory.", file=stderr)
+    print(f"BRANDING_DIR '{branding_dir}' does not point to a directory.", file=stderr)
     exit(8)
 if 'PYTHONPATH' in environ:
     environ['PYTHONPATH'] = src + '/third_party/protobuf/python' + pathsep + environ['PYTHONPATH']

@@ -116,15 +116,31 @@ add_custom_target(build_browser
     DEPENDS chromium_ordering_issue
   )
 
-if(CHROMIUM_PROFILE STREQUAL win)
-    set(CHROMIUM_PACKAGE_TARGET mini_installer)
-else()
-    set(CHROMIUM_PACKAGE_TARGET chrome/installer)
-endif()
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
+if(CMAKE_BUILD_TYPE STREQUAL "Release" )
+  if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
+    add_custom_target(package_browser
+        COMMENT "Packaging"
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" mini_installer
+        DEPENDS build_browser
+      )
+    add_custom_target(package_electron
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" "electron:electron_dist_zip"
+        DEPENDS build_electron
+    )
+  elseif("${CHROMIUM_PROFILE}" STREQUAL "win")
+    add_custom_target(package_browser
+        COMMENT "Packaging"
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" chrome/installer
+        DEPENDS build_browser
+      )
+    add_custom_target(package_electron
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" "electron:electron_dist_zip"
+        DEPENDS build_electron
+    )
+  else()
     add_custom_target(build_stripped_browser
       COMMENT "Stripping browser, output is out/${CHROMIUM_PROFILE}/chrome.stripped"
-      COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" chrome.stripped
+      COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" strip_chrome_binary
       DEPENDS build_browser
     )
     add_custom_target(build_browser_sandbox
@@ -155,29 +171,26 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
     endforeach()
     add_custom_target(package_browser
         COMMENT "Packaging"
-        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" ${CHROMIUM_PACKAGE_TARGET}
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" chrome/installer
         DEPENDS build_stripped_browser build_stripped_browser_sandbox
       )
-    add_custom_target(upload_browser
-      DEPENDS package_browser
-      COMMENT "Sending browser installer to gcloud"
-      COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/upload.py" "${CMAKE_PROJECT_VERSION}"
-      WORKING_DIRECTORY "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
-    )
     add_custom_target(package_electron
         COMMAND "${Python3_EXECUTABLE}" "${CHROMIUM_SOURCE_TREE}/electron/script/strip-binaries.py" -d "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}"
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" "electron:electron_dist_zip"
         DEPENDS build_electron
     )
+  endif()
 endif()
 
-#Symlinks for convenience
-add_custom_command(
-  TARGET build_browser
-  POST_BUILD
-  COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome" "${CMAKE_BINARY_DIR}/browser"
-  COMMENT "Symlinking... your browser can be found here: ${CMAKE_BINARY_DIR}/browser or ${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome"
-)
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+  #Symlinks for convenience
+  add_custom_command(
+    TARGET build_browser
+    POST_BUILD
+    COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome" "${CMAKE_BINARY_DIR}/browser"
+    COMMENT "Symlinking... your browser can be found here: ${CMAKE_BINARY_DIR}/browser or ${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome"
+  )
+endif()
 add_custom_command(
   TARGET build_electron
   POST_BUILD

@@ -84,7 +84,7 @@ bool Self::Process(RequestPtr const& req) {
     forward(req);
     return false;
   }
-  auto min_plel = req->type == GatewayRequestType::Block ? 2UL : 1UL;
+  auto min_plel = req->type == GatewayRequestType::Block ? 3UL : 1UL;
   auto to_send = std::max(bored / 2UL, min_plel);
   std::sort(candidates.begin(), candidates.end(), std::greater{});
   static std::size_t extra = 0UL;

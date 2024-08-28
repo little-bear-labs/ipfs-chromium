@@ -81,8 +81,11 @@ bool ParseProvider(ipfs::DagJsonValue const& provider, ipfs::Client& api) {
       LOG(ERROR) << ".Providers[x].Addrs[x] is not a string";
     }
   };
-  if (!addrs->iterate_list(handle_addr)) {
-    LOG(ERROR) << ".Providers[x].Addrs is not a list";
+  if (addrs->iterate_list(handle_addr)) {
+    LOG(INFO) << "Handled provider address(es) in list.";
+  } else {
+    LOG(WARNING) << ".Providers[x].Addrs is not a list";
+    handle_addr(*addrs);
   }
   return rv;
 }

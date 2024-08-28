@@ -3,21 +3,30 @@
 
 from version import deduce, on_tag
 
+from glob import glob
 from os import chdir, environ, getcwd, listdir
 from os.path import join, isdir, isfile
-from subprocess import check_call, check_output
+from subprocess import call, check_output
 from sys import argv, executable, stderr
 
 GITHUB_ORG = 'little-bear-labs'
 GITHUB_REPO = 'ipfs-chromium'
 
+version = deduce()
+build_dir = getcwd()
+
 try:
     from ghapi.all import GhApi
 except ModuleNotFoundError:
-    check_call([executable, '-m', 'pip', 'install', 'ghapi'])
-    from ghapi.all import GhApi
-
-build_dir = getcwd()
+    call([executable, '-m', 'pip', '--user', 'install', 'ghapi'])
+    try:
+        from ghapi.all import GhApi
+    except ModuleNotFoundError:
+        for artifact in glob(f"{build_dir}/ipfs-client-*"):
+            args = ['gh', 'release', 'upload', version, artifact]
+            print('Running via cli forking', args)
+            call(args)
+        exit(0)
 
 
 def cli_arg(a):
@@ -69,7 +78,7 @@ if not library_only:
         print(chromium_out, 'is not a directory?!', file=stderr)
         exit(4)
 build_target('package')
-version = deduce()
+
 if on_tag():
     print('Will be adding to release', version)
     gh_rel = gh.repos.get_release_by_tag(owner=GITHUB_ORG, repo=GITHUB_REPO, tag=version)
@@ -86,7 +95,10 @@ def upload(contains):
         for ext in artifact_extensions:
             if f.endswith(ext):
                 print('Uploading', f, 'to', GITHUB_ORG, GITHUB_REPO, 'release', version)
-                gh.upload_file(gh_rel, f)
+                try:
+                    gh.upload_file(gh_rel, f)
+                except Exception as e:
+                    print(' ... Error uploading ', f, ':', e)
                 break
 
 

@@ -1,5 +1,6 @@
 #include "ipfs_client/partition.h"
 
+#include <log_recorder.h>
 #include <mock_cbor.h>
 
 #include <ipfs_client/dag_json_value.h>
@@ -156,6 +157,7 @@ struct TestRequestor final : public ig::Requestor {
   }
 };
 struct OrchestratingRealData : public ::testing::Test {
+  LogRecorder logs_;
   std::shared_ptr<MockApi> api_ = std::make_shared<MockApi>();
   std::shared_ptr<i::Partition> orc_;
   OrchestratingRealData() {
