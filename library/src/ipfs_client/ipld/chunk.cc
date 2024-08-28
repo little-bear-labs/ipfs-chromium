@@ -5,7 +5,7 @@
 using Chunk = ipfs::ipld::Chunk;
 
 Chunk::Chunk(std::string data) : data_{data} {}
-Chunk::~Chunk() = default;
+Chunk::~Chunk() noexcept = default;
 
 auto Chunk::resolve(ResolutionState& params) -> ResolveResult {
   if (params.IsFinalComponent()) {

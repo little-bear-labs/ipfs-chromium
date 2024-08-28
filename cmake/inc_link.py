@@ -180,8 +180,11 @@ def search() -> bool:
                     if exists(target):
                         continue
                     verbose('Consider source',source)
-                    if isfile(source) and splitext(entry)[-1] == '.h':
-                        symlink(source, target)
+                    if isfile(source) and not isfile(target) and splitext(entry)[-1] == '.h':
+                        try:
+                            symlink(source, target)
+                        except FileExistsError:
+                            continue
                         print("Premptively symlink",entry,source,'=>',target)
                         preempt = True
                         break

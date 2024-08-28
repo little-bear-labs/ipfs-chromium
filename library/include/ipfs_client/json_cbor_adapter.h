@@ -19,11 +19,7 @@ class JsonCborAdapter final : public DagCborValue, public DagJsonValue {
 
  public:
   using Cid = ipfs::Cid;
-  JsonCborAdapter(nlohmann::json data) : data_{data} {
-    if (data_.is_array() && data_.size() == 1UL) {
-      data_ = data_[0];
-    }
-  }
+  JsonCborAdapter(nlohmann::json const& data) : data_(data) {}
   std::unique_ptr<DagCborValue> at(std::string_view k) const override {
     if (data_.is_object() && data_.contains(k)) {
       return std::make_unique<JsonCborAdapter>(data_.at(k));
@@ -42,7 +38,7 @@ class JsonCborAdapter final : public DagCborValue, public DagJsonValue {
     }
     return std::nullopt;
   }
-  std::optional<std::int64_t> as_signed() const {
+  std::optional<std::int64_t> as_signed() const override {
     if (data_.is_number_integer()) {
       return data_.get<std::int64_t>();
     } else if (auto ui = as_unsigned()) {

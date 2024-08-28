@@ -26,35 +26,6 @@ Personally, I would:
 * ${VISUAL} pretty_printed.json
 * mv pretty_printed.json ~/.config/chromium/Default/Preferences
 
-### The relevants settings are:
+### User Preferences
 
-#### ipfs.discovery.rate
-Unsigned integer.
-The requests-per-minute to be used for gateways when they're first discovered through the routing V1 api.
-A value of 0 will disable that discovery.
-The default value is 120 (i.e. 2 requests per second on average)
-
-#### ipfs.discovery.http
-Boolean.
-Whether gateways discovered with an http:// scheme (that is, not https i.e. not encrypted) will be added to the list.
-Default true.
-
-#### ipfs.gateway
-
-A dictionary where the keys are URL prefixes for different gateways, 
-and the values are dictionaries of settings for that gateay.
-
-#### `ipfs.gateway["https://ipfs.io/"].max_requests_per_minute`
-
-Unsigned integer.
-Not actually a strict maximum. 
-However, if there have been more requests sent there recently than the rate will suggest,
-other gateways will be strongly preferred over this one.
-Does help with rate limits set by gateway providers.
-
-#### `ipfs.gateway["https://ipfs.io/"].Car`
-
-Automatically set, not generally expected to be user-facing.
-There are several of these, actually. 
-They track the history of that gateway with requests of that type,
-as a soft way of inferring the capabilities of that gateway.
+For more info see [Preferences](../doc/preferences.md).

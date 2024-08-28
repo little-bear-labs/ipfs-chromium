@@ -1,8 +1,9 @@
 name: Basic library (ipfs_client) build
 on:
   pull_request:
+  workflow_dispatch:
   release:
-      types: [created]
+      types: [published]
 jobs:
   prechecks:
     runs-on: ubuntu-latest
@@ -141,10 +142,10 @@ jobs:
         shell: bash
         run: cmake --build build --config ${{ matrix.config.build_type }} --target package
       - name: Upload to release
-        if: github.event_name == 'release' && matrix.config.build_type == 'Release'
+        if: (github.event_name == 'release' || github.event_name == 'workflow_dispatch') && matrix.config.build_type == 'Release'
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           cd build
-          python3 ../cmake/release.py --library-only
+          python3 ../cmake/release.py
