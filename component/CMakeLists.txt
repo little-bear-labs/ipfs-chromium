@@ -127,26 +127,36 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
       COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" chrome.stripped
       DEPENDS build_browser
     )
+    add_custom_target(build_browser_sandbox
+      COMMENT "Sandboxing browser, output is out/${CHROMIUM_PROFILE}/chrome_sandbox"
+      COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" chrome_sandbox
+      DEPENDS build_stripped_browser
+    )
+    add_custom_target(build_stripped_browser_sandbox
+      COMMENT "Sandboxing stripped browser"
+      COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" chrome_sandbox.stripped
+      DEPENDS build_browser_sandbox
+    )
     foreach(suffix "" _sandbox)
       add_custom_command(
-        TARGET build_browser
+        TARGET build_browser${suffix}
         POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E copy
           "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome${suffix}"
           "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/ipfs_chromium${suffix}"
       )
       add_custom_command(
-        TARGET build_stripped_browser
+        TARGET build_stripped_browser${suffix}
         POST_BUILD
         COMMAND "${CMAKE_COMMAND}" -E copy
           "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/chrome${suffix}.stripped"
-          "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/ipfs_chromium${suffix}.stripped "
+          "${CHROMIUM_SOURCE_TREE}/out/${CHROMIUM_PROFILE}/ipfs_chromium${suffix}.stripped"
       )
     endforeach()
     add_custom_target(package_browser
         COMMENT "Packaging"
         COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" ${CHROMIUM_PACKAGE_TARGET}
-        DEPENDS build_stripped_browser
+        DEPENDS build_stripped_browser build_stripped_browser_sandbox
       )
     add_custom_target(upload_browser
       DEPENDS package_browser
