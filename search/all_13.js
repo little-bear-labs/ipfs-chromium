@@ -4,5 +4,6 @@ var searchData=
   ['unixfsfile_145',['UnixfsFile',['../classipfs_1_1ipld_1_1UnixfsFile.html',1,'ipfs::ipld']]],
   ['unparsed_146',['unparsed',['../classipfs_1_1PbDag.html#ac615ff5dfb9d48d0d25473dd31a53817',1,'ipfs::PbDag']]],
   ['urlloader_147',['URLLoader',['../classnetwork_1_1mojom_1_1URLLoader.html',1,'network::mojom']]],
-  ['use_5funtil_148',['use_until',['../structipfs_1_1ValidatedIpns.html#a7005820591f6108965891bf0bd9e1abb',1,'ipfs::ValidatedIpns']]]
+  ['use_5funtil_148',['use_until',['../structipfs_1_1ValidatedIpns.html#a7005820591f6108965891bf0bd9e1abb',1,'ipfs::ValidatedIpns']]],
+  ['user_20preferences_149',['User Preferences',['../md_doc_preferences.html',1,'']]]
 ];
