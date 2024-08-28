@@ -32,7 +32,7 @@ struct DagJsonNodeTest : public ::testing::Test {
             {"/", "bafyreiejkvsvdq4smz44yuwhfymcuvqzavveoj2at3utujwqlllspsqr6q"}
           }},
           {"payload", "AXESIIlVZVHDkmZ5zFLHLhgqVhkFakcnQJ7pOibQWtcnyhH0"},
-          {"signatures", {//array with 1 element
+          {"signatures", n::json::array_t{//array with 1 element
               {//map with keys protected;signature
                 {"protected", "eyJhbGciOiJFZERTQSJ9"},
                 {"signature", "-_9J5OZcl5lVuRlgI1NJEzc0FqEb6_2yVskUaQPducRQ4oe-N5ynCl57wDm4SPtm1L1bltrphpQeBOeWjVW1BQ"}
@@ -59,6 +59,8 @@ struct DagJsonNodeTest : public ::testing::Test {
 
       auto adapt = std::make_unique<i::JsonCborAdapter>(data);
       EXPECT_TRUE(adapt->is_map());
+      EXPECT_TRUE(adapt->at("signatures")->is_array());
+
       tested_ = std::make_unique<Tested>(std::move(adapt));
     }
     return *tested_;
@@ -68,7 +70,11 @@ struct DagJsonNodeTest : public ::testing::Test {
 
 TEST_F(DagJsonNodeTest, preview) {
   std::string p;
-  ipfs::ipld::ResolutionState state{i::SlashDelimited{""}, ipfs::ResponseSemantic::Http, noop_blu()};
+  ipfs::ipld::ResolutionState state{
+      i::SlashDelimited{""}
+    , ipfs::ResponseSemantic::Http
+    , noop_blu()
+    };
   auto result = super().Resolve(state);
   auto& resp = std::get<i::Response>(result);
   EXPECT_EQ(resp.status_, 200);
