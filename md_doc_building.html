@@ -75,18 +75,18 @@ $(function() {
 <li>git</li>
 </ul>
 <p>Then decide which of these approaches are appropriate for you:</p>
-<h1><a class="anchor" id="autotoc_md5"></a>
+<h1><a class="anchor" id="autotoc_md10"></a>
 ipfs_client (without Chromium)</h1>
 <p>Found in the library/ directory, ipfs_client is a library with a fairly standard <a href="https://cmake.org/cmake/help/latest/">CMake</a> build.</p>
 <p>As for dependencies, you have some choices:</p>
-<h2><a class="anchor" id="autotoc_md6"></a>
+<h2><a class="anchor" id="autotoc_md11"></a>
 With Python</h2>
 <p>If you have python3 (and and pip) installed and findable, it will use <a href="https://docs.conan.io/en/latest/introduction.html">Conan</a> to manage dependencies.</p>
 <p>See also: docker/debian-python</p>
-<h2><a class="anchor" id="autotoc_md7"></a>
+<h2><a class="anchor" id="autotoc_md12"></a>
 With C++23 (standard library in particular, but assuming the compiler too)</h2>
 <p>Be sure to set CXX_VERSION=23 in the CMake configure step. This covers your need for 'vocabulary types', so you shouldn't need Boost or Abseil. Otherwise, follow the next subsection.</p>
-<h2><a class="anchor" id="autotoc_md8"></a>
+<h2><a class="anchor" id="autotoc_md13"></a>
 With system-installed or otherwise CMake-findable dependencies</h2>
 <p>Required dependencies as they exist today:</p><ul>
 <li>protobuf (both compiler and library)</li>
@@ -101,7 +101,7 @@ With system-installed or otherwise CMake-findable dependencies</h2>
 <li>GTest</li>
 <li>GMock</li>
 </ul>
-<h2><a class="anchor" id="autotoc_md9"></a>
+<h2><a class="anchor" id="autotoc_md14"></a>
 Steps</h2>
 <ul>
 <li><code>mkdir -p /your/build/dir</code></li>
@@ -116,11 +116,11 @@ Steps</h2>
 </ul>
 </li>
 </ul>
-<h1><a class="anchor" id="autotoc_md10"></a>
+<h1><a class="anchor" id="autotoc_md15"></a>
 Chromium with the ipfs component</h1>
-<h2><a class="anchor" id="autotoc_md11"></a>
+<h2><a class="anchor" id="autotoc_md16"></a>
 If you already have a "chrome" build available on your system you'd like to patch with IPFS</h2>
-<h3><a class="anchor" id="autotoc_md12"></a>
+<h3><a class="anchor" id="autotoc_md17"></a>
 Pre-steps</h3>
 <ul>
 <li>See <a href="https://chromium.googlesource.com/chromium/src/+/main/docs/linux/build_instructions.md">the docs</a> explaining these steps.</li>
@@ -131,7 +131,7 @@ Pre-steps</h3>
 </ul>
 </li>
 </ul>
-<h3><a class="anchor" id="autotoc_md13"></a>
+<h3><a class="anchor" id="autotoc_md18"></a>
 Steps (TODO - finish docker)</h3>
 <ul>
 <li><code>mkdir -p /an/ipfs-chromium/build/dir</code></li>
@@ -145,12 +145,12 @@ Steps (TODO - finish docker)</h3>
 </li>
 <li><code>cmake --build /an/ipfs-chromium/build/dir --target build_browser</code></li>
 </ul>
-<h2><a class="anchor" id="autotoc_md14"></a>
+<h2><a class="anchor" id="autotoc_md19"></a>
 If you want ipfs-chromium's build do all your setup for you.</h2>
 <p>If you take this approach, ipfs-chromium will download a private copy of the Chromium source tree and depot_tools into its own build directory.</p>
 <p><em>NOTE</em> This takes a long time, about 55GB of disk space, and a fair bit of memory.</p>
 <p><em>NOTE</em> The previous section assumes you must have gotten all the dependencies of Chromium, because if you had not you wouldn't have successfully built chrome. However, here we cannot make that assumption. So...</p>
-<h3><a class="anchor" id="autotoc_md15"></a>
+<h3><a class="anchor" id="autotoc_md20"></a>
 Steps</h3>
 <ul>
 <li><code>mkdir -p /an/ipfs-chromium/build/dir</code></li>
