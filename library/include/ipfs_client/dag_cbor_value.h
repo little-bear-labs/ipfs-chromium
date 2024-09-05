@@ -10,6 +10,8 @@
 #include <vector>
 
 namespace ipfs {
+/*! A single value in the DOM of a dag-cbor document
+ */
 class DagCborValue {
  public:
   virtual std::unique_ptr<DagCborValue> at(std::string_view) const = 0;

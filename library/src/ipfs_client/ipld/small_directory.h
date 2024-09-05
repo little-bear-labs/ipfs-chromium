@@ -10,7 +10,7 @@ class SmallDirectory : public DagNode {
   ResolveResult resolve(ResolutionState&) override;
 
  public:
-  virtual ~SmallDirectory() noexcept;
+  ~SmallDirectory() noexcept override;
 };
 }  // namespace ipfs::ipld
 

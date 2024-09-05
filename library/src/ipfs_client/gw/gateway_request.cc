@@ -284,7 +284,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
     } break;
     case GatewayRequestType::Car: {
       DCHECK(api);
-      Car car(as_bytes(bytes), *api);
+      Car car(as_bytes(bytes), api->cbor());
       while (auto block = car.NextBlock()) {
         auto cid_s = block->cid.to_string();
         auto n = DagNode::fromBytes(api, block->cid, block->bytes);
@@ -397,7 +397,6 @@ void Self::AddBlock(std::string_view bytes,
     auto node = ipld::DagNode::fromBytes(api, cid.value(), bytes);
     if (!node) {
         success = false;
-        VLOG(2) << "Added a block with CID " << cid->to_string();
     } else {
         node->source(src);
         if (valid) {

@@ -28,7 +28,7 @@ except Exception as ex:
     verbose('Installed requests because of', ex)
 
 
-VERSION_CLOSE_ENOUGH = 30106
+VERSION_CLOSE_ENOUGH = 30110
 LARGE_INT = 9876543210
 here = dirname(__file__)
 
@@ -485,7 +485,7 @@ class Patcher:
                 return lines[i:j]
         return []
 
-    def list_ood(self, to_check: list[str], sense: bool):
+    def list_ood(self, to_check: list[str], sense: bool, both: bool = False):
         to_check.sort()
         oldest = self.oldest()
         newest = self.newest()
@@ -506,7 +506,10 @@ class Patcher:
                 is_ood = True
             else:
                 is_ood = False
-            if is_ood == sense:
+            if both:
+                state = 'Old' if is_ood else 'New'
+                print(p, state)
+            elif is_ood == sense:
                 print(p)
 
 
@@ -528,8 +531,8 @@ if __name__ == "__main__":
     elif argv[1] == "releases":
         per = Patcher("/mnt/big/lbl/code/chromium/src", "git", "Debug")
         for chan in ["Dev", "Beta", "Stable", "Extended"]:
-            for os in ["Linux", "Mac", "Windows"]:
-                rels = per.release_versions(chan, os)
+            for osn in ["Linux", "Mac", "Windows"]:
+                rels = per.release_versions(chan, osn)
                 for (n,v) in zip(['Cur', 'Prv', 'Old'], rels):
                     print(f"{v[1]:15} {n} {chan:9}{os:7}")
         for (elec_br,chrom_ver) in per.electron_versions().items():
@@ -555,6 +558,9 @@ if __name__ == "__main__":
             pr.list_ood(argv[2:], False)
         else:
             pr.list_ood(list(pr.available()), False)
+    elif argv[1] == "oldnew":
+        pr = Patcher("/mnt/big/lbl/code/chromium/src", "git", "Debug")
+        pr.list_ood(list(pr.available()), False, True)
     elif argv[1] == "git":
         pr = Patcher(realpath(join(dirname(__file__), "..")), "git", "Debug")
         PREFIX = "?? component/patches/"
@@ -568,4 +574,4 @@ if __name__ == "__main__":
                 else:
                     pr.git(["add", line[3:]], Result.OrDie)
     else:
-        Patcher(*argv[1:]).create_patch_file()
+        Patcher(*argv[1:4]).create_patch_file()

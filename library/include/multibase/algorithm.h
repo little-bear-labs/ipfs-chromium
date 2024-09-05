@@ -3,7 +3,8 @@
 #include <string>
 
 namespace multibase {
-
+/*! Base for an encoder/decoder
+ */
 class algorithm {
  public:
   /** Tag identifying algorithms which operate on blocks */

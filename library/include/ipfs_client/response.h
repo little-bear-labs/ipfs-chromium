@@ -11,6 +11,9 @@
 
 namespace ipfs {
 
+/*! Response to an IpfsRequest
+ *  @details Roughly mimics some aspects of an HTTP response, as some frameworks want to handle it as one.
+ */
 struct Response {
   std::string mime_;
   std::uint16_t status_;

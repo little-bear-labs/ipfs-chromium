@@ -7,6 +7,8 @@
 #include <cstdint>
 
 namespace ipfs {
+/*! Describe an HTTP request to be made, agnostic to how that's done
+ */
 struct HttpRequestDescription {
   std::string url;
   int timeout_seconds;

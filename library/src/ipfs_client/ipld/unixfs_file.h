@@ -8,7 +8,7 @@ class UnixfsFile : public DagNode {
   ResolveResult resolve(ResolutionState&) override;
 
  public:
-  virtual ~UnixfsFile() noexcept;
+  ~UnixfsFile() noexcept override;
 };
 }  // namespace ipfs::ipld
 

@@ -28,6 +28,9 @@ std::string_view GetName(Code);
 
 using Decoder = std::vector<Byte> (*)(std::string_view);
 using Encoder = std::string (*)(ByteView);
+/*! Base class for multibase codecs
+ *  @details https://github.com/multiformats/multibase
+ */
 struct Codec {
   Decoder const decode;
   Encoder const encode;

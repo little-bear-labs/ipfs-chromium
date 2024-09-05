@@ -21,7 +21,7 @@ class IpnsName : public DagNode {
 
  public:
   IpnsName(ValidatedIpns const&);
-  virtual ~IpnsName() noexcept {}
+  ~IpnsName() noexcept override;
 
   bool expired() const override;
 };

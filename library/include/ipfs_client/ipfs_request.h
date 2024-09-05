@@ -10,6 +10,8 @@
 
 namespace ipfs {
 struct Response;
+/*! A request for a document/resource from IPFS
+ */
 class IpfsRequest {
  public:
   using Cleanup = std::function<void()>;

@@ -26,7 +26,7 @@ struct CarTest : public testing::Test {
     std::ifstream f{fp};
     bytes.resize(file_size(fp));
     EXPECT_TRUE(f.read(bytes.data(), bytes.size()));
-    T car(ipfs::as_bytes(bytes), *api);
+    T car(ipfs::as_bytes(bytes), api->cbor());
     std::vector<i::Cid> rv;
     while (auto block = car.NextBlock()) {
       rv.push_back(block->cid);

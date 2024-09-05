@@ -6,6 +6,8 @@
 #include <string>
 
 namespace ipfs {
+/*! Specification for an HTTP IPFS Gateway
+ */
 struct GatewaySpec {
   std::string prefix;
   unsigned rate;

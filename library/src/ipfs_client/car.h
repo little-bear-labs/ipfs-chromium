@@ -2,6 +2,7 @@
 #define IPFS_CAR_H_
 
 #include <ipfs_client/cid.h>
+#include <ipfs_client/ctx/cbor_parser.h>
 #include <vocab/byte_view.h>
 
 #include <memory>
@@ -15,11 +16,21 @@ class Client;
  */
 class Car {
  public:
-  Car(ByteView, Client&);
+  /*! Parse a CAR file
+   *  @param bytes The serialized form of the CAR
+   *  @param cbor_parser A parser for the embedded cbor
+   */
+  Car(ByteView bytes, ctx::CborParser& cbor_parser);
+
+  /*! An IPLD block discvered in a CAR file
+   */
   struct Block {
-    Cid cid;
-    ByteView bytes;
+    Cid cid;///< The Content ID of the block
+    ByteView bytes;///< The raw bytes that get hashed for the CID
   };
+  /*! Pop the next block of the archive
+   *  @return The block, or nullopt if there are no more
+   */
   std::optional<Block> NextBlock();
 
  private:

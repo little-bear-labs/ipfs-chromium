@@ -26,9 +26,6 @@ bool matches(ipfs::MultiHash const& hash,
   return std::equal(result->begin(), result->end(), hash.digest().begin(),
                     hash.digest().end());
 }
-}  // namespace
-
-namespace {
 void assign(std::string& out,
             ipfs::DagCborValue& top,
             std::string_view key) {

@@ -34,9 +34,10 @@ static void c_ares_c_callback(void* vp,
   struct ares_txt_reply* txt_out = nullptr;
   LOG(INFO) << "Buffer contains " << alen << " bytes.";
   if (abuf && alen && !ares_parse_txt_reply(abuf, alen, &txt_out) && txt_out) {
-    cbcb->me->DnsResults(cbcb->host, *txt_out);
+    cbcb->me->DnsResults(cbcb->host, txt_out);
     ares_free_data(txt_out);
   } else {
+    cbcb->me->DnsResults(cbcb->host, nullptr);
     LOG(ERROR) << "c_ares status=" << status;
   }
   delete cbcb;
@@ -82,13 +83,13 @@ void Self::SendDnsTextRequest(
   }
 }
 
-void Self::DnsResults(std::string& host, ares_txt_reply& result) {
+void Self::DnsResults(std::string& host, ares_txt_reply const* result) {
   auto i = pending_dns_.find(host);
   if (pending_dns_.end() == i) {
     return;
   }
   std::vector<std::string> v{std::string{}};
-  for (auto r = &result; r; r = r->next) {
+  for (auto r = result; r; r = r->next) {
     auto p = reinterpret_cast<char const*>(r->txt);
     v[0].assign(p, r->length);
     for (auto& cbs : i->second) {
@@ -107,7 +108,8 @@ void Self::CAresProcess() {
   FD_ZERO(&writers);
   auto nfds = ares_fds(ares_channel_, &readers, &writers);
   if (nfds) {
-    tvp = ares_timeout(ares_channel_, nullptr, &tv);
+    tv.tv_sec = 30;
+    tvp = ares_timeout(ares_channel_, &tv, &tv);
     auto count = select(nfds, &readers, &writers, nullptr, tvp);
     ares_process(ares_channel_, &readers, &writers);
     nfds += count;

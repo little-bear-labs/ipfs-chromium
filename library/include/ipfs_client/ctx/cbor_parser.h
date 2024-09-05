@@ -10,6 +10,8 @@ class DagCborValue;
 }
 
 namespace ipfs::ctx {
+/*! A base class for  your way of parsing CBOR
+ */
 class CborParser {
  public:
   virtual std::unique_ptr<DagCborValue> Parse(ByteView) = 0;

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from verbose import verbose
-from cache_vars import build_dir, vars
+from cache_vars import build_dir, CACHE_VARS
 from patch import Patcher
 
 from glob import glob
@@ -13,33 +13,33 @@ from sys import argv, stderr
 import filecmp
 import subprocess
 
-depot_tools_dir = vars['DEPOT_TOOLS_DIRECTORY']
-src = vars['CHROMIUM_SOURCE_TREE']
+depot_tools_dir = CACHE_VARS['DEPOT_TOOLS_DIRECTORY']
+src = CACHE_VARS['CHROMIUM_SOURCE_TREE']
 src = src.rstrip('/')
 chromium_dir = dirname(src)
 verbose('dirname(', src, ')=', chromium_dir)
-ipfs_chromium_source_dir = vars['ipfs-chromium_SOURCE_DIR']
-profile = vars['CHROMIUM_PROFILE']
-git_binary = vars['GIT_EXECUTABLE']
-jobs = vars['parallel_jobs']
-gnargs = vars['GN_ARGS']
-build_type = vars['CMAKE_BUILD_TYPE']
-branding_dir = vars['BRANDING_DIR']
-python = vars['_Python3_EXECUTABLE']
+ipfs_chromium_source_dir = CACHE_VARS['ipfs-chromium_SOURCE_DIR']
+profile = CACHE_VARS['CHROMIUM_PROFILE']
+git_binary = CACHE_VARS['GIT_EXECUTABLE']
+jobs = CACHE_VARS['parallel_jobs']
+gnargs = CACHE_VARS['GN_ARGS']
+build_type = CACHE_VARS['CMAKE_BUILD_TYPE']
+branding_dir = CACHE_VARS['BRANDING_DIR']
+python = CACHE_VARS['_Python3_EXECUTABLE']
 patcher = Patcher(src, git_binary, build_type)
 UPDATED = 'chromium_source_updated'
 
 prof_gn = profile.lower()
 if 'test' in prof_gn or 'debug' in prof_gn:
-  gn_inc = 'testing'
+    gn_inc = 'testing'
 else:
-  gn_inc = 'release'
+    gn_inc = 'release'
 electron_args_file = join(src, 'electron', 'build', 'args', gn_inc + '.gn')
 if isfile(electron_args_file):
     toks = gnargs.split()
     # electron defines is_debug by profile convention, and unfortunately they disagree with me
     toks = filter(lambda x: not x.startswith('is_debug'), toks)
-    gnargs = ' '.join(toks) + f' import(\"//electron/build/args/testing.gn\") '
+    gnargs = ' '.join(toks) + ' import(\"//electron/build/args/testing.gn\") '
 
 
 def into_repo(p):
@@ -61,7 +61,7 @@ def run(args, fail_ok=False, cwd=None):
     else:
         cwd = None
     verbose('Run', args, 'in', cwd)
-    res = subprocess.run(args=args, cwd=cwd, capture_output=True, text=True)
+    res = subprocess.run(args=args, cwd=cwd, capture_output=True, text=True, check=False)
     # print(res)
     ec = res.returncode
     if ec == 0:
@@ -71,13 +71,13 @@ def run(args, fail_ok=False, cwd=None):
     for line in res.stdout.split("\n"):
         p = into_repo(line.split(':')[0])
         rem = ':' + ':'.join(line.split(':')[1:])
-
-        def file_there(x):
-            return isfile(join(x, p))
-        d = next(filter(file_there, ds), None)
-        if d:
-            print(realpath(join(d, p)) + rem)
-        else:
+        found = False
+        for d in ds:
+            if isfile(join(d,p)):
+                print(realpath(join(d, p)) + rem)
+                found = True
+                break
+        if not found:
             print(p + rem)
     print('Command failed with exit code', ec, ':', args, file=stderr)
     if fail_ok:
@@ -95,7 +95,7 @@ def out(args, cwd=None):
     else:
         cwd = None
     verbose('Run', args, 'in', cwd, 'and return output.')
-    res = subprocess.run(args=args, cwd=cwd, stdout=subprocess.PIPE)
+    res = subprocess.run(args=args, cwd=cwd, stdout=subprocess.PIPE, check=False)
     output = res.stdout.decode('utf-8').strip()
     if res.returncode != 0:
         print('Command failed', res, ':', args, 'output was', output, file=stderr)

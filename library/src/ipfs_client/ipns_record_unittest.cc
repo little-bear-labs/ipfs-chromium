@@ -160,7 +160,7 @@ TEST(IpnsRecordTest, SerializeValidatedIpns) {
   EXPECT_EQ(w.value, v.value);
 }
 TEST(IpnsRecordTest, TooBig) {
-  ipfs::Byte* p;
+  ipfs::Byte* p = nullptr;
   ipfs::Cid cid(
       "k51qzi5uqu5dm4tm0wt8srkg9h9suud4wuiwjimndrkydqm81cqtlb5ak6p7ku"sv);
   EXPECT_TRUE(cid.hash_type() == i::HashType::IDENTITY);
@@ -199,6 +199,17 @@ TEST(IpnsRecordTest, fromcborentry) {
   auto time_left = v.cache_until - now;
   EXPECT_GE(time_left, 1);
   EXPECT_LE(time_left, 3);
+}
+TEST(IpnsRecordTest, notAProtoBuf) {
+  ipfs::Cid cid{"k51qzi5uqu5dm4tm0wt8srkg9h9suud4wuiwjimndrkydqm81cqtlb5ak6p7ku"sv};
+  Api api;
+  LogRecorder rec;
+  auto result = ipfs::ValidateIpnsRecord(ipfs::as_bytes("Not A ProtoBuf!"sv), cid, api);
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(1UL,rec.messages.size());
+  auto m = rec.messages.at(0UL).message;
+  EXPECT_TRUE(m.find("Failed")<m.size()) << m;
+  EXPECT_TRUE(m.find("protobuf")<m.size()) << m;
 }
 
 #if __has_include(<nlohmann/json.hpp>)

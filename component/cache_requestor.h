@@ -21,6 +21,8 @@ namespace ipfs {
 class BlockStorage;
 class InterRequestState;
 
+/*! A requestor to pull things from the IPFS DiskCache
+ */
 class CacheRequestor : public gw::Requestor {
  public:
   CacheRequestor(InterRequestState&, base::FilePath);

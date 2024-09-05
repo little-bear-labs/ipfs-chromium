@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 
 from verbose import verbose
-from cache_vars import build_dir, vars
+from cache_vars import build_dir, CACHE_VARS
 
 from glob import glob
 import os
 from os import listdir, readlink, set_blocking, symlink
 from os.path import basename, dirname, exists, getmtime, isdir, isfile, islink, join, pathsep, relpath, splitext
-from subprocess import DEVNULL, Popen, PIPE, run, TimeoutExpired
+from subprocess import DEVNULL, Popen, PIPE, TimeoutExpired
 from sys import executable, stderr
 
 import json
 
 inc_link = join(build_dir,'component','inc_link')
-chromium_src = vars['CHROMIUM_SOURCE_TREE'].rstrip('/')
-profile = vars['CHROMIUM_PROFILE']
+chromium_src = CACHE_VARS['CHROMIUM_SOURCE_TREE'].rstrip('/')
+profile = CACHE_VARS['CHROMIUM_PROFILE']
 gen_dir = join(chromium_src,'out',profile,'gen')
 source_bases = [
     chromium_src,

@@ -1,5 +1,5 @@
 #!/bin/bash -ex
-cd `dirname "${0}"`/..
+cd "$(dirname "${0}")/.."
 
 branch=`git rev-parse --abbrev-ref HEAD`
 ./docker/library-builds.sh

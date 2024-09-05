@@ -10,6 +10,9 @@
 #include <string_view>
 
 namespace ipfs {
+/*! A Content ID - a way to identify content based on the content itself
+ *    generally via hash
+ */
 class Cid {
   MultiCodec codec_ = MultiCodec::INVALID;
   MultiHash hash_;
