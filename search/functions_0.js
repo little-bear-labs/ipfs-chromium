@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['addentry_251',['AddEntry',['../classipfs_1_1GeneratedDirectoryListing.html#ae7256c8d7bd7d24b97590cbeef73edda',1,'ipfs::GeneratedDirectoryListing']]],
-  ['addlistening_252',['AddListening',['../classipfs_1_1BlockStorage.html#a0071537003f3fc45bc09da2372bac766',1,'ipfs::BlockStorage']]],
-  ['addstoragehook_253',['AddStorageHook',['../classipfs_1_1BlockStorage.html#a35f051a01eb18bf489bd6e6f12b5d480',1,'ipfs::BlockStorage']]],
-  ['assigndnslink_254',['AssignDnsLink',['../classipfs_1_1IpnsNames.html#a1ccd03ba666ba55c3c2e24c1566b100f',1,'ipfs::IpnsNames']]],
-  ['assignname_255',['AssignName',['../classipfs_1_1IpnsNames.html#aaaf39692cf8b7413d7c1b56c6c176a18',1,'ipfs::IpnsNames']]]
+  ['addentry_252',['AddEntry',['../classipfs_1_1GeneratedDirectoryListing.html#ae7256c8d7bd7d24b97590cbeef73edda',1,'ipfs::GeneratedDirectoryListing']]],
+  ['addlistening_253',['AddListening',['../classipfs_1_1BlockStorage.html#a0071537003f3fc45bc09da2372bac766',1,'ipfs::BlockStorage']]],
+  ['addstoragehook_254',['AddStorageHook',['../classipfs_1_1BlockStorage.html#a35f051a01eb18bf489bd6e6f12b5d480',1,'ipfs::BlockStorage']]],
+  ['assigndnslink_255',['AssignDnsLink',['../classipfs_1_1IpnsNames.html#a1ccd03ba666ba55c3c2e24c1566b100f',1,'ipfs::IpnsNames']]],
+  ['assignname_256',['AssignName',['../classipfs_1_1IpnsNames.html#aaaf39692cf8b7413d7c1b56c6c176a18',1,'ipfs::IpnsNames']]]
 ];
