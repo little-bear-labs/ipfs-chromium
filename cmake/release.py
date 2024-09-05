@@ -6,7 +6,7 @@ from version import deduce, on_tag
 from glob import glob
 from os import chdir, environ, getcwd, listdir
 from os.path import join, isdir, isfile
-from subprocess import call, check_output
+from subprocess import call, check_call, check_output
 from sys import argv, executable, stderr
 
 GITHUB_ORG = 'little-bear-labs'

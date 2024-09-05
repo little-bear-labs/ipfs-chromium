@@ -31,9 +31,9 @@ UPDATED = 'chromium_source_updated'
 
 prof_gn = profile.lower()
 if 'test' in prof_gn or 'debug' in prof_gn:
-  gn_inc = 'testing'
+    gn_inc = 'testing'
 else:
-  gn_inc = 'release'
+    gn_inc = 'release'
 electron_args_file = join(src, 'electron', 'build', 'args', gn_inc + '.gn')
 if isfile(electron_args_file):
     toks = gnargs.split()
