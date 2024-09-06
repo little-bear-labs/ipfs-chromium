@@ -26,10 +26,11 @@ class Car {
   /*! An IPLD block discvered in a CAR file
    */
   struct Block {
-    Cid cid;
-    ByteView bytes;
+    Cid cid;///< The Content ID of the block
+    ByteView bytes;///< The raw bytes that get hashed for the CID
   };
   /*! Pop the next block of the archive
+   *  @return The block, or nullopt if there are no more
    */
   std::optional<Block> NextBlock();
 

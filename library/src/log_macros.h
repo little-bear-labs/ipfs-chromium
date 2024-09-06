@@ -20,30 +20,30 @@
 #define LOG GOOGLE_LOG
 
 #define VLOG(X)                                       \
-  ::google::protobuf::internal::LogFinisher() =       \
+  ::google::protobuf::internal::LogFinisher() =      \
       ::google::protobuf::internal::LogMessage(       \
           static_cast<::google::protobuf::LogLevel>(  \
-              ::google::protobuf::LOGLEVEL_INFO - X), \
+              ::google::protobuf::LOGLEVEL_INFO - ( X ) ), \
           __FILE__, __LINE__)
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-variable"
 namespace {
-static bool is_logging_initialized = ::ipfs::log::IsInitialized();
-}
+static bool const is_logging_initialized = ::ipfs::log::IsInitialized();
+} // namespace
 #pragma GCC diagnostic pop
 
 #endif //Chromium in-tree check
 
 #define L_VAR(X) LOG(INFO) << "VAR " << #X << "='" << (X) << '\'';
 
-inline bool starts_with(std::string_view full_text, std::string_view prefix) {
+inline auto starts_with(std::string_view full_text, std::string_view prefix) -> bool {
   if (prefix.size() > full_text.size()) {
     return false;
   }
   return full_text.substr(0UL, prefix.size()) == prefix;
 }
-inline bool ends_with(std::string_view full_text, std::string_view suffix) {
+inline auto ends_with(std::string_view full_text, std::string_view suffix) -> bool {
   if (suffix.size() > full_text.size()) {
     return false;
   }

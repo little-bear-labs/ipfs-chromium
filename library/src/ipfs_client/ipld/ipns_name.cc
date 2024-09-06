@@ -7,6 +7,8 @@
 using Self = ipfs::ipld::IpnsName;
 namespace ch = std::chrono;
 
+Self::~IpnsName() noexcept = default;
+
 Self::IpnsName(ValidatedIpns const& record)
     : expiration_{ch::system_clock::from_time_t(
           std::min(record.use_until, record.cache_until))},

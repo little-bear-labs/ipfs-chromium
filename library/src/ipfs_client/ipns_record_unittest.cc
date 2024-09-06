@@ -160,7 +160,7 @@ TEST(IpnsRecordTest, SerializeValidatedIpns) {
   EXPECT_EQ(w.value, v.value);
 }
 TEST(IpnsRecordTest, TooBig) {
-  ipfs::Byte* p;
+  ipfs::Byte* p = nullptr;
   ipfs::Cid cid(
       "k51qzi5uqu5dm4tm0wt8srkg9h9suud4wuiwjimndrkydqm81cqtlb5ak6p7ku"sv);
   EXPECT_TRUE(cid.hash_type() == i::HashType::IDENTITY);

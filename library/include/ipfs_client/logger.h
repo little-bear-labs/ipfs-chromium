@@ -18,7 +18,7 @@ enum class Level {
 void SetLevel(Level);
 
 using Handler = void (*)(std::string const&, char const*, int, Level);
-void SetHandler(Handler);
+void SetHandler(Handler) noexcept;
 
 void DefaultHandler(std::string const& message,
                     char const* source_file,
@@ -27,7 +27,7 @@ void DefaultHandler(std::string const& message,
 
 std::string_view LevelDescriptor(Level);
 
-bool IsInitialized();
+bool IsInitialized() noexcept;
 
 }  // namespace ipfs::log
 

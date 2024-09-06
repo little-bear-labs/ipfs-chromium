@@ -16,8 +16,8 @@ class Root : public DagNode {
   bool expired() const override;
 
  public:
-  Root(std::shared_ptr<DagNode>);
-  virtual ~Root() noexcept;
+  explicit Root(std::shared_ptr<DagNode>);
+  ~Root() noexcept override;
 };
 }  // namespace ipfs::ipld
 

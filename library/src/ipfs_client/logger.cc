@@ -30,7 +30,7 @@ void lg::SetLevel(Level lev) {
   current_level = lev;
 }
 
-void lg::SetHandler(Handler h) {
+void lg::SetHandler(Handler h) noexcept {
   current_handler = h;
   google::protobuf::SetLogHandler(&CheckLevel);
 }
@@ -67,7 +67,7 @@ std::string_view lg::LevelDescriptor(Level l) {
   }
 }
 
-bool lg::IsInitialized() {
+bool lg::IsInitialized() noexcept {
   if (current_handler) {
     return true;
   }

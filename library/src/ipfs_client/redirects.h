@@ -7,8 +7,7 @@
 #include <string_view>
 #include <vector>
 
-namespace ipfs {
-namespace redirects {
+namespace ipfs ::redirects {
 class Directive {
   enum class ComponentType { LITERAL, PLACEHOLDER, SPLAT };
   std::vector<std::pair<ComponentType, std::string>> components_;
@@ -26,7 +25,7 @@ class File {
   std::string error_;
 
  public:
-  File(std::string_view to_parse);
+  explicit File(std::string_view to_parse);
 
   bool valid() const { return error().empty(); }
   std::string const& error() const { return error_; }
@@ -35,7 +34,6 @@ class File {
  private:
   bool parse_line(std::string_view, int);
 };
-}  // namespace redirects
-}  // namespace ipfs
+}  // namespace ipfs::redirects
 
 #endif  // IPFS_REDIRECTS_H_
