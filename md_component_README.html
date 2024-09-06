@@ -85,8 +85,22 @@ Gateway choices</h2>
 <li>mv pretty_printed.json ~/.config/chromium/Default/Preferences</li>
 </ul>
 <h3><a class="anchor" id="autotoc_md3"></a>
-User Preferences</h3>
-<p>For more info see <a class="el" href="md_doc_preferences.html">Preferences</a>. </p>
+The relevants settings are:</h3>
+<h4><a class="anchor" id="autotoc_md4"></a>
+ipfs.discovery.rate</h4>
+<p>Unsigned integer. The requests-per-minute to be used for gateways when they're first discovered through the routing V1 api. A value of 0 will disable that discovery. The default value is 120 (i.e. 2 requests per second on average)</p>
+<h4><a class="anchor" id="autotoc_md5"></a>
+ipfs.discovery.http</h4>
+<p>Boolean. Whether gateways discovered with an <a href="http://">http://</a> scheme (that is, not https i.e. not encrypted) will be added to the list. Default true.</p>
+<h4><a class="anchor" id="autotoc_md6"></a>
+ipfs.gateway</h4>
+<p>A dictionary where the keys are URL prefixes for different gateways, and the values are dictionaries of settings for that gateay.</p>
+<h4><a class="anchor" id="autotoc_md7"></a>
+&lt;tt&gt;ipfs.gateway["https://ipfs.io/"].max_requests_per_minute&lt;/tt&gt;</h4>
+<p>Unsigned integer. Not actually a strict maximum. However, if there have been more requests sent there recently than the rate will suggest, other gateways will be strongly preferred over this one. Does help with rate limits set by gateway providers.</p>
+<h4><a class="anchor" id="autotoc_md8"></a>
+&lt;tt&gt;ipfs.gateway["https://ipfs.io/"].Car&lt;/tt&gt;</h4>
+<p>Automatically set, not generally expected to be user-facing. There are several of these, actually. They track the history of that gateway with requests of that type, as a soft way of inferring the capabilities of that gateway. </p>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
 <!-- start footer part -->
