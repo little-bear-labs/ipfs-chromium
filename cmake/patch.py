@@ -568,4 +568,4 @@ if __name__ == "__main__":
                 else:
                     pr.git(["add", line[3:]], Result.OrDie)
     else:
-        Patcher(*argv[1:]).create_patch_file()
+        Patcher(*argv[1:4]).create_patch_file()

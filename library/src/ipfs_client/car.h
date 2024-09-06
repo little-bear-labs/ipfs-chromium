@@ -15,11 +15,22 @@ class Client;
  */
 class Car {
  public:
-  Car(ByteView, Client&);
+  /*! Parse a CAR file
+   *  @param bytes The serialized form of the CAR
+   *  @param api   IPFS Client context
+   *  @todo Since we're not extending the lifetime, we could take a more specific (raw) ref
+   *    to the CBOR parser, since that should be the only part of Client actually used.
+   */
+  Car(ByteView bytes, Client& api);
+
+  /*! An IPLD block discvered in a CAR file
+   */
   struct Block {
     Cid cid;
     ByteView bytes;
   };
+  /*! Pop the next block of the archive
+   */
   std::optional<Block> NextBlock();
 
  private:

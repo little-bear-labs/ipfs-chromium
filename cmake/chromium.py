@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from verbose import verbose
-from cache_vars import build_dir, vars
+from cache_vars import build_dir, CACHE_VARS
 from patch import Patcher
 
 from glob import glob
@@ -13,19 +13,19 @@ from sys import argv, stderr
 import filecmp
 import subprocess
 
-depot_tools_dir = vars['DEPOT_TOOLS_DIRECTORY']
-src = vars['CHROMIUM_SOURCE_TREE']
+depot_tools_dir = CACHE_VARS['DEPOT_TOOLS_DIRECTORY']
+src = CACHE_VARS['CHROMIUM_SOURCE_TREE']
 src = src.rstrip('/')
 chromium_dir = dirname(src)
 verbose('dirname(', src, ')=', chromium_dir)
-ipfs_chromium_source_dir = vars['ipfs-chromium_SOURCE_DIR']
-profile = vars['CHROMIUM_PROFILE']
-git_binary = vars['GIT_EXECUTABLE']
-jobs = vars['parallel_jobs']
-gnargs = vars['GN_ARGS']
-build_type = vars['CMAKE_BUILD_TYPE']
-branding_dir = vars['BRANDING_DIR']
-python = vars['_Python3_EXECUTABLE']
+ipfs_chromium_source_dir = CACHE_VARS['ipfs-chromium_SOURCE_DIR']
+profile = CACHE_VARS['CHROMIUM_PROFILE']
+git_binary = CACHE_VARS['GIT_EXECUTABLE']
+jobs = CACHE_VARS['parallel_jobs']
+gnargs = CACHE_VARS['GN_ARGS']
+build_type = CACHE_VARS['CMAKE_BUILD_TYPE']
+branding_dir = CACHE_VARS['BRANDING_DIR']
+python = CACHE_VARS['_Python3_EXECUTABLE']
 patcher = Patcher(src, git_binary, build_type)
 UPDATED = 'chromium_source_updated'
 
@@ -39,7 +39,7 @@ if isfile(electron_args_file):
     toks = gnargs.split()
     # electron defines is_debug by profile convention, and unfortunately they disagree with me
     toks = filter(lambda x: not x.startswith('is_debug'), toks)
-    gnargs = ' '.join(toks) + f' import(\"//electron/build/args/testing.gn\") '
+    gnargs = ' '.join(toks) + ' import(\"//electron/build/args/testing.gn\") '
 
 
 def into_repo(p):

@@ -17,6 +17,10 @@ class URLResponseHead;
 class GURL;
 
 namespace ipfs {
+
+/*! Manages lifetime for a single HTTP request to an IPFS gateway.
+ *  Not strictly for a block necessarily, thought that was the case when the name was chosen.
+ */
 class BlockHttpRequest : public std::enable_shared_from_this<BlockHttpRequest> {
   std::unique_ptr<network::SimpleURLLoader> loader_;
 
