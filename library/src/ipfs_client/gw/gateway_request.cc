@@ -284,7 +284,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
     } break;
     case GatewayRequestType::Car: {
       DCHECK(api);
-      Car car(as_bytes(bytes), *api);
+      Car car(as_bytes(bytes), api->cbor());
       while (auto block = car.NextBlock()) {
         auto cid_s = block->cid.to_string();
         auto n = DagNode::fromBytes(api, block->cid, block->bytes);

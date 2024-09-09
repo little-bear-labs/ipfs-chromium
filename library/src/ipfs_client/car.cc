@@ -14,13 +14,13 @@ using ByteView = ipfs::ByteView;
 using VarInt = libp2p::multi::UVarint;
 
 namespace {
-short ReadHeader(ByteView&, ipfs::Client&);
+short ReadHeader(ByteView&, ipfs::ctx::CborParser&);
 std::pair<std::uint64_t, std::uint64_t> GetV1PayloadPos(ByteView);
 }  // namespace
 
-Self::Car(ByteView bytes, Client& api) {
+Self::Car(ByteView bytes, ctx::CborParser& cbor_parser) {
   auto after_header = bytes;
-  auto version = ReadHeader(after_header, api);
+  auto version = ReadHeader(after_header, cbor_parser);
   switch (version) {
     case 0:
       VLOG(2) << "Problem parsing CAR header.";
@@ -40,7 +40,7 @@ Self::Car(ByteView bytes, Client& api) {
         break;
       }
       data_ = bytes.subspan(off, siz);
-      ReadHeader(data_, api);
+      ReadHeader(data_, cbor_parser);
       break;
     }
     default:
@@ -71,7 +71,7 @@ auto Self::NextBlock() -> std::optional<Block> {
 
 namespace {
 // https://ipld.io/specs/transport/car/carv2/
-short ReadHeader(ByteView& bytes, ipfs::Client& api) {
+short ReadHeader(ByteView& bytes, ipfs::ctx::CborParser& cbor_parser) {
   auto header_len = VarInt::create(bytes);
   if (!header_len ||
       header_len->toUInt64() + header_len->size() > bytes.size()) {
@@ -79,7 +79,7 @@ short ReadHeader(ByteView& bytes, ipfs::Client& api) {
   }
   bytes = bytes.subspan(header_len->size());
   auto header_bytes = bytes.subspan(0UL, header_len->toUInt64());
-  auto header = api.cbor().Parse(header_bytes);
+  auto header = cbor_parser.Parse(header_bytes);
   if (!header) {
     return 0;
   }

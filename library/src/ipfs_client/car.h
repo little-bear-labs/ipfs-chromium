@@ -2,6 +2,7 @@
 #define IPFS_CAR_H_
 
 #include <ipfs_client/cid.h>
+#include <ipfs_client/ctx/cbor_parser.h>
 #include <vocab/byte_view.h>
 
 #include <memory>
@@ -17,11 +18,9 @@ class Car {
  public:
   /*! Parse a CAR file
    *  @param bytes The serialized form of the CAR
-   *  @param api   IPFS Client context
-   *  @todo Since we're not extending the lifetime, we could take a more specific (raw) ref
-   *    to the CBOR parser, since that should be the only part of Client actually used.
+   *  @param cbor_parser A parser for the embedded cbor
    */
-  Car(ByteView bytes, Client& api);
+  Car(ByteView bytes, ctx::CborParser& cbor_parser);
 
   /*! An IPLD block discvered in a CAR file
    */
