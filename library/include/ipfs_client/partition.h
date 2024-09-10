@@ -12,7 +12,9 @@
 namespace ipfs {
 
 class Client;
-
+/*! A partition of your in-memory stored IPFS DAGs
+ *  Potentially useful in the fight against cache timing attacks
+ */
 class Partition : public std::enable_shared_from_this<Partition> {
  public:
   using GatewayAccess =

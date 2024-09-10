@@ -1,9 +1,9 @@
 #!/bin/bash -ex
 echo Clone tester repo.
 git clone https://github.com/John-LittleBearLabs/ipfs_client_clitester.git
-for e in "${GITHUB_HEAD_REF}" "${GITHUB_REF}"
+for e in "${GITHUB_HEAD_REF-}" "${GITHUB_REF-}"
 do
-  if ! [ "${e}" ] && git -C ipfs_client_clitester checkout "compat/${e}"
+  if [ -n "${e}" ] && git -C ipfs_client_clitester checkout "compat/${e}"
   then
     echo "Using compat/${e}"
     break
@@ -42,11 +42,11 @@ do
   if grep -n . server.log
   then
     break
-  elif curl -m $t 'http://localhost:8080/ping'
+  elif curl -m "${t}" 'http://localhost:8080/ping'
   then
     sleep 1
   else
-    sleep ${t}
+    sleep "${t}"
   fi
 done
 

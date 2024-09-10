@@ -10,6 +10,8 @@
 #include <string_view>
 
 namespace ipfs {
+/*! A value in the DOM of a dag-json document
+ */
 class DagJsonValue {
  public:
   virtual std::string pretty_print() const = 0;

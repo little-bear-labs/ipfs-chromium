@@ -7,6 +7,8 @@
 #include <string>
 
 namespace ipfs::ipld {
+/*! Description of where a particular block was fetched from, for diagnostics
+ */
 struct BlockSource {
   using Clock = std::chrono::system_clock;
 

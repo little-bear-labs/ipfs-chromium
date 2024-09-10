@@ -7,6 +7,8 @@
 #include <vector>
 
 namespace ipfs::crypto {
+/*! Base for hash algorithms
+ */
 class Hasher {
  public:
   virtual ~Hasher() noexcept {}

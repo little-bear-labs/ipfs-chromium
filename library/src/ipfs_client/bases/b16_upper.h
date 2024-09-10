@@ -4,6 +4,9 @@
 #include <multibase/basic_algorithm.h>
 
 namespace multibase {
+
+/*! Upper-case base-16 encoding
+ */
 template <>
 struct traits<::multibase::encoding::base_16_upper> {
   constexpr static const std::array<char, 16> charset = {

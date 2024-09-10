@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
-include(cmake/version.cmake)
+list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(version)
 project(ipfs-chromium
   VERSION ${version}
   DESCRIPTION "An ipfs client library intended for use in browsers, and a Chromium component which uses it."
@@ -36,8 +37,9 @@ else()
 endif()
 
 set(IN_WORKSPACE 1)
-include(cmake/chrome.cmake)
-include(cmake/setup.cmake)
+include(chrome)
+include(setup)
+include(shell)
 
 enable_testing()
 

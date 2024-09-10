@@ -11,6 +11,9 @@ constexpr std::uint16_t MaximumHashLength = 127;
 
 HashType Validate(HashType);
 std::string_view GetName(HashType);
+/*! Some metadata about a hash (type & length) followed by the digest
+ *  ipns://multiformats.io/multihash
+ */
 class MultiHash {
  public:
   MultiHash() = default;

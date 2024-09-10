@@ -61,7 +61,7 @@ def run(args, fail_ok=False, cwd=None):
     else:
         cwd = None
     verbose('Run', args, 'in', cwd)
-    res = subprocess.run(args=args, cwd=cwd, capture_output=True, text=True)
+    res = subprocess.run(args=args, cwd=cwd, capture_output=True, text=True, check=False)
     # print(res)
     ec = res.returncode
     if ec == 0:
@@ -71,13 +71,13 @@ def run(args, fail_ok=False, cwd=None):
     for line in res.stdout.split("\n"):
         p = into_repo(line.split(':')[0])
         rem = ':' + ':'.join(line.split(':')[1:])
-
-        def file_there(x):
-            return isfile(join(x, p))
-        d = next(filter(file_there, ds), None)
-        if d:
-            print(realpath(join(d, p)) + rem)
-        else:
+        found = False
+        for d in ds:
+            if isfile(join(d,p)):
+                print(realpath(join(d, p)) + rem)
+                found = True
+                break
+        if not found:
             print(p + rem)
     print('Command failed with exit code', ec, ':', args, file=stderr)
     if fail_ok:
@@ -95,7 +95,7 @@ def out(args, cwd=None):
     else:
         cwd = None
     verbose('Run', args, 'in', cwd, 'and return output.')
-    res = subprocess.run(args=args, cwd=cwd, stdout=subprocess.PIPE)
+    res = subprocess.run(args=args, cwd=cwd, stdout=subprocess.PIPE, check=False)
     output = res.stdout.decode('utf-8').strip()
     if res.returncode != 0:
         print('Command failed', res, ':', args, 'output was', output, file=stderr)

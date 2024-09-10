@@ -10,6 +10,8 @@ class LogMessage;
 }
 
 namespace ipfs {
+/*! A block of ASCII text that is /-delimited, which one may want to split on /
+ */
 struct SlashDelimited {
   std::string_view remainder_;
 

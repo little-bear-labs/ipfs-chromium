@@ -8,6 +8,8 @@
 #include <vector>
 
 namespace ipfs ::redirects {
+/*! A directive (a non-empty line without comments) inside a _redirects file
+ */
 class Directive {
   enum class ComponentType { LITERAL, PLACEHOLDER, SPLAT };
   std::vector<std::pair<ComponentType, std::string>> components_;
@@ -20,6 +22,8 @@ class Directive {
   std::string error() const;
   bool valid() const { return error().empty(); }
 };
+/*! A _redirects file
+ */
 class File {
   std::vector<Directive> directives_;
   std::string error_;

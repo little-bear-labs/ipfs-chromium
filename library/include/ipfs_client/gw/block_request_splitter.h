@@ -11,6 +11,9 @@ class Client;
 }
 
 namespace ipfs::gw {
+/*! A request decorator of sorts that passes through non-CAR requests
+ *  But for a CAR request will output both the original request and also a block request for the root
+ */
 class BlockRequestSplitter final : public Requestor {
   std::array<std::string, 32> recent_provider_requests;
   std::size_t old_provider_request = 0UL;
