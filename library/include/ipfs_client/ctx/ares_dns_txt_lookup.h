@@ -30,7 +30,7 @@ class AresDnsTxtLookup : public DnsTxtLookup {
   void SendDnsTextRequest(std::string,
                           DnsTextResultsCallback,
                           DnsTextCompleteCallback) override;
-  void DnsResults(std::string&, ares_txt_reply&);
+  void DnsResults(std::string&, ares_txt_reply const*);
 };
 }  // namespace ipfs::ctx
 

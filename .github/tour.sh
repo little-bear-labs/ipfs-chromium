@@ -99,6 +99,7 @@ url_case ipfs baguqeerah2nswg7r2pvlpbnsz5y4c4pr4wsgbzixdl632w5qxvedqzryf54q 7750
 url_case ipns en.wikipedia-on-ipfs.org/I/HFE_Too_Slow_1.JPG.webp 09c09b2654e8529740b5a7625e39e0c8 'An image fetched through DNSLink and HAMT sharded directories.' note
 echo 'Skip as it takes too long.' url_case ipfs bafybeieb33pqideyl5ncd33kho622thym5rqv6sujrmelcuhkjlf2hdpu4/Big%20Buck%20Bunny.webm 06d51286e56badb4455594ebed6daba2 'A large UnixFS file - several hundred blocks.' error
 url_case ipfs bafybeihmq5rnk5i4gwljixz64dns3pxt7ep2i3x7eylyfq7mkzgh4gtfh4/relative_link.txt cfe9b69523140b5b5e63874a8e4997e4 'A relative symlink resolves successfully to the file pointed to.'
+url_case ipns planetable.eth/B5B2F107-A455-4B5A-AA14-B60EB7179ABF 6671d3bce06f61f5568632ae004d7dde 'DNSLink fallback to gateways to access non-DNS resolvers, in this case ENS'
 
 echo Stop test server.
 killall python3 2>/dev/null || true
