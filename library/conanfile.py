@@ -1,8 +1,10 @@
 from conan import ConanFile
+from conan.tools.build import check_min_cppstd
 from conan.tools.cmake import CMake, CMakeToolchain, CMakeDeps, cmake_layout
-from shutil import copyfile, which
+from conan.tools.files import copy
+from conan.tools.scm import Version
 import sys
-from os.path import dirname, isfile, join, realpath
+from os.path import dirname, join, realpath
 
 here = realpath(dirname(__file__))
 sys.path.append(realpath(join(here, '..', 'cmake')))
@@ -18,6 +20,10 @@ except ImportError:
 class IpfsChromium(ConanFile):
     name = "ipfs_client"
     version = VERSION
+    description = "Library for acting as a trustless client of IFPS gateway(s). see: https://specs.ipfs.tech/http-gateways/trustless-gateway/"
+    homepage = "https://github.com/little-bear-labs/ipfs-chromium/tree/main/library"
+    topics = ("ipfs", "ipns", "dweb", "web", "content-addressed", "network", "client", "io", "api", "file-sharing", "gateway", "kubo")
+    license = "MIT,Apache-2.0,https://raw.githubusercontent.com/little-bear-labs/ipfs-chromium/main/library/LICENSE"
     settings = "os", "compiler", "build_type", "arch"
     _PB = 'protobuf/3.20.0'
     require_transitively = [
@@ -52,23 +58,25 @@ class IpfsChromium(ConanFile):
 
     def build(self):
         cmake = CMake(self)
+        if self.settings.compiler.cppstd:
+          stdver = self.settings.compiler.cppstd
+        else:
+          stdver = 20
         cmake.configure(variables={
-            "CXX_VERSION": 20,
+            "CXX_VERSION": stdver,
             "INSIDE_CONAN": True
         })
         cmake.build(build_tool_args=['--verbose'])
 
     def package(self):
+        s = join(self.source_folder, 'library')
+        d = join(self.package_folder, "licenses")
+        copy(self, pattern="LICENSE*", dst=d, src=s)
         cmake = CMake(self)
         cmake.install()
-        print(self.cpp_info.objects)
 
     def package_info(self):
         self.cpp_info.libs = ["ipfs_client", "ic_proto"]
-
-    # def build_requirements(self):
-    #     if not which("doxygen"):
-    #         self.tool_requires("doxygen/1.9.4")
 
     def layout(self):
         cmake_layout(self)
@@ -76,3 +84,23 @@ class IpfsChromium(ConanFile):
     def requirements(self):
         for l in self.require_transitively:
             self.requires(l, transitive_headers=True)
+
+    @property
+    def _min_cppstd(self):
+        return "20"
+
+    @property
+    def _minimum_compilers_version(self):
+        return {
+            "apple-clang": "14",
+            "gcc": "11",
+            "msvc": "193"
+        }
+
+    def validate(self):
+        cc_nm = str(self.settings.compiler)
+        if self.settings.compiler.cppstd:
+            check_min_cppstd(self, 20)
+        minimum_version = self._minimum_compilers_version.get(cc_nm, False)
+        if minimum_version and Version(self.settings.compiler.version) < minimum_version:
+            raise ConanInvalidConfiguration(f"{self.ref} does not support your compiler.")
