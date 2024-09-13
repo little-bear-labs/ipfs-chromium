@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['gateway_5fsource_289',['gateway_source',['../structipfs_1_1ValidatedIpns.html#a5a8535dd643df208082b78751a529f15',1,'ipfs::ValidatedIpns']]]
+  ['fetch_5ftime_286',['fetch_time',['../structipfs_1_1ValidatedIpns.html#a2848fb8db773402c46dfe9d53303d845',1,'ipfs::ValidatedIpns']]]
 ];

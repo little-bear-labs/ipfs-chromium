@@ -83,16 +83,69 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad6c6e51abcd6b20caa63d55002ae8b04"><td class="memItemLeft" align="right" valign="top"><a id="ad6c6e51abcd6b20caa63d55002ae8b04"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Car</b> (ByteView, <a class="el" href="classipfs_1_1Client.html">Client</a> &amp;)</td></tr>
-<tr class="separator:ad6c6e51abcd6b20caa63d55002ae8b04"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71debd8c6b3f37db36d02d2a76c117db"><td class="memItemLeft" align="right" valign="top"><a id="a71debd8c6b3f37db36d02d2a76c117db"></a>
-std::optional&lt; <a class="el" href="structipfs_1_1Car_1_1Block.html">Block</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>NextBlock</b> ()</td></tr>
+<tr class="memitem:a494a37634a59c92ab00b4a7889699d5e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Car.html#a494a37634a59c92ab00b4a7889699d5e">Car</a> (ByteView bytes, <a class="el" href="classipfs_1_1ctx_1_1CborParser.html">ctx::CborParser</a> &amp;cbor_parser)</td></tr>
+<tr class="separator:a494a37634a59c92ab00b4a7889699d5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71debd8c6b3f37db36d02d2a76c117db"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structipfs_1_1Car_1_1Block.html">Block</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Car.html#a71debd8c6b3f37db36d02d2a76c117db">NextBlock</a> ()</td></tr>
 <tr class="separator:a71debd8c6b3f37db36d02d2a76c117db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A (C)ontent-addressed (A)(r)chive Archive in the same sense as tape archive (.tar), Java archive (.jar), archive (.a) etc. However contains metadata not related to a filesystem, but to an IPLD DAG (or part of one) </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a494a37634a59c92ab00b4a7889699d5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a494a37634a59c92ab00b4a7889699d5e">&#9670;&nbsp;</a></span>Car()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">ipfs::Car::Car </td>
+          <td>(</td>
+          <td class="paramtype">ByteView&#160;</td>
+          <td class="paramname"><em>bytes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classipfs_1_1ctx_1_1CborParser.html">ctx::CborParser</a> &amp;&#160;</td>
+          <td class="paramname"><em>cbor_parser</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Parse a CAR file </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">bytes</td><td>The serialized form of the CAR </td></tr>
+    <tr><td class="paramname">cbor_parser</td><td>A parser for the embedded cbor </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a71debd8c6b3f37db36d02d2a76c117db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a71debd8c6b3f37db36d02d2a76c117db">&#9670;&nbsp;</a></span>NextBlock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="structipfs_1_1Car_1_1Block.html">Block</a>&gt; ipfs::Car::NextBlock </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Pop the next block of the archive </p><dl class="section return"><dt>Returns</dt><dd>The block, or nullopt if there are no more </dd></dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/src/ipfs_client/<a class="el" href="car_8h_source.html">car.h</a></li>
 </ul>
 </div><!-- contents -->

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['electron_20flavor_20tweaks_305',['Electron Flavor Tweaks',['../md_doc_spin_blog.html',1,'']]]
+  ['electron_20spins_303',['Electron Spins',['../md_doc_spin_blog.html',1,'']]]
 ];

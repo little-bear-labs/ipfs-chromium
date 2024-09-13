@@ -74,29 +74,28 @@ $(function() {
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160; </div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="keyword">namespace </span>multibase {</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
-<div class="line"><a name="l00007"></a><span class="lineno"><a class="line" href="classmultibase_1_1algorithm.html">    7</a></span>&#160;<span class="keyword">class </span><a class="code" href="classmultibase_1_1algorithm.html">algorithm</a> {</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="classmultibase_1_1algorithm_1_1block__tag.html">   10</a></span>&#160;  <span class="keyword">class </span><a class="code" href="classmultibase_1_1algorithm_1_1block__tag.html">block_tag</a> {};</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
-<div class="line"><a name="l00013"></a><span class="lineno"><a class="line" href="classmultibase_1_1algorithm_1_1stream__tag.html">   13</a></span>&#160;  <span class="keyword">class </span><a class="code" href="classmultibase_1_1algorithm_1_1stream__tag.html">stream_tag</a> {};</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; </div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classmultibase_1_1algorithm.html">algorithm</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="classmultibase_1_1algorithm.html#a872d1a79fe4def712d0db5ae52f8b578">   18</a></span>&#160;  <span class="keyword">virtual</span> std::size_t <a class="code" href="classmultibase_1_1algorithm.html#a872d1a79fe4def712d0db5ae52f8b578">block_size</a>() { <span class="keywordflow">return</span> 0; }</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160; </div>
-<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="classmultibase_1_1algorithm.html#a799ab635e906348481f3fe5c7842c3d0">   21</a></span>&#160;  <span class="keyword">virtual</span> std::size_t <a class="code" href="classmultibase_1_1algorithm.html#a799ab635e906348481f3fe5c7842c3d0">output_size</a>() { <span class="keywordflow">return</span> 0; }</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="classmultibase_1_1algorithm.html#a0bdee354ec682027c66e46b440601ceb">   24</a></span>&#160;  <span class="keyword">virtual</span> std::string <a class="code" href="classmultibase_1_1algorithm.html#a0bdee354ec682027c66e46b440601ceb">process</a>(std::string_view input) = 0;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;};</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;}  <span class="comment">// namespace multibase</span></div>
-<div class="ttc" id="aclassmultibase_1_1algorithm_1_1block__tag_html"><div class="ttname"><a href="classmultibase_1_1algorithm_1_1block__tag.html">multibase::algorithm::block_tag</a></div><div class="ttdef"><b>Definition:</b> algorithm.h:10</div></div>
-<div class="ttc" id="aclassmultibase_1_1algorithm_1_1stream__tag_html"><div class="ttname"><a href="classmultibase_1_1algorithm_1_1stream__tag.html">multibase::algorithm::stream_tag</a></div><div class="ttdef"><b>Definition:</b> algorithm.h:13</div></div>
-<div class="ttc" id="aclassmultibase_1_1algorithm_html"><div class="ttname"><a href="classmultibase_1_1algorithm.html">multibase::algorithm</a></div><div class="ttdef"><b>Definition:</b> algorithm.h:7</div></div>
+<div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="classmultibase_1_1algorithm.html">    8</a></span>&#160;<span class="keyword">class </span><a class="code" href="classmultibase_1_1algorithm.html">algorithm</a> {</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="classmultibase_1_1algorithm_1_1block__tag.html">   11</a></span>&#160;  <span class="keyword">class </span><a class="code" href="classmultibase_1_1algorithm_1_1block__tag.html">block_tag</a> {};</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160; </div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="classmultibase_1_1algorithm_1_1stream__tag.html">   14</a></span>&#160;  <span class="keyword">class </span><a class="code" href="classmultibase_1_1algorithm_1_1stream__tag.html">stream_tag</a> {};</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classmultibase_1_1algorithm.html">algorithm</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
+<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="classmultibase_1_1algorithm.html#a872d1a79fe4def712d0db5ae52f8b578">   19</a></span>&#160;  <span class="keyword">virtual</span> std::size_t <a class="code" href="classmultibase_1_1algorithm.html#a872d1a79fe4def712d0db5ae52f8b578">block_size</a>() { <span class="keywordflow">return</span> 0; }</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classmultibase_1_1algorithm.html#a799ab635e906348481f3fe5c7842c3d0">   22</a></span>&#160;  <span class="keyword">virtual</span> std::size_t <a class="code" href="classmultibase_1_1algorithm.html#a799ab635e906348481f3fe5c7842c3d0">output_size</a>() { <span class="keywordflow">return</span> 0; }</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; </div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="classmultibase_1_1algorithm.html#a0bdee354ec682027c66e46b440601ceb">   25</a></span>&#160;  <span class="keyword">virtual</span> std::string <a class="code" href="classmultibase_1_1algorithm.html#a0bdee354ec682027c66e46b440601ceb">process</a>(std::string_view input) = 0;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;};</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;}  <span class="comment">// namespace multibase</span></div>
+<div class="ttc" id="aclassmultibase_1_1algorithm_1_1block__tag_html"><div class="ttname"><a href="classmultibase_1_1algorithm_1_1block__tag.html">multibase::algorithm::block_tag</a></div><div class="ttdef"><b>Definition:</b> algorithm.h:11</div></div>
+<div class="ttc" id="aclassmultibase_1_1algorithm_1_1stream__tag_html"><div class="ttname"><a href="classmultibase_1_1algorithm_1_1stream__tag.html">multibase::algorithm::stream_tag</a></div><div class="ttdef"><b>Definition:</b> algorithm.h:14</div></div>
+<div class="ttc" id="aclassmultibase_1_1algorithm_html"><div class="ttname"><a href="classmultibase_1_1algorithm.html">multibase::algorithm</a></div><div class="ttdef"><b>Definition:</b> algorithm.h:8</div></div>
 <div class="ttc" id="aclassmultibase_1_1algorithm_html_a0bdee354ec682027c66e46b440601ceb"><div class="ttname"><a href="classmultibase_1_1algorithm.html#a0bdee354ec682027c66e46b440601ceb">multibase::algorithm::process</a></div><div class="ttdeci">virtual std::string process(std::string_view input)=0</div></div>
-<div class="ttc" id="aclassmultibase_1_1algorithm_html_a799ab635e906348481f3fe5c7842c3d0"><div class="ttname"><a href="classmultibase_1_1algorithm.html#a799ab635e906348481f3fe5c7842c3d0">multibase::algorithm::output_size</a></div><div class="ttdeci">virtual std::size_t output_size()</div><div class="ttdef"><b>Definition:</b> algorithm.h:21</div></div>
-<div class="ttc" id="aclassmultibase_1_1algorithm_html_a872d1a79fe4def712d0db5ae52f8b578"><div class="ttname"><a href="classmultibase_1_1algorithm.html#a872d1a79fe4def712d0db5ae52f8b578">multibase::algorithm::block_size</a></div><div class="ttdeci">virtual std::size_t block_size()</div><div class="ttdef"><b>Definition:</b> algorithm.h:18</div></div>
+<div class="ttc" id="aclassmultibase_1_1algorithm_html_a799ab635e906348481f3fe5c7842c3d0"><div class="ttname"><a href="classmultibase_1_1algorithm.html#a799ab635e906348481f3fe5c7842c3d0">multibase::algorithm::output_size</a></div><div class="ttdeci">virtual std::size_t output_size()</div><div class="ttdef"><b>Definition:</b> algorithm.h:22</div></div>
+<div class="ttc" id="aclassmultibase_1_1algorithm_html_a872d1a79fe4def712d0db5ae52f8b578"><div class="ttname"><a href="classmultibase_1_1algorithm.html#a872d1a79fe4def712d0db5ae52f8b578">multibase::algorithm::block_size</a></div><div class="ttdeci">virtual std::size_t block_size()</div><div class="ttdef"><b>Definition:</b> algorithm.h:19</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

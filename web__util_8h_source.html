@@ -76,10 +76,10 @@ $(function() {
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;string_view&gt;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; </div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">namespace </span>ipfs::util {</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;std::string TrivialMimeGuess(std::string extension,</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">auto</span> TrivialMimeGuess(std::string extension,</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;                             std::string_view content,</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;                             std::string <span class="keyword">const</span>&amp; url);</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;std::string RoughlyUnescapeUrlComponent(std::string_view url_comp);</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;                      std::string <span class="keyword">const</span>&amp; url) -&gt; std::string;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="keyword">auto</span> RoughlyUnescapeUrlComponent(std::string_view url_comp) -&gt; std::string ;</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;}  <span class="comment">// namespace ipfs::util</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_CHROMIUM_WEB_UTIL_H</span></div>

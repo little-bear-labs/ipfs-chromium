@@ -9,7 +9,7 @@ var searchData=
   ['data_46',['Data',['../structipfs_1_1PbDag_1_1Data.html',1,'ipfs::PbDag']]],
   ['decoder_47',['decoder',['../classmultibase_1_1basic__algorithm_1_1decoder.html',1,'multibase::basic_algorithm']]],
   ['deserialize_48',['Deserialize',['../structipfs_1_1ValidatedIpns.html#aabdd2defa62bbc9d1463fd4bef53ec23',1,'ipfs::ValidatedIpns']]],
-  ['directive_49',['Directive',['../classipfs_1_1redirects_1_1Directive.html',1,'ipfs::redirects']]],
+  ['directive_49',['Directive',['../classipfs_01_1_1redirects_1_1Directive.html',1,'ipfs ::redirects']]],
   ['dirshard_50',['DirShard',['../classipfs_1_1ipld_1_1DirShard.html',1,'ipfs::ipld']]],
   ['dnslinkname_51',['DnsLinkName',['../classipfs_1_1ipld_1_1DnsLinkName.html',1,'ipfs::ipld']]],
   ['dnslinkrequestor_52',['DnsLinkRequestor',['../classipfs_1_1gw_1_1DnsLinkRequestor.html',1,'ipfs::gw']]],

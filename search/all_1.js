@@ -10,5 +10,6 @@ var searchData=
   ['blockrequestor_15',['BlockRequestor',['../classipfs_1_1BlockRequestor.html',1,'ipfs']]],
   ['blockrequestsplitter_16',['BlockRequestSplitter',['../classipfs_1_1gw_1_1BlockRequestSplitter.html',1,'ipfs::gw']]],
   ['blocksource_17',['BlockSource',['../structipfs_1_1ipld_1_1BlockSource.html',1,'ipfs::ipld']]],
-  ['blockstorage_18',['BlockStorage',['../classipfs_1_1BlockStorage.html',1,'ipfs']]]
+  ['blockstorage_18',['BlockStorage',['../classipfs_1_1BlockStorage.html',1,'ipfs']]],
+  ['bytes_19',['bytes',['../structipfs_1_1Car_1_1Block.html#a53f3cfdaa2bb45b01f3bd8eb597d66c9',1,'ipfs::Car::Block']]]
 ];

@@ -75,24 +75,25 @@ $(function() {
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;multibase/basic_algorithm.h&gt;</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; </div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="keyword">namespace </span>multibase {</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">template</span> &lt;&gt;</div>
-<div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="structmultibase_1_1traits_3_1_1multibase_1_1encoding_1_1base__16__upper_01_4.html">    8</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structmultibase_1_1traits.html">traits</a>&lt;::multibase::encoding::base_16_upper&gt; {</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;  constexpr <span class="keyword">static</span> <span class="keyword">const</span> std::array&lt;char, 16&gt; charset = {</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;      <span class="charliteral">&#39;0&#39;</span>, <span class="charliteral">&#39;1&#39;</span>, <span class="charliteral">&#39;2&#39;</span>, <span class="charliteral">&#39;3&#39;</span>, <span class="charliteral">&#39;4&#39;</span>, <span class="charliteral">&#39;5&#39;</span>, <span class="charliteral">&#39;6&#39;</span>, <span class="charliteral">&#39;7&#39;</span>,</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;      <span class="charliteral">&#39;8&#39;</span>, <span class="charliteral">&#39;9&#39;</span>, <span class="charliteral">&#39;A&#39;</span>, <span class="charliteral">&#39;B&#39;</span>, <span class="charliteral">&#39;C&#39;</span>, <span class="charliteral">&#39;D&#39;</span>, <span class="charliteral">&#39;E&#39;</span>, <span class="charliteral">&#39;F&#39;</span>};</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  constexpr <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> name[] = <span class="stringliteral">&quot;BASE_16&quot;</span>;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  <span class="keyword">using</span> <a class="code" href="classmultibase_1_1algorithm_1_1block__tag.html">execution_style</a> = <a class="code" href="classmultibase_1_1algorithm_1_1block__tag.html">multibase::algorithm::block_tag</a>;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  constexpr <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> padding = 0;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;};</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;}  <span class="comment">// namespace multibase</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>ipfs::mb {</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">using</span> base_16_upper =</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <a class="code" href="classmultibase_1_1basic__algorithm.html">multibase::basic_algorithm&lt;multibase::encoding::base_16_upper&gt;</a>;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;}  <span class="comment">// namespace ipfs::mb</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160; </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_B16_UPPER_H_</span></div>
-<div class="ttc" id="aclassmultibase_1_1algorithm_1_1block__tag_html"><div class="ttname"><a href="classmultibase_1_1algorithm_1_1block__tag.html">multibase::algorithm::block_tag</a></div><div class="ttdef"><b>Definition:</b> algorithm.h:10</div></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">template</span> &lt;&gt;</div>
+<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="structmultibase_1_1traits_3_1_1multibase_1_1encoding_1_1base__16__upper_01_4.html">   11</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structmultibase_1_1traits.html">traits</a>&lt;::multibase::encoding::base_16_upper&gt; {</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  constexpr <span class="keyword">static</span> <span class="keyword">const</span> std::array&lt;char, 16&gt; charset = {</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;      <span class="charliteral">&#39;0&#39;</span>, <span class="charliteral">&#39;1&#39;</span>, <span class="charliteral">&#39;2&#39;</span>, <span class="charliteral">&#39;3&#39;</span>, <span class="charliteral">&#39;4&#39;</span>, <span class="charliteral">&#39;5&#39;</span>, <span class="charliteral">&#39;6&#39;</span>, <span class="charliteral">&#39;7&#39;</span>,</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;      <span class="charliteral">&#39;8&#39;</span>, <span class="charliteral">&#39;9&#39;</span>, <span class="charliteral">&#39;A&#39;</span>, <span class="charliteral">&#39;B&#39;</span>, <span class="charliteral">&#39;C&#39;</span>, <span class="charliteral">&#39;D&#39;</span>, <span class="charliteral">&#39;E&#39;</span>, <span class="charliteral">&#39;F&#39;</span>};</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  constexpr <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> name[] = <span class="stringliteral">&quot;BASE_16&quot;</span>;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <span class="keyword">using</span> <a class="code" href="classmultibase_1_1algorithm_1_1block__tag.html">execution_style</a> = <a class="code" href="classmultibase_1_1algorithm_1_1block__tag.html">multibase::algorithm::block_tag</a>;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  constexpr <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> padding = 0;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;};</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;}  <span class="comment">// namespace multibase</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; </div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">namespace </span>ipfs::mb {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">using</span> base_16_upper =</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    <a class="code" href="classmultibase_1_1basic__algorithm.html">multibase::basic_algorithm&lt;multibase::encoding::base_16_upper&gt;</a>;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;}  <span class="comment">// namespace ipfs::mb</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; </div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_B16_UPPER_H_</span></div>
+<div class="ttc" id="aclassmultibase_1_1algorithm_1_1block__tag_html"><div class="ttname"><a href="classmultibase_1_1algorithm_1_1block__tag.html">multibase::algorithm::block_tag</a></div><div class="ttdef"><b>Definition:</b> algorithm.h:11</div></div>
 <div class="ttc" id="aclassmultibase_1_1basic__algorithm_html"><div class="ttname"><a href="classmultibase_1_1basic__algorithm.html">multibase::basic_algorithm</a></div><div class="ttdef"><b>Definition:</b> basic_algorithm.h:29</div></div>
 <div class="ttc" id="astructmultibase_1_1traits_html"><div class="ttname"><a href="structmultibase_1_1traits.html">multibase::traits</a></div><div class="ttdef"><b>Definition:</b> basic_algorithm.h:19</div></div>
 </div><!-- fragment --></div><!-- contents -->
