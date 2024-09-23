@@ -3,6 +3,8 @@
 
 #include <ipfs_client/ctx/gateway_config.h>
 
+//NOLINT
+
 namespace i = ipfs;
 namespace ig = i::gw;
 

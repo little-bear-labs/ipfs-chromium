@@ -7,6 +7,12 @@
 
 namespace ipfs {
 class InterRequestState;
+/*! Lookup TXT records from a DNS service using Chromium facilities
+ *  @note This is currently fragile, as only DNSClient is capable of these requests
+ *    yet DNSClient may not always be available, depending on Chromium's parsing of
+ *    system config files.
+ *  @todo Fix the note.
+ */
 class ChromiumDnsTxtLookup : public ctx::DnsTxtLookup {
   raw_ptr<InterRequestState> state_;
   std::map<std::string, std::vector<std::unique_ptr<DnsTxtRequest>>> dns_reqs_;

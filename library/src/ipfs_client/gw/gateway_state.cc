@@ -22,7 +22,7 @@ long Self::score(GatewayRequest const& req, unsigned baseline) const {
   return result;
 }
 bool Self::over_rate(unsigned req_per_min) {
-  return total_sent + current_bucket() > req_per_min * MinutesTracked;
+  return total_sent + current_bucket() > static_cast<std::size_t>(req_per_min) * MinutesTracked;
 }
 bool Self::over_rate() {
   return over_rate(cfg().GetGatewayRate(prefix_));
@@ -51,7 +51,7 @@ void Self::hit(GatewayRequestType grt, GatewayRequest const& req) {
   affinity_success[req.affinity] += 9;
   auto rpm = c.GetGatewayRate(prefix_);
   for (auto i = 9; i; --i) {
-    if (over_rate(rpm / i)) {
+    if (over_rate(++rpm / i)) {
       ++rpm;
     } else {
       break;

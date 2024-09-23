@@ -46,7 +46,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
               << " URL:" << desc_.url << " HOST:" << host_ << " PORT:" << port_
               << " TARGET:" << target_;
     auto status = ec.value() == 1 ? 408 : 500;
-    cb_(status, "", [](auto) { return std::string{}; });
+    cb_(static_cast<short>(status), "", [](auto) { return std::string{}; });
   }
   std::string parse_url() {
     ipfs::SlashDelimited ss{desc_.url};
@@ -240,7 +240,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     auto me = shared_from_this();
     auto respond = [me, get_hdr]() {
       auto& r = *(me->res_);
-      me->cb_(r.result_int(), r.body(), get_hdr);
+      me->cb_(static_cast<short>(r.result_int()), r.body(), get_hdr);
     };
     if (content_type.empty() ||
         boost::algorithm::icontains(content_type, desc_.accept)) {

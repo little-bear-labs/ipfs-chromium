@@ -9,7 +9,7 @@
 using Self = ipfs::crypto::OpensslSignatureVerifier;
 
 Self::OpensslSignatureVerifier(int key_type) : openssl_key_type_{key_type} {}
-Self::~OpensslSignatureVerifier() = default;
+Self::~OpensslSignatureVerifier() noexcept = default;
 bool Self::VerifySignature(ipfs::ByteView signature,
                            ipfs::ByteView data,
                            ipfs::ByteView key_bytes) {

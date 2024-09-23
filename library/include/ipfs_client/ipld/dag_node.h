@@ -35,15 +35,28 @@ class DirShard;
 class DnsLinkName;
 class IpnsName;
 
+/*! Response when the partition does not yet have all the blocks
+ *  needed to fulfill the request.
+ */
 struct MoreDataNeeded {
-  MoreDataNeeded(std::string one) : ipfs_abs_paths_{{one}} {}
+  /*! Construct if just one piece of data is known to be needed
+   *  @param one The /ipfs/path of the data needed
+   */
+  explicit MoreDataNeeded(std::string one) : ipfs_abs_paths_{{one}} {}
+  /*! Construct from a range of needed data
+   *  @param many The /ipfs/paths known to be needed
+   */
   template <class Range>
-  MoreDataNeeded(Range const& many)
+  explicit MoreDataNeeded(Range const& many)
       : ipfs_abs_paths_(many.begin(), many.end()) {}
+  /*! The paths
+   */
   std::vector<std::string> ipfs_abs_paths_;
-  bool insist_on_car = false;
 };
 enum class ProvenAbsent {};
+/*! Response from a redirection or symlink that causes the requested path
+ *  to be equivalent to another.
+ */
 struct PathChange {
   std::string new_path;
 };
@@ -81,7 +94,12 @@ class DagNode : public std::enable_shared_from_this<DagNode> {
                           std::string_view block_key);
   
  public:
-  // ResolveResult resolve(SlashDelimited initial_path, BlockLookup);
+  /*! Query the DAG
+   *  @param params Information about what you're looking for
+   *  @return The data needed
+   *    or how to get it
+   *    or some additional info needed before asking again.
+   */
   ResolveResult Resolve(ResolutionState& params);
 
   static NodePtr fromBytes(std::shared_ptr<Client> const& api,
@@ -92,17 +110,41 @@ class DagNode : public std::enable_shared_from_this<DagNode> {
                            std::string_view bytes);
   static NodePtr fromBlock(PbDag const&);
 
-  virtual ~DagNode() noexcept {}
+  virtual ~DagNode() noexcept;
 
+  /*! Get a root node that is logically this node
+   * @return this iff this is of type ipfs::ipld::Root
+   *    Otherwise a Root that has this as a child.
+   */
   virtual NodePtr rooted();
+  /*! @return *this if it's not a Root, otherwise its child
+   */
   virtual NodePtr deroot();
 
-  // Wish I had access to dynamic_cast
+  /*! @defgroup downcast Down-casting to specific subclasses
+   *  @brief I wish I had access to dynamic_cast, but Chromium.
+   *  @{
+   */
+
+  /*! @return this if this is a DNSLinkName, otherwise nullptr
+   */
   virtual DnsLinkName const* as_dnslink() const { return nullptr; }
+  /*! @return this if this is a DirShard, otherwise nullptr
+   */
   virtual DirShard* as_hamt() { return nullptr; }
+  /*! @return this if this is a IpnsName, otherwise nullptr
+   */
   virtual IpnsName const* as_ipns() const { return nullptr; }
 
+  /** @} */
+
+  /*! @return Whether the node should be considered expired.
+   *  @note immutable data never expires
+   */
   virtual bool expired() const;
+  /*! @return Whether this is a "better"/more-up-to-date replacement
+   *  @param another The node to compare to.
+   */
   virtual bool PreferOver(DagNode const& another) const;
 
   void set_api(std::shared_ptr<Client>);

@@ -63,6 +63,8 @@ std::pair<bool, bool> InitBlock(ipfs::MultiCodec c,
 }
 }  // namespace
 
+/*! The parsed protobufs
+ */
 struct ipfs::PbDag::Data {
   pb_dag::PBNode node_;
   unix_fs::Data fsdata_;

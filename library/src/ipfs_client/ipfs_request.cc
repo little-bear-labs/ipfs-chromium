@@ -37,6 +37,7 @@ void Self::finish(ipfs::Response& r) {
   for (auto& cleanup : cleanups_) {
     cleanup();
   }
+  cleanups_.clear();
 }
 void Self::new_path(std::string_view sv) {
   path_.assign(sv);

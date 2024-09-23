@@ -5,7 +5,7 @@ from json import load
 from os import remove
 from os.path import splitext
 
-known_obj = [c['output'] for c in load(open('compile_commands.json'))]
+known_obj = [c['output'] for c in load(open('compile_commands.json', encoding='utf-8'))]
 for o in glob('*/CMakeFiles/**/*.o', recursive=True):
     if not o in known_obj:
         base = splitext(o)[0]

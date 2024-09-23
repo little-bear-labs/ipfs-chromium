@@ -118,7 +118,7 @@ std::size_t Self::hex_width() const {
 
 std::vector<std::string> Self::hexhash(std::string_view path_element) const {
   std::array<std::uint64_t, 2> digest = {0U, 0U};
-  MurmurHash3_x64_128(path_element.data(), path_element.size(), 0,
+  MurmurHash3_x64_128(path_element.data(), static_cast<int>(path_element.size()), 0,
                       digest.data());
   std::vector<std::string> result;
   for (auto d : digest) {
@@ -130,7 +130,7 @@ std::vector<std::string> Self::hexhash(std::string_view path_element) const {
       hash_bits /= fanout_;
       std::ostringstream oss;
       // ... then hex encode (using 0-F) using little endian those bits ...
-      oss << std::setfill('0') << std::setw(hex_width()) << std::uppercase
+      oss << std::setfill('0') << std::setw(static_cast<int>(hex_width())) << std::uppercase
           << std::hex << popped;
       result.push_back(oss.str());
     }

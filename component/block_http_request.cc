@@ -66,8 +66,6 @@ void Self::OnResponse(std::shared_ptr<Self>,
       status = 408;
       break;
     default:
-      //      VLOG(2) << "NetErr " << loader_->NetError() << " for " <<
-      //      inf_.url;
       status = 500;
   }
   //  auto sz = body ? body->size() : 0UL;
