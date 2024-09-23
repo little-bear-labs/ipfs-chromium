@@ -18,7 +18,7 @@ class DnsLinkName : public DagNode {
 
  public:
   DnsLinkName(std::string_view target_abs_path);
-  virtual ~DnsLinkName() noexcept {}
+  ~DnsLinkName() noexcept override;
 
   bool expired() const override;
 };

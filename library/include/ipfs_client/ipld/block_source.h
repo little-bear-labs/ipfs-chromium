@@ -12,6 +12,8 @@ namespace ipfs::ipld {
 struct BlockSource {
   using Clock = std::chrono::system_clock;
 
+  /*! Categorization of sources
+   */
   struct Category {
     std::string gateway_url;
     gw::GatewayRequestType request_type = gw::GatewayRequestType::Zombie;

@@ -157,7 +157,8 @@ bool r::File::parse_line(std::string_view line, int line_number) {
   if (bpos == std::string_view::npos) {
     // effectively empty line
     return false;
-  } else if (line[bpos] == '#') {
+  }
+  if (line[bpos] == '#') {
     // https://specs.ipfs.tech/http-gateways/web-redirects-file/#comments
     return false;
   }

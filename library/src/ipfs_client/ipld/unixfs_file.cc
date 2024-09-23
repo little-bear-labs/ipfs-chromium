@@ -43,7 +43,6 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
     };
   }
   auto result = MoreDataNeeded{missing};
-  result.insist_on_car = true;
   return result;
 }
 

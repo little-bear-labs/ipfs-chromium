@@ -20,6 +20,8 @@ class GatewayConfig;
 
 namespace ipfs::gw {
 class GatewayRequest;
+/*! Information about an IPFS HTTP gateway and how often it should be used for what
+ */
 class GatewayState {
   std::string prefix_;
   std::shared_ptr<Client> api_;

@@ -20,6 +20,8 @@ class DirShard : public DagNode {
   std::string listing_json() const;
 
  public:
+  /*! Construct with a known fanout
+   */
   explicit DirShard(std::uint64_t fanout = 256UL);
   virtual ~DirShard() noexcept;
 };

@@ -13,6 +13,7 @@ Self::DnsLinkName(std::string_view target_abs_path)
   links_.emplace_back("", Link{target_root_, nullptr});
   target_path_.assign(target.to_string());
 }
+Self::~DnsLinkName() noexcept = default;
 
 auto Self::resolve(ResolutionState& params) -> ResolveResult {
   auto& node = links_.at(0).second.node;

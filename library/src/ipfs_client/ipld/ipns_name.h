@@ -20,9 +20,15 @@ class IpnsName : public DagNode {
   IpnsName const* as_ipns() const override { return this; }
 
  public:
-  IpnsName(ValidatedIpns const&);
+  /*! Construct from a validated entry
+   */
+  explicit IpnsName(ValidatedIpns const&);
   ~IpnsName() noexcept override;
 
+  /*! @return whether this record should be considered expired
+   *  @note Most useful for cached entries, but also can expire
+   *    While sitting in the in-memory DAG, particularly by TTL
+   */
   bool expired() const override;
 };
 }  // namespace ipld

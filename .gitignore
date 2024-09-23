@@ -7,3 +7,4 @@ CMakeUserPresets.json
 gotit.json
 .kdev4/ipfs-chromium.kdev4
 *.autosave.*
+*.autosave

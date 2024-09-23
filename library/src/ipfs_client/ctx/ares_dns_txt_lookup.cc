@@ -52,7 +52,7 @@ Self::AresDnsTxtLookup(boost::asio::io_context* io) : io_{io} {
     throw std::runtime_error("Failed to initialize c-ares channel.");
   }
 }
-Self::~AresDnsTxtLookup() {
+Self::~AresDnsTxtLookup() noexcept {
   pending_dns_.clear();
   ares_destroy(ares_channel_);
   ares_library_cleanup();
