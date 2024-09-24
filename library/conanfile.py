@@ -3,6 +3,7 @@ from conan.tools.build import check_min_cppstd
 from conan.tools.cmake import CMake, CMakeToolchain, CMakeDeps, cmake_layout
 from conan.tools.files import copy
 from conan.tools.scm import Version
+from conans.errors import ConanInvalidConfiguration
 import sys
 from os.path import dirname, join, realpath
 

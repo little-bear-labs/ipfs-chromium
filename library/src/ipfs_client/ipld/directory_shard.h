@@ -23,7 +23,7 @@ class DirShard : public DagNode {
   /*! Construct with a known fanout
    */
   explicit DirShard(std::uint64_t fanout = 256UL);
-  virtual ~DirShard() noexcept;
+  ~DirShard() noexcept override;
 };
 }  // namespace ipfs::ipld
 
