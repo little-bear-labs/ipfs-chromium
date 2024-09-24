@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['unescapeurlcomponent_278',['UnescapeUrlComponent',['../classipfs_1_1Client.html#a1b5fc981f81d33e3c6172c938a8cd92f',1,'ipfs::Client']]],
-  ['unparsed_279',['unparsed',['../classipfs_1_1PbDag.html#ac615ff5dfb9d48d0d25473dd31a53817',1,'ipfs::PbDag']]]
+  ['type_303',['type',['../classipfs_1_1PbDag.html#a63aa49ace3d5750a6eae1eb713ce4462',1,'ipfs::PbDag']]]
 ];

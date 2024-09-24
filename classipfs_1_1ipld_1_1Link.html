@@ -86,22 +86,125 @@ Collaboration diagram for ipfs::ipld::Link:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8e1039b6586b93c369c1d6ee7f057fee"><td class="memItemLeft" align="right" valign="top"><a id="a8e1039b6586b93c369c1d6ee7f057fee"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Link</b> (std::string)</td></tr>
-<tr class="separator:a8e1039b6586b93c369c1d6ee7f057fee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa7c4086891569e57b420e2db31aead5b"><td class="memItemLeft" align="right" valign="top"><a id="aa7c4086891569e57b420e2db31aead5b"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Link</b> (std::string, std::shared_ptr&lt; <a class="el" href="classipfs_1_1ipld_1_1DagNode.html">DagNode</a> &gt;)</td></tr>
-<tr class="separator:aa7c4086891569e57b420e2db31aead5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45a2a6c1d774dae98c8b8aa1382d5362"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ipld_1_1Link.html#a45a2a6c1d774dae98c8b8aa1382d5362">Link</a> (std::string <a class="el" href="classipfs_1_1ipld_1_1Link.html#aebaf67082303651a44bc755803205caf">cid</a>)</td></tr>
+<tr class="separator:a45a2a6c1d774dae98c8b8aa1382d5362"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65cb805c3d2b93093909803728305a0c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ipld_1_1Link.html#a65cb805c3d2b93093909803728305a0c">Link</a> (std::string <a class="el" href="classipfs_1_1ipld_1_1Link.html#aebaf67082303651a44bc755803205caf">cid</a>, std::shared_ptr&lt; <a class="el" href="classipfs_1_1ipld_1_1DagNode.html">DagNode</a> &gt; <a class="el" href="classipfs_1_1ipld_1_1Link.html#aa5aefd48f6060740b18ea0bcaca5576c">node</a>)</td></tr>
+<tr class="separator:a65cb805c3d2b93093909803728305a0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:aebaf67082303651a44bc755803205caf"><td class="memItemLeft" align="right" valign="top"><a id="aebaf67082303651a44bc755803205caf"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>cid</b></td></tr>
+<tr class="memitem:aebaf67082303651a44bc755803205caf"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ipld_1_1Link.html#aebaf67082303651a44bc755803205caf">cid</a></td></tr>
 <tr class="separator:aebaf67082303651a44bc755803205caf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa5aefd48f6060740b18ea0bcaca5576c"><td class="memItemLeft" align="right" valign="top"><a id="aa5aefd48f6060740b18ea0bcaca5576c"></a>
-Ptr&#160;</td><td class="memItemRight" valign="bottom"><b>node</b></td></tr>
+<tr class="memitem:aa5aefd48f6060740b18ea0bcaca5576c"><td class="memItemLeft" align="right" valign="top">Ptr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ipld_1_1Link.html#aa5aefd48f6060740b18ea0bcaca5576c">node</a></td></tr>
 <tr class="separator:aa5aefd48f6060740b18ea0bcaca5576c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a45a2a6c1d774dae98c8b8aa1382d5362"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45a2a6c1d774dae98c8b8aa1382d5362">&#9670;&nbsp;</a></span>Link() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ipfs::ipld::Link::Link </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>cid</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Construct an unresolved IPLD link </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">The</td><td>child's CID </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a65cb805c3d2b93093909803728305a0c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65cb805c3d2b93093909803728305a0c">&#9670;&nbsp;</a></span>Link() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ipfs::ipld::Link::Link </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>cid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classipfs_1_1ipld_1_1DagNode.html">DagNode</a> &gt;&#160;</td>
+          <td class="paramname"><em>node</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Construct a resolved IPLD link </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">The</td><td>child's CID </td></tr>
+    <tr><td class="paramname">node</td><td>The node linked to if we already have it </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="aebaf67082303651a44bc755803205caf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aebaf67082303651a44bc755803205caf">&#9670;&nbsp;</a></span>cid</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string ipfs::ipld::Link::cid</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>String representation of the CID </p>
+
+</div>
+</div>
+<a id="aa5aefd48f6060740b18ea0bcaca5576c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5aefd48f6060740b18ea0bcaca5576c">&#9670;&nbsp;</a></span>node</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Ptr ipfs::ipld::Link::node</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The pointed-to node, or nullptr if not yet resolved </p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/ipld/<a class="el" href="link_8h_source.html">link.h</a></li>
 </ul>

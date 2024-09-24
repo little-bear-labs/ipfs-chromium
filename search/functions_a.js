@@ -1,4 +1,6 @@
 var searchData=
 [
-  ['output_5fsize_270',['output_size',['../classmultibase_1_1algorithm.html#a799ab635e906348481f3fe5c7842c3d0',1,'multibase::algorithm::output_size()'],['../classmultibase_1_1basic__algorithm_1_1encoder.html#a5ac9e09b0c2e8d62c93c4a8cb236118c',1,'multibase::basic_algorithm::encoder::output_size()'],['../classmultibase_1_1basic__algorithm_1_1decoder.html#ade3dd245081a73bd698eacb3391907bf',1,'multibase::basic_algorithm::decoder::output_size()']]]
+  ['nameresolvedto_290',['NameResolvedTo',['../classipfs_1_1IpnsNames.html#a6a3de6ff356c15d21e8b68a443dcfd4d',1,'ipfs::IpnsNames']]],
+  ['nextblock_291',['NextBlock',['../classipfs_1_1Car.html#a71debd8c6b3f37db36d02d2a76c117db',1,'ipfs::Car']]],
+  ['nosuchname_292',['NoSuchName',['../classipfs_1_1IpnsNames.html#a9f0190dbb39b37c3d994cedfd518bd98',1,'ipfs::IpnsNames']]]
 ];

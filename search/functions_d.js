@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['serialize_274',['Serialize',['../structipfs_1_1ValidatedIpns.html#ace2f45fb79408347deee98d8b90ddb57',1,'ipfs::ValidatedIpns']]],
-  ['stoplistening_275',['StopListening',['../classipfs_1_1BlockStorage.html#aedca96e0978a421fc5d117d967eba22a',1,'ipfs::BlockStorage']]],
-  ['store_276',['Store',['../classipfs_1_1BlockStorage.html#a733a983a43f52ee176a1001bcd8303ff',1,'ipfs::BlockStorage']]]
+  ['requestbycid_297',['RequestByCid',['../classipfs_1_1BlockRequestor.html#a925ee8cd1e6de64de3f40f3f90fe969e',1,'ipfs::BlockRequestor']]],
+  ['resolve_298',['Resolve',['../classipfs_1_1ipld_1_1DagNode.html#a8235a31cacc5dd726e269f47ea6a729a',1,'ipfs::ipld::DagNode']]],
+  ['rooted_299',['rooted',['../classipfs_1_1ipld_1_1DagNode.html#ac8ebf47a8b85ad35e82bc03ddca34b64',1,'ipfs::ipld::DagNode']]]
 ];

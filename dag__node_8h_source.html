@@ -106,87 +106,90 @@ $(function() {
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">class </span>DnsLinkName;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">class </span>IpnsName;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
-<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="structipfs_1_1ipld_1_1MoreDataNeeded.html">   38</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structipfs_1_1ipld_1_1MoreDataNeeded.html">MoreDataNeeded</a> {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <a class="code" href="structipfs_1_1ipld_1_1MoreDataNeeded.html">MoreDataNeeded</a>(std::string one) : ipfs_abs_paths_{{one}} {}</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">class</span> Range&gt;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <a class="code" href="structipfs_1_1ipld_1_1MoreDataNeeded.html">MoreDataNeeded</a>(Range <span class="keyword">const</span>&amp; many)</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      : ipfs_abs_paths_(many.begin(), many.end()) {}</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  std::vector&lt;std::string&gt; ipfs_abs_paths_;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordtype">bool</span> insist_on_car = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;};</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keyword">enum class</span> ProvenAbsent {};</div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="structipfs_1_1ipld_1_1PathChange.html">   47</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structipfs_1_1ipld_1_1PathChange.html">PathChange</a> {</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  std::string new_path;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;};</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keyword">using</span> ResolveResult =</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    std::variant&lt;MoreDataNeeded, Response, ProvenAbsent, PathChange&gt;;</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="classipfs_1_1ipld_1_1DagNode.html">   56</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1ipld_1_1DagNode.html">DagNode</a> : <span class="keyword">public</span> std::enable_shared_from_this&lt;DagNode&gt; {</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <a class="code" href="classipfs_1_1ipld_1_1Link.html">Link</a>* FindChild(std::string_view);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <a class="code" href="structipfs_1_1ipld_1_1BlockSource.html">BlockSource</a> source_;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; </div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keyword">virtual</span> ResolveResult resolve(<a class="code" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp; params) = 0;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  std::vector&lt;std::pair&lt;std::string, Link&gt;&gt; links_;</div>
-<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="classipfs_1_1ipld_1_1DagNode.html#a5daefb2a24a35618603cdc4bf4075de1">   64</a></span>&#160;  std::shared_ptr&lt;Client&gt; <a class="code" href="classipfs_1_1ipld_1_1DagNode.html#a5daefb2a24a35618603cdc4bf4075de1">api_</a>;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  ResolveResult <a class="code" href="classipfs_1_1ipld_1_1DagNode.html#ad5f9cb31ef4b6d043276202525fd9fb3">CallChild</a>(<a class="code" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp;);</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; </div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  ResolveResult <a class="code" href="classipfs_1_1ipld_1_1DagNode.html#ad5f9cb31ef4b6d043276202525fd9fb3">CallChild</a>(<a class="code" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp;,</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                          std::function&lt;NodePtr(std::string_view)&gt; gen_child);</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  ResolveResult <a class="code" href="classipfs_1_1ipld_1_1DagNode.html#ad5f9cb31ef4b6d043276202525fd9fb3">CallChild</a>(<a class="code" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp;, std::string_view link_key);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  ResolveResult <a class="code" href="classipfs_1_1ipld_1_1DagNode.html#ad5f9cb31ef4b6d043276202525fd9fb3">CallChild</a>(<a class="code" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp;,</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                          std::string_view link_key,</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                          std::string_view block_key);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  </div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="comment">// ResolveResult resolve(SlashDelimited initial_path, BlockLookup);</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  ResolveResult Resolve(<a class="code" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp; params);</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="structipfs_1_1ipld_1_1MoreDataNeeded.html">   41</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structipfs_1_1ipld_1_1MoreDataNeeded.html">MoreDataNeeded</a> {</div>
+<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="structipfs_1_1ipld_1_1MoreDataNeeded.html#a329854d1164bce77349bf9c5d5848b58">   45</a></span>&#160;  <span class="keyword">explicit</span> <a class="code" href="structipfs_1_1ipld_1_1MoreDataNeeded.html#a329854d1164bce77349bf9c5d5848b58">MoreDataNeeded</a>(std::string one) : <a class="code" href="structipfs_1_1ipld_1_1MoreDataNeeded.html#afcdc9e3c2f035b7354026b0f26786839">ipfs_abs_paths_</a>{{one}} {}</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">class</span> Range&gt;</div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="structipfs_1_1ipld_1_1MoreDataNeeded.html#a0982988f0fa0e61eee0d190645da2624">   50</a></span>&#160;  <span class="keyword">explicit</span> <a class="code" href="structipfs_1_1ipld_1_1MoreDataNeeded.html#a0982988f0fa0e61eee0d190645da2624">MoreDataNeeded</a>(Range <span class="keyword">const</span>&amp; many)</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      : ipfs_abs_paths_(many.begin(), many.end()) {}</div>
+<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="structipfs_1_1ipld_1_1MoreDataNeeded.html#afcdc9e3c2f035b7354026b0f26786839">   54</a></span>&#160;  std::vector&lt;std::string&gt; <a class="code" href="structipfs_1_1ipld_1_1MoreDataNeeded.html#afcdc9e3c2f035b7354026b0f26786839">ipfs_abs_paths_</a>;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;};</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="keyword">enum class</span> ProvenAbsent {};</div>
+<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="structipfs_1_1ipld_1_1PathChange.html">   60</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structipfs_1_1ipld_1_1PathChange.html">PathChange</a> {</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  std::string new_path;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;};</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keyword">using</span> ResolveResult =</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    std::variant&lt;MoreDataNeeded, Response, ProvenAbsent, PathChange&gt;;</div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classipfs_1_1ipld_1_1DagNode.html">   69</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1ipld_1_1DagNode.html">DagNode</a> : <span class="keyword">public</span> std::enable_shared_from_this&lt;DagNode&gt; {</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <a class="code" href="classipfs_1_1ipld_1_1Link.html">Link</a>* FindChild(std::string_view);</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <a class="code" href="structipfs_1_1ipld_1_1BlockSource.html">BlockSource</a> source_;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keyword">virtual</span> ResolveResult resolve(<a class="code" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp; params) = 0;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; </div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  std::vector&lt;std::pair&lt;std::string, Link&gt;&gt; links_;</div>
+<div class="line"><a name="l00077"></a><span class="lineno"><a class="line" href="classipfs_1_1ipld_1_1DagNode.html#a5daefb2a24a35618603cdc4bf4075de1">   77</a></span>&#160;  std::shared_ptr&lt;Client&gt; <a class="code" href="classipfs_1_1ipld_1_1DagNode.html#a5daefb2a24a35618603cdc4bf4075de1">api_</a>;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160; </div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  ResolveResult CallChild(<a class="code" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp;);</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160; </div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  ResolveResult CallChild(<a class="code" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp;,</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                          std::function&lt;NodePtr(std::string_view)&gt; gen_child);</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160; </div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keyword">static</span> NodePtr fromBytes(std::shared_ptr&lt;Client&gt; <span class="keyword">const</span>&amp; api,</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                           <a class="code" href="classipfs_1_1Cid.html">Cid</a> <span class="keyword">const</span>&amp;,</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                           ByteView bytes);</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keyword">static</span> NodePtr fromBytes(std::shared_ptr&lt;Client&gt; <span class="keyword">const</span>&amp; api,</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                           <a class="code" href="classipfs_1_1Cid.html">Cid</a> <span class="keyword">const</span>&amp;,</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                           std::string_view bytes);</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keyword">static</span> NodePtr fromBlock(<a class="code" href="classipfs_1_1PbDag.html">PbDag</a> <span class="keyword">const</span>&amp;);</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classipfs_1_1ipld_1_1DagNode.html">DagNode</a>() noexcept {}</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; </div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="keyword">virtual</span> NodePtr rooted();</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keyword">virtual</span> NodePtr deroot();</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; </div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="comment">// Wish I had access to dynamic_cast</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="classipfs_1_1ipld_1_1DnsLinkName.html">DnsLinkName</a> <span class="keyword">const</span>* as_dnslink()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="keyword">virtual</span> DirShard* as_hamt() { <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keyword">virtual</span> IpnsName <span class="keyword">const</span>* as_ipns()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  ResolveResult CallChild(<a class="code" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp;, std::string_view link_key);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; </div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  ResolveResult CallChild(<a class="code" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp;,</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                          std::string_view link_key,</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                          std::string_view block_key);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  </div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  ResolveResult Resolve(<a class="code" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp; params);</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160; </div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> expired() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> PreferOver(DagNode <span class="keyword">const</span>&amp; another) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160; </div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="keywordtype">void</span> set_api(std::shared_ptr&lt;Client&gt;);</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keywordtype">void</span> source(BlockSource src) { source_ = src; }</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;};</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;}  <span class="comment">// namespace ipfs::ipld</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="keyword">static</span> NodePtr fromBytes(std::shared_ptr&lt;Client&gt; <span class="keyword">const</span>&amp; api,</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;                           <a class="code" href="classipfs_1_1Cid.html">Cid</a> <span class="keyword">const</span>&amp;,</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;                           ByteView bytes);</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="keyword">static</span> NodePtr fromBytes(std::shared_ptr&lt;Client&gt; <span class="keyword">const</span>&amp; api,</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;                           <a class="code" href="classipfs_1_1Cid.html">Cid</a> <span class="keyword">const</span>&amp;,</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;                           std::string_view bytes);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keyword">static</span> NodePtr fromBlock(<a class="code" href="classipfs_1_1PbDag.html">PbDag</a> <span class="keyword">const</span>&amp;);</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160; </div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;std::ostream&amp; operator&lt;&lt;(std::ostream&amp;, <a class="code" href="structipfs_1_1ipld_1_1PathChange.html">ipfs::ipld::PathChange</a> <span class="keyword">const</span>&amp;);</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classipfs_1_1ipld_1_1DagNode.html">DagNode</a>() noexcept;</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160; </div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_DAG_NODE_H_</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  virtual NodePtr rooted();</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  virtual NodePtr deroot();</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160; </div>
+<div class="line"><a name="l00131"></a><span class="lineno"><a class="line" href="group__downcast.html#gacd4f6b3857027b60da1908c4e28b28bc">  131</a></span>&#160;  virtual <a class="code" href="classipfs_1_1ipld_1_1DnsLinkName.html">DnsLinkName</a> const* as_dnslink()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a name="l00134"></a><span class="lineno"><a class="line" href="group__downcast.html#gab89358e0d194d18a7c8c6fc957a1f8b4">  134</a></span>&#160;  <span class="keyword">virtual</span> <a class="code" href="classipfs_1_1ipld_1_1DirShard.html">DirShard</a>* <a class="code" href="group__downcast.html#gab89358e0d194d18a7c8c6fc957a1f8b4">as_hamt</a>() { <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a name="l00137"></a><span class="lineno"><a class="line" href="group__downcast.html#ga874cce207f54ecb4eb97091689768eab">  137</a></span>&#160;  <span class="keyword">virtual</span> <a class="code" href="classipfs_1_1ipld_1_1IpnsName.html">IpnsName</a> <span class="keyword">const</span>* <a class="code" href="group__downcast.html#ga874cce207f54ecb4eb97091689768eab">as_ipns</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <span class="keyword">nullptr</span>; }</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160; </div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> expired() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> PreferOver(<a class="code" href="classipfs_1_1ipld_1_1DagNode.html">DagNode</a> <span class="keyword">const</span>&amp; another) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160; </div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  <span class="keywordtype">void</span> set_api(std::shared_ptr&lt;Client&gt;);</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  <span class="keywordtype">void</span> source(<a class="code" href="structipfs_1_1ipld_1_1BlockSource.html">BlockSource</a> src) { source_ = src; }</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;};</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;}  <span class="comment">// namespace ipfs::ipld</span></div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160; </div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;std::ostream&amp; operator&lt;&lt;(std::ostream&amp;, <a class="code" href="structipfs_1_1ipld_1_1PathChange.html">ipfs::ipld::PathChange</a> <span class="keyword">const</span>&amp;);</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160; </div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_DAG_NODE_H_</span></div>
 <div class="ttc" id="aclassipfs_1_1Cid_html"><div class="ttname"><a href="classipfs_1_1Cid.html">ipfs::Cid</a></div><div class="ttdef"><b>Definition:</b> cid.h:16</div></div>
 <div class="ttc" id="aclassipfs_1_1PbDag_html"><div class="ttname"><a href="classipfs_1_1PbDag.html">ipfs::PbDag</a></div><div class="ttdoc">Something to which a CID may refer directly.</div><div class="ttdef"><b>Definition:</b> pb_dag.h:24</div></div>
-<div class="ttc" id="aclassipfs_1_1ipld_1_1DagNode_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DagNode.html">ipfs::ipld::DagNode</a></div><div class="ttdoc">A block, an IPNS record, etc.</div><div class="ttdef"><b>Definition:</b> dag_node.h:56</div></div>
-<div class="ttc" id="aclassipfs_1_1ipld_1_1DagNode_html_a5daefb2a24a35618603cdc4bf4075de1"><div class="ttname"><a href="classipfs_1_1ipld_1_1DagNode.html#a5daefb2a24a35618603cdc4bf4075de1">ipfs::ipld::DagNode::api_</a></div><div class="ttdeci">std::shared_ptr&lt; Client &gt; api_</div><div class="ttdef"><b>Definition:</b> dag_node.h:64</div></div>
-<div class="ttc" id="aclassipfs_1_1ipld_1_1DagNode_html_ad5f9cb31ef4b6d043276202525fd9fb3"><div class="ttname"><a href="classipfs_1_1ipld_1_1DagNode.html#ad5f9cb31ef4b6d043276202525fd9fb3">ipfs::ipld::DagNode::CallChild</a></div><div class="ttdeci">ResolveResult CallChild(ResolutionState &amp;)</div><div class="ttdoc">As before, but it might be possible to create on the fly if not known.</div><div class="ttdef"><b>Definition:</b> dag_node.cc:171</div></div>
+<div class="ttc" id="aclassipfs_1_1ipld_1_1DagNode_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DagNode.html">ipfs::ipld::DagNode</a></div><div class="ttdoc">A block, an IPNS record, etc.</div><div class="ttdef"><b>Definition:</b> dag_node.h:69</div></div>
+<div class="ttc" id="aclassipfs_1_1ipld_1_1DagNode_html_a5daefb2a24a35618603cdc4bf4075de1"><div class="ttname"><a href="classipfs_1_1ipld_1_1DagNode.html#a5daefb2a24a35618603cdc4bf4075de1">ipfs::ipld::DagNode::api_</a></div><div class="ttdeci">std::shared_ptr&lt; Client &gt; api_</div><div class="ttdef"><b>Definition:</b> dag_node.h:77</div></div>
+<div class="ttc" id="aclassipfs_1_1ipld_1_1DirShard_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DirShard.html">ipfs::ipld::DirShard</a></div><div class="ttdef"><b>Definition:</b> directory_shard.h:7</div></div>
 <div class="ttc" id="aclassipfs_1_1ipld_1_1DnsLinkName_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DnsLinkName.html">ipfs::ipld::DnsLinkName</a></div><div class="ttdef"><b>Definition:</b> dnslink_name.h:9</div></div>
+<div class="ttc" id="aclassipfs_1_1ipld_1_1IpnsName_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1IpnsName.html">ipfs::ipld::IpnsName</a></div><div class="ttdef"><b>Definition:</b> ipns_name.h:11</div></div>
 <div class="ttc" id="aclassipfs_1_1ipld_1_1Link_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1Link.html">ipfs::ipld::Link</a></div><div class="ttdef"><b>Definition:</b> link.h:12</div></div>
 <div class="ttc" id="aclassipfs_1_1ipld_1_1ResolutionState_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1ResolutionState.html">ipfs::ipld::ResolutionState</a></div><div class="ttdef"><b>Definition:</b> resolution_state.h:21</div></div>
+<div class="ttc" id="agroup__downcast_html_ga874cce207f54ecb4eb97091689768eab"><div class="ttname"><a href="group__downcast.html#ga874cce207f54ecb4eb97091689768eab">ipfs::ipld::DagNode::as_ipns</a></div><div class="ttdeci">virtual IpnsName const  * as_ipns() const</div><div class="ttdef"><b>Definition:</b> dag_node.h:137</div></div>
+<div class="ttc" id="agroup__downcast_html_gab89358e0d194d18a7c8c6fc957a1f8b4"><div class="ttname"><a href="group__downcast.html#gab89358e0d194d18a7c8c6fc957a1f8b4">ipfs::ipld::DagNode::as_hamt</a></div><div class="ttdeci">virtual DirShard * as_hamt()</div><div class="ttdef"><b>Definition:</b> dag_node.h:134</div></div>
 <div class="ttc" id="anamespacelibp2p_1_1multi_html"><div class="ttname"><a href="namespacelibp2p_1_1multi.html">libp2p::multi</a></div><div class="ttdef"><b>Definition:</b> block_storage.h:11</div></div>
 <div class="ttc" id="astructipfs_1_1ipld_1_1BlockSource_html"><div class="ttname"><a href="structipfs_1_1ipld_1_1BlockSource.html">ipfs::ipld::BlockSource</a></div><div class="ttdef"><b>Definition:</b> block_source.h:12</div></div>
-<div class="ttc" id="astructipfs_1_1ipld_1_1MoreDataNeeded_html"><div class="ttname"><a href="structipfs_1_1ipld_1_1MoreDataNeeded.html">ipfs::ipld::MoreDataNeeded</a></div><div class="ttdef"><b>Definition:</b> dag_node.h:38</div></div>
-<div class="ttc" id="astructipfs_1_1ipld_1_1PathChange_html"><div class="ttname"><a href="structipfs_1_1ipld_1_1PathChange.html">ipfs::ipld::PathChange</a></div><div class="ttdef"><b>Definition:</b> dag_node.h:47</div></div>
+<div class="ttc" id="astructipfs_1_1ipld_1_1MoreDataNeeded_html"><div class="ttname"><a href="structipfs_1_1ipld_1_1MoreDataNeeded.html">ipfs::ipld::MoreDataNeeded</a></div><div class="ttdef"><b>Definition:</b> dag_node.h:41</div></div>
+<div class="ttc" id="astructipfs_1_1ipld_1_1MoreDataNeeded_html_a0982988f0fa0e61eee0d190645da2624"><div class="ttname"><a href="structipfs_1_1ipld_1_1MoreDataNeeded.html#a0982988f0fa0e61eee0d190645da2624">ipfs::ipld::MoreDataNeeded::MoreDataNeeded</a></div><div class="ttdeci">MoreDataNeeded(Range const &amp;many)</div><div class="ttdef"><b>Definition:</b> dag_node.h:50</div></div>
+<div class="ttc" id="astructipfs_1_1ipld_1_1MoreDataNeeded_html_a329854d1164bce77349bf9c5d5848b58"><div class="ttname"><a href="structipfs_1_1ipld_1_1MoreDataNeeded.html#a329854d1164bce77349bf9c5d5848b58">ipfs::ipld::MoreDataNeeded::MoreDataNeeded</a></div><div class="ttdeci">MoreDataNeeded(std::string one)</div><div class="ttdef"><b>Definition:</b> dag_node.h:45</div></div>
+<div class="ttc" id="astructipfs_1_1ipld_1_1MoreDataNeeded_html_afcdc9e3c2f035b7354026b0f26786839"><div class="ttname"><a href="structipfs_1_1ipld_1_1MoreDataNeeded.html#afcdc9e3c2f035b7354026b0f26786839">ipfs::ipld::MoreDataNeeded::ipfs_abs_paths_</a></div><div class="ttdeci">std::vector&lt; std::string &gt; ipfs_abs_paths_</div><div class="ttdef"><b>Definition:</b> dag_node.h:54</div></div>
+<div class="ttc" id="astructipfs_1_1ipld_1_1PathChange_html"><div class="ttname"><a href="structipfs_1_1ipld_1_1PathChange.html">ipfs::ipld::PathChange</a></div><div class="ttdef"><b>Definition:</b> dag_node.h:60</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['nameresolvedto_267',['NameResolvedTo',['../classipfs_1_1IpnsNames.html#a6a3de6ff356c15d21e8b68a443dcfd4d',1,'ipfs::IpnsNames']]],
-  ['nextblock_268',['NextBlock',['../classipfs_1_1Car.html#a71debd8c6b3f37db36d02d2a76c117db',1,'ipfs::Car']]],
-  ['nosuchname_269',['NoSuchName',['../classipfs_1_1IpnsNames.html#a9f0190dbb39b37c3d994cedfd518bd98',1,'ipfs::IpnsNames']]]
+  ['mimetype_288',['MimeType',['../classipfs_1_1Client.html#a062c3273e71f61ebc1ddde7a5b77dce7',1,'ipfs::Client']]],
+  ['moredataneeded_289',['MoreDataNeeded',['../structipfs_1_1ipld_1_1MoreDataNeeded.html#a329854d1164bce77349bf9c5d5848b58',1,'ipfs::ipld::MoreDataNeeded::MoreDataNeeded(std::string one)'],['../structipfs_1_1ipld_1_1MoreDataNeeded.html#a0982988f0fa0e61eee0d190645da2624',1,'ipfs::ipld::MoreDataNeeded::MoreDataNeeded(Range const &amp;many)']]]
 ];

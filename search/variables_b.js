@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['use_5funtil_294',['use_until',['../structipfs_1_1ValidatedIpns.html#a7005820591f6108965891bf0bd9e1abb',1,'ipfs::ValidatedIpns']]]
+  ['sequence_320',['sequence',['../structipfs_1_1IpnsCborEntry.html#ad8a4a90517e3370dff6a7193a6c58acd',1,'ipfs::IpnsCborEntry::sequence()'],['../structipfs_1_1ValidatedIpns.html#a2011a9f44bb95f9d130c72ba6644b4ba',1,'ipfs::ValidatedIpns::sequence()']]]
 ];
