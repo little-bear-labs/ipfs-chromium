@@ -4,6 +4,10 @@
 #include <vocab/byte_view.h>
 
 namespace ipfs::crypto {
+/*! Base class for signature-verification algorithms of various type.
+ *  @note Gets registered keyed by which algo it handles,
+ *    so that much is a prerequisite and can be simply assumed.
+ */
 class SignatureVerifier {
  public:
   virtual ~SignatureVerifier() noexcept {}

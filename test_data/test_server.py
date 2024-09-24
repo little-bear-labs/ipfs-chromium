@@ -23,19 +23,20 @@ class Handler(http.server.BaseHTTPRequestHandler):
         match components[1]:
             case 'ipfs':
                 if len(components) == 3:
-                    path = join(here, 'blocks')
+                    path = join(here, 'blocks', components[2])
                 else:
-                    path = join(here, 'cars')
+                    path = join(here, 'cars', components[2])
             case 'ipns':
                 path = join(here, 'names')
+                for comp in components[2:]:
+                    if len(path) > 0:
+                        path = join(path, comp.split('?')[0])
             case 'routing':
                 self.respond(join(here, 'gotit.json'))
                 return
             case _ :
                 print(f"{self.path} ({components}) not handled request type ({components[0]})", file=sys.stderr)
                 exit(9)
-        for comp in components[2:]:
-            path = join(path, comp)
         self.respond(path)
 
     def respond(self, path):
@@ -50,10 +51,11 @@ class Handler(http.server.BaseHTTPRequestHandler):
                         content = content.decode("utf-8")
                         content = content.strip()
                         self.send_header("X-Ipfs-Roots", content)
+                        content = str.encode(content)
                     except UnicodeError:
                         pass
                 self.end_headers()
-                self.wfile.write(str.encode(content))
+                self.wfile.write(content)
                 # print('test server responded to', self.path, ' Accept:', mime)
                 return
         except OSError as e:

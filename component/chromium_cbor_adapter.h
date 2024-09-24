@@ -7,6 +7,8 @@
 #include <ipfs_client/dag_cbor_value.h>
 
 namespace ipfs {
+/*! Adapting Chromium's components/cbor to the API needed by ipfs_client
+ */
 class ChromiumCborAdapter final : public DagCborValue, public ctx::CborParser {
   cbor::Value cbor_;
 

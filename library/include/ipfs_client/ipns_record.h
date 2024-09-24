@@ -54,7 +54,7 @@ struct ValidatedIpns {
   std::string gateway_source;  ///< Who gave us this record?
 
   ValidatedIpns();  ///< Create an invalid default object
-  ValidatedIpns(IpnsCborEntry const&);
+  explicit ValidatedIpns(IpnsCborEntry const&);
   ValidatedIpns(ValidatedIpns&&);
   ValidatedIpns(ValidatedIpns const&);
   ValidatedIpns& operator=(ValidatedIpns const&);

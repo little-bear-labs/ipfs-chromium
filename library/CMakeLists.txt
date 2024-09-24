@@ -81,7 +81,6 @@ if(USE_CLANG_TIDY AND CLANG_TIDY_EXE)
     PROPERTIES
       CXX_CLANG_TIDY "${CLANG_TIDY_EXE};--config-file=${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy;--fix"
     )
-  message(WARNING "Will run: ${CLANG_TIDY_EXE};--config-file=${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy;--fix")
 endif()
 add_library(ipfs_client_covered
   EXCLUDE_FROM_ALL

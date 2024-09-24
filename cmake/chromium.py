@@ -160,14 +160,14 @@ ipfs_dir = join(src, 'components', 'ipfs')
 elec_dir = join(src, 'electron')
 
 
-def files_content_differ(a, b):
-    if isfile(a):
-        if isfile(b):
-            return not filecmp.cmp(a, b, shallow=False)
+def files_content_differ(left, right):
+    if isfile(left):
+        if isfile(right):
+            return not filecmp.cmp(left, right, shallow=False)
         else:
             return True
     else:
-        return isfile(b)
+        return isfile(right)
 
 
 source_exts = ['.h', '.cc', '.hpp']
@@ -179,12 +179,12 @@ def touch_update(s):
         f.write(s)
 
 
-def copy_missing_and_changed_files(source, target):
+def copy_missing_and_changed_files(source_dir, target_dir):
     sources = []
     protos = []
-    for s in glob(f'{source}/**/*', recursive=True):
-        rel = relpath(s, source)
-        t = join(target, rel)
+    for s in glob(f'{source_dir}/**/*', recursive=True):
+        rel = relpath(s, source_dir)
+        t = join(target_dir, rel)
         if isdir(s):
             if not isdir(t):
                 makedirs(t)
@@ -198,11 +198,11 @@ def copy_missing_and_changed_files(source, target):
             sources.append(rel)
         elif ext == '.proto':
             rel = rel.replace('proto/ipfs_client/', '')
-            t = join(target, rel)
+            t = join(target_dir, rel)
             verbose('s', s, 'rel', rel, 't', t)
             protos.append(rel)
         if files_content_differ(s, t):
-            print('Copying', s, 'to', t, 'while synchronizing', source, 'to', target)
+            print('Copying', s, 'to', t, 'while synchronizing', source_dir, 'to', target_dir)
             if not isdir(dirname(t)):
                 makedirs(dirname(t))
             touch_update(s + t)
@@ -210,16 +210,16 @@ def copy_missing_and_changed_files(source, target):
     return (sources, protos)
 
 
-def remove_danglers(source, target, sources, protos):
-    for t in glob(f'{target}/**/*', recursive=True):
+def remove_danglers(source_dir, target_dir, sources, protos):
+    for t in glob(f'{target_dir}/**/*', recursive=True):
         if isdir(t):
             continue
-        rel = relpath(t, target)
+        rel = relpath(t, target_dir)
         if rel == 'BUILD.gn' or rel in sources or rel in protos:
             continue
-        s = join(source, rel)
+        s = join(source_dir, rel)
         if not isfile(s) and rel not in protos:
-            print('Removing dangling file', rel, 'while synchronizing', source, 'into', target)
+            print('Removing dangling file', rel, 'while synchronizing', source_dir, 'into', target_dir)
             touch_update('rm ' + t)
             remove(t)
 
@@ -279,10 +279,11 @@ if not isdir(out):
     makedirs(out)
 n = join(out, 'obj', 'components', 'ipfs', 'ipfs.ninja')
 if not isfile(n) or (isfile(UPDATED) and getmtime(UPDATED) > getmtime(n)):
-    gncmd = [python, join(depot_tools_dir, 'gn.py'), 'gen', '--args=' + gnargs.replace("'", ""), out]
-    verbose('Running gn gen', gncmd)
-    run(gncmd)
+    gn_gen_cmd = [python, join(depot_tools_dir, 'gn.py'), 'gen', '--args=' + gnargs.replace("'", ""), out]
+    verbose('Running gn gen', gn_gen_cmd)
+    run(gn_gen_cmd)
 
-for build_target in argv[2:]:
-    print("Build target", build_target, file=stderr)
-    run([python, join(depot_tools_dir, 'ninja.py'), '-C', out, '-j', jobs, build_target])
+for ninja_target in argv[2:]:
+    print("Build target", ninja_target, file=stderr)
+    run([python, join(depot_tools_dir, 'ninja.py'), '-C', out, '-j', jobs, ninja_target])
+

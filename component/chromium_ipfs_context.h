@@ -4,7 +4,6 @@
 #include "dns_txt_request.h"
 #include "preferences.h"
 
-#include <ipfs_client/block_storage.h>
 #include <ipfs_client/client.h>
 
 #include <base/memory/raw_ref.h>

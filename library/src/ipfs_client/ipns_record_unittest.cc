@@ -192,7 +192,7 @@ TEST(IpnsRecordTest, copyctorcopiesfields) {
 TEST(IpnsRecordTest, fromcborentry) {
   auto e = ipfs::IpnsCborEntry{"v", "2023-11-05T15:06:39.790199045Z", 0, 1, 99};
   auto now = std::time(nullptr);
-  ipfs::ValidatedIpns v = e;
+  ipfs::ValidatedIpns v{e};
   EXPECT_EQ(v.value, "v");
   EXPECT_EQ(v.sequence, 1);
   EXPECT_EQ(v.use_until, 1699196799);

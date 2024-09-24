@@ -4,7 +4,8 @@ echo Install dependencies
           sudo apt-get update
           sudo apt-get install --yes cmake ninja-build lcov binutils doxygen graphviz libc6{,-dev} valgrind
           npm install -g @marp-team/marp-cli
-
+g++ --version
+clang++ --version
 echo Configure
           mkdir build
           cmake \

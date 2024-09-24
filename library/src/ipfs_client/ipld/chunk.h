@@ -11,7 +11,7 @@ class Chunk : public DagNode {
 
  public:
   explicit Chunk(std::string);
-  virtual ~Chunk() noexcept;
+  ~Chunk() noexcept override;
 };
 }  // namespace ipfs::ipld
 

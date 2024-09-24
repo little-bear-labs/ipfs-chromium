@@ -16,7 +16,7 @@ class GeneratedDirectoryListing {
    * \brief Get the HTML preamble going
    * \param base_path - The path _to_ this directory
    */
-  GeneratedDirectoryListing(std::string_view base_path);
+  explicit GeneratedDirectoryListing(std::string_view base_path);
 
   /*!
    * \brief Add an entry to the list

@@ -5,6 +5,9 @@
 #include <functional>
 
 namespace ipfs::ctx {
+/*! Base class for sending HTTP requests
+ *  @note Subclassed by implementation, so you'll likely only need 1 subclass per project.
+ */
 class HttpApi {
  public:
   using ReqDesc = ::ipfs::HttpRequestDescription;

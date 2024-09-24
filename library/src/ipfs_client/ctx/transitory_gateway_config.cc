@@ -55,7 +55,7 @@ unsigned Self::RoutingApiDiscoveryDefaultRate() const {
   return 60U;
 }
 bool Self::RoutingApiDiscoveryOfUnencryptedGateways() const {
-  return false;
+  return true;
 }
 int Self::GetTypeAffinity(std::string_view, gw::GatewayRequestType) const {
   return 9;

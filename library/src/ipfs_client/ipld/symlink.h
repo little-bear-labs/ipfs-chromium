@@ -12,7 +12,7 @@ class Symlink : public DagNode {
   bool is_absolute() const;
 
  public:
-  Symlink(std::string target);
+  explicit Symlink(std::string target);
   ~Symlink() noexcept override;
 };
 }  // namespace ipfs::ipld

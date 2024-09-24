@@ -84,10 +84,11 @@ auto imb::Codec::Get(Code c) -> Codec const* {
           adapt<multibase::base_36_btc, EncodedCase::lower>("base36"sv);
       return &b36;
     }
-    case Code::BASE36_UPPER:
+    case Code::BASE36_UPPER: {
       static auto b36u =
           adapt<multibase::base_36_btc, EncodedCase::UPPER>("base36upper"sv);
       return &b36u;
+    }
     case Code::BASE58_BTC: {
       static auto b58 =
           adapt<multibase::base_58_btc, EncodedCase::Sensitive>("base58btc"sv);
