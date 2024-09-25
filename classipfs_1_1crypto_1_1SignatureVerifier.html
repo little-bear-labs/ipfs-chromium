@@ -73,6 +73,8 @@ $(function() {
 <div class="title">ipfs::crypto::SignatureVerifier Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="signature__verifier_8h_source.html">library/include/ipfs_client/crypto/signature_verifier.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -86,7 +88,9 @@ Public Member Functions</h2></td></tr>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>VerifySignature</b> (ByteView signature, ByteView data, ByteView key)=0</td></tr>
 <tr class="separator:a09c6cd15cc9fe58007732e06e1556843"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Base class for signature-verification algorithms of various type. </p><dl class="section note"><dt>Note</dt><dd>Gets registered keyed by which algo it handles, so that much is a prerequisite and can be simply assumed. </dd></dl>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/crypto/<a class="el" href="signature__verifier_8h_source.html">signature_verifier.h</a></li>
 </ul>
 </div><!-- contents -->
