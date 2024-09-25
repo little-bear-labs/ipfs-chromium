@@ -6,7 +6,8 @@ using Self = ipfs::ctx::NullDnsTxtLookup;
 
 void Self::SendDnsTextRequest(std::string,
                               DnsTextResultsCallback,
-                              DnsTextCompleteCallback) {
+                              DnsTextCompleteCallback cb) {
   LOG(ERROR)
       << "DNS TXT lookup provider not instantiated. DNSLink will not work.";
+  cb();
 }

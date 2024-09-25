@@ -5,6 +5,9 @@
 #include <string>
 
 namespace ipfs::ctx {
+/*! Handles requesting TXT (text) request from a DNS system
+ *  @note Subclassed by implementation.
+ */
 class DnsTxtLookup {
  public:
   using DnsTextResultsCallback =
