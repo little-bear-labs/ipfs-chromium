@@ -28,7 +28,7 @@ except Exception as ex:
     verbose('Installed requests because of', ex)
 
 
-VERSION_CLOSE_ENOUGH = 30113
+VERSION_CLOSE_ENOUGH = 30115
 LARGE_INT = 9876543210
 here = dirname(__file__)
 
@@ -224,19 +224,18 @@ class Patcher:
     def git(self, args: list[str], result: Result) -> str:
         a = [self.gbin, "-C", self.csrc] + args
         verbose("Running", a)
-        match result:
-            case Result.RawOutput:
-                return check_output(a, text=True)
-            case Result.StrippedOutput:
-                return check_output(a, text=True).strip()
-            case Result.OrDie:
-                check_call(a)
-            case Result.ExitCode:
-                return call(a)
-            case Result.ExitCodeOnly:
-                return call(a, stdout=DEVNULL, stderr=DEVNULL)
-            case _:
-                raise RuntimeError("result type not handled")
+        if result == Result.RawOutput:
+            return check_output(a, text=True)
+        if result == Result.StrippedOutput:
+            return check_output(a, text=True).strip()
+        if result ==  Result.OrDie:
+            return check_call(a)
+        if result ==  Result.ExitCode:
+            return call(a)
+        if result ==  Result.ExitCodeOnly:
+            return call(a, stdout=DEVNULL, stderr=DEVNULL)
+        if result ==  _:
+            raise RuntimeError("result type not handled")
 
     def tag_name(self) -> str:
         return self.git(["describe", "--tags", "--abbrev=0"], Result.Output)
@@ -308,7 +307,7 @@ class Patcher:
             return self.up_rels[key]
         parms = {"platform": pfrm, "channel": channel}
         chrom_url = "https://chromiumdash.appspot.com/fetch_releases"
-        resp = requests.get(url=chrom_url, params=parms)
+        resp = requests.get(url=chrom_url, params=parms, timeout=999)
         result = list(map(lambda x: (x["time"] / 1000, x["version"]), resp.json()))
         elec_url = "https://raw.githubusercontent.com/electron/electron/main/DEPS"
         resp = requests.get(url=elec_url)

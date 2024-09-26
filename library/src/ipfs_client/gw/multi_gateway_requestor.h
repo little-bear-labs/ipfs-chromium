@@ -12,6 +12,8 @@
 #include <map>
 
 namespace ipfs::gw {
+/*! Sends requests to multiple gateways
+ */
 class MultiGatewayRequestor : public Requestor {
   std::map<std::string, GatewayState> state_;
   std::deque<RequestPtr> q;

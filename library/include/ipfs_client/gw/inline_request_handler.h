@@ -4,6 +4,10 @@
 #include "requestor.h"
 
 namespace ipfs::gw {
+/*! Handles requests for inline requests,
+ *  i.e. /ipfs/ with hash = identity
+ *  @note The CID contains the response
+ */
 class InlineRequestHandler final : public Requestor {
  public:
   HandleOutcome handle(RequestPtr) override;
