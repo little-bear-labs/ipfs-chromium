@@ -1,19 +1,19 @@
 #ifndef IPFS_TRUSTLESS_REQUEST_H_
 #define IPFS_TRUSTLESS_REQUEST_H_
 
-#include <ipfs_client/ipld/block_source.h>
+#include "gateway_request_type.h"
 
+#include <ipfs_client/ipld/block_source.h>
 #include <ipfs_client/cid.h>
 #include <ipfs_client/client.h>
 
-#include <vocab/flat_mapset.h>
 #include <vocab/slash_delimited.h>
 
 #include <iosfwd>
 #include <memory>
 #include <optional>
 #include <string>
-#include "gateway_request_type.h"
+#include <unordered_set>
 
 namespace ipfs {
 class IpfsRequest;
@@ -28,8 +28,8 @@ class Requestor;
 
 std::string_view name(GatewayRequestType);
 
-constexpr std::size_t BLOCK_RESPONSE_BUFFER_SIZE = 2 * 1024 * 1024;
-constexpr std::size_t CAR_RESPONSE_BUFFER_SIZE = 64 * 1024 * 1024;
+constexpr std::size_t BLOCK_RESPONSE_BUFFER_SIZE = 2UL * 1024UL * 1024UL;
+constexpr std::size_t CAR_RESPONSE_BUFFER_SIZE = 5UL * 1024UL * 1024UL;
 
 /*! Information about a request that needs to be sent to an IPFS HTTP Gateway
  * @todo this class has gotten large enough that it should probably be a base
@@ -43,6 +43,7 @@ class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
  private:
   std::shared_ptr<Partition> orchestrator_;
   std::vector<BytesReceivedHook> bytes_received_hooks;
+  std::string main_param;  ///< CID, IPNS name, hostname
 
   void FleshOut(ipld::BlockSource&) const;
   void AddDnsLink(std::string_view target, bool& success, ipld::BlockSource src);
@@ -55,14 +56,13 @@ class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
  public:
   GatewayRequestType type = GatewayRequestType::Zombie;
 
-  // TODO - encapsulate. It's not that these public data members are directly accessed everywhere
-  std::string main_param;  ///< CID, IPNS name, hostname
+  // TODO - encapsulate. Hopefully these public data members aren't directly accessed everywhere
   std::string path;        ///< For CAR requests
   std::shared_ptr<IpfsRequest> dependent;
   std::optional<Cid> cid;
   short parallel = 0;
   std::string affinity;
-  flat_set<std::string> failures;
+  std::unordered_set<std::string> failures;
 
   std::string url_suffix() const;
   std::string_view accept() const;
@@ -74,6 +74,8 @@ class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
   std::string debug_string() const;
   void orchestrator(std::shared_ptr<Partition> const&);
   bool cachable() const;
+  std::string_view root_component() const;
+  void root_component(std::string_view);
 
   bool RespondSuccessfully(std::string_view,
                            std::shared_ptr<Client> const& api,

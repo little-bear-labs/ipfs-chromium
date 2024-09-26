@@ -17,8 +17,9 @@ grep -n . ipfs_client_clitester/conanfile.txt
 
 echo Install dependencies.
 sudo apt-get update
-sudo apt-get install --yes cmake ninja-build binutils libc6{,-dev}
-pip3 install conan
+sudo apt-get install --yes cmake ninja-build binutils libc6{,-dev} pipx
+pipx ensurepath
+pipx install conan
 conan profile detect || echo "Profile detection failed. Perhaps the default profile already existed - perhaps this user has already done some conan-based builds."
 sed -i 's,compiler.cppstd=.*$,compiler.cppstd=20,' "$(conan profile path default)"
 conan profile show

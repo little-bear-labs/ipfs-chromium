@@ -1,6 +1,13 @@
 #include "dnslink_name.h"
+#include <string_view>
+#include <chrono>
+#include <variant>
 
+#include "ipfs_client/ipld/link.h"
+#include "ipfs_client/ipld/resolution_state.h"
+#include "ipfs_client/ipld/dag_node.h"
 #include "log_macros.h"
+#include "vocab/slash_delimited.h"
 
 using Self = ipfs::ipld::DnsLinkName;
 namespace ch = std::chrono;
@@ -42,12 +49,12 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
   }
   return lower;
 }
-bool Self::expired() const {
+auto Self::expired() const -> bool {
   return expiration_ < ch::system_clock::now();
 }
-bool Self::PreferOver(DagNode const& another) const {
-  auto* other = another.as_dnslink();
-  if (!other) {
+auto Self::PreferOver(DagNode const& another) const -> bool {
+  const auto* other = another.as_dnslink();
+  if (other == nullptr) {
     return true;
   }
   return expiration_ > other->expiration_ + ch::seconds(1);

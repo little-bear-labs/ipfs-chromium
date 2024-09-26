@@ -1,5 +1,9 @@
 #include <ipfs_client/ctx/nlohmann_cbor_parser.h>
 
+#include <vocab/byte_view.h>
+
+#include <memory>
+
 #if HAS_JSON_CBOR_ADAPTER
 
 using Self = ipfs::ctx::NlohmannCborParser;

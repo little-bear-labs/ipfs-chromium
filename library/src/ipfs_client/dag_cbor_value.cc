@@ -2,9 +2,13 @@
 
 #include <vocab/html_escape.h>
 
-#include "log_macros.h"
 
+#include <ostream>
+#include <ios>
+#include <iomanip>
+#include <cstdint>
 #include <sstream>
+#include <string>
 
 using Self = ipfs::DagCborValue;
 
@@ -23,7 +27,7 @@ void Self::html(std::ostream& str) const {
     str << "<em>&quot;</em></p>\n";
   } else if (auto cid = as_link()) {
     auto cs = cid.value().to_string();
-    if (cs.size()) {
+    if (static_cast<unsigned int>(!cs.empty()) != 0U) {
       str << "<a class='cbor_link' href='ipfs://" << cs << "'>" << cs
           << "</a>\n";
     } else {
@@ -53,14 +57,14 @@ void Self::html(std::ostream& str) const {
     });
     str << "</table>\n";
   } else if (auto bul = as_bool()) {
-    auto val = (bul.value() ? "True" : "False");
+    const auto *val = (bul.value() ? "True" : "False");
     str << " <b class='cbor_bool'>" << val << "</b>\n";
   } else {
     str << "<b class='cbor_null' style='color:red;'>&empty;</b>\n";
   }
 }
 
-std::string Self::html() const {
+auto Self::html() const -> std::string {
   std::ostringstream oss;
   oss << "<html><title>DAG-CBOR Preview</title><body>\n";
   html(oss);

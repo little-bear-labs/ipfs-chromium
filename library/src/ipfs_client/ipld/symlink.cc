@@ -1,10 +1,18 @@
 #include "symlink.h"
 
+#include <utility>
+#include <string>
+#include <string_view>
+#include <cstddef>
+
+#include "ipfs_client/ipld/resolution_state.h"
+#include "ipfs_client/ipld/dag_node.h"
 #include "log_macros.h"
+#include "vocab/slash_delimited.h"
 
 using Self = ipfs::ipld::Symlink;
 
-Self::Symlink(std::string target) : target_{target} {}
+Self::Symlink(std::string target) : target_{std::move(target)} {}
 
 Self::~Symlink() noexcept = default;
 
@@ -17,7 +25,7 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
     result.assign(left_path.to_view());
   }
   SlashDelimited target{target_};
-  for (std::string_view component; (component = target.pop()).size();) {
+  for (std::string_view component; static_cast<unsigned int>(!(component = target.pop()).empty()) != 0U;) {
     if (component == "..") {
       auto slash = result.rfind('/');
       DCHECK(slash < result.size());
@@ -33,9 +41,9 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
   if (!params.IsFinalComponent()) {
     result.append("/").append(params.PathToResolve().to_string());
   }
-  std::size_t i;
-  while ((i = result.find("//")) != std::string::npos) {
-    result.erase(i, 1);
+  std::size_t pos;
+  while ((pos = result.find("//")) != std::string::npos) {
+    result.erase(pos, 1);
   }
   if (result.empty()) {
     result.assign(1UL, '/');
@@ -46,6 +54,6 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
   return PathChange{result};
 }
 
-bool Self::is_absolute() const {
+auto Self::is_absolute() const -> bool {
   return target_.at(0) == '/';
 }

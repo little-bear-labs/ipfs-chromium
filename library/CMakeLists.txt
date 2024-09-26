@@ -258,10 +258,9 @@ if(GTest_FOUND AND IN_WORKSPACE)
         endif()
         if(LCOV_PATH)
             setup_target_for_coverage_lcov(
-                    NAME cov
-                    DEPENDENCIES run_tests
-                    EXECUTABLE $<TARGET_FILE:unit_test_runner>
-                    EXCLUDE ${unit_test_sources} ${pb_gen}
+                NAME cov
+                DEPENDENCIES run_tests
+                EXECUTABLE $<TARGET_FILE:unit_test_runner>
             )
         else()
             message(WARNING "Cannot provide coverage report without lcov")

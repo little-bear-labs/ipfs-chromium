@@ -3,13 +3,16 @@
 #include <ipfs_client/gw/gateway_request.h>
 #include <ipfs_client/gw/gateway_request_type.h>
 
+#include "ipfs_client/gw/requestor.h"
 #include "log_macros.h"
 
 #include <algorithm>
+#include <string_view>
+#include <memory>
 
 using Self = ipfs::gw::BlockRequestSplitter;
 
-std::string_view Self::name() const {
+auto Self::name() const -> std::string_view {
   return "BlockRequestSplitter";
 }
 auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
@@ -22,9 +25,11 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
     br->path.clear();
     forward(br);
   }
-  if (api_ && api_->gw_cfg().RoutingApiDiscoveryDefaultRate()) {
-    auto it = std::find(recent_provider_requests.begin(),
-                        recent_provider_requests.end(), r->affinity);
+  if (api_ && (api_->gw_cfg().RoutingApiDiscoveryDefaultRate() != 0U)) {
+    auto it = std::find(
+        recent_provider_requests.begin(),
+        recent_provider_requests.end(),
+        r->affinity);
     if (recent_provider_requests.end() == it) {
       auto i = old_provider_request % recent_provider_requests.size();
       recent_provider_requests[i] = r->affinity;

@@ -55,7 +55,7 @@ auto Self::handle(RequestPtr req) -> HandleOutcome {
     return HandleOutcome::NOT_HANDLED;
   }
   Task task;
-  task.key = req->main_param;  // req->Key();
+  task.key = req->root_component();
   task.request = req;
   StartFetch(task, net::MAXIMUM_PRIORITY);
   return HandleOutcome::PENDING;

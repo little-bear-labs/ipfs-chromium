@@ -9,8 +9,8 @@ namespace {
 ig::RequestPtr block_req() {
   auto rv = std::make_shared<ig::GatewayRequest>();
   rv->type = RT::Block;
-  rv->main_param =
-      "bafybeid4dzlxm6h4r6kfvx6jp6vj4nteplmbve224lx2s3lgjubyufsuo4";
+  rv->root_component(
+      "bafybeid4dzlxm6h4r6kfvx6jp6vj4nteplmbve224lx2s3lgjubyufsuo4");
   return rv;
 }
 }  // namespace

@@ -2,7 +2,18 @@
 
 #include <vocab/html_escape.h>
 
+#include <memory>
+#include <ostream>
 #include <sstream>
+#include "ipfs_client/dag_json_value.h"
+#include <utility>
+#include "ipfs_client/ipld/link.h"
+#include "ipfs_client/ipld/resolution_state.h"
+#include "ipfs_client/ipld/dag_node.h"
+#include <variant>
+#include "ipfs_client/response.h"
+#include <string_view>
+#include <string>
 
 using Self = ipfs::ipld::DagJsonNode;
 
@@ -12,7 +23,7 @@ Self::DagJsonNode(std::unique_ptr<DagJsonValue> j) : data_(std::move(j)) {
     return;
   }
   auto cid_str = cid->to_string();
-  if (cid_str.size()) {
+  if (static_cast<unsigned int>(!cid_str.empty()) != 0U) {
     links_.emplace_back("", Link(cid_str));
   }
 }
@@ -20,7 +31,7 @@ Self::~DagJsonNode() noexcept = default;
 
 auto Self::resolve(ResolutionState& params) -> ResolveResult {
   auto respond_as_link = CallChild(params, "");
-  if (!std::get_if<ProvenAbsent>(&respond_as_link)) {
+  if (std::get_if<ProvenAbsent>(&respond_as_link) == nullptr) {
     return respond_as_link;
   }
   if (params.IsFinalComponent()) {
@@ -83,7 +94,7 @@ void write_body(std::ostream& str, ipfs::DagJsonValue const& val) {
   }
 }
 }  // namespace
-std::string const& Self::html() {
+auto Self::html() -> std::string const& {
   if (html_.empty()) {
     std::ostringstream html;
     html << "<html><title>Preview of DAG-JSON</title><body>\n";

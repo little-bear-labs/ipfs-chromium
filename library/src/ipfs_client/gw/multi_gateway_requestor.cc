@@ -1,19 +1,34 @@
 #include "multi_gateway_requestor.h"
 
-#include <ipfs_client/gw/gateway_request.h>
 #include <ipfs_client/gw/gateway_request_type.h>
 #include <ipfs_client/ipfs_request.h>
 
+#include <ipfs_client/gw/requestor.h>
+#include <ipfs_client/gw/gateway_state.h>
+#include <ipfs_client/gw/gateway_request.h>
+#include <ipfs_client/http_request_description.h>
+#include <ipfs_client/ipld/block_source.h>
+
 #include "log_macros.h"
+
+#include <cctype>
+#include <climits>
+#include <cstddef>
+#include <cstdint>
 
 #include <algorithm>
 #include <chrono>
+#include <functional>
+#include <iterator>
+#include <string>
+#include <string_view>
+#include <tuple>
 
 using Self = ipfs::gw::MultiGatewayRequestor;
 
 namespace ch = std::chrono;
 
-std::string_view Self::name() const {
+auto Self::name() const -> std::string_view {
   return "multi-gateway requestor";
 }
 auto Self::handle(RequestPtr r) -> HandleOutcome {
@@ -35,7 +50,7 @@ void Self::Next() {
     Process(popped);
   }
 }
-bool Self::Process(RequestPtr const& req) {
+auto Self::Process(RequestPtr const& req) -> bool {
   if (!req->is_http()) {
     return false;
   }
@@ -76,7 +91,7 @@ bool Self::Process(RequestPtr const& req) {
     }
     std::advance(state_iter, 1);
   }
-  if (std::get<2>(over_rate)) {
+  if (std::get<2>(over_rate) != nullptr) {
     candidates.push_back(over_rate);
   }
   if (candidates.empty() && config_idx <= req->failures.size()) {
@@ -116,12 +131,12 @@ void Self::DoSend(RequestPtr req, std::string const& gw, GatewayState& state) {
                << req->debug_string();
     return;
   }
-  if (state.extra_ms()) {
+  if (state.extra_ms() != 0) {
     desc->timeout_seconds += state.extra_ms() / 1000L + 1L;
   }
   auto start = ch::system_clock::now();
   auto timeout_threshold =
-      ch::seconds(desc->timeout_seconds ? desc->timeout_seconds : 300) -
+      ch::seconds(desc->timeout_seconds != 0 ? desc->timeout_seconds : 300) -
       ch::milliseconds(1);
   auto hold_alive = shared_from_this();
   auto cb = [this, hold_alive, req, gw, timeout_threshold, desc, start](
@@ -149,7 +164,7 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
     return;
   }
   auto i = state_.find(gw);
-  if (status == 200 || !status) {
+  if (status == 200 || (status == 0)) {
     auto ct = hdrs("content-type");
     auto roots = hdrs("X-Ipfs-Roots");
     std::transform(ct.begin(), ct.end(), ct.begin(), ::tolower);
@@ -158,9 +173,9 @@ void Self::HandleResponse(HttpRequestDescription const& desc,
     src.cat.gateway_url = gw;
     if (ct.empty()) {
       LOG(ERROR) << "No content-type header?";
-    } else if (desc.accept.size() &&
+    } else if ((!desc.accept.empty()) &&
                ct.find(desc.accept) == std::string::npos) {
-      if (roots.size() && req->type == GatewayRequestType::DnsLink && req->RespondSuccessfully("", api_, src, roots)) {
+      if ((!roots.empty()) && req->type == GatewayRequestType::DnsLink && req->RespondSuccessfully("", api_, src, roots)) {
         LOG(INFO) << "Wrong accept on a DNSLink request, but we still got the resolution.";
         return;
       }

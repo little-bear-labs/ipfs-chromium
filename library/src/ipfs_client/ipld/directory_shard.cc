@@ -1,22 +1,33 @@
 #include "directory_shard.h"
 
+#include "ipfs_client/response.h"
+#include "ipfs_client/ipld/resolution_state.h"
+#include "ipfs_client/ipld/dag_node.h"
+#include "ipfs_client/response_semantic.h"
 #include "log_macros.h"
 
-#include <ipfs_client/client.h>
 #include <vocab/endian.h>
 
 #include <smhasher/MurmurHash3.h>
 
 #include <array>
+#include <cstddef>
+#include <cstdint>
 #include <iomanip>
+#include <iterator>
+#include <ios>
 #include <sstream>
+#include <string_view>
+#include <variant>
+#include <string>
+#include <vector>
 
 using namespace std::literals;
 
 using Self = ipfs::ipld::DirShard;
 
 namespace {
-  ipfs::Response DynamicListingHtml(std::string_view path);
+  auto DynamicListingHtml(std::string_view path) -> ipfs::Response;
 }
 
 auto Self::resolve(ResolutionState& parms) -> ResolveResult {
@@ -27,15 +38,15 @@ auto Self::resolve(ResolutionState& parms) -> ResolveResult {
     // index.html hashes A0 6D 7E C8 78 79 38 1D B3 8D 36 0D 76 FA 7B BF
     auto index_parm = parms.WithPath("index.html"sv);
     auto result = resolve(index_parm);
-    auto resp = std::get_if<Response>(&result);
-    if (resp) {
+    auto *resp = std::get_if<Response>(&result);
+    if (resp != nullptr) {
       resp->mime_ = "text/html";
     } else if (std::holds_alternative<ProvenAbsent>(result)){
       return DynamicListingHtml(parms.MyPath().to_view());
     }
     return result;
   }
-  std::string name{parms.NextComponent(api_.get())};
+  std::string const name{parms.NextComponent(api_.get())};
   auto hash = hexhash(name);
   return resolve_internal(hash.begin(), hash.end(), name, parms);
 }
@@ -46,10 +57,10 @@ auto Self::resolve_internal(ipfs::ipld::DirShard::HashIter hash_b,
   auto hash_chunk = hash_b == hash_e ? std::string{} : *hash_b;
   auto needed_size = hash_chunk.size() + human_name.size();
   for (auto& [name, link] : links_) {
-    if (!starts_with(name, hash_chunk)) {
+    if (!name.starts_with(hash_chunk)) {
       continue;
     }
-    if (name.size() == needed_size && ends_with(name, human_name)) {
+    if (name.size() == needed_size && name.ends_with(human_name)) {
       return CallChild(parms, name);
     }
     auto node = parms.GetBlock(link.cid);
@@ -60,8 +71,8 @@ auto Self::resolve_internal(ipfs::ipld::DirShard::HashIter hash_b,
       //  partially-consumed hash
       return MoreDataNeeded{{"/ipfs/" + link.cid}};
     }
-    auto downcast = node->as_hamt();
-    if (downcast) {
+    auto *downcast = node->as_hamt();
+    if (downcast != nullptr) {
       if (hash_b == hash_e) {
         LOG(ERROR) << "Ran out of hash bits.";
         return ProvenAbsent{};
@@ -74,11 +85,11 @@ auto Self::resolve_internal(ipfs::ipld::DirShard::HashIter hash_b,
   }
   return ProvenAbsent{};
 }
-std::string Self::listing_json() const {
+auto Self::listing_json() const -> std::string {
   std::string result{"{"};
   auto first = true;
   auto const w = hex_width();
-  for (auto& [index, link] : links_) {
+  for (const auto& [index, link] : links_) {
     auto hash_bits = std::string_view{index}.substr(0, w);
     if (first) {
       first = false;
@@ -87,7 +98,7 @@ std::string Self::listing_json() const {
     }
     result.append("\n  ").push_back('"');
     result.append(hash_bits)
-      .append("\": {\"cid\": \"")
+      .append(R"(": {"cid": ")")
       .append(link.cid)
       .push_back('"');
     if (index.size() > w) {
@@ -96,7 +107,7 @@ std::string Self::listing_json() const {
       while ((quot = name.find('"')) < name.size()) {
         name.insert(quot, 1UL, '\\');
       }
-      result.append(", \"name\": \"")
+      result.append(R"(, "name": ")")
         .append(name)
         .push_back('"');
     }
@@ -105,7 +116,7 @@ std::string Self::listing_json() const {
   result.append("\n}");
   return result;
 }
-std::size_t Self::hex_width() const {
+auto Self::hex_width() const -> std::size_t {
   auto rv = 0U;
   for (auto x = fanout_; x > 1; ++rv) {
     x >>= 4;
@@ -116,14 +127,14 @@ std::size_t Self::hex_width() const {
   return rv;
 }
 
-std::vector<std::string> Self::hexhash(std::string_view path_element) const {
+auto Self::hexhash(std::string_view path_element) const -> std::vector<std::string> {
   std::array<std::uint64_t, 2> digest = {0U, 0U};
   MurmurHash3_x64_128(path_element.data(), static_cast<int>(path_element.size()), 0,
                       digest.data());
   std::vector<std::string> result;
   for (auto d : digest) {
     auto hash_bits = htobe64(d);
-    while (hash_bits) {
+    while (hash_bits != 0U) {
       // 2. Pop the log2(fanout_) lowest bits from the path component hash
       // digest,...
       auto popped = hash_bits % fanout_;
@@ -140,12 +151,12 @@ std::vector<std::string> Self::hexhash(std::string_view path_element) const {
 
 Self::DirShard(std::uint64_t fanout) : fanout_{fanout} {}
 Self::~DirShard() noexcept = default;
-Self* Self::as_hamt() {
+auto Self::as_hamt() -> Self* {
   return this;
 }
 
 namespace {
-  ipfs::Response DynamicListingHtml(std::string_view path) {
+  auto DynamicListingHtml(std::string_view path) -> ipfs::Response {
     std::string body = "<html>\n\t<head>\n\t\t<title>Directory Listing for ";
     body.append(path);
     if (!path.ends_with('/')) {

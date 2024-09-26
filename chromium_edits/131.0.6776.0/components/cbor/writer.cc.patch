@@ -1,0 +1,14 @@
+diff --git a/components/cbor/writer.cc b/components/cbor/writer.cc
+index c4bfcfb602949..b92885a30971c 100644
+--- a/components/cbor/writer.cc
++++ b/components/cbor/writer.cc
+@@ -47,6 +47,9 @@ bool Writer::EncodeCBOR(const Value& node,
+   if (max_nesting_level < 0)
+     return false;
+ 
++  if (node.has_tag()) {
++    StartItem(Value::Type::TAG, node.GetTag());
++  }
+   switch (node.type()) {
+     case Value::Type::NONE: {
+       StartItem(Value::Type::BYTE_STRING, 0);

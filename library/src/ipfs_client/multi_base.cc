@@ -4,8 +4,14 @@
 #include "bases/b32.h"
 
 #include <multibase/basic_algorithm.h>
+#include <string_view>
+#include <string>
+#include <vector>
+#include <optional>
 
 #include "log_macros.h"
+#include "vocab/byte_view.h"
+#include "vocab/byte.h"
 
 using namespace std::literals;
 
@@ -14,14 +20,14 @@ namespace {
 constexpr std::string_view UnsupportedMultibase = "unsupported-multibase";
 
 template <class Target>
-std::string encode_adapt(ipfs::ByteView bytes) {
-  auto p = reinterpret_cast<char const*>(bytes.data());
+auto encode_adapt(ipfs::ByteView bytes) -> std::string {
+  const auto *p = reinterpret_cast<char const*>(bytes.data());
   typename Target::encoder target;
   return target.process({p, bytes.size()});
 }
 enum class EncodedCase { lower, UPPER, Sensitive };
 template <class Target, EncodedCase const ec>
-std::vector<ipfs::Byte> decode_adapt(std::string_view encoded_sv) {
+auto decode_adapt(std::string_view encoded_sv) -> std::vector<ipfs::Byte> {
   typename Target::decoder target;
   std::string encoded_s{encoded_sv};
   switch (ec) {
@@ -43,12 +49,12 @@ std::vector<ipfs::Byte> decode_adapt(std::string_view encoded_sv) {
       break;
   }
   auto s = target.process(encoded_s);
-  auto b = reinterpret_cast<ipfs::Byte const*>(s.data());
+  const auto *b = reinterpret_cast<ipfs::Byte const*>(s.data());
   auto e = b + s.size();
   return std::vector<ipfs::Byte>(b, e);
 }
 template <class BasicAlgoSpecl, EncodedCase const ec>
-constexpr imb::Codec adapt(std::string_view name) {
+constexpr auto adapt(std::string_view name) -> imb::Codec {
   return imb::Codec{&decode_adapt<BasicAlgoSpecl, ec>,
                     &encode_adapt<BasicAlgoSpecl>, name};
 }
@@ -97,28 +103,28 @@ auto imb::Codec::Get(Code c) -> Codec const* {
   }
   return nullptr;
 }
-std::string_view imb::GetName(Code c) {
-  if (auto codec = Codec::Get(c)) {
+auto imb::GetName(Code c) -> std::string_view {
+  if (const auto *codec = Codec::Get(c)) {
     return codec->name;
   }
   return UnsupportedMultibase;
 }
 auto imb::CodeFromPrefix(char ch) -> Code {
   auto c = static_cast<Code>(ch);
-  return Codec::Get(c) ? Code::UNSUPPORTED : c;
+  return Codec::Get(c) != nullptr ? Code::UNSUPPORTED : c;
 }
 auto imb::decode(std::string_view mb_str) -> std::optional<std::vector<Byte>> {
   if (mb_str.empty()) {
     return std::nullopt;
   }
-  if (auto* codec = Codec::Get(static_cast<Code>(mb_str[0]))) {
+  if (const auto* codec = Codec::Get(static_cast<Code>(mb_str[0]))) {
     return codec->decode(mb_str.substr(1));
   } else {
     return std::nullopt;
   }
 }
-std::string imb::encode(Code c, ByteView bs) {
-  if (auto codec = Codec::Get(c)) {
+auto imb::encode(Code c, ByteView bs) -> std::string {
+  if (const auto *codec = Codec::Get(c)) {
     auto rv = codec->encode(bs);
     if (rv.size() >= bs.size()) {
       rv.insert(0UL, 1UL, static_cast<char>(c));

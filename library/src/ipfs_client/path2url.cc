@@ -1,8 +1,9 @@
 #include "path2url.h"
+#include <string>
 
 #include "log_macros.h"
 
-std::string ipfs::path2url(std::string p) {
+auto ipfs::path2url(std::string p) -> std::string {
   while (!p.empty() && p[0] == '/') {
     p.erase(0UL, 1UL);
   }
