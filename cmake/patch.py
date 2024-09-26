@@ -28,7 +28,7 @@ except Exception as ex:
     verbose('Installed requests because of', ex)
 
 
-VERSION_CLOSE_ENOUGH = 30113
+VERSION_CLOSE_ENOUGH = 30115
 LARGE_INT = 9876543210
 here = dirname(__file__)
 
@@ -308,7 +308,7 @@ class Patcher:
             return self.up_rels[key]
         parms = {"platform": pfrm, "channel": channel}
         chrom_url = "https://chromiumdash.appspot.com/fetch_releases"
-        resp = requests.get(url=chrom_url, params=parms)
+        resp = requests.get(url=chrom_url, params=parms, timeout=999)
         result = list(map(lambda x: (x["time"] / 1000, x["version"]), resp.json()))
         elec_url = "https://raw.githubusercontent.com/electron/electron/main/DEPS"
         resp = requests.get(url=elec_url)

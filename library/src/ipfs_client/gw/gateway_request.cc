@@ -64,9 +64,8 @@ std::string Self::url_suffix() const {
     case GatewayRequestType::Block:
       return "/ipfs/" + main_param;
     case GatewayRequestType::Car:
-      //      return "/ipfs/" + main_param + "/" + path + "?dag-scope=entity";
       return "/ipfs/" + main_param + "/" + path +
-             "?entity-bytes=0:" + std::to_string(BLOCK_RESPONSE_BUFFER_SIZE);
+             "?entity-bytes=0:" + std::to_string(CAR_RESPONSE_BUFFER_SIZE/2UL);
     case GatewayRequestType::Ipns:
       return "/ipns/" + main_param;
     case GatewayRequestType::Providers:
