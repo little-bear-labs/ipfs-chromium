@@ -17,6 +17,8 @@ namespace ipfs::gw {
 class GatewayRequest;
 using RequestPtr = std::shared_ptr<GatewayRequest>;
 
+/*! Interface for classes that respond to IPFSRequest
+ */
 class Requestor : public std::enable_shared_from_this<Requestor> {
  public:
   enum class HandleOutcome : char {
