@@ -1,15 +1,19 @@
 #include <ipfs_client/ipld/dag_headers.h>
 
+#include <chrono>
 #include <sstream>
+#include <string_view>
+#include <string>
 
-#include "log_macros.h"
+#include "ipfs_client/gw/gateway_request_type.h"
+#include "ipfs_client/ipld/block_source.h"
 
 using Self = ipfs::ipld::DagHeaders;
 using ReqTyp = ipfs::gw::GatewayRequestType;
 namespace c = std::chrono;
 
 namespace {
-std::string_view describe(ReqTyp t) {
+auto describe(ReqTyp t) -> std::string_view {
   switch (t) {
     case ReqTyp::DnsLink:
       return "Resolving a DNSLink via DNS TXT record";
@@ -49,14 +53,14 @@ void Self::Add(BlockSource const& src) {
     value << "\";dur="
           << c::duration_cast<c::milliseconds>(src.load_duration).count();
     headers_.emplace_back("Server-Timing", value.str());
-    if (src.cid.size()) {
+    if (static_cast<unsigned int>(!src.cid.empty()) != 0U) {
       auto from = src.cat.cached ? std::string{"cache"} : src.cat.gateway_url;
       headers_.emplace_back("IPFS-Source-" + src.cid, from);
     }
   }
 }
 void Self::Finish() {
-  if (!other_count_) {
+  if (other_count_ == 0U) {
     return;
   }
   std::ostringstream value;

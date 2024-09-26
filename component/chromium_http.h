@@ -10,6 +10,8 @@ class URLLoaderFactory;
 }  // namespace network::mojom
 
 namespace ipfs {
+/*! Using Chromium's URLLoader mechanisms to issue HTTP requests
+ */
 class ChromiumHttp : public ctx::HttpApi {
   raw_ptr<network::mojom::URLLoaderFactory> loader_factory_ = nullptr;
 

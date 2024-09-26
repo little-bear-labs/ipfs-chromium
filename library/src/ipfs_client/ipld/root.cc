@@ -1,5 +1,12 @@
 #include "root.h"
+#include <memory>
+#include <variant>
 
+#include "ipfs_client/ipld/dag_node.h"
+#include "ipfs_client/ipld/link.h"
+#include "ipfs_client/ipld/resolution_state.h"
+#include "ipfs_client/response.h"
+#include "ipfs_client/redirects.h"
 #include "log_macros.h"
 
 using namespace std::literals;
@@ -12,13 +19,13 @@ Self::Root(std::shared_ptr<DagNode> under) {
 }
 Self::~Root() noexcept = default;
 
-Ptr Self::deroot() {
+auto Self::deroot() -> Ptr {
   return links_.at(0).second.node;
 }
-Ptr Self::rooted() {
+auto Self::rooted() -> Ptr {
   return shared_from_this();
 }
-bool Self::expired() const {
+auto Self::expired() const -> bool {
   auto n = links_.at(0).second.node;
   return n ? n->expired() : true;
 }
@@ -27,19 +34,19 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
   auto location = params.PathToResolve().to_string();
   auto result = deroot()->Resolve(params);
   params.headers.Finish();
-  if (auto pc = std::get_if<PathChange>(&result)) {
+  if (auto *pc = std::get_if<PathChange>(&result)) {
     auto lower = params.WithPath(pc->new_path);
     result = resolve(lower);
     location.assign(lower.MyPath().to_view());
-  } else if (std::get_if<ProvenAbsent>(&result)) {
+  } else if (std::get_if<ProvenAbsent>(&result) != nullptr) {
     if (params.NextComponent(api_.get()) == "_redirects") {
       return result;
     }
     if (!redirects_.has_value()) {
       auto redirects_path = params.WithPath("_redirects");
       result = resolve(redirects_path);
-      auto redirect_resp = std::get_if<Response>(&result);
-      if (redirect_resp && redirect_resp->status_ == 200) {
+      auto *redirect_resp = std::get_if<Response>(&result);
+      if ((redirect_resp != nullptr) && redirect_resp->status_ == 200) {
         redirects_ = redirects::File(redirect_resp->body_);
       } else {
         // Either this is ProvenAbsent, in which case this will be interpreted
@@ -70,11 +77,11 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
         case 4: {
           result = deroot()->Resolve(lower_parm);
           location.assign(lower_parm.MyPath().to_view());
-          if (std::get_if<ProvenAbsent>(&result)) {
+          if (std::get_if<ProvenAbsent>(&result) != nullptr) {
             return Response{"", 500, "", location, params.headers};
           }
           resp = std::get_if<Response>(&result);
-          if (resp) {
+          if (resp != nullptr) {
             resp->status_ = status;
             resp->headers_ = params.headers;
             return *resp;
@@ -88,8 +95,8 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
       }
     }
   }
-  auto resp = std::get_if<Response>(&result);
-  if (resp) {
+  auto *resp = std::get_if<Response>(&result);
+  if (resp != nullptr) {
     if (resp->location_.empty()) {
       resp->location_ = location;
     }

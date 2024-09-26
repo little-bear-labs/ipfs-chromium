@@ -28,7 +28,7 @@ except Exception as ex:
     verbose('Installed requests because of', ex)
 
 
-VERSION_CLOSE_ENOUGH = 30113
+VERSION_CLOSE_ENOUGH = 30119
 LARGE_INT = 9876543210
 here = dirname(__file__)
 
@@ -189,6 +189,13 @@ class Patcher:
                 verbose(f"{to_path} already copied")
         verbose("Done patching")
 
+    @staticmethod
+    def edit_evidence(text: str):
+        for tok in ['ipfs', 'ReadTagContent', 'SetTag(']:
+            if tok in text:
+                return True
+        return False
+
     def check_patch(self, patch_path: str, relative: str, target_path: str):
         if 0 == self.git(
             ["apply", "--check", "--reverse", "--verbose", patch_path],
@@ -204,11 +211,12 @@ class Patcher:
         else:
             with open(join(self.csrc, src)) as target_file:
                 text = target_file.read()
-                if "ipfs" in text or "ReadTagContent" in text or "SetTag(" in text:
+                if self.edit_evidence(text):
                     print(
-                        "Patch file",
+                        "Patch file ",
                         patch_path,
-                        "may have already been applied, or otherwise hand-edited. Ignoring.",
+                        " may have already been applied, ",
+                        "or otherwise hand-edited. Ignoring.",
                     )
                 else:
                     print(
@@ -224,19 +232,17 @@ class Patcher:
     def git(self, args: list[str], result: Result) -> str:
         a = [self.gbin, "-C", self.csrc] + args
         verbose("Running", a)
-        match result:
-            case Result.RawOutput:
-                return check_output(a, text=True)
-            case Result.StrippedOutput:
-                return check_output(a, text=True).strip()
-            case Result.OrDie:
-                check_call(a)
-            case Result.ExitCode:
-                return call(a)
-            case Result.ExitCodeOnly:
-                return call(a, stdout=DEVNULL, stderr=DEVNULL)
-            case _:
-                raise RuntimeError("result type not handled")
+        if result == Result.RawOutput:
+            return check_output(a, text=True)
+        if result == Result.StrippedOutput:
+            return check_output(a, text=True).strip()
+        if result == Result.OrDie:
+            return check_call(a)
+        if result == Result.ExitCode:
+            return call(a)
+        if result == Result.ExitCodeOnly:
+            return call(a, stdout=DEVNULL, stderr=DEVNULL)
+        raise RuntimeError("result type not handled")
 
     def tag_name(self) -> str:
         return self.git(["describe", "--tags", "--abbrev=0"], Result.Output)
@@ -308,7 +314,7 @@ class Patcher:
             return self.up_rels[key]
         parms = {"platform": pfrm, "channel": channel}
         chrom_url = "https://chromiumdash.appspot.com/fetch_releases"
-        resp = requests.get(url=chrom_url, params=parms)
+        resp = requests.get(url=chrom_url, params=parms, timeout=999)
         result = list(map(lambda x: (x["time"] / 1000, x["version"]), resp.json()))
         elec_url = "https://raw.githubusercontent.com/electron/electron/main/DEPS"
         resp = requests.get(url=elec_url)
@@ -411,11 +417,11 @@ class Patcher:
                 try:
                     when, version = self.release_versions(channel, pfrm)[0]
                     s = f"{channel}-{pfrm}-{when}"
-                    close = VERSION_CLOSE_ENOUGH * (ci + 0.001) * (pi + 1)
+                    close = VERSION_CLOSE_ENOUGH * (ci + 1) * (pi + 1)
                     check(version, version_set, s, close)
                 except IndexError:
                     pass  # One may assume this is Linux Extended
-        close = VERSION_CLOSE_ENOUGH / 100
+        close = VERSION_CLOSE_ENOUGH
         for ev, e in self.electron_versions().items():
             close += VERSION_CLOSE_ENOUGH * 2
             check(e, version_set, f"electron-{ev}", close)
@@ -514,22 +520,23 @@ class Patcher:
 
 
 if __name__ == "__main__":
+    chromium_src_dir = os.environ['CHROMIUM_SOURCE_TREE']
     if len(argv) < 2:
         print("Give an argument to indicate what you'd like to do.")
     elif argv[1] == "apply":
-        Patcher("/mnt/big/lbl/code/chromium/src", "git", "Debug").apply()
+        Patcher(chromium_src_dir, "git", "Debug").apply()
     elif argv[1] == "rec":
         print(osname())
         BT = "Release" if len(argv) == 2 else argv[2]
-        print(Patcher("/mnt/big/lbl/code/chromium/src", "git", BT).recommend())
+        print(Patcher(chromium_src_dir, "git", BT).recommend())
     elif argv[1] == "missing":
         missing = Patcher(
-            "/mnt/big/lbl/code/chromium/src", "git", "Debug"
+            chromium_src_dir, "git", "Debug"
         ).unavailable()
         for m in missing:
             print(m)
     elif argv[1] == "releases":
-        per = Patcher("/mnt/big/lbl/code/chromium/src", "git", "Debug")
+        per = Patcher(chromium_src_dir, "git", "Debug")
         for chan in ["Dev", "Beta", "Stable", "Extended"]:
             for osn in ["Linux", "Mac", "Windows"]:
                 rels = per.release_versions(chan, osn)
@@ -543,23 +550,23 @@ if __name__ == "__main__":
         n = per.newest()
         print("Development at:", n[1], f"({ctime(n[2])})")
     elif argv[1] == "available":
-        pr = Patcher("/mnt/big/lbl/code/chromium/src", "git", "Debug")
+        pr = Patcher(chromium_src_dir, "git", "Debug")
         print(list(pr.available()))
         print(pr.edir)
     elif argv[1] == "old":
-        pr = Patcher("/mnt/big/lbl/code/chromium/src", "git", "Debug")
+        pr = Patcher(chromium_src_dir, "git", "Debug")
         if len(argv) > 2:
             pr.list_ood(argv[2:], True)
         else:
             pr.list_ood(list(pr.available()), True)
     elif argv[1] == "new":
-        pr = Patcher("/mnt/big/lbl/code/chromium/src", "git", "Debug")
+        pr = Patcher(chromium_src_dir, "git", "Debug")
         if len(argv) > 2:
             pr.list_ood(argv[2:], False)
         else:
             pr.list_ood(list(pr.available()), False)
     elif argv[1] == "oldnew":
-        pr = Patcher("/mnt/big/lbl/code/chromium/src", "git", "Debug")
+        pr = Patcher(chromium_src_dir, "git", "Debug")
         pr.list_ood(list(pr.available()), False, True)
     elif argv[1] == "git":
         pr = Patcher(realpath(join(dirname(__file__), "..")), "git", "Debug")

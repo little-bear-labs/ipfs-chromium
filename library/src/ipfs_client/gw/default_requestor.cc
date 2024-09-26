@@ -5,6 +5,8 @@
 #include <ipfs_client/gw/inline_request_handler.h>
 #include <ipfs_client/gw/multi_gateway_requestor.h>
 #include <ipfs_client/gw/terminating_requestor.h>
+#include <memory>
+#include "ipfs_client/gw/requestor.h"
 
 auto ipfs::gw::default_requestor(std::shared_ptr<Requestor> early,
                                  std::shared_ptr<Client> api)

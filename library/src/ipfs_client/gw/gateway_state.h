@@ -2,13 +2,13 @@
 #define IPFS_GATEWAY_STATE_H_
 
 #include <ipfs_client/gw/gateway_request_type.h>
-#include <vocab/flat_mapset.h>
 
 #include <ctime>
 
 #include <array>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 namespace ipfs {
 class Client;
@@ -25,7 +25,7 @@ class GatewayRequest;
 class GatewayState {
   std::string prefix_;
   std::shared_ptr<Client> api_;
-  flat_map<std::string, long> affinity_success;
+  std::unordered_map<std::string, long> affinity_success;
   static constexpr short MinutesTracked = 4;
   std::array<unsigned, MinutesTracked * 60UL> sent_counts;
   std::size_t total_sent = 0UL;

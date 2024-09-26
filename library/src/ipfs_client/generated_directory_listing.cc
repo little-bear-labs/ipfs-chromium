@@ -1,6 +1,7 @@
 #include "generated_directory_listing.h"
+#include <string_view>
+#include <string>
 
-#include "log_macros.h"
 
 ipfs::GeneratedDirectoryListing::GeneratedDirectoryListing(
     std::string_view base_path)
@@ -40,6 +41,6 @@ void ipfs::GeneratedDirectoryListing::AddLink(std::string_view name,
       .append("      </li>\n");
 }
 
-std::string const& ipfs::GeneratedDirectoryListing::Finish() {
+auto ipfs::GeneratedDirectoryListing::Finish() -> std::string const& {
   return html_.append("    </ul>\n").append("  </body>\n").append("</html>\n");
 }

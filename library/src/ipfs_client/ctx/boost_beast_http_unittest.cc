@@ -5,6 +5,10 @@
 #include <ipfs_client/client.h>
 
 TEST(BoostBeastHttpTest, GoogleHomePage) {
+  auto off = std::getenv("OFFLINE");
+  if (off && *off == '1') {
+      return;
+  }
   boost::asio::ssl::context ssl_sux{boost::asio::ssl::context::sslv23_client};
   boost::asio::io_context io;
   ipfs::ctx::BoostBeastHttp t{io};

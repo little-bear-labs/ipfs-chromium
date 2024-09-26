@@ -69,7 +69,7 @@ struct TestRequestor final : public ig::Requestor {
   TestRequestor() { api_ = std::make_shared<MockApi>(); }
   std::string_view name() const { return "return test requestor"; }
   HandleOutcome handle(ig::RequestPtr r) {
-    auto cid = r->main_param;
+    std::string cid{r->root_component()};
     auto base_dir = std::filesystem::path{__FILE__};
     while (!is_directory(base_dir / "test_data" / "blocks") &&
            base_dir.generic_string().size() > 2) {

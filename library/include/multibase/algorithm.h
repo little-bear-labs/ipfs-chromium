@@ -1,5 +1,7 @@
 #pragma once
 
+// LCOV_EXCL_START
+
 #include <string>
 
 namespace multibase {
@@ -26,3 +28,5 @@ class algorithm {
 };
 
 }  // namespace multibase
+
+// LCOV_EXCL_STOP

@@ -4,8 +4,12 @@
 
 #include <vocab/slash_delimited.h>
 
-#include <numeric>
+#include <cstddef>
+#include <cstdint>
+#include <string_view>
+#include <string>
 #include <unordered_set>
+#include <utility>
 
 namespace r = ipfs::redirects;
 using namespace std::literals;
@@ -47,7 +51,7 @@ r::Directive::Directive(std::string_view from, std::string_view to, int status)
     }
   }
 }
-std::uint16_t r::Directive::rewrite(std::string& path) const {
+auto r::Directive::rewrite(std::string& path) const -> std::uint16_t {
   auto input = SlashDelimited{path};
   auto result = to_;
   auto replace = [&result](std::string_view ph, std::string_view val) {
@@ -81,8 +85,8 @@ std::uint16_t r::Directive::rewrite(std::string& path) const {
     return status_;
   }
 }
-std::string r::Directive::error() const {
-  if (starts_with(to_, "ERROR: ")) {
+auto r::Directive::error() const -> std::string {
+  if (to_.starts_with("ERROR: ")) {
     return to_;
   }
   if (status_ < 200 || status_ > 451) {
@@ -100,10 +104,10 @@ std::string r::Directive::error() const {
   return {};
 }
 
-std::uint16_t r::File::rewrite(std::string& missing_path) const {
-  for (auto& directive : directives_) {
+auto r::File::rewrite(std::string& missing_path) const -> std::uint16_t {
+  for (const auto& directive : directives_) {
     auto status = directive.rewrite(missing_path);
-    if (status) {
+    if (status != 0U) {
       return status;
     }
   }
@@ -114,7 +118,7 @@ r::File::File(std::string_view to_parse) {
     error_ = "INPUT FILE TOO LARGE " + std::to_string(to_parse.size());
     return;
   }
-  for (auto line_number = 1; valid() && to_parse.size(); ++line_number) {
+  for (auto line_number = 1; valid() && (static_cast<unsigned int>(!to_parse.empty()) != 0U); ++line_number) {
     auto line_end = to_parse.find('\n');
     auto line = to_parse.substr(0UL, line_end);
     if (!parse_line(line, line_number)) {
@@ -129,7 +133,7 @@ r::File::File(std::string_view to_parse) {
           .append(" [")
           .append(line)
           .push_back(']');
-      LOG(ERROR) << error_;
+      LOG(WARNING) << error_;
       return;
     }
     if (line_end < to_parse.size()) {
@@ -145,10 +149,10 @@ r::File::File(std::string_view to_parse) {
 }
 
 namespace {
-std::pair<int, std::string> parse_status(std::string_view line,
-                                         std::size_t col);
+auto parse_status(std::string_view line,
+                                         std::size_t col) -> std::pair<int, std::string>;
 }
-bool r::File::parse_line(std::string_view line, int line_number) {
+auto r::File::parse_line(std::string_view line, int line_number) -> bool {
   if (line.empty()) {
     // empty line is not a directive
     return false;
@@ -197,8 +201,8 @@ bool r::File::parse_line(std::string_view line, int line_number) {
 
 namespace {
 
-std::pair<int, std::string> parse_status(std::string_view line,
-                                         std::size_t col) {
+auto parse_status(std::string_view line,
+                                         std::size_t col) -> std::pair<int, std::string> {
   if (col >= line.size()) {
     return {DEFAULT_STATUS, ""};
   }

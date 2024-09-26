@@ -1,6 +1,9 @@
 #include <ipfs_client/multi_hash.h>
 
+#include <iterator>
 #include <libp2p/multi/uvarint.hpp>
+#include "vocab/byte_view.h"
+#include <string_view>
 
 using Self = ipfs::MultiHash;
 using VarInt = libp2p::multi::UVarint;
@@ -11,7 +14,7 @@ Self::MultiHash(ipfs::HashType t, ipfs::ByteView digest)
 Self::MultiHash(ipfs::ByteView bytes) {
   ReadPrefix(bytes);
 }
-bool Self::ReadPrefix(ipfs::ByteView& bytes) {
+auto Self::ReadPrefix(ipfs::ByteView& bytes) -> bool {
   auto i = VarInt::create(bytes);
   if (!i) {
     return false;
@@ -32,13 +35,13 @@ bool Self::ReadPrefix(ipfs::ByteView& bytes) {
   type_ = type;
   return true;
 }
-bool Self::valid() const {
-  return type_ != HashType::INVALID && hash_.size() > 0UL;
+auto Self::valid() const -> bool {
+  return type_ != HashType::INVALID && !hash_.empty();
 }
 namespace {
 constexpr std::string_view InvalidHashTypeName;
 }
-std::string_view ipfs::GetName(HashType t) {
+auto ipfs::GetName(HashType t) -> std::string_view {
   switch (t) {
     case HashType::INVALID:
       return InvalidHashTypeName;

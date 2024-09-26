@@ -17,7 +17,7 @@ class DnsTxtLookup {
                                   DnsTextResultsCallback,
                                   DnsTextCompleteCallback) = 0;
 
-  virtual ~DnsTxtLookup() noexcept {}
+  virtual ~DnsTxtLookup() noexcept;
 };
 }  // namespace ipfs::ctx
 

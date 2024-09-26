@@ -1,15 +1,24 @@
 #include <ipfs_client/cid.h>
 
 #include <ipfs_client/multi_base.h>
+#include <cstdint>
 #include <libp2p/multi/uvarint.hpp>
+#include <utility>
+#include <string_view>
+#include <string>
+#include <vector>
 
+#include "ipfs_client/multicodec.h"
+#include "ipfs_client/multi_hash.h"
 #include "log_macros.h"
+#include "vocab/byte_view.h"
+#include "vocab/byte.h"
 
 using Self = ipfs::Cid;
 using VarInt = libp2p::multi::UVarint;
 
 Self::Cid(ipfs::MultiCodec cdc, ipfs::MultiHash hsh)
-    : codec_{cdc}, hash_{hsh} {}
+    : codec_{cdc}, hash_{std::move(hsh)} {}
 
 Self::Cid(ipfs::ByteView bytes) {
   ReadStart(bytes);
@@ -28,7 +37,7 @@ Self::Cid(std::string_view s) {
   }
 }
 
-bool Self::ReadStart(ByteView& bytes) {
+auto Self::ReadStart(ByteView& bytes) -> bool {
   if (bytes.size() >= 34 && bytes[0] == ipfs::Byte{0x12} &&
       bytes[1] == ipfs::Byte{0x20}) {
     hash_ = MultiHash{bytes};
@@ -55,7 +64,7 @@ bool Self::ReadStart(ByteView& bytes) {
   return hash_.ReadPrefix(bytes);
 }
 
-bool Self::valid() const {
+auto Self::valid() const -> bool {
   return codec_ != MultiCodec::INVALID && hash_.valid();
 }
 
@@ -66,11 +75,11 @@ auto Self::hash_type() const -> HashType {
   return multi_hash().type();
 }
 
-std::string Self::to_string() const {
+auto Self::to_string() const -> std::string {
   std::vector<Byte> binary;
   auto append_varint = [&binary](auto x) {
     auto i = static_cast<std::uint64_t>(x);
-    VarInt v{i};
+    VarInt const v{i};
     auto b = v.toBytes();
     binary.insert(binary.end(), b.begin(), b.end());
   };

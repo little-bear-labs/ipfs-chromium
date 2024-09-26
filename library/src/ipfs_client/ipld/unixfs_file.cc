@@ -1,10 +1,19 @@
 #include "unixfs_file.h"
+#include <cstdint>
+#include <vector>
+#include <string>
+#include <variant>
 
+#include "ipfs_client/ipld/resolution_state.h"
+#include "ipfs_client/ipld/dag_node.h"
+#include "ipfs_client/response.h"
 #include "log_macros.h"
 
 using namespace std::literals;
 
 using Self = ipfs::ipld::UnixfsFile;
+
+constexpr std::uint16_t cSuccess = 200U;
 
 auto Self::resolve(ResolutionState& params) -> ResolveResult {
   if (!params.IsFinalComponent()) {
@@ -21,8 +30,8 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
     }
     if (link.node) {
       auto recurse = link.node->Resolve(params);
-      auto mdn = std::get_if<MoreDataNeeded>(&recurse);
-      if (mdn) {
+      auto *mdn = std::get_if<MoreDataNeeded>(&recurse);
+      if (mdn != nullptr) {
         missing.insert(missing.end(), mdn->ipfs_abs_paths_.begin(),
                        mdn->ipfs_abs_paths_.end());
         continue;
@@ -37,7 +46,7 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
   if (missing.empty()) {
     return Response{
         "",
-        200,
+        cSuccess,
         body,
         params.MyPath().to_string(), {},
     };

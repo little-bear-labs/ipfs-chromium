@@ -15,6 +15,7 @@
 #include <boost/beast/ssl.hpp>
 
 #include <map>
+#include <utility>
 
 using Self = ipfs::ctx::BoostBeastHttp;
 
@@ -48,7 +49,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     auto status = ec.value() == 1 ? 408 : 500;
     cb_(static_cast<short>(status), "", [](auto) { return std::string{}; });
   }
-  std::string parse_url() {
+  auto parse_url() -> std::string {
     ipfs::SlashDelimited ss{desc_.url};
     auto scheme = ss.pop();
     if (port_.empty()) {
@@ -81,7 +82,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
         resolver_(strand_),
         ssl_ctx_(ssc),
         stream_(strand_, ssc),
-        cb_{cb},
+        cb_{std::move(cb)},
         desc_{desc} {
     if (auto sz = desc_.max_response_size) {
       response_parser_.body_limit(*sz * 2);
@@ -89,7 +90,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
       response_parser_.body_limit(boost::none);
     }
   }
-  tcp::resolver::results_type& resolution() {
+  auto resolution() -> tcp::resolver::results_type& {
     return resolutions_[host_ + port_];
   }
   // Start the asynchronous operation
@@ -100,7 +101,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     }
     // Set SNI Hostname (many hosts need this to handshake successfully)
     if (!SSL_set_tlsext_host_name(stream_.native_handle(), host_.c_str())) {
-      boost::beast::error_code ec{static_cast<int>(::ERR_get_error()),
+      boost::beast::error_code const ec{static_cast<int>(::ERR_get_error()),
                                   boost::asio::error::get_ssl_category()};
       LOG(ERROR) << "SSL early fail: " << ec.message();
       return;
@@ -110,7 +111,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     req_.method(http::verb::get);
     req_.target(target_);
     req_.set(http::field::host, parsed_host_);
-    if (desc_.accept.size()) {
+    if (static_cast<unsigned int>(!desc_.accept.empty()) != 0U) {
       req_.set("Accept", desc_.accept);
     }
     extend_time();
@@ -132,10 +133,11 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
   }
   void on_resolve(boost::beast::error_code ec,
                   tcp::resolver::results_type results) {
-    if (ec)
+    if (ec) {
       return fail(ec, "resolve");
+}
     resolution() = results;
-    for (auto& ep : results) {
+    for (const auto& ep : results) {
       VLOG(1) << desc_.url << " Resolved " << host_ << ", now connecting to "
               << req_[http::field::host] << " aka " << ep.host_name() << ':'
               << ep.service_name() << " for " << target_;
@@ -148,8 +150,9 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
 
   void on_connect(boost::beast::error_code ec,
                   tcp::resolver::results_type::endpoint_type) {
-    if (ec)
+    if (ec) {
       return fail(ec, "connect");
+}
     extend_time();
     LOG(INFO) << desc_.url << " connected.";
     if (use_ssl()) {
@@ -165,7 +168,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
                                                          shared_from_this()));
     }
   }
-  bool use_ssl() const { return port_ == "443" || port_ == "https"; }
+  auto use_ssl() const -> bool { return port_ == "443" || port_ == "https"; }
   void extend_time() {
     expiry_seconds_ += desc_.timeout_seconds + 1;
     VLOG(2) << "expiry_seconds_ = " << expiry_seconds_ << '\n';
@@ -173,8 +176,9 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
         std::chrono::seconds(expiry_seconds_));
   }
   void on_handshake(boost::beast::error_code ec) {
-    if (ec)
+    if (ec) {
       return fail(ec, "handshake");
+}
     extend_time();
     http::async_write(stream_, req_,
                       boost::beast::bind_front_handler(&HttpSession::on_write,
@@ -182,8 +186,9 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
   }
 
   void on_write(boost::beast::error_code ec, std::size_t) {
-    if (ec)
+    if (ec) {
       return fail(ec, "write");
+}
     VLOG(2) << desc_.url << " request written.";
     extend_time();
     if (use_ssl()) {
@@ -199,10 +204,11 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
   }
 
   void on_read(boost::beast::error_code ec, std::size_t bytes_transferred) {
-    if (ec)
+    if (ec) {
       return fail(ec, "read");
+}
     res_ = response_parser_.release();
-    api::Hdrs get_hdr = [this](std::string_view k) -> std::string {
+    api::Hdrs const get_hdr = [this](std::string_view k) -> std::string {
       std::string rv{(*res_)[k]};
       return rv;
     };
@@ -213,8 +219,8 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     if (res_->result_int() == 400) {
       LOG(WARNING) << "Got that annoying 400 status: " << res_->body();
     }
-    for (auto& h : *res_) {
-      auto& n = h.name_string();
+    for (const auto& h : *res_) {
+      const auto& n = h.name_string();
       if (n.substr(0, 6) != "Access") {
         VLOG(1) << "\t Header=" << h.name_string() << ": " << h.value();
       }
@@ -254,7 +260,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     boost::asio::defer(strand_, respond);
     close();
   }
-  int redirect_count(std::string_view comp) {
+  auto redirect_count(std::string_view comp) -> int {
     if (comp == desc_.url) {
       LOG(ERROR) << "Redirect loop on " << comp;
       return 0xFF;
@@ -277,8 +283,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     ll.close();
   }
   void on_shutdown(boost::beast::error_code ec) {
-    namespace E = boost::asio::error;
-    switch (ec.value()) {
+       switch (ec.value()) {
       case 0:
       case 1:
       case 2:
@@ -296,7 +301,7 @@ std::map<std::string, boost::asio::ip::tcp::resolver::results_type>
 auto Self::SendHttpRequest(ReqDesc desc, OnComplete cb) const -> Canceller {
   auto sess = std::make_shared<HttpSession>(io_, ssl_ctx_, desc, cb);
   sess->run();
-  std::weak_ptr<HttpSession> w = sess;
+  std::weak_ptr<HttpSession> const w = sess;
   return [w](){
     if (auto p = w.lock()) {
       p->close();

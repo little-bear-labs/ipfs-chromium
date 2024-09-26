@@ -1,9 +1,10 @@
 #include <ipfs_client/gw/gateway_request_type.h>
 
-#include <cstdint>
 #include <cstdio>
 
 #include <array>
+#include <string_view>
+#include <optional>
 
 auto ipfs::gw::from_name(std::string_view name)
     -> std::optional<GatewayRequestType> {
@@ -32,7 +33,7 @@ auto ipfs::gw::from_name(std::string_view name)
   }
   return std::nullopt;
 }
-std::string_view ipfs::gw::name(GatewayRequestType t) {
+auto ipfs::gw::name(GatewayRequestType t) -> std::string_view {
   using ipfs::gw::GatewayRequestType;
   switch (t) {
     case GatewayRequestType::Block:

@@ -3,6 +3,8 @@
 #include <google/protobuf/stubs/logging.h>
 
 #include <iostream>
+#include <string>
+#include <string_view>
 
 namespace lg = ipfs::log;
 
@@ -18,7 +20,7 @@ void CheckLevel(google::protobuf::LogLevel lv,
   if (lev < static_cast<int>(current_level)) {
     return;
   }
-  if (!current_handler) {
+  if (current_handler == nullptr) {
     return;
   }
   current_handler(m, f, l, static_cast<lg::Level>(lev));
@@ -46,7 +48,7 @@ void lg::DefaultHandler(std::string const& message,
   }
 }
 
-std::string_view lg::LevelDescriptor(Level l) {
+auto lg::LevelDescriptor(Level l) -> std::string_view {
   switch (l) {
     case Level::Trace:
       return "trace";
@@ -67,8 +69,8 @@ std::string_view lg::LevelDescriptor(Level l) {
   }
 }
 
-bool lg::IsInitialized() noexcept {
-  if (current_handler) {
+auto lg::IsInitialized() noexcept -> bool {
+  if (current_handler != nullptr) {
     return true;
   }
   SetHandler(&DefaultHandler);
