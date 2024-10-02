@@ -29,7 +29,7 @@ TEST(BlockRequestSplitterTest, split2three) {
   tested.or_else(rec);
   auto req = std::make_shared<Req>();
   req->type = RT::Car;
-  req->main_param = "cid";
+  req->root_component( "cid");
   req->path = "path";
   req->parallel = 123;
   req->affinity = __func__;
@@ -38,16 +38,16 @@ TEST(BlockRequestSplitterTest, split2three) {
   EXPECT_EQ(rec->requests_received.size(), 3U);
   EXPECT_TRUE(rec->requests_received.at(0)->type == RT::Block)
       << static_cast<int>(rec->requests_received.at(0)->type);
-  EXPECT_EQ(rec->requests_received.at(0)->main_param, "cid");
+  EXPECT_EQ(rec->requests_received.at(0)->root_component(), "cid");
   EXPECT_EQ(rec->requests_received.at(0)->path, "");
 
   EXPECT_TRUE(rec->requests_received.at(1)->type == RT::Providers)
       << static_cast<int>(rec->requests_received.at(2)->type);
-  EXPECT_EQ(rec->requests_received.at(1)->main_param, "cid");
+  EXPECT_EQ(rec->requests_received.at(1)->root_component(), "cid");
   EXPECT_EQ(rec->requests_received.at(1)->path, "");
 
   EXPECT_TRUE(rec->requests_received.at(2)->type == RT::Car)
       << static_cast<int>(rec->requests_received.at(2)->type);
-  EXPECT_EQ(rec->requests_received.at(2)->main_param, "cid");
+  EXPECT_EQ(rec->requests_received.at(2)->root_component(), "cid");
   EXPECT_EQ(rec->requests_received.at(2)->path, "path");
 }
