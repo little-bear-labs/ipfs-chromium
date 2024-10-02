@@ -6,7 +6,7 @@ from cache_vars import build_dir, CACHE_VARS
 from glob import glob
 import os
 from os import listdir, readlink, set_blocking, symlink
-from os.path import basename, dirname, exists, getmtime, isdir, isfile, islink, join, pathsep, relpath, splitext
+from os.path import dirname, exists, isdir, isfile, islink, join, relpath, splitext
 from subprocess import DEVNULL, Popen, PIPE, TimeoutExpired
 from sys import executable, stderr
 
@@ -124,23 +124,18 @@ class Command:
         unfound_count += 1
         return False
 
+
 preempt = False
+
+
 def search() -> bool:
     global link_count
     global unfound_count
     global preempt
     link_count = 0
     unfound_count = 0
-    # ipfs_client_gen = join(gen_dir,'third_party','ipfs_client')
-    # for h in listdir(ipfs_client_gen):
-    #     if h.endswith('.h'):
-    #         source = join(ipfs_client_gen, h)
-    #         target = join(inc_link, 'third_party', 'ipfs_client', h)
-    #         if isfile(source) and not exists(target):
-    #             print("linked our gen file ",source,target)
-    #             symlink(source, target)
-    #             link_count += 1
-    compile_commands = json.load(open(join(build_dir,'compile_commands.json')))
+    comp_comm_json = join(build_dir, 'compile_commands.json')
+    compile_commands = json.load(open(comp_comm_json, encoding='utf-8'))
     commands = []
     for command_obj in compile_commands:
         artifact = command_obj['output']
@@ -196,6 +191,7 @@ def search() -> bool:
     print('Linked',link_count,'new headers. Trouble with',unfound_count,'others.',file=stderr)
     return link_count > unfound_count
 
+
 def flesh_out() -> bool:
     existing = glob(inc_link+'/**/*.h',recursive=True)
     existing_dir_map = set()
@@ -207,8 +203,8 @@ def flesh_out() -> bool:
         if not isdir(f):
             continue
         for entry in listdir(f):
-            source = join(f,entry)
-            target = join(t,entry)
+            source = join(f, entry)
+            target = join(t, entry)
             if exists(target):
                 continue
             if isfile(source) and splitext(entry)[-1] == '.h':

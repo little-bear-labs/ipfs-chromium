@@ -51,8 +51,9 @@ auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
       }
     }
   };
-  api_->dns_txt().SendDnsTextRequest("_dnslink." + req->main_param, res,
-                                     std::move(don));
+  std::string host{"_dnslink."};
+  host.append(req->root_component());
+  api_->dns_txt().SendDnsTextRequest(host, res, std::move(don));
   return HandleOutcome::PENDING;
 }
 namespace {
