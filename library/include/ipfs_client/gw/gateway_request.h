@@ -75,6 +75,7 @@ class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
   void orchestrator(std::shared_ptr<Partition> const&);
   bool cachable() const;
   std::string_view root_component() const;
+  void root_component(std::string_view);
 
   bool RespondSuccessfully(std::string_view,
                            std::shared_ptr<Client> const& api,

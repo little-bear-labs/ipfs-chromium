@@ -227,6 +227,9 @@ std::string Self::Key() const {
 std::string_view Self::root_component() const {
     return main_param;
 }
+void Self::root_component(std::string_view val) {
+    main_param.assign(val);
+}
 bool Self::RespondSuccessfully(std::string_view bytes,
                                std::shared_ptr<Client> const& api,
                                ipld::BlockSource src,

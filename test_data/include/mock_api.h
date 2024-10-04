@@ -41,7 +41,6 @@ struct MockDnsTxt : public i::ctx::DnsTxtLookup {
     ccb();
   }
 };
-struct MockHasher :
 struct MockApi final : public i::Client {
   MockDnsTxt* dns_;
   MockGwCfg* gw_;

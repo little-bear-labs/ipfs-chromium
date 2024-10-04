@@ -59,7 +59,7 @@ struct GatewayRequestTest : public testing::Test {
   GatewayRequestTest() {
     orc = api->with(rtor).partition({});
     t_.orchestrator(orc);
-    t_.main_param = "main";
+    t_.root_component("main");
   }
   short timeout(RT t) {
    T gr;
