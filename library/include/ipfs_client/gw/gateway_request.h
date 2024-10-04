@@ -43,6 +43,7 @@ class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
  private:
   std::shared_ptr<Partition> orchestrator_;
   std::vector<BytesReceivedHook> bytes_received_hooks;
+  std::string main_param;  ///< CID, IPNS name, hostname
 
   void FleshOut(ipld::BlockSource&) const;
   void AddDnsLink(std::string_view target, bool& success, ipld::BlockSource src);
@@ -55,8 +56,7 @@ class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
  public:
   GatewayRequestType type = GatewayRequestType::Zombie;
 
-  // TODO - encapsulate. It's not that these public data members are directly accessed everywhere
-  std::string main_param;  ///< CID, IPNS name, hostname
+  // TODO - encapsulate. Hopefully these public data members aren't directly accessed everywhere
   std::string path;        ///< For CAR requests
   std::shared_ptr<IpfsRequest> dependent;
   std::optional<Cid> cid;
@@ -74,6 +74,7 @@ class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
   std::string debug_string() const;
   void orchestrator(std::shared_ptr<Partition> const&);
   bool cachable() const;
+  std::string_view root_component() const;
 
   bool RespondSuccessfully(std::string_view,
                            std::shared_ptr<Client> const& api,

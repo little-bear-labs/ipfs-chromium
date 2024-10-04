@@ -224,6 +224,9 @@ std::string Self::Key() const {
   //  rv.append(" ").append(name(type)).append(" ").append(path);
   return rv;
 }
+std::string_view Self::root_component() const {
+    return main_param;
+}
 bool Self::RespondSuccessfully(std::string_view bytes,
                                std::shared_ptr<Client> const& api,
                                ipld::BlockSource src,
