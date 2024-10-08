@@ -82,7 +82,7 @@ std::uint16_t r::Directive::rewrite(std::string& path) const {
   }
 }
 std::string r::Directive::error() const {
-  if (starts_with(to_, "ERROR: ")) {
+  if (to_.starts_with("ERROR: ")) {
     return to_;
   }
   if (status_ < 200 || status_ > 451) {

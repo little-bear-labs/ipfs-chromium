@@ -37,17 +37,4 @@ static bool const is_logging_initialized = ::ipfs::log::IsInitialized();
 
 #define L_VAR(X) LOG(INFO) << "VAR " << #X << "='" << (X) << '\'';
 
-inline auto starts_with(std::string_view full_text, std::string_view prefix) -> bool {
-  if (prefix.size() > full_text.size()) {
-    return false;
-  }
-  return full_text.substr(0UL, prefix.size()) == prefix;
-}
-inline auto ends_with(std::string_view full_text, std::string_view suffix) -> bool {
-  if (suffix.size() > full_text.size()) {
-    return false;
-  }
-  return full_text.substr(full_text.size() - suffix.size()) == suffix;
-}
-
 #endif  // IPFS_LOG_MACROS_H_

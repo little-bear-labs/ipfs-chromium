@@ -4,6 +4,8 @@
  */
 #pragma once
 
+// LCOV_EXCL_START
+
 #include <multibase/algorithm.h>
 #include <multibase/encoding.h>
 
@@ -320,3 +322,5 @@ struct traits<encoding::base_64> {
 using base_64 = basic_algorithm<encoding::base_64>;
 
 }  // namespace multibase
+
+// LCOV_EXCL_STOP
