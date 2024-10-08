@@ -2,6 +2,7 @@
 
 #include "crypto/openssl_sha2_256.h"
 #include "ipfs_client/crypto/openssl_signature_verifier.h"
+#include "ipfs_client/crypto/identity_hasher.h"
 #include "ipfs_client/ctx/boost_beast_http.h"
 #include "ipfs_client/ctx/nlohmann_cbor_parser.h"
 #include "ipfs_client/ctx/nlohmann_json_parser.h"
@@ -22,6 +23,7 @@ Self::Client() {
   hashers_.emplace(HashType::SHA2_256,
                    std::make_unique<crypto::OpensslSha2_256>());
 #endif
+  hashers_.emplace(HashType::IDENTITY, std::make_unique<crypto::IdentityHasher>());
 #if HAS_OPENSSL_EVP
   with(SigningKeyType::RSA,
        std::make_unique<crypto::OpensslSignatureVerifier>(EVP_PKEY_RSA));

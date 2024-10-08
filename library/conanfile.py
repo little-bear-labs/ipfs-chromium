@@ -50,7 +50,6 @@ class IpfsChromium(ConanFile):
     exports = 'version.txt'
     package_type = 'static-library'
 
-
     def generate(self):
         tc = CMakeToolchain(self, 'Ninja')
         tc.generate()
@@ -60,9 +59,9 @@ class IpfsChromium(ConanFile):
     def build(self):
         cmake = CMake(self)
         if self.settings.compiler.cppstd:
-          stdver = self.settings.compiler.cppstd
+            stdver = self.settings.compiler.cppstd
         else:
-          stdver = 20
+            stdver = 20
         cmake.configure(variables={
             "CXX_VERSION": stdver,
             "INSIDE_CONAN": True

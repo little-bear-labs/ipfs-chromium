@@ -65,7 +65,7 @@ std::string Self::url_suffix() const {
       return "/ipfs/" + main_param;
     case GatewayRequestType::Car:
       return "/ipfs/" + main_param + "/" + path +
-             "?entity-bytes=0:" + std::to_string(CAR_RESPONSE_BUFFER_SIZE/2UL);
+             "?entity-bytes=0:" + std::to_string(2UL*CAR_RESPONSE_BUFFER_SIZE/3UL);
     case GatewayRequestType::Ipns:
       return "/ipns/" + main_param;
     case GatewayRequestType::Providers:
@@ -223,6 +223,12 @@ std::string Self::Key() const {
   auto rv = main_param;
   //  rv.append(" ").append(name(type)).append(" ").append(path);
   return rv;
+}
+std::string_view Self::root_component() const {
+    return main_param;
+}
+void Self::root_component(std::string_view val) {
+    main_param.assign(val);
 }
 bool Self::RespondSuccessfully(std::string_view bytes,
                                std::shared_ptr<Client> const& api,
