@@ -51,6 +51,8 @@ unfound_count = 0
 
 class Command:
     def __init__(self,c,d):
+        self.retry = False
+        self.dead = False
         self.command = c
         self.command[self.command.index('-c')] = '-E'
         i = self.command.index('-o')

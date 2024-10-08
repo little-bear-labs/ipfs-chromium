@@ -4,6 +4,8 @@
 #include "http_api.h"
 
 namespace ipfs::ctx {
+/*! "Null Object" non-implementation of HTTP requests.
+ */
 class NullHttpProvider : public HttpApi {
   Canceller SendHttpRequest(ReqDesc, OnComplete cb) const;
 };

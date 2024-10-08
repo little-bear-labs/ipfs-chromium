@@ -57,8 +57,8 @@ constexpr imb::Codec adapt(std::string_view name) {
 auto imb::Codec::Get(Code c) -> Codec const* {
   switch (c) {
     case Code::IDENTITY:
-      return nullptr;
     case Code::UNSUPPORTED:
+    case Code::BASE64:
       return nullptr;
     case Code::BASE16_LOWER: {
       static auto b16 =
@@ -85,14 +85,14 @@ auto imb::Codec::Get(Code c) -> Codec const* {
       return &b36;
     }
     case Code::BASE36_UPPER:
-      return nullptr;
+      static auto b36u =
+          adapt<multibase::base_36_btc, EncodedCase::UPPER>("base36upper"sv);
+      return &b36u;
     case Code::BASE58_BTC: {
       static auto b58 =
           adapt<multibase::base_58_btc, EncodedCase::Sensitive>("base58btc"sv);
       return &b58;
     }
-    case Code::BASE64:
-      return nullptr;
   }
   return nullptr;
 }

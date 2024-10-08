@@ -208,7 +208,7 @@ ipfs::ValidatedIpns::ValidatedIpns(IpnsCborEntry const& e)
   std::istringstream ss{e.validity};
   std::tm t = {};
   ss >> std::get_time(&t, "%Y-%m-%dT%H:%M:%S");
-  long ttl = (e.ttl / 1'000'000'000UL) + 1;
+  long ttl = static_cast<long>(e.ttl / 1'000'000'000UL) + 1;
 #ifdef _MSC_VER
   use_until = _mkgmtime(&t);
 #else

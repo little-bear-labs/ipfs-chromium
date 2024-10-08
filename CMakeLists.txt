@@ -26,7 +26,8 @@ set(DEPOT_TOOLS_DIRECTORY "${default_dt}" CACHE PATH
     "Where to find depot_tools, e.g. DEPOT_TOOLS_DIRECTORY/gn.py should exist. Setting this to DETECT_FROM_PATH implies the directory is in your PATH and always will be."
 )
 set(TEST_BY_DEFAULT FALSE CACHE BOOL "Update unit tests as part of the 'all' default target.")
-set(USE_DOXYGEN TRUE CACHE BOOL "If we should attempt to use Doxygen to generate documentation.")
+set(USE_CLANG_TIDY FALSE CACHE BOOL "Use clang-tidy, if found, to generate additional warnings.")
+set(USE_DOXYGEN TRUE CACHE BOOL "If we should attempt to use Doxygen to generate documentation, if it's available.")
 set(BRANDING_DIR "${CMAKE_CURRENT_LIST_DIR}/branding" CACHE PATH "Directory conataining branding files to synchronize. If empty, don't apply any branding changes.")
 #End of user-configuration cache variables.
 

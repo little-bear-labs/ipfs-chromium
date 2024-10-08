@@ -21,6 +21,7 @@
 
 using Node = ipfs::ipld::DagNode;
 
+Node::~DagNode() noexcept = default;
 std::shared_ptr<Node> Node::fromBytes(std::shared_ptr<Client> const& api,
                                       Cid const& cid,
                                       std::string_view bytes) {

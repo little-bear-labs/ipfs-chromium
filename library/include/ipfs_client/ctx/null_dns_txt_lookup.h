@@ -4,6 +4,8 @@
 #include "dns_txt_lookup.h"
 
 namespace ipfs::ctx {
+/*! "Null Object" non-implementation of DNS TXT requests
+ */
 class NullDnsTxtLookup : public DnsTxtLookup {
   void SendDnsTextRequest(std::string,
                           DnsTextResultsCallback,

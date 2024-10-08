@@ -30,8 +30,10 @@ std::string_view name(GatewayRequestType);
 
 constexpr std::size_t BLOCK_RESPONSE_BUFFER_SIZE = 2 * 1024 * 1024;
 
-// TODO this class has gotten large enough that it should probably be a base class
- //  with subclasses instead of switch statements on type
+/*! Information about a request that needs to be sent to an IPFS HTTP Gateway
+ * @todo this class has gotten large enough that it should probably be a base
+ *    class with subclasses instead of switch statements on type
+ */
 class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
  public:
   using BytesReceivedHook =

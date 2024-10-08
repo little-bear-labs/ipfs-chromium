@@ -8,6 +8,8 @@ class Client;
 }
 
 namespace ipfs::gw {
+/*! Link in chain-of-command for request for a DNSLink name
+ */
 class DnsLinkRequestor final : public Requestor {
  public:
   explicit DnsLinkRequestor(std::shared_ptr<Client>);

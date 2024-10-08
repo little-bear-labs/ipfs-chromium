@@ -5,6 +5,14 @@
 #include <ipfs_client/ipld/dag_node.h>
 
 namespace ipfs::ipld {
+/*! A DAG-JSON value.
+ *  @details
+ *    The `links_` are path-able, so...
+ *    * If it represents a dictionary, the links are the members of the dict.
+ *    * If it's a "link", the node has exactly one child, the thing linked to.
+ *    * Otherwise the one node contains all child JSON values.
+ *      - e.g. if it's an array this one node contains all members of the array
+ */
 class DagJsonNode final : public DagNode {
   std::unique_ptr<DagJsonValue> data_;
   std::string html_;
@@ -13,7 +21,9 @@ class DagJsonNode final : public DagNode {
   std::string const& html();
 
  public:
-  DagJsonNode(std::unique_ptr<DagJsonValue>);
+  /*! Construct from parsed JSON
+   */
+  explicit DagJsonNode(std::unique_ptr<DagJsonValue>);
   ~DagJsonNode() noexcept override;
 };
 

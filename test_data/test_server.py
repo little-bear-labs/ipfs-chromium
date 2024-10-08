@@ -44,8 +44,16 @@ class Handler(http.server.BaseHTTPRequestHandler):
                 self.send_response(200)
                 mime = self.headers.get('Accept')
                 self.send_header("Content-type", mime)
+                content = f.read()
+                if '/names/' in path and len(content) < 99:
+                    try:
+                        content = content.decode("utf-8")
+                        content = content.strip()
+                        self.send_header("X-Ipfs-Roots", content)
+                    except UnicodeError:
+                        pass
                 self.end_headers()
-                self.wfile.write(f.read())
+                self.wfile.write(str.encode(content))
                 # print('test server responded to', self.path, ' Accept:', mime)
                 return
         except OSError as e:

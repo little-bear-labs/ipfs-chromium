@@ -8,6 +8,8 @@
 #include <ipfs_client/crypto/hasher.h>
 
 namespace ipfs::crypto {
+/*! Implement SHA-256 hashing
+ */
 class OpensslSha2_256 final : public Hasher {
  public:
   ~OpensslSha2_256() noexcept override;

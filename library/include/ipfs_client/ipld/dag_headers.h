@@ -8,6 +8,8 @@
 #include <vector>
 
 namespace ipfs::ipld {
+/*! Response headers coming from the IPLD DAG
+ */
 class DagHeaders {
  public:
   void Add(BlockSource const&);

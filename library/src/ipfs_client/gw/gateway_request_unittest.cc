@@ -94,6 +94,8 @@ TEST_F(GatewayRequestTest, suffices) {
   EXPECT_EQ(t_.url_suffix(), "/ipfs/main/?entity-bytes=0:2097152");
   t_.type = RT::Ipns;
   EXPECT_EQ(t_.url_suffix(), "/ipns/main");
+  t_.type = RT::DnsLink;
+  EXPECT_EQ(t_.url_suffix(), "/ipns/main");
   t_.type = RT::Providers;
   EXPECT_EQ(t_.url_suffix(), "/routing/v1/providers/main");
   t_.type = RT::Identity;
@@ -128,4 +130,21 @@ TEST_F(GatewayRequestTest, describe_block_http) {
  EXPECT_EQ(d.timeout_seconds, 32);
  ASSERT_TRUE(d.max_response_size.has_value());
  EXPECT_EQ(d.max_response_size.value(), 2097152);
+}
+TEST_F(GatewayRequestTest, from_path_unsupportedCID) {
+  i::SlashDelimited p{
+    "/ipfs/bafkrsqgi3m3fi6kqwdzbucyn3fo4tv7pq5hqig7npu5o7gdcmk45a7chshayimpzumfakl732bqxmtata6y2jf43rm6z3bc3vxm7vzyss2366"
+  };
+  //ipfs_client doesn't support shake-256 by default
+  auto t = T::fromIpfsPath(p);
+  EXPECT_FALSE(t);
+}
+TEST_F(GatewayRequestTest, from_path_detectsInline) {
+  i::SlashDelimited p{
+      "/ipfs/bafyaacqkbaeaeeqcnburqaq"
+  };
+  //ipfs_client doesn't support shake-256 by default
+  auto t = T::fromIpfsPath(p);
+  ASSERT_TRUE(t);
+  EXPECT_TRUE(t->type==RT::Identity);
 }

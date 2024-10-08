@@ -9,6 +9,8 @@ class DagJsonValue;
 }
 
 namespace ipfs::ctx {
+/*! Base class for implementations of JSON parsing
+ */
 class JsonParser {
  public:
   virtual ~JsonParser() noexcept {}

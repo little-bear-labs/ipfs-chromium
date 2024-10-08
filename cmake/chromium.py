@@ -133,7 +133,7 @@ if not isdir(chromium_dir):
     makedirs(chromium_dir)
 if not isdir(src):
     makedirs(src)
-    open(join(build_dir, 'fresh'), 'a').close()
+    open(join(build_dir, 'fresh'), 'a', encoding='utf-8').close()
 
 if isfile(join(build_dir, 'fresh')):
     if not isdir(join(src, '.git')):
@@ -175,7 +175,7 @@ ignore_exts = ['.patch', '.orig', '.txt', '.in']
 
 
 def touch_update(s):
-    with open(UPDATED, 'w') as f:
+    with open(UPDATED, 'w', encoding='utf-8') as f:
         f.write(s)
 
 
@@ -239,20 +239,20 @@ def sync_dir(source_relative, target_relative, complete=True):
     formatted_protos = '\n'.join(map(lambda s: f'    "{s}",', protos))
     build_in = join(source, 'BUILD.gn.in')
     if isfile(build_in):
-        with open(build_in) as bif:
+        with open(build_in, encoding='utf-8') as bif:
             bn = bif.read()
         bn = bn.replace('@gn_sources@', formatted_sources)
         bn = bn.replace('@gn_protos@', formatted_protos)
         old_build_gn = join(target, 'BUILD.gn')
         obn = ''
         try:
-            with open(old_build_gn) as obif:
+            with open(old_build_gn, encoding='utf-8') as obif:
                 obn = obif.read()
-        except Exception:
+        except FileNotFoundError:
             pass
         if bn != obn:
             print("Updating BUILD.gn", file=stderr)
-            open(old_build_gn, 'w').write(bn)
+            open(old_build_gn, 'w', encoding='utf-8').write(bn)
             touch_update('BUILD.gn')
 
 
@@ -279,10 +279,10 @@ if not isdir(out):
     makedirs(out)
 n = join(out, 'obj', 'components', 'ipfs', 'ipfs.ninja')
 if not isfile(n) or (isfile(UPDATED) and getmtime(UPDATED) > getmtime(n)):
-    a = [python, join(depot_tools_dir, 'gn.py'), 'gen', '--args=' + gnargs.replace("'", ""), out]
-    verbose('Running gn gen', a)
-    run(a)
+    gncmd = [python, join(depot_tools_dir, 'gn.py'), 'gen', '--args=' + gnargs.replace("'", ""), out]
+    verbose('Running gn gen', gncmd)
+    run(gncmd)
 
-for target in argv[2:]:
-    print("Build target", target, file=stderr)
-    run([python, join(depot_tools_dir, 'ninja.py'), '-C', out, '-j', jobs, target])
+for build_target in argv[2:]:
+    print("Build target", build_target, file=stderr)
+    run([python, join(depot_tools_dir, 'ninja.py'), '-C', out, '-j', jobs, build_target])
