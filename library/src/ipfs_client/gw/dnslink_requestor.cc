@@ -64,7 +64,7 @@ bool parse_results(ipfs::gw::RequestPtr req,
   constexpr auto prefix = "dnslink="sv;
   auto t = Source::Clock::now();
   for (auto& result : results) {
-    if (starts_with(result, prefix)) {
+    if (result.starts_with(prefix)) {
       Source src;
       src.fetched_at = t;
       src.load_duration = t - start;
