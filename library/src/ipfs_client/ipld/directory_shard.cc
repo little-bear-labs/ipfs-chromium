@@ -46,10 +46,10 @@ auto Self::resolve_internal(ipfs::ipld::DirShard::HashIter hash_b,
   auto hash_chunk = hash_b == hash_e ? std::string{} : *hash_b;
   auto needed_size = hash_chunk.size() + human_name.size();
   for (auto& [name, link] : links_) {
-    if (!starts_with(name, hash_chunk)) {
+    if (!name.starts_with(hash_chunk)) {
       continue;
     }
-    if (name.size() == needed_size && ends_with(name, human_name)) {
+    if (name.size() == needed_size && name.ends_with(human_name)) {
       return CallChild(parms, name);
     }
     auto node = parms.GetBlock(link.cid);

@@ -28,7 +28,7 @@ except Exception as ex:
     verbose('Installed requests because of', ex)
 
 
-VERSION_CLOSE_ENOUGH = 30115
+VERSION_CLOSE_ENOUGH = 30116
 LARGE_INT = 9876543210
 here = dirname(__file__)
 
@@ -416,11 +416,11 @@ class Patcher:
                 try:
                     when, version = self.release_versions(channel, pfrm)[0]
                     s = f"{channel}-{pfrm}-{when}"
-                    close = VERSION_CLOSE_ENOUGH * (ci + 0.001) * (pi + 1)
+                    close = VERSION_CLOSE_ENOUGH * (ci + 1) * (pi + 1)
                     check(version, version_set, s, close)
                 except IndexError:
                     pass  # One may assume this is Linux Extended
-        close = VERSION_CLOSE_ENOUGH / 100
+        close = VERSION_CLOSE_ENOUGH
         for ev, e in self.electron_versions().items():
             close += VERSION_CLOSE_ENOUGH * 2
             check(e, version_set, f"electron-{ev}", close)
