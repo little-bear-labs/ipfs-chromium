@@ -4,7 +4,9 @@
 #include "dag_cbor_node.h"
 #include "dag_json_node.h"
 #include "directory_shard.h"
-#include "dnslink_name.h"
+#include "ipfs_client/multicodec.h"
+#include "ipfs_client/ipld/resolution_state.h"
+#include "ipfs_client/ipld/link.h"
 #include "root.h"
 #include "small_directory.h"
 #include "symlink.h"
@@ -15,16 +17,26 @@
 #include <ipfs_client/pb_dag.h>
 
 #include "log_macros.h"
+#include "vocab/byte_view.h"
+#include "vocab/byte.h"
 
 #include <algorithm>
+#include <memory>
+#include <ios>
+#include <cstdint>
+#include <functional>
+#include <ostream>
 #include <sstream>
+#include <string_view>
+#include <utility>
+#include <string>
 
 using Node = ipfs::ipld::DagNode;
 
 Node::~DagNode() noexcept = default;
-std::shared_ptr<Node> Node::fromBytes(std::shared_ptr<Client> const& api,
+auto Node::fromBytes(std::shared_ptr<Client> const& api,
                                       Cid const& cid,
-                                      std::string_view bytes) {
+                                      std::string_view bytes) -> std::shared_ptr<Node> {
   return fromBytes(api, cid, as_bytes(bytes));
 }
 auto Node::fromBytes(std::shared_ptr<Client> const& api,
@@ -56,7 +68,7 @@ auto Node::fromBytes(std::shared_ptr<Client> const& api,
   }
   switch (cid.codec()) {
     case MultiCodec::DAG_CBOR: {
-      auto p = reinterpret_cast<Byte const*>(bytes.data());
+      const auto *p = reinterpret_cast<Byte const*>(bytes.data());
       auto cbor = api->cbor().Parse({p, bytes.size()});
       if (cbor) {
         result = std::make_shared<DagCborNode>(std::move(cbor));
@@ -66,7 +78,7 @@ auto Node::fromBytes(std::shared_ptr<Client> const& api,
       }
     } break;
     case MultiCodec::DAG_JSON: {
-      auto p = reinterpret_cast<char const*>(bytes.data());
+      const auto *p = reinterpret_cast<char const*>(bytes.data());
       auto json = api->json().Parse({p, bytes.size()});
       if (json) {
         result = std::make_shared<DagJsonNode>(std::move(json));
@@ -77,7 +89,7 @@ auto Node::fromBytes(std::shared_ptr<Client> const& api,
     } break;
     case MultiCodec::RAW:
     case MultiCodec::DAG_PB: {
-      ipfs::PbDag b{cid, bytes};
+      ipfs::PbDag const b{cid, bytes};
       if (b.valid()) {
         result = fromBlock(b);
       } else {
@@ -104,7 +116,7 @@ auto Node::fromBytes(std::shared_ptr<Client> const& api,
   }
   return result;
 }
-std::shared_ptr<Node> Node::fromBlock(ipfs::PbDag const& block) {
+auto Node::fromBlock(ipfs::PbDag const& block) -> std::shared_ptr<Node> {
   std::shared_ptr<Node> result;
   switch (block.type()) {
     case PbDag::Type::FileChunk:
@@ -147,10 +159,10 @@ std::shared_ptr<Node> Node::fromBlock(ipfs::PbDag const& block) {
   return result;
 }
 
-std::shared_ptr<Node> Node::deroot() {
+auto Node::deroot() -> std::shared_ptr<Node> {
   return shared_from_this();
 }
-std::shared_ptr<Node> Node::rooted() {
+auto Node::rooted() -> std::shared_ptr<Node> {
   return std::make_shared<Root>(shared_from_this());
 }
 void Node::set_api(std::shared_ptr<Client> api) {
@@ -164,7 +176,7 @@ auto Node::resolve(SlashDelimited initial_path, BlockLookup blu)
 }
 */
 auto Node::Resolve(ResolutionState& params) -> ResolveResult {
-  if (source_.cid.size()) {
+  if (static_cast<unsigned int>(!source_.cid.empty()) != 0U) {
     params.headers.Add(source_);
   }
   return resolve(params);
@@ -175,8 +187,8 @@ auto Node::CallChild(ipfs::ipld::ResolutionState& state) -> ResolveResult {
 auto Node::CallChild(ipfs::ipld::ResolutionState& state,
                      std::string_view link_key,
                      std::string_view block_key) -> ResolveResult {
-  auto child = FindChild(link_key);
-  if (!child) {
+  auto *child = FindChild(link_key);
+  if (child == nullptr) {
     links_.emplace_back(link_key, Link{std::string{block_key}, {}});
   }
   return CallChild(state, link_key);
@@ -184,7 +196,7 @@ auto Node::CallChild(ipfs::ipld::ResolutionState& state,
 auto Node::CallChild(ResolutionState& state, std::string_view link_key)
     -> ResolveResult {
   auto* child = FindChild(link_key);
-  if (!child) {
+  if (child == nullptr) {
     return ProvenAbsent{};
   }
   auto& node = child->node;
@@ -198,7 +210,7 @@ auto Node::CallChild(ResolutionState& state, std::string_view link_key)
     std::string needed{"/ipfs/"};
     needed.append(child->cid);
     auto more = state.PathToResolve().to_view();
-    if (more.size()) {
+    if (static_cast<unsigned int>(!more.empty()) != 0U) {
       if (more.front() != '/') {
         needed.push_back('/');
       }
@@ -211,8 +223,8 @@ auto Node::CallChild(ResolutionState& state,
                      std::function<NodePtr(std::string_view)> gen_child)
     -> ResolveResult {
   auto link_key = state.NextComponent(api_.get());
-  auto child = FindChild(link_key);
-  if (!child) {
+  auto *child = FindChild(link_key);
+  if (child == nullptr) {
     links_.emplace_back(link_key, Link{{}, {}});
     child = &links_.back().second;
   }
@@ -234,13 +246,13 @@ auto Node::FindChild(std::string_view link_key) -> Link* {
   }
   return nullptr;
 }
-bool Node::expired() const {
+auto Node::expired() const -> bool {
   return false;
 }
-bool Node::PreferOver(Node const&) const {
+auto Node::PreferOver(Node const& /*unused*/) const -> bool {
   return false;
 }
 
-std::ostream& operator<<(std::ostream& s, ipfs::ipld::PathChange const& c) {
+auto operator<<(std::ostream& s, ipfs::ipld::PathChange const& c) -> std::ostream& {
   return s << "PathChange{" << c.new_path << '}';
 }

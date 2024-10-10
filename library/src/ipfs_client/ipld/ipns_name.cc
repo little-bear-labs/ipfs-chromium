@@ -1,8 +1,15 @@
 #include "ipns_name.h"
 
 #include <ipfs_client/ipns_record.h>
+#include <chrono>
+#include <algorithm>
+#include <variant>
 
+#include "ipfs_client/ipld/link.h"
+#include "ipfs_client/ipld/resolution_state.h"
+#include "ipfs_client/ipld/dag_node.h"
 #include "log_macros.h"
+#include "vocab/slash_delimited.h"
 
 using Self = ipfs::ipld::IpnsName;
 namespace ch = std::chrono;
@@ -47,12 +54,12 @@ auto Self::resolve(ResolutionState& params) -> ResolveResult {
   }
   return lower;
 }
-bool Self::expired() const {
+auto Self::expired() const -> bool {
   return expiration_ < ch::system_clock::now();
 }
-bool Self::PreferOver(DagNode const& another) const {
-  auto other = another.as_ipns();
-  if (!other) {
+auto Self::PreferOver(DagNode const& another) const -> bool {
+  const auto *other = another.as_ipns();
+  if (other == nullptr) {
     return true;
   }
   return serial_ > other->serial_;
