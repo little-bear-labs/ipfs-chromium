@@ -2,7 +2,9 @@
 
 echo Install dependencies
           sudo apt-get update
-          sudo apt-get install --yes cmake ninja-build lcov binutils doxygen graphviz libc6{,-dev} valgrind
+          sudo apt-get install --yes cmake ninja-build lcov binutils doxygen graphviz libc6{,-dev} valgrind pipx
+          pipx ensurepath
+          pipx install conan
           npm install -g @marp-team/marp-cli
 g++ --version
 clang++ --version
