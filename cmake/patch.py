@@ -189,7 +189,8 @@ class Patcher:
                 verbose(f"{to_path} already copied")
         verbose("Done patching")
 
-    def edit_evidence(text):
+    @staticmethod
+    def edit_evidence(text: str):
         for tok in ['ipfs', 'ReadTagContent', 'SetTag(']:
             if tok in text:
                 return True
@@ -519,7 +520,7 @@ class Patcher:
 
 
 if __name__ == "__main__":
-    chromium_src_dir = join(os.environ['CHROMIUM_SOURCE_TREE'], 'src')
+    chromium_src_dir = os.environ['CHROMIUM_SOURCE_TREE']
     if len(argv) < 2:
         print("Give an argument to indicate what you'd like to do.")
     elif argv[1] == "apply":
