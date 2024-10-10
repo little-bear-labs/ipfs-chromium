@@ -8,6 +8,8 @@ echo Install dependencies
           npm install -g @marp-team/marp-cli
 g++ --version
 clang++ --version
+conan --version
+conan profile detect
 echo Configure
           mkdir build
           cmake \
