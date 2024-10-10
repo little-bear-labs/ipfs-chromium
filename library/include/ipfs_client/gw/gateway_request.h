@@ -1,19 +1,19 @@
 #ifndef IPFS_TRUSTLESS_REQUEST_H_
 #define IPFS_TRUSTLESS_REQUEST_H_
 
-#include <ipfs_client/ipld/block_source.h>
+#include "gateway_request_type.h"
 
+#include <ipfs_client/ipld/block_source.h>
 #include <ipfs_client/cid.h>
 #include <ipfs_client/client.h>
 
-#include <vocab/flat_mapset.h>
 #include <vocab/slash_delimited.h>
 
 #include <iosfwd>
 #include <memory>
 #include <optional>
 #include <string>
-#include "gateway_request_type.h"
+#include <unordered_set>
 
 namespace ipfs {
 class IpfsRequest;
@@ -62,7 +62,7 @@ class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
   std::optional<Cid> cid;
   short parallel = 0;
   std::string affinity;
-  flat_set<std::string> failures;
+  std::unordered_set<std::string> failures;
 
   std::string url_suffix() const;
   std::string_view accept() const;

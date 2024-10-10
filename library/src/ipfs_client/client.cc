@@ -1,9 +1,22 @@
 #include <ipfs_client/client.h>
+#include <memory>
+#include <openssl/evp.h>
+#include <optional>
+#include <vector>
+#include <string>
+#include <string_view>
+#include <utility>
 
 #include "crypto/openssl_sha2_256.h"
 #include "ipfs_client/crypto/openssl_signature_verifier.h"
 #include "ipfs_client/crypto/identity_hasher.h"
-#include "ipfs_client/ctx/boost_beast_http.h"
+#include "ipfs_client/crypto/signing_key_type.h"
+#include "ipfs_client/crypto/signature_verifier.h"
+#include "ipfs_client/ctx/http_api.h"
+#include "ipfs_client/ctx/dns_txt_lookup.h"
+#include "ipfs_client/ctx/gateway_config.h"
+#include "ipfs_client/ctx/json_parser.h"
+#include "ipfs_client/ctx/cbor_parser.h"
 #include "ipfs_client/ctx/nlohmann_cbor_parser.h"
 #include "ipfs_client/ctx/nlohmann_json_parser.h"
 #include "ipfs_client/ctx/null_dns_txt_lookup.h"
@@ -11,10 +24,14 @@
 #include "ipfs_client/ctx/transitory_gateway_config.h"
 #include "ipfs_client/gw/default_requestor.h"
 
+#include "ipfs_client/multi_hash.h"
+#include "ipfs_client/json_cbor_adapter.h"
+#include "ipfs_client/gw/requestor.h"
 #include "ipfs_client/partition.h"
 #include "ipfs_client/web_util.h"
 
 #include "log_macros.h"
+#include "vocab/byte.h"
 
 using Self = ipfs::Client;
 
@@ -40,10 +57,10 @@ auto Self::Hash(HashType ht, ByteView data)
   }
   return it->second->hash(data);
 }
-bool Self::VerifyKeySignature(SigningKeyType typ,
+auto Self::VerifyKeySignature(SigningKeyType typ,
                               ByteView signature,
                               ByteView data,
-                              ByteView key_bytes) const {
+                              ByteView key_bytes) const -> bool {
   auto it = verifiers_.find(typ);
   if (verifiers_.end() == it || !(it->second)) {
     LOG(ERROR)
@@ -53,9 +70,9 @@ bool Self::VerifyKeySignature(SigningKeyType typ,
   }
   return it->second->VerifySignature(signature, data, key_bytes);
 }
-std::string Self::MimeType(std::string extension,
+auto Self::MimeType(std::string extension,
                            std::string_view content,
-                           std::string const& url) {
+                           std::string const& url) -> std::string {
   if (!deduce_mime_type_) {
     LOG(WARNING) << "No mime-type deduction algo provided. Will do something "
                     "trivial/inaccurate.";
@@ -63,7 +80,7 @@ std::string Self::MimeType(std::string extension,
   }
   return deduce_mime_type_(extension, content, url);
 }
-std::string Self::UnescapeUrlComponent(std::string_view url_comp) {
+auto Self::UnescapeUrlComponent(std::string_view url_comp) -> std::string {
   if (!unescape_) {
     LOG(WARNING)
         << "No URL (un)escaping algo provided. Will do something simple/wrong.";
@@ -71,7 +88,7 @@ std::string Self::UnescapeUrlComponent(std::string_view url_comp) {
   }
   return unescape_(url_comp);
 }
-bool Self::DnslinkFallback() const {
+auto Self::DnslinkFallback() const -> bool {
   if (dns_fb_) {
     return dns_fb_();
   }
@@ -134,24 +151,24 @@ auto Self::requestor() -> std::shared_ptr<gw::Requestor> {
   }
   return rtor_;
 }
-Self& Self::with(std::unique_ptr<ctx::JsonParser> p) {
+auto Self::with(std::unique_ptr<ctx::JsonParser> p) -> Self& {
   json_parser_ = std::move(p);
   return *this;
 }
-Self& Self::with(std::unique_ptr<ctx::CborParser> p) {
+auto Self::with(std::unique_ptr<ctx::CborParser> p) -> Self& {
   cbor_parser_ = std::move(p);
   return *this;
 }
-Self& Self::with(std::unique_ptr<ctx::HttpApi> p) {
+auto Self::with(std::unique_ptr<ctx::HttpApi> p) -> Self& {
   http_api_ = std::move(p);
   return *this;
 }
-Self& Self::with(std::unique_ptr<ctx::DnsTxtLookup> p) {
+auto Self::with(std::unique_ptr<ctx::DnsTxtLookup> p) -> Self& {
   dns_txt_ = std::move(p);
   return *this;
 }
-Self& Self::with(SigningKeyType t,
-                 std::unique_ptr<crypto::SignatureVerifier> p) {
+auto Self::with(SigningKeyType t,
+                 std::unique_ptr<crypto::SignatureVerifier> p) -> Self& {
   if (p) {
     verifiers_[t] = std::move(p);
   } else {
@@ -159,23 +176,23 @@ Self& Self::with(SigningKeyType t,
   }
   return *this;
 }
-Self& Self::with(ipfs::Client::MimeTypeDeduction deduce_mime_type) {
+auto Self::with(ipfs::Client::MimeTypeDeduction deduce_mime_type) -> Self& {
   deduce_mime_type_ = deduce_mime_type;
   return *this;
 }
-Self& Self::with(ipfs::Client::UrlUnescaping unescape) {
+auto Self::with(ipfs::Client::UrlUnescaping unescape) -> Self& {
   unescape_ = unescape;
   return *this;
 }
-Self& Self::with(std::unique_ptr<ctx::GatewayConfig> p) {
+auto Self::with(std::unique_ptr<ctx::GatewayConfig> p) -> Self& {
   gateway_config_ = std::move(p);
   return *this;
 }
-Self& Self::with(std::shared_ptr<gw::Requestor> p) {
+auto Self::with(std::shared_ptr<gw::Requestor> p) -> Self& {
   rtor_ = p;
   return *this;
 }
-Self& Self::with(DnslinkFallbackSwitch sw) {
+auto Self::with(DnslinkFallbackSwitch sw) -> Self& {
   dns_fb_ = sw;
   return *this;
 }

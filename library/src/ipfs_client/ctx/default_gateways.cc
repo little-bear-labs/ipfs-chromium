@@ -2,13 +2,17 @@
 
 #include <ipfs_client/ctx/gateway_config.h>
 
+#include <cstdlib>
 #include <sstream>
+#include <string>
+#include <utility>
+#include <string_view>
 
 namespace ctx = ipfs::ctx;
 
-bool ctx::LoadGatewaysFromEnvironmentVariable(ipfs::ctx::GatewayConfig& cfg) {
+auto ctx::LoadGatewaysFromEnvironmentVariable(ipfs::ctx::GatewayConfig& cfg) -> bool {
   auto* ovr = std::getenv("IPFS_GATEWAY");
-  if (!ovr) {
+  if (ovr == nullptr) {
     return false;
   }
   std::istringstream user_override{ovr};

@@ -1,6 +1,13 @@
 #include <ipfs_client/opinionated_context.h>
 
 #include <ipfs_client/gw/default_requestor.h>
+#include <memory>
+#include "ipfs_client/client.h"
+#include "ipfs_client/crypto/signing_key_type.h"
+#include "ipfs_client/ctx/boost_beast_http.h"
+#include "ipfs_client/ctx/ares_dns_txt_lookup.h"
+#include "ipfs_client/crypto/openssl_signature_verifier.h"
+#include <openssl/evp.h>
 
 #if HAS_OPINIONATED_CONTEXT
 

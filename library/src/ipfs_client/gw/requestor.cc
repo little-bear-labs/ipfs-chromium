@@ -7,13 +7,15 @@
 #include <ipfs_client/partition.h>
 #include <ipfs_client/pb_dag.h>
 #include <ipfs_client/response.h>
+#include <memory>
 
+#include "ipfs_client/gw/gateway_request_type.h"
 #include "log_macros.h"
 
 using Self = ipfs::gw::Requestor;
 using ReqPtr = std::shared_ptr<ipfs::gw::GatewayRequest>;
 
-Self& Self::or_else(std::shared_ptr<Self> p) {
+auto Self::or_else(std::shared_ptr<Self> p) -> Self& {
   if (next_) {
     next_->or_else(p);
   } else {
@@ -56,7 +58,7 @@ void Self::request(ReqPtr req) {
       break;
   }
 }
-void Self::definitive_failure(ipfs::gw::RequestPtr r) const {
+void Self::definitive_failure(ipfs::gw::RequestPtr r) {
   if (!r) {
     LOG(ERROR) << "nullptr definitively failing?";
   } else if (!(r->dependent)) {
@@ -73,7 +75,7 @@ void Self::forward(ipfs::gw::RequestPtr req) const {
     next_->request(req);
   }
 }
-Self& Self::api(std::shared_ptr<Client> a) {
+auto Self::api(std::shared_ptr<Client> a) -> Self& {
   api_ = a;
   return *this;
 }
