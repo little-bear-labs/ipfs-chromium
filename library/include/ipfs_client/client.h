@@ -45,6 +45,8 @@ class Client : public std::enable_shared_from_this<Client> {
   using MimeTypeDeduction = std::function<
       std::string(std::string, std::string_view, std::string const&)>;
   using UrlUnescaping = std::function<std::string(std::string_view)>;
+
+  //TODO this should probably with GatewayConfig stuff
   using DnslinkFallbackSwitch = std::function<bool()>;
 
   Client();

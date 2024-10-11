@@ -1,4 +1,5 @@
 #include "ipfs_client/ctx/null_http_provider.h"
+#include <string>
 
 using Self = ipfs::ctx::NullHttpProvider;
 

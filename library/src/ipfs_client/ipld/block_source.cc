@@ -1,11 +1,18 @@
 #include <ipfs_client/ipld/block_source.h>
 
+#include <ctime>
 #include <sstream>
-#include <version>
+#include <string>
+#include <string_view>
+#include <string>
+#include <string>
+#include "ipfs_client/gw/gateway_request_type.h"
+#include "ipfs_client/gw/gateway_request_type.h"
+#include "ipfs_client/gw/gateway_request_type.h"
+#include "ipfs_client/gw/gateway_request_type.h"
 
 using Self = ipfs::ipld::BlockSource;
 
-namespace c = std::chrono;
 
 /*
 namespace {
@@ -19,7 +26,7 @@ static_assert(a < b);
 }  // namespace
 */
 
-std::string Self::Serialize() const {
+auto Self::Serialize() const -> std::string {
   std::ostringstream result;
   result << name(cat.request_type) << ' ' << cat.cached << ' ' << cid << ' '
          << Clock::to_time_t(fetched_at) << ' ' << cat.gateway_url;

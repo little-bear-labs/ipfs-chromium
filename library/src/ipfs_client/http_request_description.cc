@@ -2,11 +2,11 @@
 
 using Self = ipfs::HttpRequestDescription;
 
-bool Self::operator==(HttpRequestDescription const& r) const {
+auto Self::operator==(HttpRequestDescription const& r) const -> bool {
   // The concept of identity does NOT involve feedback-looping timeout fudge
   // Nor is the acceptable size of a response necessary to distinguish.
   return url == r.url && accept == r.accept;
 }
-bool Self::operator<(HttpRequestDescription const& r) const {
+auto Self::operator<(HttpRequestDescription const& r) const -> bool {
   return url == r.url ? accept < r.accept : url < r.url;
 }

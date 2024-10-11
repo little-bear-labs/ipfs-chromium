@@ -1,6 +1,10 @@
 #include "ipfs_client/crypto/signing_key_type.h"
 
-#include <ipfs_client/ipns_record.h>
+#if __has_include(<third_party/ipfs_client/keys.pb.h>)
+#include <third_party/ipfs_client/keys.pb.h>
+#else
+#include "ipfs_client/keys.pb.h"
+#endif
 
 using T = ipfs::crypto::SigningKeyType;
 namespace n = ipfs::ipns;

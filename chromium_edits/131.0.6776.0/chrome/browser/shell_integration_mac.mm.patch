@@ -1,0 +1,13 @@
+diff --git a/chrome/browser/shell_integration_mac.mm b/chrome/browser/shell_integration_mac.mm
+index c6bb768979453..c0d0abb9c78f3 100644
+--- a/chrome/browser/shell_integration_mac.mm
++++ b/chrome/browser/shell_integration_mac.mm
+@@ -79,6 +79,8 @@ bool SetAsDefaultBrowser() {
+     if (LSSetDefaultHandlerForURLScheme(CFSTR("https"), identifier) != noErr) {
+       return false;
+     }
++    LSSetDefaultHandlerForURLScheme(CFSTR("ipfs"), identifier);
++    LSSetDefaultHandlerForURLScheme(CFSTR("ipns"), identifier);
+     if (LSSetDefaultRoleHandlerForContentType(kUTTypeHTML, kLSRolesViewer,
+                                               identifier) != noErr) {
+       return false;

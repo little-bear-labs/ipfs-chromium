@@ -3,27 +3,20 @@
 #include <ipfs_client/cid.h>
 #include <ipfs_client/client.h>
 #include <ipfs_client/dag_cbor_value.h>
-#include <ipfs_client/keys.pb.h>
-#include <ctime>
-#include <ctime>
 
-#include "ipfs_client/multi_hash.h"
-#include "ipfs_client/ipns_cbor_entry.h"
-#include "ipfs_client/multicodec.h"
-#include "ipfs_client/crypto/signing_key_type.h"
-#include "log_macros.h"
-#include "vocab/byte_view.h"
-#include "vocab/byte.h"
+#include <cstdint>
+#include <ctime>
 
 #include <algorithm>
-#include <cstdint>
-#include <limits>
-#include <optional>
 #include <iomanip>
 #include <ios>
+#include <limits>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <string_view>
+
+#include "log_macros.h"
 
 #if __has_include(<third_party/ipfs_client/ipns_record.pb.h>)
 #include <third_party/ipfs_client/ipns_record.pb.h>
