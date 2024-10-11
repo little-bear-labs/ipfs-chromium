@@ -1,16 +1,27 @@
-  Checks:          'bugp*,
-                    -bugprone-reserved-identifier,
-                    -bugprone-standalone-empty,
-                    -bugprone-suspicious-semicolon,
-                    misc*,
-                    -misc-const-correctness,
-                    -misc-header-include-cycle,
-                    -misc-no-recursion,
-                    mode*,
-                    read*,
-                    -readability-container-size-empty,
+# bugprone-unc* takes too long
+# misc-include-cleaner finds includes that are directly used, thinks they're not, and removes them breaking code
+# readability-else-after-return is oftentimes not more readable
+# reability-named-parameter complains about parameters whose names are commented out because they're unused
+# readability-qualified-auto can cause iterators (especially into std::array) to be declared as auto* which is both generally wrong, but also causes it to not build when array is defined slightly differently e.g. when the iterator is std::__wrap_iter
+  Checks:          'bugpr*,
+                    -bugprone-unc*,
+                    -bugprone-m*,
+                    -bugprone-n*,
+                    -bugprone-o*,
+                    -bugprone-p*,
+                    -bugprone-r*,
+                    -bugprone-s*,
+                    -bugprone-t*,
+                    -bugprone-und*,
+                    -bugprone-unh*,
+                    -bugprone-uni*,
+                    misc-*,
+                    -misc-include-cleaner,
+                    moder*,
+                    reada*,
                     -readability-else-after-return,
-                    -readability-named-parameter'
+                    -readability-named-parameter,
+                    -readability-qualified-auto'
   CheckOptions:
     - key:          bugprone-assert-side-effect.AssertMacros
       value:        assert,DCHECK

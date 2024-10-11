@@ -26,8 +26,10 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
     forward(br);
   }
   if (api_ && (api_->gw_cfg().RoutingApiDiscoveryDefaultRate() != 0U)) {
-    auto *it = std::find(recent_provider_requests.begin(),
-                        recent_provider_requests.end(), r->affinity);
+    auto it = std::find(
+        recent_provider_requests.begin(),
+        recent_provider_requests.end(),
+        r->affinity);
     if (recent_provider_requests.end() == it) {
       auto i = old_provider_request % recent_provider_requests.size();
       recent_provider_requests[i] = r->affinity;

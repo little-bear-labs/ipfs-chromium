@@ -9,6 +9,7 @@ echo Install dependencies
 g++ --version
 clang++ --version
 conan --version
+lcov --version
 conan profile detect
 echo Configure
           mkdir build

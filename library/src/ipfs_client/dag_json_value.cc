@@ -1,6 +1,10 @@
 #include <ipfs_client/dag_json_value.h>
 
 #include <ipfs_client/cid.h>
+#include <optional>
+#include <optional>
+#include <optional>
+#include <optional>
 
 using Self = ipfs::DagJsonValue;
 
