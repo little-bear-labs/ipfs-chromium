@@ -224,19 +224,18 @@ class Patcher:
     def git(self, args: list[str], result: Result) -> str:
         a = [self.gbin, "-C", self.csrc] + args
         verbose("Running", a)
-        match result:
-            case Result.RawOutput:
-                return check_output(a, text=True)
-            case Result.StrippedOutput:
-                return check_output(a, text=True).strip()
-            case Result.OrDie:
-                check_call(a)
-            case Result.ExitCode:
-                return call(a)
-            case Result.ExitCodeOnly:
-                return call(a, stdout=DEVNULL, stderr=DEVNULL)
-            case _:
-                raise RuntimeError("result type not handled")
+        if result == Result.RawOutput:
+            return check_output(a, text=True)
+        if result == Result.StrippedOutput:
+            return check_output(a, text=True).strip()
+        if result ==  Result.OrDie:
+            return check_call(a)
+        if result ==  Result.ExitCode:
+            return call(a)
+        if result ==  Result.ExitCodeOnly:
+            return call(a, stdout=DEVNULL, stderr=DEVNULL)
+        if result ==  _:
+            raise RuntimeError("result type not handled")
 
     def tag_name(self) -> str:
         return self.git(["describe", "--tags", "--abbrev=0"], Result.Output)
