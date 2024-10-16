@@ -133,7 +133,7 @@ r::File::File(std::string_view to_parse) {
           .append(" [")
           .append(line)
           .push_back(']');
-      LOG(ERROR) << error_;
+      LOG(WARNING) << error_;
       return;
     }
     if (line_end < to_parse.size()) {
