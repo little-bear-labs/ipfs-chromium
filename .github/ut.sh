@@ -1,18 +1,35 @@
 #!/bin/bash -ex
 
 echo Install dependencies
-          sudo apt-get update
-          sudo apt-get install --yes cmake ninja-build lcov binutils doxygen graphviz libc6{,-dev} valgrind pipx
+    sudo apt-get update
+    sudo apt-get install --yes \
+        cmake \
+        ninja-build \
+        doxygen \
+        graphviz \
+        valgrind \
+        pipx \
+        lcov # yes still install, to get dependencies
+
+perl -MCPAN -e 'install(Capture::Tiny)'
+wget https://github.com/linux-test-project/lcov/releases/download/v2.1/lcov-2.1.tar.gz
+tar xzvf lcov-2.1.tar.gz
+export PATH="${PWD}/lcov-2.1/bin:${PATH}"
+hash -r
 
 pipx ensurepath
 pipx install conan
 npm install -g @marp-team/marp-cli
 
+set +x
 echo Show versions:
-g++ --version
-clang++ --version
-conan --version
-lcov --version
+for p in g++ gcc clang{++,} lcov conan
+do
+    which "${p}"
+    "${p}" --version
+done
+set -x
+
 conan profile detect
 
 echo Configure
