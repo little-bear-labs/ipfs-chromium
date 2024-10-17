@@ -1,6 +1,5 @@
 #include <ipfs_client/multicodec.h>
 #include <string_view>
-#include <string_view>
 
 using Cdc = ipfs::MultiCodec;
 
@@ -8,8 +7,8 @@ namespace {
 constexpr std::string_view InvalidMulticodecLabel{"invalid-multicodec"};
 }
 
-auto ipfs::GetName(Cdc c) -> std::string_view {
-  switch (c) {
+auto ipfs::GetName(Cdc codec) -> std::string_view {
+  switch (codec) {
     case Cdc::INVALID:
       return InvalidMulticodecLabel;
     case Cdc::IDENTITY:

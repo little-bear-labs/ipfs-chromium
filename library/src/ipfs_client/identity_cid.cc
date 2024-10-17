@@ -6,11 +6,6 @@
 #include "ipfs_client/multi_hash.h"
 #include "vocab/byte.h"
 #include "vocab/byte_view.h"
-#include "ipfs_client/multi_hash.h"
-#include "ipfs_client/multi_hash.h"
-#include "ipfs_client/multi_hash.h"
-#include "ipfs_client/cid.h"
-#include "ipfs_client/multicodec.h"
 #include "ipfs_client/multicodec.h"
 
 namespace Self = ipfs::id_cid;

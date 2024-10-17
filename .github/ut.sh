@@ -3,14 +3,18 @@
 echo Install dependencies
           sudo apt-get update
           sudo apt-get install --yes cmake ninja-build lcov binutils doxygen graphviz libc6{,-dev} valgrind pipx
-          pipx ensurepath
-          pipx install conan
-          npm install -g @marp-team/marp-cli
+
+pipx ensurepath
+pipx install conan
+npm install -g @marp-team/marp-cli
+
+echo Show versions:
 g++ --version
 clang++ --version
 conan --version
 lcov --version
 conan profile detect
+
 echo Configure
           mkdir build
           cmake \

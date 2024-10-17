@@ -3,11 +3,6 @@
 #include <optional>
 #include <vector>
 #include "vocab/byte.h"
-#include <optional>
-#include <vector>
-#include "vocab/byte.h"
-#include "vocab/byte.h"
-#include <optional>
 
 using Self = ipfs::crypto::OpensslSha2_256;
 

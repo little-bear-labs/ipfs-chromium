@@ -2,24 +2,10 @@
 
 #include <ipfs_client/cid.h>
 #include <string>
-#include <string>
 #include <utility>
-#include <utility>
-#include <string>
 #include <string_view>
 #include <ctime>
-#include <utility>
-#include <string_view>
-#include <string_view>
-#include <string>
-#include <string_view>
-#include <ctime>
-#include <string>
-#include <string>
-#include <string>
 
-#include "ipfs_client/ipns_record.h"
-#include "ipfs_client/ipns_record.h"
 #include "ipfs_client/ipns_record.h"
 #include "log_macros.h"
 
@@ -30,7 +16,7 @@ void Self::NoSuchName(std::string const& name) {
 }
 void Self::AssignName(std::string const& name, ValidatedIpns entry) {
   auto& res = entry.value;
-  if ((!res.empty() != 0u) && res.front() == '/') {
+  if ((static_cast<unsigned int>(!res.empty()) != 0U) && res.front() == '/') {
     res.erase(0, 1);
   }
   auto endofcid = res.find_first_of("/?#", 6);

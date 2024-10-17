@@ -3,21 +3,11 @@
 #include <ipfs_client/response.h>
 
 #include "ipfs_client/response_semantic.h"
-#include "ipfs_client/response_semantic.h"
-#include "ipfs_client/response_semantic.h"
-#include "ipfs_client/response_semantic.h"
-#include "ipfs_client/response_semantic.h"
-#include "ipfs_client/response_semantic.h"
 
 #include <memory>
 #include <utility>
 #include <string>
-#include <string>
-#include <utility>
-#include <utility>
 #include <string_view>
-#include <string_view>
-#include <utility>
 
 using Self = ipfs::IpfsRequest;
 

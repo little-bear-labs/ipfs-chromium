@@ -6,7 +6,6 @@
 #include <ostream>
 #include <ios>
 #include <iomanip>
-#include <iomanip>
 #include <cstdint>
 #include <sstream>
 #include <string>
@@ -28,7 +27,7 @@ void Self::html(std::ostream& str) const {
     str << "<em>&quot;</em></p>\n";
   } else if (auto cid = as_link()) {
     auto cs = cid.value().to_string();
-    if (!cs.empty() != 0u) {
+    if (static_cast<unsigned int>(!cs.empty()) != 0U) {
       str << "<a class='cbor_link' href='ipfs://" << cs << "'>" << cs
           << "</a>\n";
     } else {

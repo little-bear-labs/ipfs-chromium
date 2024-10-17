@@ -5,8 +5,6 @@
 #include <array>
 #include <string_view>
 #include <optional>
-#include <optional>
-#include <string_view>
 
 auto ipfs::gw::from_name(std::string_view name)
     -> std::optional<GatewayRequestType> {

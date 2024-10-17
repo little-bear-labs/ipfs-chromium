@@ -2,25 +2,15 @@
 
 #include "ipfs_client/ctx/default_gateways.h"
 #include "ipfs_client/gateway_spec.h"
-#include "ipfs_client/gateway_spec.h"
-#include "ipfs_client/gateway_spec.h"
-#include "ipfs_client/gw/gateway_request_type.h"
 #include "ipfs_client/gw/gateway_request_type.h"
 #include "log_macros.h"
 
 #include <algorithm>
 #include <optional>
 #include <cstddef>
-#include <optional>
 #include <string_view>
 #include <string>
-#include <string_view>
-#include <string_view>
-#include <string_view>
 #include <vector>
-#include <string_view>
-#include <string_view>
-#include <string_view>
 
 using Self = ipfs::ctx::TransitoryGatewayConfig;
 

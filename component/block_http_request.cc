@@ -48,7 +48,6 @@ void Self::Send(raw_ptr<network::mojom::URLLoaderFactory> loader_factory) {
                               shared_from_this());
   DCHECK(loader_factory);
   if (auto sz = inf_.max_response_size) {
-    VLOG(2) << "Sending a request but enforcing a maximum response size: " << *sz;
     loader_->DownloadToString(loader_factory, std::move(bound), sz.value());
   } else {
     loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(loader_factory,
