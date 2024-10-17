@@ -29,6 +29,7 @@ class Requestor;
 std::string_view name(GatewayRequestType);
 
 constexpr std::size_t BLOCK_RESPONSE_BUFFER_SIZE = 2 * 1024 * 1024;
+constexpr std::size_t CAR_RESPONSE_BUFFER_SIZE = 64 * 1024 * 1024;
 
 /*! Information about a request that needs to be sent to an IPFS HTTP Gateway
  * @todo this class has gotten large enough that it should probably be a base

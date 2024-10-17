@@ -63,6 +63,14 @@ jobs:
               generators: "Ninja"
             }
           - {
+              name: "Ubuntu-Clang",
+              os: ubuntu-latest,
+              build_type: "Release",
+              cc: "clang",
+              cxx: "clang++",
+              generators: "Ninja"
+            }
+          - {
               name: "Windows-MSVC",
               os: windows-latest,
               build_type: "Release",
@@ -121,7 +129,7 @@ jobs:
           python3 -m pip install --upgrade pip
           python3 -m pip install conan
           conan profile detect
-          Copy-Item ".\.github\msvc.profile" -Destination "C:\Users\runneradmin\.conan2\profiles\default"
+          conan profile show
           ninja --version
           cmake --version
           conan --version
@@ -130,6 +138,16 @@ jobs:
         run: |
           mkdir build
           mkdir ipfs-client-dev
+          if which ${{ matrix.config.cc }}
+          then
+            CC=`which ${{ matrix.config.cc }}`
+            export CC
+          fi
+          if which ${{ matrix.config.cxx }}
+          then
+            CXX=`which ${{ matrix.config.cxx }}`
+            export CXX
+          fi
           cmake \
             -G "${{ matrix.config.generators }}" \
             -S . \

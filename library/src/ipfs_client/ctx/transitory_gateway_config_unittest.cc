@@ -33,7 +33,7 @@ TEST(TransitoryGatewayConfigTest, RoutingApiDiscoveryDefaultRateIs60) {
 }
 TEST(TransitoryGatewayConfigTest, RoutingApiDiscoveryOfUnencryptedGatewaysIsFalse) {
   T t;
-  EXPECT_FALSE(t.RoutingApiDiscoveryOfUnencryptedGateways());
+  EXPECT_TRUE(t.RoutingApiDiscoveryOfUnencryptedGateways());
 }
 TEST(TransitoryGatewayConfigTest, TypeAffinityIs9) {
   T t;

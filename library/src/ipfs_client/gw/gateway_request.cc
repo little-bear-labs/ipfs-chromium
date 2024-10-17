@@ -173,7 +173,7 @@ std::optional<std::size_t> Self::max_response_size() const {
     case GatewayRequestType::Block:
       return BLOCK_RESPONSE_BUFFER_SIZE;
     case GatewayRequestType::Car: {
-      return BLOCK_RESPONSE_BUFFER_SIZE * 2;
+      return CAR_RESPONSE_BUFFER_SIZE;
     }
     case GatewayRequestType::Zombie:
       return 0;
@@ -257,7 +257,8 @@ bool Self::RespondSuccessfully(std::string_view bytes,
         auto rec = ipfs::ValidateIpnsRecord({byte_ptr, bytes.size()},
                                             cid.value(), *api);
         if (rec.has_value()) {
-          auto node = std::make_shared<IpnsName>(rec.value());
+          ValidatedIpns validated{rec.value()};
+          auto node = std::make_shared<IpnsName>(validated);
           if (!node || node->expired()) {
             return false;
           }

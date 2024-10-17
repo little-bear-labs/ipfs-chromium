@@ -8,6 +8,8 @@
 #include <string_view>
 
 namespace ipfs::ctx {
+/*! Configuration for IPFS gateways - which to use, how, etc.
+ */
 class GatewayConfig {
  public:
   virtual ~GatewayConfig() noexcept {}
