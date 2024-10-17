@@ -261,9 +261,6 @@ if(GTest_FOUND AND IN_WORKSPACE)
                 NAME cov
                 DEPENDENCIES run_tests
                 EXECUTABLE $<TARGET_FILE:unit_test_runner>
-                EXCLUDE
-                   ${unit_test_sources}
-                   src/smhasher/MurmurHash3.cc
             )
         else()
             message(WARNING "Cannot provide coverage report without lcov")
