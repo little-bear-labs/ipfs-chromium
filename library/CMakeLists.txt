@@ -262,7 +262,7 @@ if(GTest_FOUND AND IN_WORKSPACE)
                 DEPENDENCIES run_tests
                 EXECUTABLE $<TARGET_FILE:unit_test_runner>
                 EXCLUDE
-                    "*/*/*test.cc"
+                    "*test.cc"
             )
         else()
             message(WARNING "Cannot provide coverage report without lcov")
