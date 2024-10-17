@@ -2,7 +2,11 @@
 
 echo Install dependencies
           sudo apt-get update
-          sudo apt-get install --yes cmake ninja-build lcov binutils doxygen graphviz libc6{,-dev} valgrind pipx
+          sudo apt-get install --yes cmake ninja-build binutils doxygen graphviz libc6{,-dev} valgrind pipx
+
+wget https://github.com/linux-test-project/lcov/releases/download/v2.1/lcov-2.1.tar.gz
+tar xzvf lcov-2.1.tar.gz
+export PATH+=":${PWD}/lcov-2.1/bin"
 
 pipx ensurepath
 pipx install conan
