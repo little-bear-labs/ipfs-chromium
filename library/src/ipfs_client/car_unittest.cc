@@ -37,6 +37,8 @@ struct CarTest : public testing::Test {
 };
 }  // namespace
 
+TEST_F(CarTest,Noop) {}
+
 #if HAS_JSON_CBOR_ADAPTER
 
 TEST_F(CarTest, SmallishDirectoryAndAllItsContents) {

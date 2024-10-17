@@ -1,0 +1,26 @@
+diff --git a/components/cbor/reader.h b/components/cbor/reader.h
+index 5f11ba48ba494..d4c9c489da4b6 100644
+--- a/components/cbor/reader.h
++++ b/components/cbor/reader.h
+@@ -131,6 +131,11 @@ class CBOR_EXPORT Reader {
+     // during decoding will set raise the `UNSUPPORTED_FLOATING_POINT_VALUE`
+     // error.
+     bool allow_floating_point = false;
++
++    // If the parser encounters a TAG element, should it be parsed out and
++    // the tag value saved (true), or should the entire node and its content
++    // be discarded (false)
++    bool parse_tags = false;
+   };
+ 
+   Reader(const Reader&) = delete;
+@@ -205,6 +210,9 @@ class CBOR_EXPORT Reader {
+   std::optional<Value> ReadMapContent(const DataItemHeader& header,
+                                       const Config& config,
+                                       int max_nesting_level);
++  std::optional<Value> ReadTagContent(const DataItemHeader& header,
++                                       const Config& config,
++                                       int max_nesting_level);
+   std::optional<uint8_t> ReadByte();
+   std::optional<base::span<const uint8_t>> ReadBytes(uint64_t num_bytes);
+   bool IsKeyInOrder(const Value& new_key,
