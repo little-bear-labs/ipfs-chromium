@@ -13,7 +13,8 @@ echo Install dependencies
 
 wget https://github.com/linux-test-project/lcov/releases/download/v2.1/lcov-2.1.tar.gz
 tar xzvf lcov-2.1.tar.gz
-export PATH+=":${PWD}/lcov-2.1/bin"
+export PATH="${PWD}/lcov-2.1/bin:${PATH}"
+hash -r
 
 pipx ensurepath
 pipx install conan
