@@ -111,7 +111,7 @@ class HttpSession : public std::enable_shared_from_this<HttpSession> {
     req_.method(http::verb::get);
     req_.target(target_);
     req_.set(http::field::host, parsed_host_);
-    if (!desc_.accept.empty() != 0u) {
+    if (static_cast<unsigned int>(!desc_.accept.empty()) != 0U) {
       req_.set("Accept", desc_.accept);
     }
     extend_time();

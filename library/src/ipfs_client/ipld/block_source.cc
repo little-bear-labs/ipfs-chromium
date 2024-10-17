@@ -4,11 +4,6 @@
 #include <sstream>
 #include <string>
 #include <string_view>
-#include <string>
-#include <string>
-#include "ipfs_client/gw/gateway_request_type.h"
-#include "ipfs_client/gw/gateway_request_type.h"
-#include "ipfs_client/gw/gateway_request_type.h"
 #include "ipfs_client/gw/gateway_request_type.h"
 
 using Self = ipfs::ipld::BlockSource;

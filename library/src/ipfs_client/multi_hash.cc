@@ -3,9 +3,6 @@
 #include <iterator>
 #include <libp2p/multi/uvarint.hpp>
 #include "vocab/byte_view.h"
-#include "vocab/byte_view.h"
-#include "vocab/byte_view.h"
-#include <string_view>
 #include <string_view>
 
 using Self = ipfs::MultiHash;

@@ -2,7 +2,6 @@
 
 #include <utility>
 #include <string>
-#include <string>
 #include <memory>
 
 using Self = ipfs::ipld::Link;

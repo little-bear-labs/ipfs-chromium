@@ -5,37 +5,12 @@
 
 #include <cstdint>
 #include <cstddef>
-#include <cstddef>
-#include <cstdint>
-#include <cstdint>
-#include <cstddef>
-#include <cstdint>
-#include <cstddef>
-#include <cstdint>
 #include <algorithm>
-#include <cstddef>
-#include <cstddef>
-#include <cstddef>
-#include <cstddef>
-#include <cstdint>
-#include <cstdint>
 #include <libp2p/multi/uvarint.hpp>
 #include "vocab/byte.h"
-#include "vocab/byte.h"
-#include "vocab/byte.h"
-#include "vocab/byte_view.h"
 #include "vocab/byte_view.h"
 #include <optional>
-#include "vocab/byte_view.h"
-#include "vocab/byte.h"
-#include "vocab/byte_view.h"
-#include "vocab/byte_view.h"
 #include <vector>
-#include "vocab/byte.h"
-#include "vocab/byte_view.h"
-#include "vocab/byte.h"
-#include "vocab/byte.h"
-#include "vocab/byte.h"
 
 namespace libp2p::multi {
 
