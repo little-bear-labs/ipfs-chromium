@@ -262,7 +262,7 @@ if(GTest_FOUND AND IN_WORKSPACE)
                 DEPENDENCIES run_tests
                 EXECUTABLE $<TARGET_FILE:unit_test_runner>
                 EXCLUDE
-                   ${unit_test_sources}
+                   */*/i*_unittest.cc
                    src/smhasher/MurmurHash3.cc
             )
         else()
