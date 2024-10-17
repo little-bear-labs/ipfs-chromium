@@ -8,10 +8,13 @@ echo Install dependencies
         doxygen \
         graphviz \
         valgrind \
-        pipx \
-        lcov # yes still install, to get dependencies
+        pipx
 
-perl -MCPAN -e 'install(Capture::Tiny)'
+for pl in lib{capture-tiny,datetime}-perl
+do
+    sudo apt-get install "${pl}"
+done
+
 wget https://github.com/linux-test-project/lcov/releases/download/v2.1/lcov-2.1.tar.gz
 tar xzvf lcov-2.1.tar.gz
 export PATH="${PWD}/lcov-2.1/bin:${PATH}"
