@@ -274,6 +274,7 @@ function(setup_target_for_coverage_lcov)
     set(LCOV_BASELINE_CMD ${LCOV_PATH} ${Coverage_LCOV_ARGS}
         --gcov-tool ${GCOV_PATH} -c --no-external -i -d .
         --ignore-errors mismatch
+        --ignore-errors unused
         -b ${BASEDIR}
         -o ${Coverage_NAME}.base )
     # Run tests
