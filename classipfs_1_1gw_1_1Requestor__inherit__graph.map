@@ -1,11 +1,10 @@
 <map id="ipfs::gw::Requestor" name="ipfs::gw::Requestor">
-<area shape="rect" id="node1" title=" " alt="" coords="240,157,387,184"/>
+<area shape="rect" id="node1" title=" " alt="" coords="240,132,387,159"/>
 <area shape="rect" id="node3" href="$classipfs_1_1CacheRequestor.html" title=" " alt="" coords="473,5,633,32"/>
 <area shape="rect" id="node4" href="$classipfs_1_1gw_1_1BlockRequestSplitter.html" title=" " alt="" coords="445,56,661,83"/>
 <area shape="rect" id="node5" href="$classipfs_1_1gw_1_1DnsLinkRequestor.html" title=" " alt="" coords="454,107,653,133"/>
 <area shape="rect" id="node6" href="$classipfs_1_1gw_1_1InlineRequestHandler.html" title=" " alt="" coords="443,157,663,184"/>
 <area shape="rect" id="node7" href="$classipfs_1_1gw_1_1MultiGatewayRequestor.html" title=" " alt="" coords="435,208,672,235"/>
-<area shape="rect" id="node8" href="$classipfs_1_1gw_1_1RequestorPool.html" title=" " alt="" coords="466,259,641,285"/>
-<area shape="rect" id="node9" href="$classipfs_1_1gw_1_1TerminatingRequestor.html" title=" " alt="" coords="442,309,665,336"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,150,192,191"/>
+<area shape="rect" id="node8" href="$classipfs_1_1gw_1_1TerminatingRequestor.html" title=" " alt="" coords="442,259,665,285"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,125,192,166"/>
 </map>

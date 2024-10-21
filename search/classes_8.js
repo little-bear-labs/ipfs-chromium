@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['identityhasher_201',['IdentityHasher',['../classipfs_1_1crypto_1_1IdentityHasher.html',1,'ipfs::crypto']]],
   ['inlinerequesthandler_202',['InlineRequestHandler',['../classipfs_1_1gw_1_1InlineRequestHandler.html',1,'ipfs::gw']]],
   ['ipfsrequest_203',['IpfsRequest',['../classipfs_1_1IpfsRequest.html',1,'ipfs']]],
   ['ipfsurlloader_204',['IpfsUrlLoader',['../classipfs_1_1IpfsUrlLoader.html',1,'ipfs']]],

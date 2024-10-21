@@ -8,7 +8,7 @@ var searchData=
   ['dagnode_44',['DagNode',['../classipfs_1_1ipld_1_1DagNode.html',1,'ipfs::ipld']]],
   ['data_45',['Data',['../structipfs_1_1PbDag_1_1Data.html',1,'ipfs::PbDag']]],
   ['decoder_46',['decoder',['../classmultibase_1_1basic__algorithm_1_1decoder.html',1,'multibase::basic_algorithm']]],
-  ['deroot_47',['deroot',['../classipfs_1_1ipld_1_1DagNode.html#a5119081ea91f0bfd54e776695569b84e',1,'ipfs::ipld::DagNode']]],
+  ['deroot_47',['deroot',['../classipfs_1_1ipld_1_1DagNode.html#a2e267b1407f04553e04d5ef217cf82ed',1,'ipfs::ipld::DagNode']]],
   ['deserialize_48',['Deserialize',['../structipfs_1_1ValidatedIpns.html#aabdd2defa62bbc9d1463fd4bef53ec23',1,'ipfs::ValidatedIpns']]],
   ['directive_49',['Directive',['../classipfs_01_1_1redirects_1_1Directive.html',1,'ipfs ::redirects']]],
   ['dirshard_50',['DirShard',['../classipfs_1_1ipld_1_1DirShard.html#ab75b2be7396edd5187d2b033858ce4f3',1,'ipfs::ipld::DirShard::DirShard()'],['../classipfs_1_1ipld_1_1DirShard.html',1,'ipfs::ipld::DirShard']]],

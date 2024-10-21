@@ -65,14 +65,14 @@ $(function() {
 <div class="title">User Preferences </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h1><a class="anchor" id="autotoc_md54"></a>
+<div class="textblock"><h1><a class="anchor" id="autotoc_md60"></a>
 Library</h1>
 <p>Users of the library configure behavior directly, via <code><a class="el" href="classipfs_1_1Client.html" title="Interface that provides functionality from whatever environment you&#39;re using this library in.">ipfs::Client</a></code>.</p>
 <p>All of the overloads to <code>with(X)</code> are there for you to alter/extend behavior. The ones related to the user preferences in Chromium are <code><a class="el" href="classipfs_1_1ctx_1_1GatewayConfig.html">ipfs::ctx::GatewayConfig</a></code> and <code>DnslinkFallbackSwitch</code>.</p>
-<h1><a class="anchor" id="autotoc_md55"></a>
+<h1><a class="anchor" id="autotoc_md61"></a>
 Chromium (components/ipfs)</h1>
 <p>As of today there is no UI for editing the user preferences that change the behavior. Some values alter themselves from feedback, e.g. if a gateway returns desired content successfully more often it will be used more frequently in the future. Others are simply left to their default values, unless one manually intervenes by changing the <code>Preferences</code> file.</p>
-<h2><a class="anchor" id="autotoc_md56"></a>
+<h2><a class="anchor" id="autotoc_md62"></a>
 Preferences file.</h2>
 <p>Find the file named Prefernces in your <a href="https://chromium.googlesource.com/chromium/src.git/+/HEAD/docs/user_data_dir.md#Current-Location">profile directory</a>. For example, for me it would be <code>~/.config/chromium/Default/Preferences</code></p>
 <p>Don't write to it while that profile is active. Race conditions are a bad idea.</p>

@@ -72,6 +72,8 @@ $(function() {
 <div class="title">ipfs::gw::InlineRequestHandler Class Reference<span class="mlabels"><span class="mlabel">final</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="inline__request__handler_8h_source.html">library/include/ipfs_client/gw/inline_request_handler.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for ipfs::gw::InlineRequestHandler:</div>
 <div class="dyncontent">
@@ -133,18 +135,21 @@ Additional Inherited Members</h2></td></tr>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>RequestPtr</b> = ::ipfs::gw::RequestPtr</td></tr>
 <tr class="separator:a5756c746cba35075d2ce68127dac7d5e inherit pub_types_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classipfs_1_1gw_1_1Requestor"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classipfs_1_1gw_1_1Requestor')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classipfs_1_1gw_1_1Requestor.html">ipfs::gw::Requestor</a></td></tr>
-<tr class="memitem:abe08c5aea632f9b3a42b9b5d2a50b245 inherit pro_methods_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="abe08c5aea632f9b3a42b9b5d2a50b245"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>definitive_failure</b> (RequestPtr) const</td></tr>
-<tr class="separator:abe08c5aea632f9b3a42b9b5d2a50b245 inherit pro_methods_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6db499668823e59448d4052a3fbec364 inherit pro_methods_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="a6db499668823e59448d4052a3fbec364"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>forward</b> (RequestPtr) const</td></tr>
 <tr class="separator:a6db499668823e59448d4052a3fbec364 inherit pro_methods_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_static_methods_classipfs_1_1gw_1_1Requestor"><td colspan="2" onclick="javascript:toggleInherit('pro_static_methods_classipfs_1_1gw_1_1Requestor')"><img src="closed.png" alt="-"/>&#160;Static Protected Member Functions inherited from <a class="el" href="classipfs_1_1gw_1_1Requestor.html">ipfs::gw::Requestor</a></td></tr>
+<tr class="memitem:abf9582cd6e32eb694cbc324fee1c23c2 inherit pro_static_methods_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="abf9582cd6e32eb694cbc324fee1c23c2"></a>
+static void&#160;</td><td class="memItemRight" valign="bottom"><b>definitive_failure</b> (RequestPtr)</td></tr>
+<tr class="separator:abf9582cd6e32eb694cbc324fee1c23c2 inherit pro_static_methods_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classipfs_1_1gw_1_1Requestor"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classipfs_1_1gw_1_1Requestor')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classipfs_1_1gw_1_1Requestor.html">ipfs::gw::Requestor</a></td></tr>
 <tr class="memitem:a3539251eb1302cf5900cc908112eb4f4 inherit pro_attribs_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="a3539251eb1302cf5900cc908112eb4f4"></a>
 std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>api_</b></td></tr>
 <tr class="separator:a3539251eb1302cf5900cc908112eb4f4 inherit pro_attribs_classipfs_1_1gw_1_1Requestor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Handles requests for inline requests, i.e. /ipfs/ with hash = identity </p><dl class="section note"><dt>Note</dt><dd>The CID contains the response </dd></dl>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/gw/<a class="el" href="inline__request__handler_8h_source.html">inline_request_handler.h</a></li>
 </ul>
 </div><!-- contents -->

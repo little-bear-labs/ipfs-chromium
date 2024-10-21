@@ -77,31 +77,35 @@ $(function() {
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; </div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">namespace </span>ipfs::ctx {</div>
-<div class="line"><a name="l00009"></a><span class="lineno"><a class="line" href="classipfs_1_1ctx_1_1TransitoryGatewayConfig.html">    9</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1ctx_1_1TransitoryGatewayConfig.html">TransitoryGatewayConfig</a> : <span class="keyword">public</span> <a class="code" href="classipfs_1_1ctx_1_1GatewayConfig.html">GatewayConfig</a> {</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  std::vector&lt;GatewaySpec&gt; gateways_;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; </div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  std::vector&lt;GatewaySpec&gt;::iterator FindGateway(std::string_view);</div>
+<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="classipfs_1_1ctx_1_1TransitoryGatewayConfig.html">   11</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1ctx_1_1TransitoryGatewayConfig.html">TransitoryGatewayConfig</a> : <span class="keyword">public</span> <a class="code" href="classipfs_1_1ctx_1_1GatewayConfig.html">GatewayConfig</a> {</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  std::vector&lt;GatewaySpec&gt; gateways_;</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160; </div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  std::optional&lt;GatewaySpec&gt; GetGateway(std::size_t index) <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <span class="keywordtype">unsigned</span> GetGatewayRate(std::string_view) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keywordtype">void</span> SetGatewayRate(std::string_view, <span class="keywordtype">unsigned</span>) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="keywordtype">void</span> AddGateway(std::string_view, <span class="keywordtype">unsigned</span>) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keywordtype">unsigned</span> RoutingApiDiscoveryDefaultRate() <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keywordtype">bool</span> RoutingApiDiscoveryOfUnencryptedGateways() <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keywordtype">int</span> GetTypeAffinity(std::string_view url_prefix,</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                      gw::GatewayRequestType) <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keywordtype">void</span> SetTypeAffinity(std::string_view url_prefix,</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                       gw::GatewayRequestType,</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                       <span class="keywordtype">int</span>) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; </div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <a class="code" href="classipfs_1_1ctx_1_1TransitoryGatewayConfig.html">TransitoryGatewayConfig</a>();</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;};</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;}  <span class="comment">// namespace ipfs::ctx</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_CHROMIUM_TRANSITORY_GATEWAY_CONFIG_H</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  std::vector&lt;GatewaySpec&gt;::iterator FindGateway(std::string_view);</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="comment">/* @param index 0-based index into list</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">   * @return The spec at index, or nullopt if index is out-of-bounds</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">   */</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  std::optional&lt;GatewaySpec&gt; GetGateway(std::size_t index) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keywordtype">unsigned</span> GetGatewayRate(std::string_view) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="keywordtype">void</span> SetGatewayRate(std::string_view, <span class="keywordtype">unsigned</span>) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keywordtype">void</span> AddGateway(std::string_view, <span class="keywordtype">unsigned</span>) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keywordtype">unsigned</span> RoutingApiDiscoveryDefaultRate() <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <span class="keywordtype">bool</span> RoutingApiDiscoveryOfUnencryptedGateways() <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keywordtype">int</span> GetTypeAffinity(std::string_view url_prefix,</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                      gw::GatewayRequestType) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keywordtype">void</span> SetTypeAffinity(std::string_view url_prefix,</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                       gw::GatewayRequestType,</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                       <span class="keywordtype">int</span>) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="classipfs_1_1ctx_1_1TransitoryGatewayConfig.html#a26ca47aa1c9d94d2f181334c724ac069">   34</a></span>&#160;  <a class="code" href="classipfs_1_1ctx_1_1TransitoryGatewayConfig.html#a26ca47aa1c9d94d2f181334c724ac069">TransitoryGatewayConfig</a>();</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;};</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;}  <span class="comment">// namespace ipfs::ctx</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; </div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_CHROMIUM_TRANSITORY_GATEWAY_CONFIG_H</span></div>
 <div class="ttc" id="aclassipfs_1_1ctx_1_1GatewayConfig_html"><div class="ttname"><a href="classipfs_1_1ctx_1_1GatewayConfig.html">ipfs::ctx::GatewayConfig</a></div><div class="ttdef"><b>Definition:</b> gateway_config.h:13</div></div>
-<div class="ttc" id="aclassipfs_1_1ctx_1_1TransitoryGatewayConfig_html"><div class="ttname"><a href="classipfs_1_1ctx_1_1TransitoryGatewayConfig.html">ipfs::ctx::TransitoryGatewayConfig</a></div><div class="ttdef"><b>Definition:</b> transitory_gateway_config.h:9</div></div>
+<div class="ttc" id="aclassipfs_1_1ctx_1_1TransitoryGatewayConfig_html"><div class="ttname"><a href="classipfs_1_1ctx_1_1TransitoryGatewayConfig.html">ipfs::ctx::TransitoryGatewayConfig</a></div><div class="ttdef"><b>Definition:</b> transitory_gateway_config.h:11</div></div>
+<div class="ttc" id="aclassipfs_1_1ctx_1_1TransitoryGatewayConfig_html_a26ca47aa1c9d94d2f181334c724ac069"><div class="ttname"><a href="classipfs_1_1ctx_1_1TransitoryGatewayConfig.html#a26ca47aa1c9d94d2f181334c724ac069">ipfs::ctx::TransitoryGatewayConfig::TransitoryGatewayConfig</a></div><div class="ttdeci">TransitoryGatewayConfig()</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

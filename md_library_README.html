@@ -65,10 +65,10 @@ $(function() {
 <div class="title">ipfs-client </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h1><a class="anchor" id="autotoc_md91"></a>
+<div class="textblock"><h1><a class="anchor" id="autotoc_md97"></a>
 Usage</h1>
 <p>For a rough example of how this is done, see <a href="https://github.com/John-LittleBearLabs/ipfs_client_clitester">this command-line tester</a></p>
-<h2><a class="anchor" id="autotoc_md92"></a>
+<h2><a class="anchor" id="autotoc_md98"></a>
 Instantiate ipfs::Client</h2>
 <p>Using code should center on the <code><a class="el" href="classipfs_1_1Client.html" title="Interface that provides functionality from whatever environment you&#39;re using this library in.">ipfs::Client</a></code> class found in <code><a class="el" href="client_8h_source.html">include/ipfs_client/client.h</a></code> There are a number of customization points for that class, particularly those things which might vary depending on which dependencies you'd like to use and/or which behaviors you'd like.</p>
 <p>Some concrete classes are provided with the library, each turned off if the corresponding dependency does not appear to be available. If you're using the Conan package, and not on Windows, all those libraries should be already linked in for you. In that case, you may use <code>ipfs::start_default</code> found in <code><a class="el" href="opinionated__context_8h_source.html">include/ipfs_client/opinionated_context.h</a></code> , which is suitable for some non-critical uses.</p>
@@ -96,11 +96,11 @@ Instantiate ipfs::Client</h2>
 <tr class="markdownTableRowOdd">
 <td class="markdownTableBodyNone"><a class="el" href="classipfs_1_1crypto_1_1SignatureVerifier.html">ipfs::crypto::SignatureVerifier</a>   </td><td class="markdownTableBodyNone">Verifies a public key signature for a particular type of key   </td><td class="markdownTableBodyNone">ipfs::crypto::OpensslSignatureVerifier   </td><td class="markdownTableBodyNone">Uses OpenSSL, but only for RSA &amp; Ed25519 keys (others are dropped)   </td></tr>
 </table>
-<h2><a class="anchor" id="autotoc_md93"></a>
+<h2><a class="anchor" id="autotoc_md99"></a>
 Get a partition</h2>
 <p><code>ipfs::Client::partition()</code> takes an arbitrary string to use as a key for that partition. The scheme for the keys is whatever you'd like it to be, but if you pass in an identical key you'll get the same partition back each time. If it's the first time for that key, a new object is created, including an isolated view of the DAGs.</p>
 <p>If you are not in a security-critical case, it's entirely reasonable to pass in <code>""</code> every time. You might also consider using URL origins to define partitioning.</p>
-<h2><a class="anchor" id="autotoc_md94"></a>
+<h2><a class="anchor" id="autotoc_md100"></a>
 Make a request</h2>
 <p><code>std::make_shared&lt;IpfsRequest&gt;(path, callback)</code></p>
 <ul>
@@ -108,10 +108,10 @@ Make a request</h2>
 <li>callback - What to call when a final response is formed.</li>
 </ul>
 <p>Pass the request to <code>partition-&gt;build_response()</code></p>
-<h2><a class="anchor" id="autotoc_md95"></a>
+<h2><a class="anchor" id="autotoc_md101"></a>
 Drive your HttpApi and DnsTxtLookup implementations</h2>
 <p>Many implementations will need some sort of event loop. Do that.</p>
-<h2><a class="anchor" id="autotoc_md96"></a>
+<h2><a class="anchor" id="autotoc_md102"></a>
 Handle response</h2>
 <p>The callback you passed to create the request. Be sure to check the second parameter's (the response's) status_ field, which contains HTTP statuses like:</p>
 <ul>

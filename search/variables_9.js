@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['path_301',['path',['../classipfs_1_1gw_1_1GatewayRequest.html#a3ed4328a2d69a9f977a2dc5f54902c05',1,'ipfs::gw::GatewayRequest']]]
+  ['resolution_5fms_301',['resolution_ms',['../structipfs_1_1ValidatedIpns.html#a6b30cf75683f0a4e62d38dea2cca5696',1,'ipfs::ValidatedIpns']]]
 ];
