@@ -5,24 +5,35 @@
 #include <ipfs_client/ipld/dag_node.h>
 #include <ipfs_client/ipld/dnslink_name.h>
 #include <ipfs_client/ipld/ipns_name.h>
-
-#include <ipfs_client/car.h>
 #include <ipfs_client/ipfs_request.h>
+#include <ipfs_client/car.h>
 #include <ipfs_client/ipns_record.h>
 #include <ipfs_client/partition.h>
 #include <ipfs_client/pb_dag.h>
-#include <ipfs_client/response.h>
+#include <ipfs_client/multi_hash.h>
+#include <ipfs_client/gw/gateway_request_type.h>
+#include <ipfs_client/http_request_description.h>
+#include <ipfs_client/ipld/block_source.h>
 
-#include "log_macros.h"
+#include <vocab/slash_delimited.h>
+#include <vocab/byte.h>
+#include <vocab/byte_view.h>
 
-#include <array>
+#include <log_macros.h>
+
+#include <memory>
+#include <optional>
+#include <cstddef>
 #include <sstream>
+#include <utility>
+#include <string>
+#include <string_view>
 
 using namespace std::literals;
 
 using Self = ipfs::gw::GatewayRequest;
 
-std::shared_ptr<Self> Self::fromIpfsPath(ipfs::SlashDelimited p) {
+auto Self::fromIpfsPath(ipfs::SlashDelimited p) -> std::shared_ptr<Self> {
   auto name_space = p.pop();
   auto r = std::make_shared<Self>();
   r->main_param = p.pop();
@@ -59,14 +70,13 @@ std::shared_ptr<Self> Self::fromIpfsPath(ipfs::SlashDelimited p) {
   return r;
 }
 
-std::string Self::url_suffix() const {
+auto Self::url_suffix() const -> std::string {
   switch (type) {
     case GatewayRequestType::Block:
       return "/ipfs/" + main_param;
     case GatewayRequestType::Car:
-      //      return "/ipfs/" + main_param + "/" + path + "?dag-scope=entity";
       return "/ipfs/" + main_param + "/" + path +
-             "?entity-bytes=0:" + std::to_string(BLOCK_RESPONSE_BUFFER_SIZE);
+             "?entity-bytes=0:" + std::to_string(2UL*CAR_RESPONSE_BUFFER_SIZE/3UL);
     case GatewayRequestType::Ipns:
       return "/ipns/" + main_param;
     case GatewayRequestType::Providers:
@@ -83,7 +93,7 @@ std::string Self::url_suffix() const {
     #endif
   return {};
 }
-std::string_view Self::accept() const {
+auto Self::accept() const -> std::string_view {
   switch (type) {
     case GatewayRequestType::Block:
       return "application/vnd.ipld.raw"sv;
@@ -102,7 +112,7 @@ std::string_view Self::accept() const {
   LOG(FATAL) << "Invalid gateway request type: " << static_cast<int>(type);
   return {};
 }
-short Self::timeout_seconds() const {
+auto Self::timeout_seconds() const -> short {
   switch (type) {
     case GatewayRequestType::DnsLink:
       return 33;
@@ -128,11 +138,11 @@ auto Self::identity_data() const -> std::string_view {
     return "";
   }
   auto hash = cid.value().hash();
-  auto d = reinterpret_cast<char const*>(hash.data());
+  const auto *d = reinterpret_cast<char const*>(hash.data());
   return std::string_view{d, hash.size()};
 }
 
-bool Self::is_http() const {
+auto Self::is_http() const -> bool {
   switch (type) {
     case GatewayRequestType::Ipns:
     case GatewayRequestType::Car:
@@ -162,7 +172,7 @@ auto Self::describe_http(std::string_view prefix) const
   return HttpRequestDescription{url, timeout_seconds(), std::string{accept()},
                                 max_response_size()};
 }
-std::optional<std::size_t> Self::max_response_size() const {
+auto Self::max_response_size() const -> std::optional<std::size_t> {
   switch (type) {
     case GatewayRequestType::Identity:
       return 0;
@@ -190,7 +200,7 @@ std::optional<std::size_t> Self::max_response_size() const {
   LOG(ERROR) << "Invalid gateway request type " << static_cast<int>(type);
   return std::nullopt;
 }
-bool Self::cachable() const {
+auto Self::cachable() const -> bool {
   using ipfs::gw::GatewayRequestType;
   switch (type) {
       //    case GatewayRequestType::Car:
@@ -208,7 +218,7 @@ bool Self::cachable() const {
   LOG(ERROR) << "Unhandled request type: " << debug_string();
   return false;
 }
-std::string Self::debug_string() const {
+auto Self::debug_string() const -> std::string {
   std::ostringstream oss;
   oss << "Request{Type=" << type << ' ' << main_param;
   if (!path.empty()) {
@@ -220,19 +230,25 @@ std::string Self::debug_string() const {
   oss << " plel=" << parallel << '}';
   return oss.str();
 }
-std::string Self::Key() const {
+auto Self::Key() const -> std::string {
   auto rv = main_param;
   //  rv.append(" ").append(name(type)).append(" ").append(path);
   return rv;
 }
-bool Self::RespondSuccessfully(std::string_view bytes,
+auto Self::root_component() const -> std::string_view {
+    return main_param;
+}
+void Self::root_component(std::string_view val) {
+    main_param.assign(val);
+}
+auto Self::RespondSuccessfully(std::string_view bytes,
                                std::shared_ptr<Client> const& api,
                                ipld::BlockSource src,
                                std::string_view roots,
-                               bool* valid) {
+                               bool* valid) -> bool {
   using namespace ipfs::ipld;
   bool success = false;
-  if (valid) {
+  if (valid != nullptr) {
     *valid = false;
   }
   FleshOut(src);
@@ -246,25 +262,25 @@ bool Self::RespondSuccessfully(std::string_view bytes,
         node->source(src);
       }
       success = orchestrator_->add_node(main_param, node);
-      if (valid) {
+      if (valid != nullptr) {
         *valid = true;
       }
     } break;
     case GatewayRequestType::Ipns:
       if (cid.has_value()) {
         DCHECK(api);
-        auto byte_ptr = reinterpret_cast<ipfs::Byte const*>(bytes.data());
+        const auto *byte_ptr = reinterpret_cast<ipfs::Byte const*>(bytes.data());
         auto rec = ipfs::ValidateIpnsRecord({byte_ptr, bytes.size()},
                                             cid.value(), *api);
         if (rec.has_value()) {
-          ValidatedIpns validated{rec.value()};
+          ValidatedIpns const validated{rec.value()};
           auto node = std::make_shared<IpnsName>(validated);
           if (!node || node->expired()) {
             return false;
           }
           node->source(src);
           success = orchestrator_->add_node(main_param, node);
-          if (valid) {
+          if (valid != nullptr) {
             *valid = !node->expired();
           }
         } else {
@@ -274,7 +290,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
       }
       break;
     case GatewayRequestType::DnsLink: {
-      Cid c{roots};
+      Cid const c{roots};
       if (c.valid()) {
         AddDnsLink("/ipfs/" + c.to_string(), success, src);
         cid = c;
@@ -293,7 +309,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
           LOG(ERROR) << "Unable to handle block from CAR: " << cid_s;
           continue;
         }
-        if (valid) {
+        if (valid != nullptr) {
           *valid = true;
         }
         if (n) {
@@ -310,7 +326,7 @@ bool Self::RespondSuccessfully(std::string_view bytes,
     }
     case GatewayRequestType::Providers:
       success = providers::ProcessResponse(bytes, *api);
-      if (valid) {
+      if (valid != nullptr) {
         *valid = success;
       }
       break;
@@ -338,7 +354,7 @@ void Self::Hook(BytesReceivedHook f) {
 void Self::orchestrator(std::shared_ptr<Partition> const& orc) {
   orchestrator_ = orc;
 }
-bool Self::PartiallyRedundant() const {
+auto Self::PartiallyRedundant() const -> bool {
   if (Finished()) {
     return true;
   }
@@ -347,7 +363,7 @@ bool Self::PartiallyRedundant() const {
   }
   return orchestrator_->has_key(main_param);
 }
-bool Self::Finished() const {
+auto Self::Finished() const -> bool {
   if (type == GatewayRequestType::Zombie) {
     return true;
   }
@@ -400,7 +416,7 @@ void Self::AddBlock(std::string_view bytes,
         success = false;
     } else {
         node->source(src);
-        if (valid) {
+        if (valid != nullptr) {
             *valid = true;
         }
         success = orchestrator_->add_node(main_param, node) || success;

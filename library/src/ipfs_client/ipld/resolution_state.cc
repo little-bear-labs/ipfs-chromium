@@ -1,6 +1,12 @@
 #include <ipfs_client/ipld/resolution_state.h>
 
 #include <ipfs_client/client.h>
+#include "vocab/slash_delimited.h"
+#include "ipfs_client/response_semantic.h"
+
+#include <utility>
+#include <string>
+#include <string_view>
 
 using Self = ipfs::ipld::ResolutionState;
 
@@ -10,9 +16,9 @@ Self::ResolutionState(SlashDelimited path_to_resolve,
     : 
       unresolved_path(path_to_resolve),
       semantic_{sem},
-      get_available_block(blu) {}
+      get_available_block(std::move(blu)) {}
 
-bool Self::IsFinalComponent() const {
+auto Self::IsFinalComponent() const -> bool {
   return !unresolved_path;
 }
 auto Self::PathToResolve() const -> SlashDelimited {
@@ -21,9 +27,9 @@ auto Self::PathToResolve() const -> SlashDelimited {
 auto Self::MyPath() const -> SlashDelimited {
   return SlashDelimited{resolved_path_components};
 }
-std::string Self::NextComponent(Client* api) const {
+auto Self::NextComponent(Client* api) const -> std::string {
   auto copy = unresolved_path;
-  if (api) {
+  if (api != nullptr) {
     return api->UnescapeUrlComponent(copy.pop());
   } else {
     return std::string{copy.pop()};
@@ -32,15 +38,15 @@ std::string Self::NextComponent(Client* api) const {
 auto Self::GetBlock(std::string const& block_key) const -> NodePtr {
   return get_available_block(block_key);
 }
-Self Self::WithPath(std::string_view p) const {
-  auto rv = *this;
-  rv.unresolved_path = SlashDelimited{p};
-  return rv;
+auto Self::WithPath(std::string_view new_path) const -> Self {
+  auto result = *this;
+  result.unresolved_path = SlashDelimited{new_path};
+  return result;
 }
 auto Self::RestartResolvedPath() const -> ResolutionState {
-  auto rv = *this;
-  rv.resolved_path_components.clear();
-  return rv;
+  auto newme = *this;
+  newme.resolved_path_components.clear();
+  return newme;
 }
 void Self::Descend() {
   auto next = unresolved_path.pop();

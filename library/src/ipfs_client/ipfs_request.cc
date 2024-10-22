@@ -2,14 +2,17 @@
 
 #include <ipfs_client/response.h>
 
-#include "log_macros.h"
+#include "ipfs_client/response_semantic.h"
 
 #include <memory>
+#include <utility>
+#include <string>
+#include <string_view>
 
 using Self = ipfs::IpfsRequest;
 
 Self::IpfsRequest(std::string path_p, Finisher f)
-    : path_{path_p}, callback_{f}, semantic_{ResponseSemantic::Http} {}
+    : path_{std::move(path_p)}, callback_{std::move(f)}, semantic_{ResponseSemantic::Http} {}
 
 Self::~IpfsRequest() noexcept {
   for (auto& cleanup : cleanups_) {
@@ -23,7 +26,7 @@ Self::~IpfsRequest() noexcept {
   }
 }
 
-std::shared_ptr<Self> Self::fromUrl(std::string url, ipfs::IpfsRequest::Finisher f) {
+auto Self::fromUrl(std::string url, ipfs::IpfsRequest::Finisher f) -> std::shared_ptr<Self> {
   url.erase(4UL, 2UL );
   url.insert(0UL, 1UL, '/');
   return std::make_shared<Self>(std::move(url), std::move(f));
@@ -42,10 +45,10 @@ void Self::finish(ipfs::Response& r) {
 void Self::new_path(std::string_view sv) {
   path_.assign(sv);
 }
-bool Self::done() const {
+auto Self::done() const -> bool {
   return !callback_;
 }
-Self& Self::semantic(std::string_view sem) {
+auto Self::semantic(std::string_view sem) -> Self& {
   if (sem.find("isting") == 1UL) {
     semantic_ = ResponseSemantic::Listing;
   } else {

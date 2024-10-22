@@ -1,10 +1,13 @@
 #include "web_util.h"
+#include <string>
+#include <string_view>
+#include <cctype>
 
 namespace u = ipfs::util;
 
-std::string u::TrivialMimeGuess(std::string ext,
+auto u::TrivialMimeGuess(std::string ext,
                                 std::string_view,
-                                std::string const&) {
+                                std::string const&) -> std::string {
   if (ext.starts_with("htm")) {
     return "text/html";
   }
@@ -19,7 +22,7 @@ std::string u::TrivialMimeGuess(std::string ext,
   }
   return "application/octet-stream";
 }
-std::string u::RoughlyUnescapeUrlComponent(std::string_view url_comp) {
+auto u::RoughlyUnescapeUrlComponent(std::string_view url_comp) -> std::string {
   std::string rv{url_comp};
   auto xval = [](char c) {
     if (c <= '9') {
@@ -42,11 +45,11 @@ std::string u::RoughlyUnescapeUrlComponent(std::string_view url_comp) {
     if (i + 2UL >= rv.size()) {
       break;
     }
-    if (!std::isxdigit(a)) {
+    if (std::isxdigit(a) == 0) {
       continue;
     }
     auto b = rv[i + 2UL];
-    if (std::isxdigit(b)) {
+    if (std::isxdigit(b) != 0) {
       rv[i] = xval(a) * 16 + xval(b);
       rv.erase(i + 1UL, 2);
     }

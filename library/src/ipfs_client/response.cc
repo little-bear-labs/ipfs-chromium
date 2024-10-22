@@ -1,4 +1,6 @@
 #include "ipfs_client/response.h"
+#include <string>
+#include <string_view>
 
 using Self = ipfs::Response;
 
@@ -16,6 +18,6 @@ Self Self::HOST_NOT_FOUND_RESPONSE{
     std::string{},
     {}};
 
-Self Self::html(std::string_view body, std::string_view location) {
+auto Self::html(std::string_view body, std::string_view location) -> Self {
   return {"text/html", 200, std::string{body}, std::string{location}, {}};
 }

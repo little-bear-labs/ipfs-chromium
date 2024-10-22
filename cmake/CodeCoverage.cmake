@@ -271,15 +271,21 @@ function(setup_target_for_coverage_lcov)
         ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} -directory . -b ${BASEDIR} --zerocounters
     )
     # Create baseline to make sure untouched files show up in the report
-    set(LCOV_BASELINE_CMD ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} -c --no-external -i -d . -b ${BASEDIR} -o ${Coverage_NAME}.base )
+    set(LCOV_BASELINE_CMD ${LCOV_PATH} ${Coverage_LCOV_ARGS}
+        --gcov-tool ${GCOV_PATH} -c --no-external -i -d .
+        --ignore-errors mismatch
+        --ignore-errors unused
+        -b ${BASEDIR}
+        -o ${Coverage_NAME}.base )
     # Run tests
     set(LCOV_EXEC_TESTS_CMD
         ${Coverage_EXECUTABLE} ${Coverage_EXECUTABLE_ARGS}
     )
     # Capturing lcov counters and generating report
     set(LCOV_CAPTURE_CMD
-        ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} --directory . -b
-        ${BASEDIR} --capture --no-external --output-file ${Coverage_NAME}.capture
+        ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} --directory .
+        -b ${BASEDIR} --capture --no-external --ignore-errors mismatch
+        --output-file ${Coverage_NAME}.capture
     )
     # add baseline counters
     set(LCOV_BASELINE_COUNT_CMD
@@ -296,8 +302,8 @@ function(setup_target_for_coverage_lcov)
         ${GENHTML_PATH}
             ${GENHTML_EXTRA_ARGS}
             ${Coverage_GENHTML_ARGS}
-            --rc genhtml_hi_limit=88
-            --rc genhtml_med_limit=74
+            --rc genhtml_hi_limit=89
+            --rc genhtml_med_limit=78
             --prefix "${BASEDIR}"
             -o ${Coverage_NAME}
             ${Coverage_NAME}.info

@@ -4,10 +4,19 @@
 #include <ipfs_client/client.h>
 #include <ipfs_client/dag_cbor_value.h>
 
-#include "log_macros.h"
-
+#include <cstdint>
 #include <ctime>
+
+#include <algorithm>
+#include <iomanip>
+#include <ios>
+#include <limits>
+#include <optional>
 #include <sstream>
+#include <string>
+#include <string_view>
+
+#include "log_macros.h"
 
 #if __has_include(<third_party/ipfs_client/ipns_record.pb.h>)
 #include <third_party/ipfs_client/ipns_record.pb.h>
@@ -16,9 +25,9 @@
 #endif
 
 namespace {
-bool matches(ipfs::MultiHash const& hash,
+auto matches(ipfs::MultiHash const& hash,
              ipfs::ByteView pubkey_bytes,
-             ipfs::Client& api) {
+             ipfs::Client& api) -> bool {
   auto result = api.Hash(hash.type(), pubkey_bytes);
   if (!result.has_value()) {
     return false;
@@ -29,16 +38,16 @@ bool matches(ipfs::MultiHash const& hash,
 void assign(std::string& out,
             ipfs::DagCborValue& top,
             std::string_view key) {
-  auto p = top.at(key);
-  if (!p) {
+  auto ptr = top.at(key);
+  if (!ptr) {
     out.assign("Key '").append(key).append("' not present in IPNS CBOR!");
   } else {
     // YEP! as_bytes() . There are only 2 string values here, they are logically
     // text, but they are defined in the spec to be bytes.
-    auto o = p->as_bytes();
-    if (o.has_value()) {
-      auto chars = reinterpret_cast<char const*>(o.value().data());
-      out.assign(chars, o.value().size());
+    auto byted = ptr->as_bytes();
+    if (byted.has_value()) {
+      const auto *chars = reinterpret_cast<char const*>(byted.value().data());
+      out.assign(chars, byted.value().size());
     } else {
       out.assign("Key '").append(key).append(
           "' was not a string in IPNS CBOR!");
@@ -136,13 +145,13 @@ auto ipfs::ValidateIpnsRecord(ipfs::ByteView top_level_bytes,
     return {};
   }
   ipfs::ipns::PublicKey pk;
-  auto* pkbp = reinterpret_cast<char const*>(public_key.data());
+  const auto* pkbp = reinterpret_cast<char const*>(public_key.data());
   if (!pk.ParseFromArray(pkbp, public_key.size())) {
     LOG(ERROR) << "Failed to parse public key bytes";
     return {};
   }
-  auto& signature_str = entry.signaturev2();
-  ByteView signature{reinterpret_cast<ipfs::Byte const*>(signature_str.data()),
+  const auto& signature_str = entry.signaturev2();
+  ByteView const signature{reinterpret_cast<ipfs::Byte const*>(signature_str.data()),
                      signature_str.size()};
   // https://specs.ipfs.tech/ipns/ipns-record/#record-verification
   //  Create bytes for signature verification by concatenating
@@ -150,10 +159,10 @@ auto ipfs::ValidateIpnsRecord(ipfs::ByteView top_level_bytes,
   //  69706e732d7369676e61747572653a) with raw CBOR bytes from IpnsEntry.data
   auto bytes_str = entry.data();
   bytes_str.insert(
-      0, "\x69\x70\x6e\x73\x2d\x73\x69\x67\x6e\x61\x74\x75\x72\x65\x3a");
-  ByteView bytes{reinterpret_cast<ipfs::Byte const*>(bytes_str.data()),
+      0, R"(ipns-signature:)");
+  ByteView const bytes{reinterpret_cast<ipfs::Byte const*>(bytes_str.data()),
                  bytes_str.size()};
-  ByteView key_bytes{reinterpret_cast<ipfs::Byte const*>(pk.data().data()),
+  ByteView const key_bytes{reinterpret_cast<ipfs::Byte const*>(pk.data().data()),
                      pk.data().size()};
   if (!api.VerifyKeySignature(static_cast<crypto::SigningKeyType>(pk.type()),
                               signature, bytes, key_bytes)) {
@@ -208,7 +217,7 @@ ipfs::ValidatedIpns::ValidatedIpns(IpnsCborEntry const& e)
   std::istringstream ss{e.validity};
   std::tm t = {};
   ss >> std::get_time(&t, "%Y-%m-%dT%H:%M:%S");
-  long ttl = static_cast<long>(e.ttl / 1'000'000'000UL) + 1;
+  long const ttl = static_cast<long>(e.ttl / 1'000'000'000UL) + 1;
 #ifdef _MSC_VER
   use_until = _mkgmtime(&t);
 #else
@@ -217,7 +226,7 @@ ipfs::ValidatedIpns::ValidatedIpns(IpnsCborEntry const& e)
   cache_until = std::time(nullptr) + ttl;
 }
 
-std::string ipfs::ValidatedIpns::Serialize() const {
+auto ipfs::ValidatedIpns::Serialize() const -> std::string {
   DCHECK_EQ(value.find(' '), std::string::npos);
   DCHECK_EQ(gateway_source.find(' '), std::string::npos);
   std::ostringstream ss;

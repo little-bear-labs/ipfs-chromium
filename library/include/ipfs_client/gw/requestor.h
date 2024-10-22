@@ -17,6 +17,8 @@ namespace ipfs::gw {
 class GatewayRequest;
 using RequestPtr = std::shared_ptr<GatewayRequest>;
 
+/*! Interface for classes that respond to IPFSRequest
+ */
 class Requestor : public std::enable_shared_from_this<Requestor> {
  public:
   enum class HandleOutcome : char {
@@ -32,7 +34,7 @@ class Requestor : public std::enable_shared_from_this<Requestor> {
 
   virtual HandleOutcome handle(RequestPtr) = 0;
 
-  void definitive_failure(RequestPtr) const;
+  static void definitive_failure(RequestPtr) ;
   void forward(RequestPtr) const;
 
   std::shared_ptr<Client> api_;

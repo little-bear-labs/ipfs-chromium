@@ -1,7 +1,12 @@
 #include <ipfs_client/ipns_names.h>
 
 #include <ipfs_client/cid.h>
+#include <string>
+#include <utility>
+#include <string_view>
+#include <ctime>
 
+#include "ipfs_client/ipns_record.h"
 #include "log_macros.h"
 
 using Self = ipfs::IpnsNames;
@@ -11,7 +16,7 @@ void Self::NoSuchName(std::string const& name) {
 }
 void Self::AssignName(std::string const& name, ValidatedIpns entry) {
   auto& res = entry.value;
-  if (res.size() && res.front() == '/') {
+  if ((static_cast<unsigned int>(!res.empty()) != 0U) && res.front() == '/') {
     res.erase(0, 1);
   }
   auto endofcid = res.find_first_of("/?#", 6);
@@ -53,9 +58,9 @@ void Self::AssignDnsLink(std::string const& name, std::string_view target) {
   AssignName(name, std::move(v));
 }
 
-std::string_view Self::NameResolvedTo(std::string_view original_name) const {
+auto Self::NameResolvedTo(std::string_view original_name) const -> std::string_view {
   std::string name{original_name};
-  std::string_view prev = "";
+  std::string_view prev;
   auto trailer = names_.end();
   auto trail_step = false;
   auto now = std::time(nullptr);
@@ -70,7 +75,7 @@ std::string_view Self::NameResolvedTo(std::string_view original_name) const {
                  << ' ' << name;
       return "";
     }
-    auto& target = it->second.value;
+    const auto& target = it->second.value;
     if (target.empty()) {
       return kNoSuchName;
     }

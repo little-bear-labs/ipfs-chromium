@@ -3,7 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <cstdint>
+#include <cstddef>
+#include <algorithm>
 #include <libp2p/multi/uvarint.hpp>
+#include "vocab/byte.h"
+#include "vocab/byte_view.h"
+#include <optional>
+#include <vector>
 
 namespace libp2p::multi {
 
@@ -29,15 +36,15 @@ UVarint::UVarint(ipfs::ByteView varint_bytes) {
 UVarint::UVarint(ipfs::ByteView varint_bytes, size_t varint_size)
     : bytes_(varint_bytes.begin(), varint_bytes.begin() + varint_size) {}
 
-std::optional<UVarint> UVarint::create(ipfs::ByteView varint_bytes) {
-  size_t size = calculateSize(varint_bytes);
+auto UVarint::create(ipfs::ByteView varint_bytes) -> std::optional<UVarint> {
+  size_t const size = calculateSize(varint_bytes);
   if (size > 0 && size <= varint_bytes.size()) {
     return UVarint{varint_bytes, size};
   }
   return {};
 }
 
-uint64_t UVarint::toUInt64() const {
+auto UVarint::toUInt64() const -> uint64_t {
   uint64_t res = 0;
   size_t index = 0;
   for (const auto& byte : bytes_) {
@@ -47,45 +54,45 @@ uint64_t UVarint::toUInt64() const {
   return res;
 }
 
-ipfs::ByteView UVarint::toBytes() const {
+auto UVarint::toBytes() const -> ipfs::ByteView {
   return ipfs::ByteView{bytes_.data(), bytes_.size()};
 }
 
-std::vector<ipfs::Byte> const& UVarint::toVector() const {
+auto UVarint::toVector() const -> std::vector<ipfs::Byte> const& {
   return bytes_;
 }
 
-size_t UVarint::size() const {
+auto UVarint::size() const -> size_t {
   return bytes_.size();
 }
 
-UVarint& UVarint::operator=(UVarint const& rhs) = default;
-UVarint& UVarint::operator=(uint64_t n) {
+auto UVarint::operator=(UVarint const& rhs) -> UVarint& = default;
+auto UVarint::operator=(uint64_t n) -> UVarint& {
   *this = UVarint(n);
   return *this;
 }
 
-bool UVarint::operator==(const UVarint& r) const {
+auto UVarint::operator==(const UVarint& r) const -> bool {
   return std::equal(bytes_.begin(), bytes_.end(), r.bytes_.begin(),
                     r.bytes_.end());
 }
 
-bool UVarint::operator!=(const UVarint& r) const {
+auto UVarint::operator!=(const UVarint& r) const -> bool {
   return !(*this == r);
 }
 
-bool UVarint::operator<(const UVarint& r) const {
+auto UVarint::operator<(const UVarint& r) const -> bool {
   return toUInt64() < r.toUInt64();
 }
 
-size_t UVarint::calculateSize(ipfs::ByteView varint_bytes) {
+auto UVarint::calculateSize(ipfs::ByteView varint_bytes) -> size_t {
   size_t size = 0;
   size_t shift = 0;
   constexpr size_t capacity = sizeof(uint64_t) * 8;
   bool last_byte_found = false;
   for (const auto& byte : varint_bytes) {
     ++size;
-    std::uint_least64_t slice = to_integer(byte) & 0x7f;
+    std::uint_least64_t const slice = to_integer(byte) & 0x7f;
     if (shift >= capacity || ((slice << shift) >> shift) != slice) {
       size = 0;
       break;

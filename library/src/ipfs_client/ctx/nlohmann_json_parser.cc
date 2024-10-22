@@ -1,5 +1,10 @@
 #include <ipfs_client/ctx/nlohmann_json_parser.h>
 
+#include <string_view>
+#include <memory>
+#include <sstream>
+#include <iomanip>
+
 #if HAS_JSON_CBOR_ADAPTER
 
 #include "log_macros.h"

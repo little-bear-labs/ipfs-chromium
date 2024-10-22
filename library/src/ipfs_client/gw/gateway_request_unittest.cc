@@ -59,7 +59,7 @@ struct GatewayRequestTest : public testing::Test {
   GatewayRequestTest() {
     orc = api->with(rtor).partition({});
     t_.orchestrator(orc);
-    t_.main_param = "main";
+    t_.root_component("main");
   }
   short timeout(RT t) {
    T gr;
@@ -91,7 +91,7 @@ TEST_F(GatewayRequestTest, RespondsToCar) {
 }
 TEST_F(GatewayRequestTest, suffices) {
   t_.type = RT::Car;
-  EXPECT_EQ(t_.url_suffix(), "/ipfs/main/?entity-bytes=0:2097152");
+  EXPECT_EQ(t_.url_suffix(), "/ipfs/main/?entity-bytes=0:3495253");
   t_.type = RT::Ipns;
   EXPECT_EQ(t_.url_suffix(), "/ipns/main");
   t_.type = RT::DnsLink;

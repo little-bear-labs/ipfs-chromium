@@ -1,72 +1,81 @@
 #include "gateway_state.h"
 
 #include <ipfs_client/gw/gateway_request.h>
+#include <string_view>
 
+#include <utility>
+#include <memory>
+#include <ctime>
+#include <cstddef>
+#include <algorithm>
+#include <limits>
+
+#include "ipfs_client/gw/gateway_request_type.h"
 #include "log_macros.h"
 
 using Self = ipfs::gw::GatewayState;
 
 Self::GatewayState(std::string_view prefix, std::shared_ptr<Client> api)
-    : prefix_{prefix}, api_{api} {
+    : prefix_{prefix}, api_{std::move(api)} {
   DCHECK(!prefix_.empty());
   last_hist_update = std::time({});
   sent_counts.fill(0U);
 }
-long Self::score(GatewayRequest const& req, unsigned baseline) const {
+auto Self::score(GatewayRequest const& req, unsigned baseline) const -> long {
   auto result = static_cast<long>(baseline);
   result += 7L * cfg().GetTypeAffinity(prefix_, req.type);
-  auto i = affinity_success.find(req.affinity);
-  if (i != affinity_success.end()) {
-    result += 8L * i->second;
+  auto aff = affinity_success.find(req.affinity);
+  if (aff != affinity_success.end()) {
+    result += 8L * aff->second;
   }
   return result;
 }
-bool Self::over_rate(unsigned req_per_min) {
+auto Self::over_rate(unsigned req_per_min) -> bool {
   return total_sent + current_bucket() > static_cast<std::size_t>(req_per_min) * MinutesTracked;
 }
-bool Self::over_rate() {
+auto Self::over_rate() -> bool {
   return over_rate(cfg().GetGatewayRate(prefix_));
 }
-bool Self::bored() const {
+auto Self::bored() const -> bool {
   return total_sent == 0UL;
 }
 void Self::just_sent_one() {
   current_bucket()++;
   ++total_sent;
 }
-unsigned int& Self::current_bucket() {
+auto Self::current_bucket() -> unsigned int& {
   auto now = std::time({});
   while (last_hist_update < now) {
     ++last_hist_update;
-    auto& c = sent_counts[last_hist_update % sent_counts.size()];
-    total_sent -= c;
-    c = 0;
+    auto& count = sent_counts[last_hist_update % sent_counts.size()];
+    total_sent -= count;
+    count = 0;
   }
   return sent_counts[last_hist_update % sent_counts.size()];
 }
 void Self::hit(GatewayRequestType grt, GatewayRequest const& req) {
-  auto& c = cfg();
-  auto typaff = c.GetTypeAffinity(prefix_, grt);
-  c.SetTypeAffinity(prefix_, grt, std::max(typaff + 9, 1));
+  auto& config = cfg();
+  auto typaff = config.GetTypeAffinity(prefix_, grt);
+  config.SetTypeAffinity(prefix_, grt, std::max(typaff + 9, 1));
   affinity_success[req.affinity] += 9;
-  auto rpm = c.GetGatewayRate(prefix_);
-  for (auto i = 8; i; --i) {
+  auto rpm = config.GetGatewayRate(prefix_);
+  for (auto i = 7; i != 0; --i) {
     if (over_rate(++rpm / i)) {
       ++rpm;
     } else {
       break;
     }
   }
-  c.SetGatewayRate(prefix_, rpm);
+  config.SetGatewayRate(prefix_, rpm);
 }
-bool Self::miss(GatewayRequestType grt, GatewayRequest const& req) {
+auto Self::miss(GatewayRequestType grt, GatewayRequest const& req) -> bool {
   auto& c = cfg();
   auto aff = c.GetTypeAffinity(prefix_, grt);
   if (aff > std::numeric_limits<decltype(aff)>::min()) {
     c.SetTypeAffinity(prefix_, grt, --aff);
   }
   auto rpm = c.GetGatewayRate(prefix_);
-  if (!rpm) {
+  if (rpm == 0U) {
     for (auto i = 0U;; ++i) {
       if (auto gw = c.GetGateway(i)) {
         auto& p = gw->prefix;
@@ -89,7 +98,7 @@ void Self::timed_out() {
   if (over_rate(rpm)) {
     return;
   }
-  if (--rpm && !over_rate(rpm / 2)) {
+  if ((--rpm != 0U) && !over_rate(rpm / 2)) {
     --rpm;
   }
   c.SetGatewayRate(prefix_, rpm);

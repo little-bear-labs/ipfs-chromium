@@ -4,6 +4,8 @@
 #include <ipfs_client/dag_json_value.h>
 
 #include <vocab/slash_delimited.h>
+#include <string_view>
+#include <string>
 
 #include "log_macros.h"
 
@@ -12,40 +14,47 @@ using namespace std::literals;
 namespace prov = ipfs::providers;
 
 namespace {
-bool default_port(std::string_view scheme, std::string_view port) {
-  if (scheme == "http") {
-    return port == "80";
-  } else if (scheme == "https") {
-    return port == "443";
-  } else {
-    LOG(ERROR)
-        << "Expected gateway's scheme to be either http or https, but it was '"
-        << scheme << "'.";
-    return false;
+class Scheme {
+  char last_ = '!';
+ public:
+  Scheme(std::string_view const name)
+  {
+    if (name.starts_with("http")) {
+      last_ = name.back();
+    }
   }
-}
-std::string MultiaddrToGatewayPrefix(ipfs::SlashDelimited ma, bool http) {
-  /* auto addr_proto = */ ma.pop();
-  auto host = ma.pop();
-  auto tcp = ma.pop();
+  [[nodiscard]] auto is_default_port(std::string_view port) const -> bool {
+    switch (last_) {
+      case 'p': return port == "80";
+      case 's': return port == "443";
+      default: return false;
+    }
+  }
+};
+
+auto MultiaddrToGatewayPrefix(ipfs::SlashDelimited maddr, bool http) -> std::string {
+  /* auto addr_proto = */ maddr.pop();
+  auto host = maddr.pop();
+  auto tcp = maddr.pop();
   DCHECK_EQ(tcp, "tcp");
-  auto port = ma.pop();
-  auto app_proto = ma.pop();
+  auto port = maddr.pop();
+  auto app_proto = maddr.pop();
   if (app_proto == "http" && !http) {
     LOG(INFO) << "Rejecting http:// gateway discovery due to config.";
     return "";
   }
   DCHECK_EQ(app_proto.substr(0, 4), "http");
-  std::string rv{app_proto};
-  rv.append("://").append(host);
-  if (!default_port(app_proto, port)) {
-    rv.append(":").append(port);
+  std::string prefix{app_proto};
+  prefix.append("://").append(host);
+  Scheme const schm{app_proto};
+  if (!schm.is_default_port(port)) {
+    prefix.append(":").append(port);
   }
-  rv.append("/").append(ma.to_view());
-  return rv;
+  prefix.append("/").append(maddr.to_view());
+  return prefix;
 }
 
-bool ParseProvider(ipfs::DagJsonValue const& provider, ipfs::Client& api) {
+auto ParseProvider(ipfs::DagJsonValue const& provider, ipfs::Client& api) -> bool {
   auto proto = provider["Protocol"sv];
   if (!proto) {
     // Perhaps Schema == peer. Not an error, but not used as of now.
@@ -71,9 +80,9 @@ bool ParseProvider(ipfs::DagJsonValue const& provider, ipfs::Client& api) {
     if (auto s = addr.get_if_string()) {
       auto& c = api.gw_cfg();
       auto http = c.RoutingApiDiscoveryOfUnencryptedGateways();
-      ipfs::SlashDelimited sd{s.value()};
+      ipfs::SlashDelimited const sd{s.value()};
       auto gw_pre = MultiaddrToGatewayPrefix(sd, http);
-      if (gw_pre.size()) {
+      if (static_cast<unsigned int>(!gw_pre.empty()) != 0U) {
         c.AddGateway(gw_pre, c.RoutingApiDiscoveryDefaultRate());
         rv = true;
       }
@@ -91,7 +100,7 @@ bool ParseProvider(ipfs::DagJsonValue const& provider, ipfs::Client& api) {
 }
 }  // namespace
 
-bool prov::ProcessResponse(std::string_view json_str, Client& api) {
+auto prov::ProcessResponse(std::string_view json_str, Client& api) -> bool {
   if (json_str.empty()) {
     LOG(ERROR) << "Empty body in response to routing/v1 providers request.";
     return false;

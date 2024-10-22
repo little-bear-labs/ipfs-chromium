@@ -2,13 +2,17 @@
 
 #include <ipfs_client/ctx/gateway_config.h>
 
+#include <cstdlib>
 #include <sstream>
+#include <string>
+#include <utility>
+#include <string_view>
 
 namespace ctx = ipfs::ctx;
 
-bool ctx::LoadGatewaysFromEnvironmentVariable(ipfs::ctx::GatewayConfig& cfg) {
+auto ctx::LoadGatewaysFromEnvironmentVariable(ipfs::ctx::GatewayConfig& cfg) -> bool {
   auto* ovr = std::getenv("IPFS_GATEWAY");
-  if (!ovr) {
+  if (ovr == nullptr) {
     return false;
   }
   std::istringstream user_override{ovr};
@@ -29,24 +33,24 @@ bool ctx::LoadGatewaysFromEnvironmentVariable(ipfs::ctx::GatewayConfig& cfg) {
 
 void ctx::LoadStaticGatewayList(ipfs::ctx::GatewayConfig& cfg) {
   auto static_list = {
-      std::pair<std::string_view, int>{"http://127.0.0.1:8080/", 1029},
-      {"https://ipfs.io/", 1008},
-      {"https://dweb.link/", 955},
+      std::pair<std::string_view, int>{"http://127.0.0.1:8080/", 1036},
+      {"https://ipfs.io/", 977},
+      {"https://dweb.link/", 949},
       {"https://trustless-gateway.link/", 945},
-      {"https://hardbin.com/", 935},
-      {"https://ipfs.joaoleitao.org/", 873},
-      {"https://ipfs.greyh.at/", 872},
-      {"https://dlunar.net/", 713},
-      {"https://flk-ipfs.io/", 697},
-      {"https://ipfs.cyou/", 483},
-      {"https://human.mypinata.cloud/", 424},
-      {"https://jcsl.hopto.org/", 386},
-      {"https://delegated-ipfs.dev/", 336},
-      {"https://4everland.io/", 310},
-      {"https://ipfs.runfission.com/", 280},
-      {"https://gateway.pinata.cloud/", 153},
-      {"https://dag.w3s.link/", 147},
-      {"https://ipfs.eth.aragon.network/", 12},
+      {"https://hardbin.com/", 924},
+      {"https://ipfs.greyh.at/", 865},
+      {"https://ipfs.joaoleitao.org/", 861},
+      {"https://dlunar.net/", 702},
+      {"https://flk-ipfs.io/", 686},
+      {"https://ipfs.cyou/", 477},
+      {"https://human.mypinata.cloud/", 418},
+      {"https://jcsl.hopto.org/", 375},
+      {"https://delegated-ipfs.dev/", 330},
+      {"https://4everland.io/", 303},
+      {"https://ipfs.runfission.com/", 274},
+      {"https://gateway.pinata.cloud/", 147},
+      {"https://dag.w3s.link/", 141},
+      {"https://ipfs.eth.aragon.network/", 14},
       {"https://data.filstorage.io/", 10},
       {"https://storry.tv/", 9},
 

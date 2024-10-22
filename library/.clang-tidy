@@ -1,41 +1,27 @@
-  Checks:          '-*,
-                    bugprone-a*,
-                    bugprone-b*,
-                    bugprone-dangling-handle,
-                    bugprone-forward-declaration-namespace,
-                    bugprone-inaccurate-erase,
-                    bugprone-string-constructor,
-                    bugprone-string-integer-assignment,
-                    bugprone-undefined-memory-manipulation,
-                    bugprone-unique-ptr-array-mismatch,
-                    bugprone-unused-raii,
-                    bugprone-use-after-move,
-                    bugprone-virtual-near-miss,
-                    google-build-explicit-make-pair,
-                    google-default-arguments,
-                    google-explicit-constructor,
-                    google-objc-avoid-nsobject-new,
-                    google-upgrade-googletest-case,
-                    misc-misleading-identifier,
-                    misc-homoglyph,
-                    modernize-avoid-bind,
-                    modernize-concat-nested-namespaces,
-                    modernize-loop-convert,
-                    modernize-make-shared,
-                    modernize-make-unique,
-                    modernize-redundant-void-arg,
-                    modernize-replace-random-shuffle,
-                    modernize-shrink-to-fit,
-                    modernize-use-bool-literals,
-                    modernize-use-default-member-init,
-                    modernize-use-emplace,
-                    modernize-use-equals-default,
-                    modernize-use-equals-delete,
-                    modernize-use-noexcept,
-                    modernize-use-nullptr,
-                    modernize-use-override,
-                    modernize-use-transparent-functors,
-                    readability-redundant-member-init'
+# bugprone-unc* takes too long
+# misc-include-cleaner finds includes that are directly used, thinks they're not, and removes them breaking code
+# readability-else-after-return is oftentimes not more readable
+# reability-named-parameter complains about parameters whose names are commented out because they're unused
+# readability-qualified-auto can cause iterators (especially into std::array) to be declared as auto* which is both generally wrong, but also causes it to not build when array is defined slightly differently e.g. when the iterator is std::__wrap_iter
+  Checks:          'bugpr*,
+                    -bugprone-unc*,
+                    -bugprone-m*,
+                    -bugprone-n*,
+                    -bugprone-o*,
+                    -bugprone-p*,
+                    -bugprone-r*,
+                    -bugprone-s*,
+                    -bugprone-t*,
+                    -bugprone-und*,
+                    -bugprone-unh*,
+                    -bugprone-uni*,
+                    misc-*,
+                    -misc-include-cleaner,
+                    moder*,
+                    reada*,
+                    -readability-else-after-return,
+                    -readability-named-parameter,
+                    -readability-qualified-auto'
   CheckOptions:
     - key:          bugprone-assert-side-effect.AssertMacros
       value:        assert,DCHECK
@@ -54,5 +40,7 @@
     # https://groups.google.com/a/chromium.org/g/cxx/c/noMMTNYiM0w .
     - key:          modernize-use-emplace.IgnoreImplicitConstructors
       value:        1
-WarningsAsErrors: '*'
+CompileFlags:
+    Add: -Wno-unknown-warning-option
+    Remove: -fprofile-abs-path
 ...

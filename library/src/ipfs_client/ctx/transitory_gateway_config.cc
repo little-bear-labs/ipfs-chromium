@@ -1,9 +1,16 @@
 #include <ipfs_client/ctx/transitory_gateway_config.h>
 
 #include "ipfs_client/ctx/default_gateways.h"
+#include "ipfs_client/gateway_spec.h"
+#include "ipfs_client/gw/gateway_request_type.h"
 #include "log_macros.h"
 
 #include <algorithm>
+#include <optional>
+#include <cstddef>
+#include <string_view>
+#include <string>
+#include <vector>
 
 using Self = ipfs::ctx::TransitoryGatewayConfig;
 
@@ -15,7 +22,7 @@ Self::TransitoryGatewayConfig() {
             [](auto& a, auto& b) { return a.prefix < b.prefix; });
 }
 
-std::optional<ipfs::GatewaySpec> Self::GetGateway(std::size_t index) const {
+auto Self::GetGateway(std::size_t index) const -> std::optional<ipfs::GatewaySpec> {
   if (index < gateways_.size()) {
     return gateways_.at(index);
   }
@@ -42,7 +49,7 @@ void Self::SetGatewayRate(std::string_view prefix, unsigned int rate) {
               << " to " << rate;
   }
 }
-unsigned Self::GetGatewayRate(std::string_view prefix) {
+auto Self::GetGatewayRate(std::string_view prefix) -> unsigned {
   auto i = FindGateway(prefix);
   return gateways_.end() == i ? 60U : i->rate;
 }
@@ -51,13 +58,13 @@ auto Self::FindGateway(std::string_view prefix)
   auto cmp = [](auto& g, std::string_view p) { return g.prefix < p; };
   return std::lower_bound(gateways_.begin(), gateways_.end(), prefix, cmp);
 }
-unsigned Self::RoutingApiDiscoveryDefaultRate() const {
+auto Self::RoutingApiDiscoveryDefaultRate() const -> unsigned {
   return 60U;
 }
-bool Self::RoutingApiDiscoveryOfUnencryptedGateways() const {
+auto Self::RoutingApiDiscoveryOfUnencryptedGateways() const -> bool {
   return true;
 }
-int Self::GetTypeAffinity(std::string_view, gw::GatewayRequestType) const {
+auto Self::GetTypeAffinity(std::string_view, gw::GatewayRequestType) const -> int {
   return 9;
 }
 void Self::SetTypeAffinity(std::string_view, gw::GatewayRequestType, int) {}
