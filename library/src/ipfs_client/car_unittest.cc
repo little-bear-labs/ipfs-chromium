@@ -2,6 +2,8 @@
 
 #include <mock_api.h>
 
+#include <ipfs_client/ctx/null_cbor_parser.h>
+
 #include <algorithm>
 #include <filesystem>
 #include <fstream>
@@ -31,13 +33,10 @@ struct CarTest : public testing::Test {
     while (auto block = car.NextBlock()) {
       rv.push_back(block->cid);
     }
-    EXPECT_GT(rv.size(), 1UL);
     return rv;
   }
 };
 }  // namespace
-
-TEST_F(CarTest,Noop) {}
 
 #if HAS_JSON_CBOR_ADAPTER
 
@@ -70,3 +69,9 @@ TEST_F(CarTest, V2FromOfficialTestFixture) {
             "bafkreifc4hca3inognou377hfhvu2xfchn2ltzi7yu27jkaeujqqqdbjju");
 }
 #endif
+TEST_F(CarTest, NullParserFail) {
+  api->with(std::make_unique<ic::NullCborParser>());
+  auto result =
+      list("bafybeifyeyhzmhj5fg2f5v7k4gsvazw7iwsjehpq77o54vd4kwdd3fud3y");
+  EXPECT_EQ(result.size(),0UL);
+}

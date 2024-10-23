@@ -60,8 +60,8 @@ constexpr auto adapt(std::string_view name) -> imb::Codec {
 }
 }  // namespace
 
-auto imb::Codec::Get(Code c) -> Codec const* {
-  switch (c) {
+auto imb::Codec::Get(Code code) -> Codec const* {
+  switch (code) {
     case Code::IDENTITY:
     case Code::UNSUPPORTED:
     case Code::BASE64:

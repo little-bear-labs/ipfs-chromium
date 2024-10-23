@@ -52,9 +52,9 @@ auto Node::fromBytes(std::shared_ptr<Client> const& api,
     return {};
   }
   for (auto i = 0U; i < hash.value().size(); ++i) {
-    auto e = cid.hash()[i];
-    auto a = hash.value().at(i);
-    if (e != a) {
+    auto expected = cid.hash()[i];
+    auto actual = hash.value().at(i);
+    if (expected != actual) {
       return {};
     }
   }
