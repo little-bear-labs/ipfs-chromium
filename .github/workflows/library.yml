@@ -21,10 +21,7 @@ jobs:
         with:
           files: build/library/cov.info
       - name: Run Doxygen
-        run: |
-          cmake --build build --config Debug --target doc
-          ls -lrth build/doc/html
-          mv -v ipfs_chromium/.git .
+        run: ./ipfs_chromium/.github/doc.sh
       - name: UpDoc
         uses: JamesIves/github-pages-deploy-action@v4
         with:

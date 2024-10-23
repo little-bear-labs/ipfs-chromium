@@ -6,9 +6,9 @@ from cache_vars import build_dir, CACHE_VARS
 from glob import glob
 import os
 from os import listdir, readlink, set_blocking, symlink
-from os.path import dirname, exists, isdir, isfile, islink, join, relpath, splitext
-from subprocess import DEVNULL, Popen, PIPE, TimeoutExpired
-from sys import executable, stderr
+from os.path import dirname, exists, isdir, isfile, islink, join, splitext
+from subprocess import DEVNULL, Popen, PIPE
+from sys import stderr
 
 import json
 

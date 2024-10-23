@@ -16,7 +16,8 @@ from os.path import (
 )
 from shutil import copyfile, rmtree
 from subprocess import call, CalledProcessError, check_call, check_output, DEVNULL
-from sys import argv, executable, exit, platform, stderr
+import sys
+from sys import argv, executable, platform, stderr
 from time import ctime, time
 from verbose import verbose
 
@@ -28,7 +29,7 @@ except Exception as ex:
     verbose('Installed requests because of', ex)
 
 
-VERSION_CLOSE_ENOUGH = 30119
+VERSION_CLOSE_ENOUGH = 30120
 LARGE_INT = 9876543210
 here = dirname(__file__)
 
@@ -66,7 +67,7 @@ def content_differs(ap, bp):
                 return a.read() != b.read()
             except Exception as e:
                 print(f"Error diffing {ap} against {bp}: {e}", file=stderr)
-                exit(7)
+                sys.exit(7)
 
 
 class Result(Enum):
@@ -227,7 +228,7 @@ class Patcher:
                         ") with",
                         patch_path,
                     )
-                    exit(8)
+                    sys.exit(8)
 
     def git(self, args: list[str], result: Result) -> str:
         a = [self.gbin, "-C", self.csrc] + args
@@ -577,7 +578,7 @@ if __name__ == "__main__":
                 end = len(line) - len(SUFFIX) - 1
                 pch = line[len(PREFIX): end]
                 if pr.out_of_date(pch):
-                    exit(9)
+                    sys.exit(9)
                 else:
                     pr.git(["add", line[3:]], Result.OrDie)
     else:

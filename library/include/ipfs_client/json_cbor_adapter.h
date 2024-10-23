@@ -145,7 +145,6 @@ class JsonCborAdapter final : public DagCborValue, public DagJsonValue {
   }
 };
 }  // namespace ipfs
-
 #endif
 
 #endif  // IPFS_JSON_CBOR_ADAPTER_H_

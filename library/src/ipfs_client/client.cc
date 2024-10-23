@@ -17,6 +17,7 @@
 #include "ipfs_client/ctx/gateway_config.h"
 #include "ipfs_client/ctx/json_parser.h"
 #include "ipfs_client/ctx/cbor_parser.h"
+#include "ipfs_client/ctx/null_cbor_parser.h"
 #include "ipfs_client/ctx/nlohmann_cbor_parser.h"
 #include "ipfs_client/ctx/nlohmann_json_parser.h"
 #include "ipfs_client/ctx/null_dns_txt_lookup.h"
@@ -49,9 +50,9 @@ Self::Client() {
 #endif
 }
 
-auto Self::Hash(HashType ht, ByteView data)
+auto Self::Hash(HashType hash_type, ByteView data)
     -> std::optional<std::vector<Byte>> {
-  auto it = hashers_.find(ht);
+  auto it = hashers_.find(hash_type);
   if (hashers_.end() == it || !(it->second)) {
     return std::nullopt;
   }
@@ -137,7 +138,8 @@ auto Self::cbor() -> ctx::CborParser& {
 #if HAS_JSON_CBOR_ADAPTER
     cbor_parser_ = std::make_unique<ctx::NlohmannCborParser>();
 #else
-    LOG(FATAL) << "A CBOR parser must be provided.";
+    LOG(ERROR) << "CBOR parsing requested, but no valid parser added to ipfs::Client context!";
+    cbor_parser_ = std::make_unique<ctx::NullCborParser>();
 #endif
   }
   DCHECK(cbor_parser_);
