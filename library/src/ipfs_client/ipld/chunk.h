@@ -4,6 +4,12 @@
 #include <ipfs_client/ipld/dag_node.h>
 
 namespace ipfs::ipld {
+/*! A chunk of bytes.
+ *  @details The node may have been a raw codec,
+ *  or a UnixFS file or UnixFS raw,
+ *  but when traversing to get a final response they all kind of behave the same.
+ *  It's a leaf.
+ */
 class Chunk : public DagNode {
   std::string const data_;
 

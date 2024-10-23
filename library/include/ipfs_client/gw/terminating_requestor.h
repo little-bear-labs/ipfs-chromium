@@ -4,6 +4,9 @@
 #include "requestor.h"
 
 namespace ipfs::gw {
+/*! Intended to appear at the end of the decorator list,
+ *  This requestor doesn't issue requests, but just wraps up loose ends.
+ */
 class TerminatingRequestor : public Requestor {
  public:
   using HandleOutcome = Requestor::HandleOutcome;
