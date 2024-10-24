@@ -49,9 +49,9 @@ Self::Client() {
 #endif
 }
 
-auto Self::Hash(HashType ht, ByteView data)
+auto Self::Hash(HashType hash_type, ByteView data)
     -> std::optional<std::vector<Byte>> {
-  auto it = hashers_.find(ht);
+  auto it = hashers_.find(hash_type);
   if (hashers_.end() == it || !(it->second)) {
     return std::nullopt;
   }

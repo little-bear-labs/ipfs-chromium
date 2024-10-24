@@ -25,12 +25,12 @@ struct CallbackCallback {
 };
 }  // namespace
 extern "C" {
-static void c_ares_c_callback(void* vp,
+static void c_ares_c_callback(void* cbcb_voidptr,
                               int status,
                               int /*timeouts*/,
                               unsigned char* abuf,
                               int alen) {
-  auto cbcb = reinterpret_cast<CallbackCallback*>(vp);
+  auto cbcb = reinterpret_cast<CallbackCallback*>(cbcb_voidptr);
   struct ares_txt_reply* txt_out = nullptr;
   LOG(INFO) << "Buffer contains " << alen << " bytes.";
   if ((abuf != nullptr) && (alen != 0) && (ares_parse_txt_reply(abuf, alen, &txt_out) == 0) && (txt_out != nullptr)) {
