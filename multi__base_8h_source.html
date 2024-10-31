@@ -100,18 +100,22 @@ $(function() {
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">using</span> Decoder = std::vector&lt;Byte&gt; (*)(std::string_view);</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">using</span> Encoder = std::string (*)(ByteView);</div>
 <div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="structipfs_1_1mb_1_1Codec.html">   34</a></span>&#160;<span class="keyword">struct </span><a class="code" href="structipfs_1_1mb_1_1Codec.html">Codec</a> {</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  Decoder <span class="keyword">const</span> decode;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  Encoder <span class="keyword">const</span> encode;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  std::string_view <span class="keyword">const</span> name;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keyword">static</span> <a class="code" href="structipfs_1_1mb_1_1Codec.html">Codec</a> <span class="keyword">const</span>* Get(Code);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;};</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;std::string encode(Code, ByteView);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;std::optional&lt;std::vector&lt;Byte&gt;&gt; decode(std::string_view mb_str);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;}  <span class="comment">// namespace ipfs::mb</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; </div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_MB_PREFIXES_H_</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="structipfs_1_1mb_1_1Codec.html#ae213da1ff31a47993b97b67acaa9a247">   37</a></span>&#160;  Decoder <span class="keyword">const</span> <a class="code" href="structipfs_1_1mb_1_1Codec.html#ae213da1ff31a47993b97b67acaa9a247">decode</a>;</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="structipfs_1_1mb_1_1Codec.html#a6506dd8300fb8c8c5535c8d273a3aa1b">   40</a></span>&#160;  Encoder <span class="keyword">const</span> <a class="code" href="structipfs_1_1mb_1_1Codec.html#a6506dd8300fb8c8c5535c8d273a3aa1b">encode</a>;</div>
+<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="structipfs_1_1mb_1_1Codec.html#a98b1d815b3c24bd3177993dfdb14ea32">   44</a></span>&#160;  std::string_view <span class="keyword">const</span> <a class="code" href="structipfs_1_1mb_1_1Codec.html#a98b1d815b3c24bd3177993dfdb14ea32">name</a>;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keyword">static</span> <a class="code" href="structipfs_1_1mb_1_1Codec.html">Codec</a> <span class="keyword">const</span>* <a class="code" href="structipfs_1_1mb_1_1Codec.html#a8aca59aac9668c2044c876a7ebc4ac23">Get</a>(Code code);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;};</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;std::string encode(Code, ByteView);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;std::optional&lt;std::vector&lt;Byte&gt;&gt; decode(std::string_view mb_str);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}  <span class="comment">// namespace ipfs::mb</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160; </div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_MB_PREFIXES_H_</span></div>
 <div class="ttc" id="astructipfs_1_1mb_1_1Codec_html"><div class="ttname"><a href="structipfs_1_1mb_1_1Codec.html">ipfs::mb::Codec</a></div><div class="ttdef"><b>Definition:</b> multi_base.h:34</div></div>
+<div class="ttc" id="astructipfs_1_1mb_1_1Codec_html_a6506dd8300fb8c8c5535c8d273a3aa1b"><div class="ttname"><a href="structipfs_1_1mb_1_1Codec.html#a6506dd8300fb8c8c5535c8d273a3aa1b">ipfs::mb::Codec::encode</a></div><div class="ttdeci">Encoder const encode</div><div class="ttdef"><b>Definition:</b> multi_base.h:40</div></div>
+<div class="ttc" id="astructipfs_1_1mb_1_1Codec_html_a8aca59aac9668c2044c876a7ebc4ac23"><div class="ttname"><a href="structipfs_1_1mb_1_1Codec.html#a8aca59aac9668c2044c876a7ebc4ac23">ipfs::mb::Codec::Get</a></div><div class="ttdeci">static Codec const  * Get(Code code)</div><div class="ttdef"><b>Definition:</b> multi_base.cc:63</div></div>
+<div class="ttc" id="astructipfs_1_1mb_1_1Codec_html_a98b1d815b3c24bd3177993dfdb14ea32"><div class="ttname"><a href="structipfs_1_1mb_1_1Codec.html#a98b1d815b3c24bd3177993dfdb14ea32">ipfs::mb::Codec::name</a></div><div class="ttdeci">std::string_view const name</div><div class="ttdef"><b>Definition:</b> multi_base.h:44</div></div>
+<div class="ttc" id="astructipfs_1_1mb_1_1Codec_html_ae213da1ff31a47993b97b67acaa9a247"><div class="ttname"><a href="structipfs_1_1mb_1_1Codec.html#ae213da1ff31a47993b97b67acaa9a247">ipfs::mb::Codec::decode</a></div><div class="ttdeci">Decoder const decode</div><div class="ttdef"><b>Definition:</b> multi_base.h:37</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

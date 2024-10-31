@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['ipfs_5fabs_5fpaths_5f_297',['ipfs_abs_paths_',['../structipfs_1_1ipld_1_1MoreDataNeeded.html#afcdc9e3c2f035b7354026b0f26786839',1,'ipfs::ipld::MoreDataNeeded']]]
+  ['fetch_5ftime_304',['fetch_time',['../structipfs_1_1ValidatedIpns.html#a2848fb8db773402c46dfe9d53303d845',1,'ipfs::ValidatedIpns']]]
 ];

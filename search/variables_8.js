@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['path_300',['path',['../classipfs_1_1gw_1_1GatewayRequest.html#a3ed4328a2d69a9f977a2dc5f54902c05',1,'ipfs::gw::GatewayRequest']]]
+  ['knosuchname_307',['kNoSuchName',['../classipfs_1_1IpnsNames.html#acc72608629b918371d3c8039ae913915',1,'ipfs::IpnsNames']]]
 ];

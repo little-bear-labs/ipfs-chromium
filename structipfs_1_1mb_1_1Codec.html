@@ -89,26 +89,102 @@ Collaboration diagram for ipfs::mb::Codec:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ae17307557bdbd3a37d8dc53c1ebeab79"><td class="memItemLeft" align="right" valign="top"><a id="ae17307557bdbd3a37d8dc53c1ebeab79"></a>
-static <a class="el" href="structipfs_1_1mb_1_1Codec.html">Codec</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><b>Get</b> (Code)</td></tr>
-<tr class="separator:ae17307557bdbd3a37d8dc53c1ebeab79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8aca59aac9668c2044c876a7ebc4ac23"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="structipfs_1_1mb_1_1Codec.html">Codec</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1mb_1_1Codec.html#a8aca59aac9668c2044c876a7ebc4ac23">Get</a> (Code code)</td></tr>
+<tr class="separator:a8aca59aac9668c2044c876a7ebc4ac23"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:ae213da1ff31a47993b97b67acaa9a247"><td class="memItemLeft" align="right" valign="top"><a id="ae213da1ff31a47993b97b67acaa9a247"></a>
-Decoder const&#160;</td><td class="memItemRight" valign="bottom"><b>decode</b></td></tr>
+<tr class="memitem:ae213da1ff31a47993b97b67acaa9a247"><td class="memItemLeft" align="right" valign="top">Decoder const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1mb_1_1Codec.html#ae213da1ff31a47993b97b67acaa9a247">decode</a></td></tr>
 <tr class="separator:ae213da1ff31a47993b97b67acaa9a247"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6506dd8300fb8c8c5535c8d273a3aa1b"><td class="memItemLeft" align="right" valign="top"><a id="a6506dd8300fb8c8c5535c8d273a3aa1b"></a>
-Encoder const&#160;</td><td class="memItemRight" valign="bottom"><b>encode</b></td></tr>
+<tr class="memitem:a6506dd8300fb8c8c5535c8d273a3aa1b"><td class="memItemLeft" align="right" valign="top">Encoder const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1mb_1_1Codec.html#a6506dd8300fb8c8c5535c8d273a3aa1b">encode</a></td></tr>
 <tr class="separator:a6506dd8300fb8c8c5535c8d273a3aa1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a98b1d815b3c24bd3177993dfdb14ea32"><td class="memItemLeft" align="right" valign="top"><a id="a98b1d815b3c24bd3177993dfdb14ea32"></a>
-std::string_view const&#160;</td><td class="memItemRight" valign="bottom"><b>name</b></td></tr>
+<tr class="memitem:a98b1d815b3c24bd3177993dfdb14ea32"><td class="memItemLeft" align="right" valign="top">std::string_view const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structipfs_1_1mb_1_1Codec.html#a98b1d815b3c24bd3177993dfdb14ea32">name</a></td></tr>
 <tr class="separator:a98b1d815b3c24bd3177993dfdb14ea32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Base class for multibase codecs</p>
+<div class="textblock"><p>Form of multibase codecs</p>
 <p><a href="https://github.com/multiformats/multibase">https://github.com/multiformats/multibase</a> </p>
-</div><hr/>The documentation for this struct was generated from the following files:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a8aca59aac9668c2044c876a7ebc4ac23"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8aca59aac9668c2044c876a7ebc4ac23">&#9670;&nbsp;</a></span>Get()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">auto ipfs::mb::Codec::Get </td>
+          <td>(</td>
+          <td class="paramtype">Code&#160;</td>
+          <td class="paramname"><em>code</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Struct</td><td>with the above fields filled </td></tr>
+    <tr><td class="paramname">code</td><td>The multibase to fetch </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="ae213da1ff31a47993b97b67acaa9a247"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae213da1ff31a47993b97b67acaa9a247">&#9670;&nbsp;</a></span>decode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Decoder const ipfs::mb::Codec::decode</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Functor to turn a multibase string into binary </p>
+
+</div>
+</div>
+<a id="a6506dd8300fb8c8c5535c8d273a3aa1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6506dd8300fb8c8c5535c8d273a3aa1b">&#9670;&nbsp;</a></span>encode</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Encoder const ipfs::mb::Codec::encode</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Functor to turn binary data into a multibase </p>
+
+</div>
+</div>
+<a id="a98b1d815b3c24bd3177993dfdb14ea32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a98b1d815b3c24bd3177993dfdb14ea32">&#9670;&nbsp;</a></span>name</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view const ipfs::mb::Codec::name</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The name of the multibase in question. Should match the name found in the multibase table. </p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following files:<ul>
 <li>library/include/ipfs_client/<a class="el" href="multi__base_8h_source.html">multi_base.h</a></li>
 <li>library/src/ipfs_client/multi_base.cc</li>
 </ul>

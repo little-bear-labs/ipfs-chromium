@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['resolution_5fms_301',['resolution_ms',['../structipfs_1_1ValidatedIpns.html#a6b30cf75683f0a4e62d38dea2cca5696',1,'ipfs::ValidatedIpns']]]
+  ['name_308',['name',['../structipfs_1_1mb_1_1Codec.html#a98b1d815b3c24bd3177993dfdb14ea32',1,'ipfs::mb::Codec']]],
+  ['node_309',['node',['../classipfs_1_1ipld_1_1Link.html#aa5aefd48f6060740b18ea0bcaca5576c',1,'ipfs::ipld::Link']]]
 ];
