@@ -12,7 +12,9 @@ namespace ipfs::gw {
  */
 class DnsLinkRequestor final : public Requestor {
  public:
-  explicit DnsLinkRequestor(std::shared_ptr<Client>);
+  /*! @param api The Client context API
+   */
+  explicit DnsLinkRequestor(std::shared_ptr<Client> api);
 
   HandleOutcome handle(RequestPtr) override;
   std::string_view name() const override;

@@ -1,6 +1,7 @@
 #!/bin/bash -ex
 
-export here="$(dirname "${0}")"
+here="$(dirname "${0}")"
+export here
 source "${here}/ubuntu-deps.env"
 
 conan profile detect

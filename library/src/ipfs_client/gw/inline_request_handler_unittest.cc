@@ -27,7 +27,7 @@ TEST(InlineRequestHanlder, bluesky) {
   r->type = RT::Identity;
   r->orchestrator(orc);
   i::MultiHash h(i::HashType::IDENTITY, i::as_bytes("abc"sv));
-  r->cid = Cid(i::MultiCodec::RAW, h);
+  r->cid({i::MultiCodec::RAW, h});
   auto res = t.handle(r);
   EXPECT_EQ(static_cast<char>(res), 'D');
 }

@@ -14,7 +14,10 @@ namespace ipfs::ctx {
  */
 class CborParser {
  public:
-  virtual std::unique_ptr<DagCborValue> Parse(ByteView) = 0;
+  /*! @param cbor The CBOR to parse
+   *  @return The DOM value, or NULL if there was an error
+   */
+  virtual std::unique_ptr<DagCborValue> Parse(ByteView cbor) = 0;
   virtual ~CborParser() noexcept {}
 };
 }  // namespace ipfs::ctx

@@ -11,6 +11,8 @@ namespace ipfs::crypto {
 class SignatureVerifier {
  public:
   virtual ~SignatureVerifier() noexcept {}
+  /*! Non-owned bytes
+   */
   using ByteView = ipfs::ByteView;
   virtual bool VerifySignature(ByteView signature,
                                ByteView data,

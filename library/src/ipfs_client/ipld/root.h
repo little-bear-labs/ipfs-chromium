@@ -7,6 +7,9 @@
 #include <optional>
 
 namespace ipfs::ipld {
+/*! Since some operations will behave differently if a given node is being treated as
+   *    a DAG root, this proxy wraps around a node to give it those properties
+   */
 class Root : public DagNode {
   std::optional<redirects::File> redirects_;
 
@@ -16,7 +19,10 @@ class Root : public DagNode {
   bool expired() const override;
 
  public:
-  explicit Root(std::shared_ptr<DagNode>);
+  /*! Construct
+   *  @param node The actual node being treated as a DAG root
+   */
+  explicit Root(std::shared_ptr<DagNode> node);
   ~Root() noexcept override;
 };
 }  // namespace ipfs::ipld

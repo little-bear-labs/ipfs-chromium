@@ -10,7 +10,11 @@ namespace ipfs::gw {
  */
 class InlineRequestHandler final : public Requestor {
  public:
-  HandleOutcome handle(RequestPtr) override;
+  /*! @param request The request to try handling
+   *  @return DONE (after responding) if it was an inline request
+   *    NOT_HANDLED otherwise
+   */
+  HandleOutcome handle(RequestPtr request) override;
   std::string_view name() const override;
 };
 }  // namespace ipfs::gw

@@ -12,6 +12,12 @@ class Symlink : public DagNode {
   bool is_absolute() const;
 
  public:
+  /*! Construct from the text of the target
+   *  @target Either a path relative to this node's,
+   *    OR /an/absolute/path which is relative to the DAG root
+   *  @note If it points outside the DAG it'll be considered broken.
+   *    This can be achieved by simply using too many ../../..
+   */
   explicit Symlink(std::string target);
   ~Symlink() noexcept override;
 };

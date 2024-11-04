@@ -3,8 +3,12 @@
 
 using Self = ipfs::ctx::NullHttpProvider;
 
-auto Self::SendHttpRequest(ReqDesc, OnComplete cb) const -> Canceller {
+namespace {
+constexpr auto INTERNAL_SERVER_ERROR_STATUS = 500;
+}
+
+auto Self::SendHttpRequest(ReqDesc, OnComplete callback) const -> Canceller {
   auto hdrs = [](auto) { return std::string{}; };
-  cb(500, "No HTTP networking available.", hdrs);
+  callback(INTERNAL_SERVER_ERROR_STATUS, "No HTTP networking available.", hdrs);
   return [](){};
 }

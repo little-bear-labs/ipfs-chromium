@@ -9,9 +9,8 @@ namespace ipfs::gw {
  */
 class TerminatingRequestor : public Requestor {
  public:
-  using HandleOutcome = Requestor::HandleOutcome;
   std::string_view name() const override;
-  HandleOutcome handle(RequestPtr) override;
+  Requestor::HandleOutcome handle(RequestPtr) override;
 };
 }  // namespace ipfs::gw
 

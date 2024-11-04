@@ -71,8 +71,7 @@ struct GatewayRequestTest : public testing::Test {
 
 TEST_F(GatewayRequestTest, RespondsToCar) {
   LogRecorder lr;
-  t_.cid =
-      i::Cid{"bafybeibwfakyszctcz54dungqay7jae35agjjhokltvvtboospgo6napxy"};
+  t_.cid(i::Cid{"bafybeibwfakyszctcz54dungqay7jae35agjjhokltvvtboospgo6napxy"});
   t_.type = RT::Car;
   auto p = reinterpret_cast<char const*>(a_car.data());
   EXPECT_FALSE(orc->has_key(
@@ -114,6 +113,8 @@ TEST_F(GatewayRequestTest, accept_param) {
   EXPECT_EQ(t_.accept(), "");
   t_.type = RT::Zombie;
   EXPECT_EQ(t_.accept(), "");
+  t_.type = RT::DnsLink;
+  EXPECT_EQ(t_.accept(), "application/vnd.ipld.raw");
 }
 TEST_F(GatewayRequestTest, timeouts_ordinal) {
  EXPECT_LT(timeout(RT::Identity), timeout(RT::DnsLink));

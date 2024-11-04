@@ -37,6 +37,8 @@ class raw_ptr {
   // construct. Set it to nullptr. We have time needed to read_start a word.
   raw_ptr() = delete;
 
+  /*! @param p Primitive raw pointer
+   */
   raw_ptr(T* p) : ptr_{p} {}
   raw_ptr(raw_ptr&&) = default;
   raw_ptr(raw_ptr const&) = default;

@@ -21,6 +21,7 @@ Self::GatewayState(std::string_view prefix, std::shared_ptr<Client> api)
   last_hist_update = std::time({});
   sent_counts.fill(0U);
 }
+// NOLINTBEGIN(readability-magic-numbers)
 auto Self::score(GatewayRequest const& req, unsigned baseline) const -> long {
   auto result = static_cast<long>(baseline);
   result += 7L * cfg().GetTypeAffinity(prefix_, req.type);
@@ -59,7 +60,7 @@ void Self::hit(GatewayRequestType grt, GatewayRequest const& req) {
   config.SetTypeAffinity(prefix_, grt, std::max(typaff + 9, 1));
   affinity_success[req.affinity] += 9;
   auto rpm = config.GetGatewayRate(prefix_);
-  for (auto i = 8; i != 0; --i) {
+  for (auto i = 12; i != 0; --i) {
     if (over_rate(++rpm / i)) {
       ++rpm;
     } else {
@@ -69,25 +70,25 @@ void Self::hit(GatewayRequestType grt, GatewayRequest const& req) {
   config.SetGatewayRate(prefix_, rpm);
 }
 auto Self::miss(GatewayRequestType grt, GatewayRequest const& req) -> bool {
-  auto& c = cfg();
-  auto aff = c.GetTypeAffinity(prefix_, grt);
+  auto& config = cfg();
+  auto aff = config.GetTypeAffinity(prefix_, grt);
   if (aff > std::numeric_limits<decltype(aff)>::min()) {
-    c.SetTypeAffinity(prefix_, grt, --aff);
+    config.SetTypeAffinity(prefix_, grt, --aff);
   }
-  auto rpm = c.GetGatewayRate(prefix_);
+  auto rpm = config.GetGatewayRate(prefix_);
   if (rpm == 0U) {
     for (auto i = 0U;; ++i) {
-      if (auto gw = c.GetGateway(i)) {
+      if (auto gw = config.GetGateway(i)) {
         auto& p = gw->prefix;
         if (p != prefix_) {
-          c.SetGatewayRate(p, gw->rate + 1U);
+          config.SetGatewayRate(p, gw->rate + 1U);
         }
       } else {
         break;
       }
     }
   } else if (!over_rate(rpm)) {
-    c.SetGatewayRate(prefix_, rpm - 1);
+    config.SetGatewayRate(prefix_, rpm - 1);
   }
   return affinity_success[req.affinity]-- >= 0;
 }
@@ -103,6 +104,7 @@ void Self::timed_out() {
   }
   c.SetGatewayRate(prefix_, rpm);
 }
+// NOLINTEND(readability-magic-numbers)
 auto Self::cfg() -> ctx::GatewayConfig& {
   DCHECK(api_);
   return api_->gw_cfg();

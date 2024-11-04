@@ -14,6 +14,9 @@ class DagHeaders {
  public:
   void Add(BlockSource const&);
   void Finish();
+
+  /*! A list of HTTP header names and values
+   */
   using HeaderList = std::vector<std::pair<std::string, std::string>>;
 
   HeaderList const& headers() const { return headers_; }

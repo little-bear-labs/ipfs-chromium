@@ -75,8 +75,8 @@ auto ParseProvider(ipfs::DagJsonValue const& provider, ipfs::Client& api) -> boo
     LOG(WARNING) << "Gateway with no addrs";
     return false;
   }
-  bool rv = false;
-  auto handle_addr = [&api, &rv](ipfs::DagJsonValue const& addr) {
+  bool res = false;
+  auto handle_addr = [&api, &res](ipfs::DagJsonValue const& addr) {
     if (auto s = addr.get_if_string()) {
       auto& c = api.gw_cfg();
       auto http = c.RoutingApiDiscoveryOfUnencryptedGateways();
@@ -84,7 +84,7 @@ auto ParseProvider(ipfs::DagJsonValue const& provider, ipfs::Client& api) -> boo
       auto gw_pre = MultiaddrToGatewayPrefix(sd, http);
       if (static_cast<unsigned int>(!gw_pre.empty()) != 0U) {
         c.AddGateway(gw_pre, c.RoutingApiDiscoveryDefaultRate());
-        rv = true;
+        res = true;
       }
     } else {
       LOG(ERROR) << ".Providers[x].Addrs[x] is not a string";
@@ -96,7 +96,7 @@ auto ParseProvider(ipfs::DagJsonValue const& provider, ipfs::Client& api) -> boo
     LOG(WARNING) << ".Providers[x].Addrs is not a list";
     handle_addr(*addrs);
   }
-  return rv;
+  return res;
 }
 }  // namespace
 
