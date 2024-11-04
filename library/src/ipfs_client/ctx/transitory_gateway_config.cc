@@ -14,6 +14,10 @@
 
 using Self = ipfs::ctx::TransitoryGatewayConfig;
 
+namespace {
+constexpr auto ONE_HZ = 60U;
+}
+
 Self::TransitoryGatewayConfig() {
   if (!LoadGatewaysFromEnvironmentVariable(*this)) {
     LoadStaticGatewayList(*this);
@@ -29,11 +33,11 @@ auto Self::GetGateway(std::size_t index) const -> std::optional<ipfs::GatewaySpe
   return std::nullopt;
 }
 void Self::AddGateway(std::string_view prefix, unsigned at_rate) {
-  auto it = FindGateway(prefix);
-  if (gateways_.end() != it && it->prefix == prefix) {
-    it->rate++;
+  auto gw_it = FindGateway(prefix);
+  if (gateways_.end() != gw_it && gw_it->prefix == prefix) {
+    gw_it->rate++;
   } else {
-    gateways_.insert(it, GatewaySpec{std::string{prefix}, at_rate});
+    gateways_.insert(gw_it, GatewaySpec{std::string{prefix}, at_rate});
     DCHECK(
         std::is_sorted(gateways_.begin(), gateways_.end(),
                        [](auto& a, auto& b) { return a.prefix < b.prefix; }));
@@ -51,7 +55,7 @@ void Self::SetGatewayRate(std::string_view prefix, unsigned int rate) {
 }
 auto Self::GetGatewayRate(std::string_view prefix) -> unsigned {
   auto i = FindGateway(prefix);
-  return gateways_.end() == i ? 60U : i->rate;
+  return gateways_.end() == i ? ONE_HZ : i->rate;
 }
 auto Self::FindGateway(std::string_view prefix)
     -> std::vector<GatewaySpec>::iterator {
@@ -59,7 +63,7 @@ auto Self::FindGateway(std::string_view prefix)
   return std::lower_bound(gateways_.begin(), gateways_.end(), prefix, cmp);
 }
 auto Self::RoutingApiDiscoveryDefaultRate() const -> unsigned {
-  return 60U;
+  return ONE_HZ;
 }
 auto Self::RoutingApiDiscoveryOfUnencryptedGateways() const -> bool {
   return true;

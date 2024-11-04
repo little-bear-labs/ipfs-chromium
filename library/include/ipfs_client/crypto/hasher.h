@@ -13,7 +13,10 @@ class Hasher {
  public:
   virtual ~Hasher() noexcept {}
 
-  virtual std::optional<std::vector<Byte>> hash(ByteView) = 0;
+  /*! @param bytes Bytes to hash
+   *  @return The digest or nullopt if there was an error
+   */
+  virtual std::optional<std::vector<Byte>> hash(ByteView bytes) = 0;
 };
 }  // namespace ipfs::crypto
 

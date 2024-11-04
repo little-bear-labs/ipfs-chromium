@@ -1,0 +1,23 @@
+diff --git a/chrome/browser/prefs/BUILD.gn b/chrome/browser/prefs/BUILD.gn
+index 6af45fd10c466..ec2f3915c9be2 100644
+--- a/chrome/browser/prefs/BUILD.gn
++++ b/chrome/browser/prefs/BUILD.gn
+@@ -7,6 +7,7 @@ import("//components/safe_browsing/buildflags.gni")
+ import("//components/services/on_device_translation/buildflags/features.gni")
+ import("//extensions/buildflags/buildflags.gni")
+ import("//pdf/features.gni")
++import("//third_party/ipfs_client/args.gni")
+ 
+ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+ 
+@@ -125,7 +126,9 @@ source_set("impl") {
+     "//services/preferences/public/mojom",
+     "//services/preferences/tracked",
+   ]
+-
++  if (enable_ipfs) {
++    deps += [ "//components/ipfs" ]
++  }
+   if (is_chromeos) {
+     deps += [
+       "//ash",

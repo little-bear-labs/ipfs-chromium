@@ -14,8 +14,8 @@ using Self = ipfs::gw::InlineRequestHandler;
 auto Self::name() const -> std::string_view {
   return "InlineRequestHandler";
 }
-auto Self::handle(RequestPtr reqp) -> HandleOutcome {
-  GatewayRequest& req = *reqp;
+auto Self::handle(RequestPtr request) -> HandleOutcome {
+  GatewayRequest& req = *request;
   if (req.type != GatewayRequestType::Identity) {
     return HandleOutcome::NOT_HANDLED;
   }

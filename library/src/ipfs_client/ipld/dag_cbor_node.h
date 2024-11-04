@@ -12,6 +12,8 @@ class DagCborNode final : public DagNode {
   ResolveResult resolve(ResolutionState&) override;
 
  public:
+  /*! The dict or document being represented
+   */
   using Data = DagCborValue;
   explicit DagCborNode(std::unique_ptr<Data>);
   ~DagCborNode() noexcept override;

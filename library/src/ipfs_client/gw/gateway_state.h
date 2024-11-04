@@ -38,7 +38,11 @@ class GatewayState {
   ctx::GatewayConfig const& cfg() const;
 
  public:
-  GatewayState(std::string_view prefix, std::shared_ptr<Client>);
+  /*! @param prefix The URL prefix that goes in front of HTTP requests to the gateway
+   *    e.g. https://ipfs.io/
+   *  @param api Access to the functionality of this client's context
+   */
+  GatewayState(std::string_view prefix, std::shared_ptr<Client> api);
   long score(GatewayRequest const&, unsigned) const;
   bool bored() const;
   bool over_rate();

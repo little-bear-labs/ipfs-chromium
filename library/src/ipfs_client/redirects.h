@@ -17,7 +17,11 @@ class Directive {
   int const status_;
 
  public:
-  Directive(std::string_view, std::string_view, int);
+  /*! @param from path/glob to match against
+   *  @param to partial path to replace from with
+   *  @param status HTTP status to use in successful response that hit this rule
+   */
+  Directive(std::string_view from, std::string_view to, int status);
   std::uint16_t rewrite(std::string&) const;
   std::string error() const;
   bool valid() const { return error().empty(); }

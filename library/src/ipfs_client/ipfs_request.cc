@@ -11,8 +11,8 @@
 
 using Self = ipfs::IpfsRequest;
 
-Self::IpfsRequest(std::string path_p, Finisher f)
-    : path_{std::move(path_p)}, callback_{std::move(f)}, semantic_{ResponseSemantic::Http} {}
+Self::IpfsRequest(std::string path_p, Finisher fin)
+    : path_{std::move(path_p)}, callback_{std::move(fin)}, semantic_{ResponseSemantic::Http} {}
 
 Self::~IpfsRequest() noexcept {
   for (auto& cleanup : cleanups_) {

@@ -10,6 +10,8 @@ namespace ipfs::ctx {
  */
 class DnsTxtLookup {
  public:
+  /*! Callback for if usable result was achieved
+   */
   using DnsTextResultsCallback =
       std::function<void(std::vector<std::string> const&)>;
   using DnsTextCompleteCallback = std::function<void(void)>;

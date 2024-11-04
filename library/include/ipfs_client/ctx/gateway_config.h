@@ -13,6 +13,10 @@ namespace ipfs::ctx {
 class GatewayConfig {
  public:
   virtual ~GatewayConfig() noexcept {}
+  /*! Position-based access (indexing)
+   *  @param index The 0-based index of the gateway in question
+   *  @return The spec for the gateway iff index < count of gateways, nullopt otherwise
+   */
   virtual std::optional<GatewaySpec> GetGateway(std::size_t index) const = 0;
   virtual unsigned GetGatewayRate(std::string_view url_prefix) = 0;
   virtual int GetTypeAffinity(std::string_view url_prefix,

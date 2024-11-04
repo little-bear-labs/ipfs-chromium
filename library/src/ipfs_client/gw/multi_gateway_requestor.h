@@ -31,6 +31,8 @@ class MultiGatewayRequestor : public Requestor {
   void Next();
 
  public:
+  /*! @return "multi-gateway requestor"
+   */
   std::string_view name() const override;
   HandleOutcome handle(RequestPtr) override;
 };

@@ -63,9 +63,9 @@ def line_to_var(line):
         return ('', None)
 
 
-vars = check_output(['cmake', '-L', '-N', '-B', '.'], text=True).splitlines()
-vars = dict(map(line_to_var, vars))
-chromium_out = join(vars['CHROMIUM_SOURCE_TREE'], 'out', vars['CHROMIUM_PROFILE'])
+cmak_vars = check_output(['cmake', '-L', '-N', '-B', '.'], text=True).splitlines()
+cmak_vars = dict(map(line_to_var, cmak_vars))
+chromium_out = join(cmak_vars['CHROMIUM_SOURCE_TREE'], 'out', cmak_vars['CHROMIUM_PROFILE'])
 tok = environ.get('GITHUB_TOKEN')
 if tok:
     gh = GhApi()
@@ -95,10 +95,7 @@ def upload(contains):
         for ext in artifact_extensions:
             if f.endswith(ext):
                 print('Uploading', f, 'to', GITHUB_ORG, GITHUB_REPO, 'release', version)
-                try:
-                    gh.upload_file(gh_rel, f)
-                except Exception as e:
-                    print(' ... Error uploading ', f, ':', e)
+                gh.upload_file(gh_rel, f)
                 break
 
 

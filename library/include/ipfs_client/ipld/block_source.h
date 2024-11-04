@@ -10,6 +10,8 @@ namespace ipfs::ipld {
 /*! Description of where a particular block was fetched from, for diagnostics
  */
 struct BlockSource {
+  /*! Source of now(). Defines timestamp type.
+   */
   using Clock = std::chrono::system_clock;
 
   /*! Categorization of sources

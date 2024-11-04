@@ -16,7 +16,10 @@ class Chunk : public DagNode {
   ResolveResult resolve(ResolutionState&) override;
 
  public:
-  explicit Chunk(std::string);
+  /*! Construct
+   *  @param bytes The blob itself
+   */
+  explicit Chunk(std::string bytes);
   ~Chunk() noexcept override;
 };
 }  // namespace ipfs::ipld

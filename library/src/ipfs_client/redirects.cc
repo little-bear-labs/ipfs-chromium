@@ -22,6 +22,7 @@ constexpr std::size_t MAX_SIZE = 64UL * 1024UL * 1024UL;
 // Not including \n which terminates lines
 constexpr std::string_view WHITESPACE = " \t\f\r\v\n";
 
+constexpr int MIN_SUPPORTED_STATUS = 200;
 // https://specs.ipfs.tech/http-gateways/web-redirects-file/#status
 constexpr int DEFAULT_STATUS = 301;
 // https://specs.ipfs.tech/http-gateways/web-redirects-file/#error-handling
@@ -89,7 +90,7 @@ auto r::Directive::error() const -> std::string {
   if (to_.starts_with("ERROR: ")) {
     return to_;
   }
-  if (status_ < 200 || status_ > 451) {
+  if (status_ < MIN_SUPPORTED_STATUS || status_ > 451) {
     return "UNSUPPORTED STATUS " + std::to_string(status_);
   }
   if (components_.empty()) {
@@ -201,18 +202,17 @@ auto r::File::parse_line(std::string_view line, int line_number) -> bool {
 
 namespace {
 
-auto parse_status(std::string_view line,
-                                         std::size_t col) -> std::pair<int, std::string> {
+auto parse_status(std::string_view line, std::size_t col) -> std::pair<int, std::string> {
   if (col >= line.size()) {
     return {DEFAULT_STATUS, ""};
   }
-  auto b = line.find_first_not_of(WHITESPACE, col);
-  if (b >= line.size()) {
+  auto blank = line.find_first_not_of(WHITESPACE, col);
+  if (blank >= line.size()) {
     VLOG(2)
         << " No status specified (line ended in whitespace), using default.";
     return {DEFAULT_STATUS, ""};
   }
-  auto status_str = line.substr(b);
+  auto status_str = line.substr(blank);
   if (status_str.size() < 3) {
     return {PARSE_ERROR_STATUS,
             " Not enough characters for a valid status string: [" +

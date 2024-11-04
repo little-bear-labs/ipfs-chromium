@@ -17,6 +17,8 @@ struct SlashDelimited {
 
  public:
   SlashDelimited() : remainder_{""} {}
+  /*! @param unowned Text to parse into /-delimited components
+   */
   explicit SlashDelimited(std::string_view unowned);
   explicit operator bool() const;
   std::string_view pop();

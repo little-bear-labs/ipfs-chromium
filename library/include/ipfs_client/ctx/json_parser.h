@@ -14,7 +14,10 @@ namespace ipfs::ctx {
 class JsonParser {
  public:
   virtual ~JsonParser() noexcept {}
-  virtual std::unique_ptr<DagJsonValue> Parse(std::string_view) = 0;
+  /*! @param json The JSON text to parse
+   *  @return The DOM object or NULL if parsing failed.
+   */
+  virtual std::unique_ptr<DagJsonValue> Parse(std::string_view json) = 0;
 };
 }  // namespace ipfs::ctx
 

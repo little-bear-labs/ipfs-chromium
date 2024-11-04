@@ -37,15 +37,15 @@ auto get_bytes(std::string const& already_string) -> std::string {
 }
 
 auto get_bytes(std::istream& strm) -> std::string {
-  return std::string(std::istreambuf_iterator<char>(strm), {});
+  return {std::istreambuf_iterator<char>(strm), {}};
 }
 
 auto parse(ipfs::pb_dag::PBNode& n, std::istream& strm) -> bool {
   return n.ParseFromIstream(&strm);
 }
 
-auto parse(ipfs::pb_dag::PBNode& n, std::string const& s) -> bool {
-  return n.ParseFromString(s);
+auto parse(ipfs::pb_dag::PBNode& n, std::string const& str) -> bool {
+  return n.ParseFromString(str);
 }
 
 template <class From>

@@ -42,7 +42,7 @@ struct Codec {
    *  Should match the name found in the multibase table.
    */
   std::string_view const name;
-  /*! @param Struct with the above fields filled
+  /*! @return Struct with the above fields filled
    *  @param code The multibase to fetch
    */
   static Codec const* Get(Code code);

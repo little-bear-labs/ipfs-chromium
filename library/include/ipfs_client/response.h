@@ -24,6 +24,9 @@ struct Response {
   static Response PLAIN_NOT_FOUND;
   static Response IMMUTABLY_GONE;
   static Response HOST_NOT_FOUND_RESPONSE;
+  /*! @param body HTML text (the response of the body, not the `<body>`
+   *  @param location The Location header
+   */
   static Response html(std::string_view body, std::string_view location = {});
 };
 
