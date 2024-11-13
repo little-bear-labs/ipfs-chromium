@@ -106,8 +106,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1ea5c293bd3f1e0e15993369594dcee8"><td class="memItemLeft" align="right" valign="top"><a id="a1ea5c293bd3f1e0e15993369594dcee8"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>ChromiumCborAdapter</b> (<a class="el" href="classipfs_1_1ChromiumCborAdapter.html">ChromiumCborAdapter</a> const &amp;rhs)</td></tr>
 <tr class="separator:a1ea5c293bd3f1e0e15993369594dcee8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a283b0f41a4eb5d1288827a6f40f1f292"><td class="memItemLeft" align="right" valign="top"><a id="a283b0f41a4eb5d1288827a6f40f1f292"></a>
-std::unique_ptr&lt; <a class="el" href="classipfs_1_1DagCborValue.html">DagCborValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Parse</b> (ByteView) override</td></tr>
+<tr class="memitem:a283b0f41a4eb5d1288827a6f40f1f292"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="el" href="classipfs_1_1DagCborValue.html">DagCborValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ChromiumCborAdapter.html#a283b0f41a4eb5d1288827a6f40f1f292">Parse</a> (ByteView) override</td></tr>
 <tr class="separator:a283b0f41a4eb5d1288827a6f40f1f292"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classipfs_1_1DagCborValue"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classipfs_1_1DagCborValue')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classipfs_1_1DagCborValue.html">ipfs::DagCborValue</a></td></tr>
 <tr class="memitem:afc805fa0d0502efbda3b7c2e514b8496 inherit pub_methods_classipfs_1_1DagCborValue"><td class="memItemLeft" align="right" valign="top"><a id="afc805fa0d0502efbda3b7c2e514b8496"></a>
@@ -129,7 +128,43 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>ArrayElementCallback
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Adapting Chromium's components/cbor to the API needed by ipfs_client </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a283b0f41a4eb5d1288827a6f40f1f292"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a283b0f41a4eb5d1288827a6f40f1f292">&#9670;&nbsp;</a></span>Parse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classipfs_1_1DagCborValue.html">DagCborValue</a>&gt; ipfs::ChromiumCborAdapter::Parse </td>
+          <td>(</td>
+          <td class="paramtype">ByteView&#160;</td>
+          <td class="paramname"><em>cbor</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cbor</td><td>The CBOR to parse </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The DOM value, or NULL if there was an error </dd></dl>
+
+<p>Implements <a class="el" href="classipfs_1_1ctx_1_1CborParser.html#a9c49e9a1446e8d9e0b87da64701632eb">ipfs::ctx::CborParser</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>component/<a class="el" href="chromium__cbor__adapter_8h_source.html">chromium_cbor_adapter.h</a></li>
 </ul>
 </div><!-- contents -->

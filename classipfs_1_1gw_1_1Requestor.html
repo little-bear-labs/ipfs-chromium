@@ -122,8 +122,7 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>RequestPtr</b> = ::i
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aabb9fbb4d0be489d4a71c898b0f995b1"><td class="memItemLeft" align="right" valign="top"><a id="aabb9fbb4d0be489d4a71c898b0f995b1"></a>
-virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>name</b> () const =0</td></tr>
+<tr class="memitem:aabb9fbb4d0be489d4a71c898b0f995b1"><td class="memItemLeft" align="right" valign="top">virtual std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1gw_1_1Requestor.html#aabb9fbb4d0be489d4a71c898b0f995b1">name</a> () const =0</td></tr>
 <tr class="separator:aabb9fbb4d0be489d4a71c898b0f995b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af8e6f3a27dd66d7ea07118958462ff81"><td class="memItemLeft" align="right" valign="top"><a id="af8e6f3a27dd66d7ea07118958462ff81"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>request</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> &gt;)</td></tr>
@@ -161,7 +160,36 @@ std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface for classes that respond to IPFSRequest </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="aabb9fbb4d0be489d4a71c898b0f995b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabb9fbb4d0be489d4a71c898b0f995b1">&#9670;&nbsp;</a></span>name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string_view ipfs::gw::Requestor::name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The requestor's name, for debugging. Typically this is 1:1 with the concrete type. </dd></dl>
+
+<p>Implemented in <a class="el" href="classipfs_1_1gw_1_1MultiGatewayRequestor.html#a1024f1b4610b2e1c3804d0fae4392662">ipfs::gw::MultiGatewayRequestor</a>, <a class="el" href="classipfs_1_1gw_1_1TerminatingRequestor.html#af9525f26034babdd56d45e0058865448">ipfs::gw::TerminatingRequestor</a>, <a class="el" href="classipfs_1_1gw_1_1InlineRequestHandler.html#ae5c156cc3c4697ee826f517c4d223033">ipfs::gw::InlineRequestHandler</a>, <a class="el" href="classipfs_1_1gw_1_1DnsLinkRequestor.html#a620673b8a8b53054715aef8d9e5ec8a4">ipfs::gw::DnsLinkRequestor</a>, and <a class="el" href="classipfs_1_1CacheRequestor.html#a434ac85b127f18aac31da06955e32db9">ipfs::CacheRequestor</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/gw/<a class="el" href="requestor_8h_source.html">requestor.h</a></li>
 </ul>
 </div><!-- contents -->

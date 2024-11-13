@@ -86,13 +86,48 @@ Inheritance diagram for ipfs::ctx::JsonParser:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a581dc9fc0dd3b8d5dbab890dc48f0d48"><td class="memItemLeft" align="right" valign="top"><a id="a581dc9fc0dd3b8d5dbab890dc48f0d48"></a>
-virtual std::unique_ptr&lt; <a class="el" href="classipfs_1_1DagJsonValue.html">DagJsonValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Parse</b> (std::string_view)=0</td></tr>
-<tr class="separator:a581dc9fc0dd3b8d5dbab890dc48f0d48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01f23b9a60fe504ad706abc2bf0402de"><td class="memItemLeft" align="right" valign="top">virtual std::unique_ptr&lt; <a class="el" href="classipfs_1_1DagJsonValue.html">DagJsonValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ctx_1_1JsonParser.html#a01f23b9a60fe504ad706abc2bf0402de">Parse</a> (std::string_view json)=0</td></tr>
+<tr class="separator:a01f23b9a60fe504ad706abc2bf0402de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base class for implementations of JSON parsing </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a01f23b9a60fe504ad706abc2bf0402de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01f23b9a60fe504ad706abc2bf0402de">&#9670;&nbsp;</a></span>Parse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::unique_ptr&lt;<a class="el" href="classipfs_1_1DagJsonValue.html">DagJsonValue</a>&gt; ipfs::ctx::JsonParser::Parse </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>json</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">json</td><td>The JSON text to parse </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The DOM object or NULL if parsing failed. </dd></dl>
+
+<p>Implemented in <a class="el" href="classipfs_1_1JsonParserAdapter.html#af0ed64764cbbcaced005cb783d26220b">ipfs::JsonParserAdapter</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/ctx/<a class="el" href="json__parser_8h_source.html">json_parser.h</a></li>
 </ul>
 </div><!-- contents -->

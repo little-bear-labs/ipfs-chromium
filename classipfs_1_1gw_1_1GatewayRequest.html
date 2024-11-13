@@ -104,8 +104,7 @@ Collaboration diagram for ipfs::gw::GatewayRequest:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a20a1ec743bee476e8358ad2a60182350"><td class="memItemLeft" align="right" valign="top"><a id="a20a1ec743bee476e8358ad2a60182350"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>BytesReceivedHook</b> = std::function&lt; void(std::string_view, ByteView, <a class="el" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> const  &amp;)&gt;</td></tr>
+<tr class="memitem:a20a1ec743bee476e8358ad2a60182350"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html#a20a1ec743bee476e8358ad2a60182350">BytesReceivedHook</a> = std::function&lt; void(std::string_view, ByteView, <a class="el" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> const  &amp;)&gt;</td></tr>
 <tr class="separator:a20a1ec743bee476e8358ad2a60182350"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -140,8 +139,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>orchestrator</b> (std
 <tr class="memitem:af739efd67499fd535b8eba21a7bf7f4a"><td class="memItemLeft" align="right" valign="top"><a id="af739efd67499fd535b8eba21a7bf7f4a"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>cachable</b> () const</td></tr>
 <tr class="separator:af739efd67499fd535b8eba21a7bf7f4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f6318a270aa2dc966becf59db13b486"><td class="memItemLeft" align="right" valign="top"><a id="a0f6318a270aa2dc966becf59db13b486"></a>
-std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>root_component</b> () const</td></tr>
+<tr class="memitem:a0f6318a270aa2dc966becf59db13b486"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html#a0f6318a270aa2dc966becf59db13b486">root_component</a> () const</td></tr>
 <tr class="separator:a0f6318a270aa2dc966becf59db13b486"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a42482329d97e700bddfc20dbc531a19f"><td class="memItemLeft" align="right" valign="top"><a id="a42482329d97e700bddfc20dbc531a19f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>root_component</b> (std::string_view)</td></tr>
@@ -150,7 +148,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>root_component</b> (s
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>RespondSuccessfully</b> (std::string_view, std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt; const &amp;api, <a class="el" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> src, std::string_view roots=&quot;&quot;, bool *valid=nullptr)</td></tr>
 <tr class="separator:ad67df3922b9d807ebf559595b12e4673"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af954c1a592327a14264d934f526ff1bd"><td class="memItemLeft" align="right" valign="top"><a id="af954c1a592327a14264d934f526ff1bd"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Hook</b> (BytesReceivedHook)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Hook</b> (<a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html#a20a1ec743bee476e8358ad2a60182350">BytesReceivedHook</a>)</td></tr>
 <tr class="separator:af954c1a592327a14264d934f526ff1bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31b79b36bf2208ced5b9e2fb5f31d6a6"><td class="memItemLeft" align="right" valign="top"><a id="a31b79b36bf2208ced5b9e2fb5f31d6a6"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>PartiallyRedundant</b> () const</td></tr>
@@ -195,7 +193,42 @@ std::unordered_set&lt; std::string &gt;&#160;</td><td class="memItemRight" valig
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Information about a request that needs to be sent to an IPFS HTTP Gateway </p><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>this class has gotten large enough that it should probably be a base class with subclasses instead of switch statements on type </dd></dl>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="a20a1ec743bee476e8358ad2a60182350"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20a1ec743bee476e8358ad2a60182350">&#9670;&nbsp;</a></span>BytesReceivedHook</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html#a20a1ec743bee476e8358ad2a60182350">ipfs::gw::GatewayRequest::BytesReceivedHook</a> =  std::function&lt;void(std::string_view, ByteView, <a class="el" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> const&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Type for callbacks for when bytes are received </p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a0f6318a270aa2dc966becf59db13b486"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f6318a270aa2dc966becf59db13b486">&#9670;&nbsp;</a></span>root_component()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view ipfs::gw::GatewayRequest::root_component </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The part of the path that functions as an origin (the second component) </dd></dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/gw/<a class="el" href="gateway__request_8h_source.html">gateway_request.h</a></li>
 </ul>
 </div><!-- contents -->

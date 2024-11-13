@@ -98,14 +98,12 @@ Collaboration diagram for ipfs::gw::DnsLinkRequestor:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af9d5c393f214a3551d342bced81826fa"><td class="memItemLeft" align="right" valign="top"><a id="af9d5c393f214a3551d342bced81826fa"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>DnsLinkRequestor</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt;)</td></tr>
-<tr class="separator:af9d5c393f214a3551d342bced81826fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50607e6042318a60bce052af8cb80311"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1gw_1_1DnsLinkRequestor.html#a50607e6042318a60bce052af8cb80311">DnsLinkRequestor</a> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt; api)</td></tr>
+<tr class="separator:a50607e6042318a60bce052af8cb80311"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a8073554ddb81e7dd47f8bbf4d43fed"><td class="memItemLeft" align="right" valign="top"><a id="a3a8073554ddb81e7dd47f8bbf4d43fed"></a>
 HandleOutcome&#160;</td><td class="memItemRight" valign="bottom"><b>handle</b> (RequestPtr) override</td></tr>
 <tr class="separator:a3a8073554ddb81e7dd47f8bbf4d43fed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a620673b8a8b53054715aef8d9e5ec8a4"><td class="memItemLeft" align="right" valign="top"><a id="a620673b8a8b53054715aef8d9e5ec8a4"></a>
-std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>name</b> () const override</td></tr>
+<tr class="memitem:a620673b8a8b53054715aef8d9e5ec8a4"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1gw_1_1DnsLinkRequestor.html#a620673b8a8b53054715aef8d9e5ec8a4">name</a> () const override</td></tr>
 <tr class="separator:a620673b8a8b53054715aef8d9e5ec8a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classipfs_1_1gw_1_1Requestor"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classipfs_1_1gw_1_1Requestor')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classipfs_1_1gw_1_1Requestor.html">ipfs::gw::Requestor</a></td></tr>
 <tr class="memitem:af8e6f3a27dd66d7ea07118958462ff81 inherit pub_methods_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="af8e6f3a27dd66d7ea07118958462ff81"></a>
@@ -152,7 +150,69 @@ std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Link in chain-of-command for request for a DNSLink name </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a50607e6042318a60bce052af8cb80311"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50607e6042318a60bce052af8cb80311">&#9670;&nbsp;</a></span>DnsLinkRequestor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">ipfs::gw::DnsLinkRequestor::DnsLinkRequestor </td>
+          <td>(</td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt;&#160;</td>
+          <td class="paramname"><em>api</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">api</td><td>The <a class="el" href="classipfs_1_1Client.html" title="Interface that provides functionality from whatever environment you&#39;re using this library in.">Client</a> context API </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="a620673b8a8b53054715aef8d9e5ec8a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a620673b8a8b53054715aef8d9e5ec8a4">&#9670;&nbsp;</a></span>name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view ipfs::gw::DnsLinkRequestor::name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The requestor's name, for debugging. Typically this is 1:1 with the concrete type. </dd></dl>
+
+<p>Implements <a class="el" href="classipfs_1_1gw_1_1Requestor.html#aabb9fbb4d0be489d4a71c898b0f995b1">ipfs::gw::Requestor</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/gw/<a class="el" href="dnslink__requestor_8h_source.html">dnslink_requestor.h</a></li>
 </ul>
 </div><!-- contents -->

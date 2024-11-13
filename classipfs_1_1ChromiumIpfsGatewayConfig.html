@@ -104,8 +104,7 @@ unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>GetGatewayRate</b
 <tr class="memitem:a1414a380fa5209575cdac8222ea2b34b"><td class="memItemLeft" align="right" valign="top"><a id="a1414a380fa5209575cdac8222ea2b34b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>SetGatewayRate</b> (std::string_view, unsigned) override</td></tr>
 <tr class="separator:a1414a380fa5209575cdac8222ea2b34b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d8d3b05735fc32d99b5859ae17faa3b"><td class="memItemLeft" align="right" valign="top"><a id="a1d8d3b05735fc32d99b5859ae17faa3b"></a>
-std::optional&lt; <a class="el" href="structipfs_1_1GatewaySpec.html">GatewaySpec</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>GetGateway</b> (std::size_t index) const override</td></tr>
+<tr class="memitem:a1d8d3b05735fc32d99b5859ae17faa3b"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structipfs_1_1GatewaySpec.html">GatewaySpec</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ChromiumIpfsGatewayConfig.html#a1d8d3b05735fc32d99b5859ae17faa3b">GetGateway</a> (std::size_t index) const override</td></tr>
 <tr class="separator:a1d8d3b05735fc32d99b5859ae17faa3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a538ba0c4d314c61e6e88b90b0d3f270c"><td class="memItemLeft" align="right" valign="top"><a id="a538ba0c4d314c61e6e88b90b0d3f270c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>AddGateway</b> (std::string_view, unsigned) override</td></tr>
@@ -125,7 +124,43 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SetTypeAffinity</b> (
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Configuration of gateways using Chromium preferences </p>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a1d8d3b05735fc32d99b5859ae17faa3b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d8d3b05735fc32d99b5859ae17faa3b">&#9670;&nbsp;</a></span>GetGateway()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt;<a class="el" href="structipfs_1_1GatewaySpec.html">GatewaySpec</a>&gt; ipfs::ChromiumIpfsGatewayConfig::GetGateway </td>
+          <td>(</td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Position-based access (indexing) </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">index</td><td>The 0-based index of the gateway in question </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The spec for the gateway iff index &lt; count of gateways, nullopt otherwise </dd></dl>
+
+<p>Implements <a class="el" href="classipfs_1_1ctx_1_1GatewayConfig.html#a237184c917bee827af4e88288f2b5884">ipfs::ctx::GatewayConfig</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>component/<a class="el" href="component_2preferences_8h_source.html">preferences.h</a></li>
 </ul>
 </div><!-- contents -->

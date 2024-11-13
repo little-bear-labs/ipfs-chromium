@@ -98,11 +98,9 @@ Collaboration diagram for ipfs::gw::InlineRequestHandler:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3a48432e6617213f765792897166f881"><td class="memItemLeft" align="right" valign="top"><a id="a3a48432e6617213f765792897166f881"></a>
-HandleOutcome&#160;</td><td class="memItemRight" valign="bottom"><b>handle</b> (RequestPtr) override</td></tr>
-<tr class="separator:a3a48432e6617213f765792897166f881"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae5c156cc3c4697ee826f517c4d223033"><td class="memItemLeft" align="right" valign="top"><a id="ae5c156cc3c4697ee826f517c4d223033"></a>
-std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>name</b> () const override</td></tr>
+<tr class="memitem:a70470641bc2190bd90a616da7f06f9e2"><td class="memItemLeft" align="right" valign="top">HandleOutcome&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1gw_1_1InlineRequestHandler.html#a70470641bc2190bd90a616da7f06f9e2">handle</a> (RequestPtr request) override</td></tr>
+<tr class="separator:a70470641bc2190bd90a616da7f06f9e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5c156cc3c4697ee826f517c4d223033"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1gw_1_1InlineRequestHandler.html#ae5c156cc3c4697ee826f517c4d223033">name</a> () const override</td></tr>
 <tr class="separator:ae5c156cc3c4697ee826f517c4d223033"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classipfs_1_1gw_1_1Requestor"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classipfs_1_1gw_1_1Requestor')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classipfs_1_1gw_1_1Requestor.html">ipfs::gw::Requestor</a></td></tr>
 <tr class="memitem:af8e6f3a27dd66d7ea07118958462ff81 inherit pub_methods_classipfs_1_1gw_1_1Requestor"><td class="memItemLeft" align="right" valign="top"><a id="af8e6f3a27dd66d7ea07118958462ff81"></a>
@@ -149,7 +147,71 @@ std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handles requests for inline requests, i.e. /ipfs/ with hash = identity </p><dl class="section note"><dt>Note</dt><dd>The CID contains the response </dd></dl>
-</div><hr/>The documentation for this class was generated from the following file:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a id="a70470641bc2190bd90a616da7f06f9e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70470641bc2190bd90a616da7f06f9e2">&#9670;&nbsp;</a></span>handle()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">HandleOutcome ipfs::gw::InlineRequestHandler::handle </td>
+          <td>(</td>
+          <td class="paramtype">RequestPtr&#160;</td>
+          <td class="paramname"><em>request</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">request</td><td>The request to try handling </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>DONE (after responding) if it was an inline request NOT_HANDLED otherwise </dd></dl>
+
+<p>Implements <a class="el" href="classipfs_1_1gw_1_1Requestor.html">ipfs::gw::Requestor</a>.</p>
+
+</div>
+</div>
+<a id="ae5c156cc3c4697ee826f517c4d223033"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5c156cc3c4697ee826f517c4d223033">&#9670;&nbsp;</a></span>name()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string_view ipfs::gw::InlineRequestHandler::name </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The requestor's name, for debugging. Typically this is 1:1 with the concrete type. </dd></dl>
+
+<p>Implements <a class="el" href="classipfs_1_1gw_1_1Requestor.html#aabb9fbb4d0be489d4a71c898b0f995b1">ipfs::gw::Requestor</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/gw/<a class="el" href="inline__request__handler_8h_source.html">inline_request_handler.h</a></li>
 </ul>
 </div><!-- contents -->

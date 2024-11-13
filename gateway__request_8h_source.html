@@ -105,74 +105,77 @@ $(function() {
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; </div>
 <div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="classipfs_1_1gw_1_1GatewayRequest.html">   39</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> : <span class="keyword">public</span> std::enable_shared_from_this&lt;GatewayRequest&gt; {</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keyword">using</span> BytesReceivedHook =</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      std::function&lt;void(std::string_view, ByteView, <a class="code" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> <span class="keyword">const</span>&amp;)&gt;;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  std::shared_ptr&lt;Partition&gt; orchestrator_;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  std::vector&lt;BytesReceivedHook&gt; bytes_received_hooks;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  std::string main_param;  </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordtype">void</span> FleshOut(<a class="code" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a>&amp;) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordtype">void</span> AddDnsLink(std::string_view target, <span class="keywordtype">bool</span>&amp; success, <a class="code" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> src);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordtype">void</span> AddBlock(std::string_view bytes,</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                <span class="keywordtype">bool</span>&amp; success,</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                <a class="code" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> src,</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                std::shared_ptr&lt;Client&gt; <span class="keyword">const</span>&amp; api,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                <span class="keywordtype">bool</span>* valid);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordtype">void</span> AddBlocks(<a class="code" href="classipfs_1_1Car.html">Car</a>&amp; car,</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                 std::shared_ptr&lt;Client&gt; <span class="keyword">const</span>&amp; api,</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                 <span class="keywordtype">bool</span>&amp; success, <span class="keywordtype">bool</span>* valid, <a class="code" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> src);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keywordtype">bool</span> IpnsResponse(ByteView bytes, std::shared_ptr&lt;Client&gt; <span class="keyword">const</span>&amp; api, <span class="keywordtype">bool</span>&amp; success, <span class="keywordtype">bool</span>* valid, <a class="code" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> src);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  GatewayRequestType type = GatewayRequestType::Zombie;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="comment">// TODO - encapsulate. Hopefully these public data members aren&#39;t directly accessed everywhere</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="classipfs_1_1gw_1_1GatewayRequest.html#a3ed4328a2d69a9f977a2dc5f54902c05">   65</a></span>&#160;  std::string <a class="code" href="classipfs_1_1gw_1_1GatewayRequest.html#a3ed4328a2d69a9f977a2dc5f54902c05">path</a>;        </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  std::shared_ptr&lt;IpfsRequest&gt; dependent;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  std::optional&lt;Cid&gt; cid;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keywordtype">short</span> parallel = 0;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  std::string affinity;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  std::unordered_set&lt;std::string&gt; failures;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; </div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  std::string url_suffix() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  std::string_view accept() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  std::string_view identity_data() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordtype">short</span> timeout_seconds() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keywordtype">bool</span> is_http() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  std::optional&lt;std::size_t&gt; max_response_size() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  std::optional&lt;HttpRequestDescription&gt; describe_http(std::string_view) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  std::string debug_string() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keywordtype">void</span> orchestrator(std::shared_ptr&lt;Partition&gt; <span class="keyword">const</span>&amp;);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordtype">bool</span> cachable() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  std::string_view root_component() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordtype">void</span> root_component(std::string_view);</div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="classipfs_1_1gw_1_1GatewayRequest.html#a20a1ec743bee476e8358ad2a60182350">   43</a></span>&#160;  <span class="keyword">using</span> <a class="code" href="classipfs_1_1gw_1_1GatewayRequest.html#a20a1ec743bee476e8358ad2a60182350">BytesReceivedHook</a> =</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      std::function&lt;void(std::string_view, ByteView, <a class="code" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> <span class="keyword">const</span>&amp;)&gt;;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  std::shared_ptr&lt;Partition&gt; orchestrator_;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  std::vector&lt;BytesReceivedHook&gt; bytes_received_hooks;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  std::string main_param;  </div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordtype">void</span> FleshOut(<a class="code" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a>&amp;) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordtype">void</span> AddDnsLink(std::string_view target, <span class="keywordtype">bool</span>&amp; success, <a class="code" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> src);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordtype">void</span> AddBlock(std::string_view bytes,</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                <span class="keywordtype">bool</span>&amp; success,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                <a class="code" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> src,</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                std::shared_ptr&lt;Client&gt; <span class="keyword">const</span>&amp; api,</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                <span class="keywordtype">bool</span>* valid);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordtype">void</span> AddBlocks(<a class="code" href="classipfs_1_1Car.html">Car</a>&amp; car,</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                 std::shared_ptr&lt;Client&gt; <span class="keyword">const</span>&amp; api,</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                 <span class="keywordtype">bool</span>&amp; success, <span class="keywordtype">bool</span>* valid, <a class="code" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> src);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordtype">bool</span> IpnsResponse(ByteView bytes, std::shared_ptr&lt;Client&gt; <span class="keyword">const</span>&amp; api, <span class="keywordtype">bool</span>&amp; success, <span class="keywordtype">bool</span>* valid, <a class="code" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> src);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  GatewayRequestType type = GatewayRequestType::Zombie;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="comment">// TODO - encapsulate. Hopefully these public data members aren&#39;t directly accessed everywhere</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno"><a class="line" href="classipfs_1_1gw_1_1GatewayRequest.html#a3ed4328a2d69a9f977a2dc5f54902c05">   67</a></span>&#160;  std::string <a class="code" href="classipfs_1_1gw_1_1GatewayRequest.html#a3ed4328a2d69a9f977a2dc5f54902c05">path</a>;        </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  std::shared_ptr&lt;IpfsRequest&gt; dependent;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  std::optional&lt;Cid&gt; cid;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordtype">short</span> parallel = 0;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  std::string affinity;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  std::unordered_set&lt;std::string&gt; failures;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; </div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  std::string url_suffix() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  std::string_view accept() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  std::string_view identity_data() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordtype">short</span> timeout_seconds() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordtype">bool</span> is_http() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  std::optional&lt;std::size_t&gt; max_response_size() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  std::optional&lt;HttpRequestDescription&gt; describe_http(std::string_view) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  std::string debug_string() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keywordtype">void</span> orchestrator(std::shared_ptr&lt;Partition&gt; <span class="keyword">const</span>&amp;);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordtype">bool</span> cachable() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160; </div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordtype">bool</span> RespondSuccessfully(std::string_view,</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                           std::shared_ptr&lt;Client&gt; <span class="keyword">const</span>&amp; api,</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                           <a class="code" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> src,</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                           std::string_view roots = <span class="stringliteral">&quot;&quot;</span>,</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                           <span class="keywordtype">bool</span>* valid = <span class="keyword">nullptr</span>);</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keywordtype">void</span> Hook(BytesReceivedHook);</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keywordtype">bool</span> PartiallyRedundant() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  std::string Key() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keywordtype">bool</span> Finished() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; </div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keyword">static</span> std::shared_ptr&lt;GatewayRequest&gt; fromIpfsPath(<a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> ipfs_path);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;};</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; </div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;}  <span class="comment">// namespace ipfs::gw</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno"><a class="line" href="classipfs_1_1gw_1_1GatewayRequest.html#a0f6318a270aa2dc966becf59db13b486">   87</a></span>&#160;  std::string_view <a class="code" href="classipfs_1_1gw_1_1GatewayRequest.html#a0f6318a270aa2dc966becf59db13b486">root_component</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="classipfs_1_1gw_1_1GatewayRequest.html#a0f6318a270aa2dc966becf59db13b486">root_component</a>(std::string_view);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keywordtype">bool</span> RespondSuccessfully(std::string_view,</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                           std::shared_ptr&lt;Client&gt; <span class="keyword">const</span>&amp; api,</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                           <a class="code" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> src,</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                           std::string_view roots = <span class="stringliteral">&quot;&quot;</span>,</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                           <span class="keywordtype">bool</span>* valid = <span class="keyword">nullptr</span>);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keywordtype">void</span> Hook(<a class="code" href="classipfs_1_1gw_1_1GatewayRequest.html#a20a1ec743bee476e8358ad2a60182350">BytesReceivedHook</a>);</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keywordtype">bool</span> PartiallyRedundant() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  std::string Key() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keywordtype">bool</span> Finished() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; </div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="keyword">inline</span> std::ostream&amp; operator&lt;&lt;(std::ostream&amp; s,</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                                ipfs::gw::GatewayRequestType t) {</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="keywordflow">return</span> s &lt;&lt; name(t);</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;}</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keyword">static</span> std::shared_ptr&lt;GatewayRequest&gt; fromIpfsPath(<a class="code" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> ipfs_path);</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;};</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; </div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;}  <span class="comment">// namespace ipfs::gw</span></div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160; </div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_TRUSTLESS_REQUEST_H_</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;<span class="keyword">inline</span> std::ostream&amp; operator&lt;&lt;(std::ostream&amp; s,</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;                                ipfs::gw::GatewayRequestType t) {</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keywordflow">return</span> s &lt;&lt; name(t);</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;}</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; </div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_TRUSTLESS_REQUEST_H_</span></div>
 <div class="ttc" id="aclassipfs_1_1Car_html"><div class="ttname"><a href="classipfs_1_1Car.html">ipfs::Car</a></div><div class="ttdef"><b>Definition:</b> car.h:17</div></div>
 <div class="ttc" id="aclassipfs_1_1gw_1_1GatewayRequest_html"><div class="ttname"><a href="classipfs_1_1gw_1_1GatewayRequest.html">ipfs::gw::GatewayRequest</a></div><div class="ttdef"><b>Definition:</b> gateway_request.h:39</div></div>
-<div class="ttc" id="aclassipfs_1_1gw_1_1GatewayRequest_html_a3ed4328a2d69a9f977a2dc5f54902c05"><div class="ttname"><a href="classipfs_1_1gw_1_1GatewayRequest.html#a3ed4328a2d69a9f977a2dc5f54902c05">ipfs::gw::GatewayRequest::path</a></div><div class="ttdeci">std::string path</div><div class="ttdoc">For CAR requests.</div><div class="ttdef"><b>Definition:</b> gateway_request.h:65</div></div>
+<div class="ttc" id="aclassipfs_1_1gw_1_1GatewayRequest_html_a0f6318a270aa2dc966becf59db13b486"><div class="ttname"><a href="classipfs_1_1gw_1_1GatewayRequest.html#a0f6318a270aa2dc966becf59db13b486">ipfs::gw::GatewayRequest::root_component</a></div><div class="ttdeci">std::string_view root_component() const</div></div>
+<div class="ttc" id="aclassipfs_1_1gw_1_1GatewayRequest_html_a20a1ec743bee476e8358ad2a60182350"><div class="ttname"><a href="classipfs_1_1gw_1_1GatewayRequest.html#a20a1ec743bee476e8358ad2a60182350">ipfs::gw::GatewayRequest::BytesReceivedHook</a></div><div class="ttdeci">std::function&lt; void(std::string_view, ByteView, ipld::BlockSource const  &amp;)&gt; BytesReceivedHook</div><div class="ttdef"><b>Definition:</b> gateway_request.h:44</div></div>
+<div class="ttc" id="aclassipfs_1_1gw_1_1GatewayRequest_html_a3ed4328a2d69a9f977a2dc5f54902c05"><div class="ttname"><a href="classipfs_1_1gw_1_1GatewayRequest.html#a3ed4328a2d69a9f977a2dc5f54902c05">ipfs::gw::GatewayRequest::path</a></div><div class="ttdeci">std::string path</div><div class="ttdoc">For CAR requests.</div><div class="ttdef"><b>Definition:</b> gateway_request.h:67</div></div>
 <div class="ttc" id="astructipfs_1_1SlashDelimited_html"><div class="ttname"><a href="structipfs_1_1SlashDelimited.html">ipfs::SlashDelimited</a></div><div class="ttdef"><b>Definition:</b> slash_delimited.h:15</div></div>
 <div class="ttc" id="astructipfs_1_1ipld_1_1BlockSource_html"><div class="ttname"><a href="structipfs_1_1ipld_1_1BlockSource.html">ipfs::ipld::BlockSource</a></div><div class="ttdef"><b>Definition:</b> block_source.h:12</div></div>
 </div><!-- fragment --></div><!-- contents -->

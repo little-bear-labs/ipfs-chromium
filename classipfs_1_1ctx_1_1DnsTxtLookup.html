@@ -88,8 +88,7 @@ Inheritance diagram for ipfs::ctx::DnsTxtLookup:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a226609b482eb219df670f7bfe04a3bea"><td class="memItemLeft" align="right" valign="top"><a id="a226609b482eb219df670f7bfe04a3bea"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>DnsTextResultsCallback</b> = std::function&lt; void(std::vector&lt; std::string &gt; const  &amp;)&gt;</td></tr>
+<tr class="memitem:a226609b482eb219df670f7bfe04a3bea"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ctx_1_1DnsTxtLookup.html#a226609b482eb219df670f7bfe04a3bea">DnsTextResultsCallback</a> = std::function&lt; void(std::vector&lt; std::string &gt; const  &amp;)&gt;</td></tr>
 <tr class="separator:a226609b482eb219df670f7bfe04a3bea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2ac613c752d4f5be79367d6c769a4ee1"><td class="memItemLeft" align="right" valign="top"><a id="a2ac613c752d4f5be79367d6c769a4ee1"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>DnsTextCompleteCallback</b> = std::function&lt; void(void)&gt;</td></tr>
@@ -98,12 +97,28 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>DnsTextCompleteCallb
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a85db29e90aff7706dd187c9bb5291725"><td class="memItemLeft" align="right" valign="top"><a id="a85db29e90aff7706dd187c9bb5291725"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>SendDnsTextRequest</b> (std::string hostname, DnsTextResultsCallback, DnsTextCompleteCallback)=0</td></tr>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>SendDnsTextRequest</b> (std::string hostname, <a class="el" href="classipfs_1_1ctx_1_1DnsTxtLookup.html#a226609b482eb219df670f7bfe04a3bea">DnsTextResultsCallback</a>, DnsTextCompleteCallback)=0</td></tr>
 <tr class="separator:a85db29e90aff7706dd187c9bb5291725"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Handles requesting TXT (text) request from a DNS system </p><dl class="section note"><dt>Note</dt><dd>Subclassed by implementation. </dd></dl>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="a226609b482eb219df670f7bfe04a3bea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a226609b482eb219df670f7bfe04a3bea">&#9670;&nbsp;</a></span>DnsTextResultsCallback</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="classipfs_1_1ctx_1_1DnsTxtLookup.html#a226609b482eb219df670f7bfe04a3bea">ipfs::ctx::DnsTxtLookup::DnsTextResultsCallback</a> =  std::function&lt;void(std::vector&lt;std::string&gt; const&amp;)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Callback for if usable result was achieved </p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>library/include/ipfs_client/ctx/<a class="el" href="dns__txt__lookup_8h_source.html">dns_txt_lookup.h</a></li>
 <li>library/src/ipfs_client/ctx/dns_txt_lookup.cc</li>
 </ul>
