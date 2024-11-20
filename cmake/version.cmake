@@ -1,8 +1,0 @@
-include("${CMAKE_CURRENT_LIST_DIR}/python.cmake")
-
-execute_process(
-    COMMAND ${Python3_EXECUTABLE} version.py
-    WORKING_DIRECTORY "${CMAKE_CURRENT_LIST_DIR}"
-    OUTPUT_VARIABLE version
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-)

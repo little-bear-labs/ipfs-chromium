@@ -1,5 +1,6 @@
 #!/bin/bash -ex
-
+echo "TODO ${0}"
+exit
 here="$(dirname "${0}")"
 export here
 source "${here}/ubuntu-deps.env"
