@@ -1,61 +1,276 @@
 cmake_minimum_required(VERSION 3.22)
 list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-include(version)
-project(ipfs-chromium
-  VERSION ${version}
-  DESCRIPTION "An ipfs client library intended for use in browsers, and a Chromium component which uses it."
-  HOMEPAGE_URL https://github.com/little-bear-labs/ipfs-chromium
-  LANGUAGES CXX
+message(WARNING "${CMAKE_MODULE_PATH}")
+include(python)
+execute_process(
+    COMMAND "${Python_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/bld/ic_version.py"
+    OUTPUT_VARIABLE deduced_version
   )
-#The cache variables in all-caps are meant for you to customize the build.
-#They are all here, so you don't need to hunt.
-set(DOWNLOAD_CHROMIUM FALSE CACHE BOOL
-    "Whether you prefer this cmake run to fetch its own private copy of Chromium stuff. Takes a very long time."
+project(ipfs_client
+    DESCRIPTION "Code related to using IPFS http gateways to resolve ipfs:// and ipns:// URLs"
+    LANGUAGES CXX
+    VERSION ${deduced_version}
 )
-set(CHROMIUM_SOURCE_TREE "${CMAKE_CURRENT_BINARY_DIR}/chromium/src" CACHE PATH
-    "Path to chromium/src. If DOWNLOAD_CHROMIUM=TRUE, and it does not exist, it will be created."
-)
-set(CHROMIUM_PROFILE "${CMAKE_BUILD_TYPE}" CACHE STRING "The profile of the current Chromium build.")
-set(CXX_VERSION "20" CACHE STRING "The numeric part (year % 100) of the version of the C++ standard to be used. Must be at least 20 (for C++20). Must be one CMake knows about.")
-if(DOWNLOAD_CHROMIUM)
-    set(default_dt "${CMAKE_CURRENT_BINARY_DIR}/depot_tools")
-else()
-    set(default_dt "DETECT_FROM_PATH")
-endif()
-set(DEPOT_TOOLS_DIRECTORY "${default_dt}" CACHE PATH
-    "Where to find depot_tools, e.g. DEPOT_TOOLS_DIRECTORY/gn.py should exist. Setting this to DETECT_FROM_PATH implies the directory is in your PATH and always will be."
-)
-set(TEST_BY_DEFAULT FALSE CACHE BOOL "Update unit tests as part of the 'all' default target.")
-set(USE_CLANG_TIDY FALSE CACHE BOOL "Use clang-tidy, if found, to generate additional warnings.")
-set(USE_DOXYGEN TRUE CACHE BOOL "If we should attempt to use Doxygen to generate documentation, if it's available.")
-set(BRANDING_DIR "${CMAKE_CURRENT_LIST_DIR}/branding" CACHE PATH "Directory conataining branding files to synchronize. If empty, don't apply any branding changes.")
-#End of user-configuration cache variables.
 
-if(CXX_VERSION GREATER_EQUAL 20)
-    message(STATUS "Building for C++${CXX_VERSION}")
-else()
-    message(FATAL_ERROR "Unsupported CXX_VERSION: ${CXX_VERSION}")
+set(TESTING ON CACHE BOOL "Do we want to run tests?")
+set(CXX_VERSION 20 CACHE STRING "Should be no less than your conan profile.")
+
+file(READ bld/protobuf_version.txt pb_ver)
+string(STRIP "${pb_ver}" pb_ver)
+
+include(dependencies)
+
+dependency(protobuf VERSION ${pb_ver})
+dependency(absl)
+dependency(Boost)
+dependency(c-ares)
+dependency(nlohmann_json)
+dependency(OpenSSL)
+if(TESTING)
+  dependency(GTest)
 endif()
 
-set(IN_WORKSPACE 1)
-include(chrome)
-include(setup)
-include(shell)
+file(GLOB_RECURSE
+    sources
+    CONFIGURE_DEPENDS
+    src/*.cc
+)
+list(FILTER
+    sources
+    EXCLUDE
+    REGEX .*test.cc
+)
+file(GLOB_RECURSE
+    headers
+    include/*.h
+    include/*.hpp
+)
+file(GLOB_RECURSE
+  protos
+  proto/*.proto
+)
 
-enable_testing()
+foreach(proto ${protos})
+    get_filename_component(base "${proto}" NAME_WE)
+    set(d "${CMAKE_CURRENT_BINARY_DIR}/gen")
+    set(p "${d}/ipfs_client/${base}.pb")
+    add_custom_command(
+        OUTPUT "${p}.h" "${p}.cc"
+        MAIN_DEPENDENCY "${proto}"
+        COMMAND "${CMAKE_COMMAND}" -E make_directory "${d}"
+        COMMAND bash -ex "${CMAKE_CURRENT_SOURCE_DIR}/bld/protoc.sh" "${CMAKE_CURRENT_SOURCE_DIR}/proto" "${d}" "${proto}"
+    )
+    list(APPEND pb_gen "${p}.h" )
+    list(APPEND pb_gen "${p}.cc")
+    set_source_files_properties("${p}.h" PROPERTIES GENERATED ON)
+    set_source_files_properties("${p}.cc" PROPERTIES GENERATED ON)
+endforeach()
+set_source_files_properties(${pb_gen} PROPERTIES GENERATED ON)
 
-add_subdirectory(library)
+add_library(ic_proto
+    ${pb_gen}
+)
+target_compile_features(ic_proto
+    PUBLIC
+        cxx_std_${CXX_VERSION}
+)
+target_include_directories(ic_proto
+    PUBLIC
+        "${CMAKE_CURRENT_BINARY_DIR}/gen"
+        "${protobuf_INCLUDE_DIR}"
+)
+target_link_libraries(ic_proto
+  PUBLIC
+    protobuf::protobuf
+)
 
-if(IS_DIRECTORY "${CHROMIUM_SOURCE_TREE}")
-    add_subdirectory(component)
-elseif(CHROMIUM_SOURCE_TREE AND DOWNLOAD_CHROMIUM)
-    message(STATUS "In download mode.")
-    add_subdirectory(component)
-else()
-    message(WARNING "CHROMIUM_SOURCE_TREE (${CHROMIUM_SOURCE_TREE}) not pointing to source tree.")
+add_library(ipfs_client
+  STATIC
+      ${sources}
+      ${headers} #Mostly for IDEs' sake - this used to be considered bad practice but... generator expressions and such
+  )
+if(USE_CLANG_TIDY AND CLANG_TIDY_EXE)
+  set_target_properties(ipfs_client
+    PROPERTIES
+      CXX_CLANG_TIDY "${CLANG_TIDY_EXE};--config-file=${CMAKE_CURRENT_SOURCE_DIR}/.clang-tidy;--fix"
+    )
+endif()
+add_library(ipfs_client_covered
+  EXCLUDE_FROM_ALL
+      ${sources}
+      ${headers}
+  )
+foreach(libname ipfs_client ipfs_client_covered)
+    target_compile_features(${libname}
+        PUBLIC
+            cxx_std_${CXX_VERSION}
+    )
+    target_compile_options(${libname}
+        PRIVATE
+            ${WARNING_FLAGS}
+    )
+    target_compile_definitions(${libname}
+      PRIVATE
+        ABSL_USES_STD_STRING_VIEW=1
+    )
+    target_include_directories(${libname}
+        PUBLIC
+            include/
+    )
+    target_include_directories(${libname}
+        SYSTEM
+        PUBLIC
+            "${CMAKE_CURRENT_BINARY_DIR}/gen"
+            "${CMAKE_CURRENT_BINARY_DIR}"
+    )
+    target_include_directories(${libname}
+      PRIVATE
+        src/
+    )
+    target_link_libraries(${libname}
+      PUBLIC
+        ic_proto
+    )
+    target_link_libraries(${libname}
+      PUBLIC
+        absl::strings
+        Boost::headers
+        c-ares::cares
+        nlohmann_json::nlohmann_json
+    )
+endforeach()
+
+file(
+  GLOB pub_incs
+  include/*
+  LIST_DIRECTORIES true
+)
+install(
+  DIRECTORY ${pub_incs}
+  TYPE INCLUDE
+)
+install(TARGETS ic_proto)
+install(TARGETS ipfs_client)
+
+set(CPACK_GENERATOR TGZ;ZIP)
+find_program(DPKG_BUILDPACKAGE dpkg-buildpackage)
+if(DPKG_BUILDPACKAGE)
+    list(APPEND CPACK_GENERATOR DEB)
+endif()
+find_program(RPMBUILD rpmbuild)
+if(RPMBUILD)
+    list(APPEND CPACK_GENERATOR RPM)
+endif()
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    list(APPEND DRAGNDROP)
 endif()
 
-add_subdirectory(electron-spin)
+if (CMAKE_BUILD_TYPE STREQUAL Release)
+    set(CPACK_PACKAGE_NAME "ipfs-client-devel")
+else()
+    set(CPACK_PACKAGE_NAME "ipfs-client-devel-${CMAKE_BUILD_TYPE}")
+endif()
+set(CPACK_PACKAGE_VERSION "${CMAKE_PROJECT_VERSION}")
+set(CPACK_PACKAGE_VENDOR "LBL")
+set(CPACK_PACKAGE_CONTACT "john@littlebearlabs.io")
+set(CPACK_ARCHIVE_FILE_NAME "ipfs-client")
+include(CPack)
+
+file(GLOB_RECURSE
+    unit_test_sources
+    CONFIGURE_DEPENDS
+    src/*_unittest.cc
+)
+if(TESTING)
+    get_target_property(links ipfs_client_covered INTERFACE_LINK_LIBRARIES)
+    enable_testing()
+    add_executable(unit_test_runner
+      EXCLUDE_FROM_ALL
+      ${unit_test_sources}
+    )
+    target_compile_features(unit_test_runner
+      PUBLIC
+      cxx_std_${CXX_VERSION}
+      )
+    target_include_directories(unit_test_runner
+      PRIVATE
+      include/
+      src/
+      test_data/include
+      )
+    target_link_libraries(unit_test_runner
+      PUBLIC
+      ipfs_client_covered
+      OpenSSL::SSL
+      GTest::gtest
+      GTest::gtest_main
+      )
+    find_program(VALGRIND "valgrind")
+    add_custom_target(run_tests
+      DEPENDS unit_test_runner
+      COMMAND $<TARGET_FILE:unit_test_runner>
+      WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
+    )
+    if(VALGRIND)
+        add_custom_command(
+          OUTPUT ut.cert
+          DEPENDS unit_test_runner
+          COMMAND "${VALGRIND}" --tool=memcheck --leak-check=no --exit-on-first-error=yes --error-exitcode=99 "--suppressions=${CMAKE_SOURCE_DIR}/bld/valgrind.suppressions.txt"  $<TARGET_FILE:unit_test_runner>
+          COMMAND "${CMAKE_COMMAND}" -E touch ut.cert
+          WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
+        )
+    else()
+        add_custom_command(
+          OUTPUT ut.cert
+          DEPENDS unit_test_runner
+          COMMAND $<TARGET_FILE:unit_test_runner>
+          COMMAND "${CMAKE_COMMAND}" -E touch ut.cert
+          WORKING_DIRECTORY "${PROJECT_BINARY_DIR}"
+        )
+    endif()
+    if(TEST_BY_DEFAULT)
+        add_custom_target(ut
+          ALL
+          DEPENDS ut.cert
+          COMMAND "${CMAKE_COMMAND}" -E echo "Tests up-to-date"
+        )
+    else()
+        add_custom_target(ut
+          DEPENDS ut.cert
+          COMMAND "${CMAKE_COMMAND}" -E echo "Tests up-to-date"
+        )
+    endif()
+    if(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
+        include(CodeCoverage OPTIONAL RESULT_VARIABLE INCLUDED_COVERAGE)
+        if(INCLUDED_COVERAGE)
+            append_coverage_compiler_flags_to_target(ipfs_client_covered)
+            append_coverage_compiler_flags_to_target(unit_test_runner)
+            if(CMAKE_BUILD_TYPE STREQUAL Debug)
+                target_compile_options(ipfs_client_covered
+                        PRIVATE
+                        ${coverage_debug_flags}
+                )
+            endif()
+            if(CMAKE_BUILD_TYPE STREQUAL Debug)
+                target_compile_options(unit_test_runner
+                        PRIVATE
+                        ${coverage_debug_flags}
+                )
+            endif()
+        endif()
+        if(LCOV_PATH)
+            setup_target_for_coverage_lcov(
+                NAME cov
+                DEPENDENCIES run_tests
+                EXECUTABLE $<TARGET_FILE:unit_test_runner>
+                EXCLUDE ${unit_test_sources}
+                LCOV_ARGS --ignore-errors unused
+            )
+        else()
+            message(WARNING "Cannot provide coverage report without lcov")
+        endif()
+    endif()
+endif()
 
 include(cmake/doxy.cmake)
 include(cmake/marp.cmake)
@@ -65,3 +280,4 @@ if(doc_targets)
       COMMENT "Generated documentation: ${doc_targets}"
     )
 endif()
+

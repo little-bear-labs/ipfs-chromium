@@ -1,40 +1,37 @@
-find_package(Python3 QUIET COMPONENTS Interpreter)
-if(Python3_EXECUTABLE)
-    execute_process(
-        COMMAND ${Python3_EXECUTABLE} -m pip --version
-        RESULT_VARIABLE pip_result
-        OUTPUT_QUIET
-    )
-    if(pip_result EQUAL 0)
-        set(HAVE_PIP TRUE)
-    else()
-        set(HAVE_PIP FALSE)
-    endif()
-    find_program(PYLINT pylint)
+find_package(
+    Python
+    COMPONENTS Interpreter
+    REQUIRED
+  )
+execute_process(
+    COMMAND "${Python_EXECUTABLE}" --version
+  )
+execute_process(
+    COMMAND "${Python_EXECUTABLE}" -m pip --version
+    RESULT_VARIABLE PIP_STATUS
+  )
+if(PIP_STATUS EQUAL 0)
+  message(STATUS "Using Python at ${Python_EXECUTABLE}")
 else()
-    set(HAVE_PIP FALSE)
-    message(WARNING "Can't find python3! This means we can't use depot_tools, and so can't do in-Chromium building of either kind. It also means we can't use conan.")
+  message(WARNING "pip not working!! This will likely cause problems down the line.")
 endif()
-
-if(already_included)
-  #message(STATUS "python.cmake included more than once. Not an error.")
-elseif(PYLINT)
-  file(GLOB_RECURSE
-    python_sources
-    *.py
+execute_process(
+    COMMAND "conan" --version
+    RESULT_VARIABLE CONAN_STATUS
   )
-  add_custom_command(
-    OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/pylint.json"
-    DEPENDS "${python_sources}"
-    COMMAND "${PYLINT}" --exit-zero --output-format=json2 ${python_sources} > "${CMAKE_CURRENT_BINARY_DIR}/pylint.json"
-    COMMENT "Linting python"
-  )
-  add_custom_target(static_py
-    ALL
-    DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/pylint.json"
-    COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_LIST_DIR}/pylint_thresh.py" "${CMAKE_CURRENT_BINARY_DIR}/pylint.json"
-  )
-  set(already_included ON)
+if(CONAN_STATUS EQUAL 0)
+  message(STATUS "Have conan.")
 else()
-  message(WARNING "No pylint.")
+  execute_process(
+      COMMAND "${Python_EXECUTABLE}" -m pip install --user --upgrade conan
+    )
+  execute_process(
+      COMMAND conan profile detect
+      RESULT_VARIABLE CONAN_STATUS
+    )
+  if(CONAN_STATUS EQUAL 0)
+    message(STATUS "Installed conan.")
+  else()
+    message(WARNING "conan not working!! This will almost certainly cause problems down the line.")
+  endif()
 endif()
