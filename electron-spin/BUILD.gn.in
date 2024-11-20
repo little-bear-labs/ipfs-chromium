@@ -1,8 +1,0 @@
-static_library("electron_hooks") {
-    sources = [
-@gn_sources@
-    ]
-    deps = [
-        "//components/ipfs:ipfs"
-    ]
-}
