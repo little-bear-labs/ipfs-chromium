@@ -1,2 +1,0 @@
- 
-set(WARNING_FLAGS /W4)
