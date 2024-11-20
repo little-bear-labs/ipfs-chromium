@@ -1,4 +1,6 @@
 #!/bin/bash -ex
+echo "TODO ${0}"
+exit
 echo Clone tester repo.
 git clone https://github.com/John-LittleBearLabs/ipfs_client_clitester.git
 for e in "${GITHUB_HEAD_REF-}" "${GITHUB_REF-}"
