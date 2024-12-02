@@ -28,14 +28,24 @@ std::string_view GetName(Code);
 
 using Decoder = std::vector<Byte> (*)(std::string_view);
 using Encoder = std::string (*)(ByteView);
-/*! Base class for multibase codecs
+/*! Form of multibase codecs
  *  @details https://github.com/multiformats/multibase
  */
 struct Codec {
+  /*! Functor to turn a multibase string into binary
+   */
   Decoder const decode;
+  /*! Functor to turn binary data into a multibase
+   */
   Encoder const encode;
+  /*! The name of the multibase in question.
+   *  Should match the name found in the multibase table.
+   */
   std::string_view const name;
-  static Codec const* Get(Code);
+  /*! @param Struct with the above fields filled
+   *  @param code The multibase to fetch
+   */
+  static Codec const* Get(Code code);
 };
 
 std::string encode(Code, ByteView);

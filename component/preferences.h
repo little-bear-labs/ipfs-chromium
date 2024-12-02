@@ -16,6 +16,9 @@ class PrefService;
 namespace ipfs {
 COMPONENT_EXPORT(IPFS) void RegisterPreferences(PrefRegistrySimple*);
 bool DnsFallbackPref(PrefService const*);
+
+/*! Configuration of gateways using Chromium preferences
+ */
 class ChromiumIpfsGatewayConfig final : public ipfs::ctx::GatewayConfig {
   raw_ptr<PrefService> prefs_;
   base::Value::Dict last_;

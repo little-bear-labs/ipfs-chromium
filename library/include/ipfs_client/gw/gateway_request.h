@@ -16,6 +16,7 @@
 #include <unordered_set>
 
 namespace ipfs {
+class Car;
 class IpfsRequest;
 class Partition;
 namespace ipld {
@@ -52,6 +53,10 @@ class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
                 ipld::BlockSource src,
                 std::shared_ptr<Client> const& api,
                 bool* valid);
+  void AddBlocks(Car& car,
+                 std::shared_ptr<Client> const& api,
+                 bool& success, bool* valid, ipld::BlockSource src);
+  bool IpnsResponse(ByteView bytes, std::shared_ptr<Client> const& api, bool& success, bool* valid, ipld::BlockSource src);
 
  public:
   GatewayRequestType type = GatewayRequestType::Zombie;
@@ -87,7 +92,7 @@ class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
   std::string Key() const;
   bool Finished() const;
 
-  static std::shared_ptr<GatewayRequest> fromIpfsPath(SlashDelimited);
+  static std::shared_ptr<GatewayRequest> fromIpfsPath(SlashDelimited ipfs_path);
 };
 
 }  // namespace ipfs::gw

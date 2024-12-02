@@ -9,9 +9,7 @@ if (enable_ipfs) {
       ]
       defines = [  ]
       include_dirs = [
-        ".",
-        "ipfs_client",
-        "ipfs_client/unix_fs",
+        "."
       ]
       deps = [
         "//content",
@@ -26,6 +24,7 @@ if (enable_ipfs) {
         "//services/network/public/mojom:url_loader_base",
         "//url",
         "//third_party/blink/public:blink",
+        "//third_party/ipfs_client",
       ]
       public_deps = [
         "//third_party/ipfs_client",

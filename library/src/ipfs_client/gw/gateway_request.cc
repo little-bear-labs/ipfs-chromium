@@ -33,10 +33,10 @@ using namespace std::literals;
 
 using Self = ipfs::gw::GatewayRequest;
 
-auto Self::fromIpfsPath(ipfs::SlashDelimited p) -> std::shared_ptr<Self> {
-  auto name_space = p.pop();
+auto Self::fromIpfsPath(ipfs::SlashDelimited ipfs_path) -> std::shared_ptr<Self> {
+  auto name_space = ipfs_path.pop();
   auto r = std::make_shared<Self>();
-  r->main_param = p.pop();
+  r->main_param = ipfs_path.pop();
   Cid cid(r->main_param);
   if (cid.valid()) {
     r->cid = std::move(cid);
@@ -52,12 +52,12 @@ auto Self::fromIpfsPath(ipfs::SlashDelimited p) -> std::shared_ptr<Self> {
     if (r->cid.value().hash_type() == HashType::IDENTITY) {
       r->type = GatewayRequestType::Identity;
     } else {
-      r->path = p.pop_all();
+      r->path = ipfs_path.pop_all();
       r->type =
           r->path.empty() ? GatewayRequestType::Block : GatewayRequestType::Car;
     }
   } else if (name_space == "ipns") {
-    r->path = p.pop_all();
+    r->path = ipfs_path.pop_all();
     if (Cid(r->main_param).valid()) {
       r->type = GatewayRequestType::Ipns;
     } else {
@@ -65,7 +65,7 @@ auto Self::fromIpfsPath(ipfs::SlashDelimited p) -> std::shared_ptr<Self> {
     }
   } else {
     LOG(FATAL) << "Unsupported namespace in ipfs path: /" << name_space << '/'
-               << p.pop_all();
+               << ipfs_path.pop_all();
   }
   return r;
 }
@@ -267,31 +267,14 @@ auto Self::RespondSuccessfully(std::string_view bytes,
       }
     } break;
     case GatewayRequestType::Ipns:
-      if (cid.has_value()) {
-        DCHECK(api);
-        const auto *byte_ptr = reinterpret_cast<ipfs::Byte const*>(bytes.data());
-        auto rec = ipfs::ValidateIpnsRecord({byte_ptr, bytes.size()},
-                                            cid.value(), *api);
-        if (rec.has_value()) {
-          ValidatedIpns const validated{rec.value()};
-          auto node = std::make_shared<IpnsName>(validated);
-          if (!node || node->expired()) {
-            return false;
-          }
-          node->source(src);
-          success = orchestrator_->add_node(main_param, node);
-          if (valid != nullptr) {
-            *valid = !node->expired();
-          }
-        } else {
-          LOG(ERROR) << "IPNS record failed to validate!";
-          return false;
-        }
+      if (!IpnsResponse(as_bytes(bytes), api, success, valid, src)) {
+        return false;
       }
       break;
     case GatewayRequestType::DnsLink: {
       Cid const c{roots};
       if (c.valid()) {
+        VLOG(1) << debug_string() << " resolves to " << c.to_string();
         AddDnsLink("/ipfs/" + c.to_string(), success, src);
         cid = c;
         AddBlock(bytes, success, src, api, valid);
@@ -302,26 +285,7 @@ auto Self::RespondSuccessfully(std::string_view bytes,
     case GatewayRequestType::Car: {
       DCHECK(api);
       Car car(as_bytes(bytes), api->cbor());
-      while (auto block = car.NextBlock()) {
-        auto cid_s = block->cid.to_string();
-        auto n = DagNode::fromBytes(api, block->cid, block->bytes);
-        if (!n) {
-          LOG(ERROR) << "Unable to handle block from CAR: " << cid_s;
-          continue;
-        }
-        if (valid != nullptr) {
-          *valid = true;
-        }
-        if (n) {
-          n->source(src);
-        }
-        if (orchestrator_->add_node(cid_s, n)) {
-          success = true;
-          for (auto& hook : bytes_received_hooks) {
-            hook(cid_s, block->bytes, src);
-          }
-        }
-      }
+      AddBlocks(car, api, success, valid, src);
       break;
     }
     case GatewayRequestType::Providers:
@@ -421,4 +385,48 @@ void Self::AddBlock(std::string_view bytes,
         }
         success = orchestrator_->add_node(main_param, node) || success;
     }
+}
+void Self::AddBlocks(Car& car, const std::shared_ptr<Client>& api, bool& success, bool* valid, ipld::BlockSource src) {
+  while (auto block = car.NextBlock()) {
+    auto cid_s = block->cid.to_string();
+    auto n = ipld::DagNode::fromBytes(api, block->cid, block->bytes);
+    if (!n) {
+      LOG(ERROR) << "Unable to handle block from CAR: " << cid_s;
+      continue;
+    }
+    if (valid != nullptr) {
+      *valid = true;
+    }
+    if (n) {
+      n->source(src);
+    }
+    if (orchestrator_->add_node(cid_s, n)) {
+      success = true;
+      for (auto& hook : bytes_received_hooks) {
+        hook(cid_s, block->bytes, src);
+      }
+    }
+  }
+}
+auto Self::IpnsResponse(ByteView bytes, std::shared_ptr<Client> const& api, bool& success, bool* valid, ipld::BlockSource src) -> bool {
+  if (cid.has_value()) {
+    DCHECK(api);
+    auto rec = ipfs::ValidateIpnsRecord(bytes, cid.value(), *api);
+    if (rec.has_value()) {
+      ValidatedIpns const validated{rec.value()};
+      auto node = std::make_shared<ipld::IpnsName>(validated);
+      if (!node || node->expired()) {
+        return false;
+      }
+      node->source(src);
+      success = orchestrator_->add_node(main_param, node);
+      if (valid != nullptr) {
+        *valid = !node->expired();
+      }
+    } else {
+      LOG(ERROR) << "IPNS record failed to validate!";
+      return false;
+    }
+  }
+  return true;
 }

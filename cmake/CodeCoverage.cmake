@@ -294,17 +294,18 @@ function(setup_target_for_coverage_lcov)
     )
     # filter collected data to final coverage report
     set(LCOV_FILTER_CMD
-        ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH} --remove
-        ${Coverage_NAME}.total ${LCOV_EXCLUDES} --output-file ${Coverage_NAME}.info
+        ${LCOV_PATH} ${Coverage_LCOV_ARGS} --gcov-tool ${GCOV_PATH}
+        --remove ${Coverage_NAME}.total ${LCOV_EXCLUDES} --output-file ${Coverage_NAME}.info
     )
     # Generate HTML output
     set(LCOV_GEN_HTML_CMD
         ${GENHTML_PATH}
             ${GENHTML_EXTRA_ARGS}
             ${Coverage_GENHTML_ARGS}
-            --rc genhtml_hi_limit=89
-            --rc genhtml_med_limit=78
+            --rc genhtml_hi_limit=90
+            --rc genhtml_med_limit=75
             --prefix "${BASEDIR}"
+            --ignore-errors unused
             -o ${Coverage_NAME}
             ${Coverage_NAME}.info
     )

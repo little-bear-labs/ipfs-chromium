@@ -59,7 +59,7 @@ void Self::hit(GatewayRequestType grt, GatewayRequest const& req) {
   config.SetTypeAffinity(prefix_, grt, std::max(typaff + 9, 1));
   affinity_success[req.affinity] += 9;
   auto rpm = config.GetGatewayRate(prefix_);
-  for (auto i = 7; i != 0; --i) {
+  for (auto i = 8; i != 0; --i) {
     if (over_rate(++rpm / i)) {
       ++rpm;
     } else {

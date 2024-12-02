@@ -15,6 +15,13 @@ else()
     find_package(Boost QUIET REQUIRED CONFIG)
     find_package(c-ares QUIET REQUIRED CONFIG)
     find_package(nlohmann_json QUIET REQUIRED CONFIG)
+    find_package(
+        Protobuf
+        ${protobuf_version}
+        QUIET
+        REQUIRED
+        CONFIG
+    )
 endif()
 
 file(GLOB_RECURSE
@@ -37,7 +44,6 @@ file(GLOB_RECURSE
   proto/*.proto
 )
 
-find_package(Protobuf QUIET REQUIRED)
 foreach(proto ${protos})
     get_filename_component(base "${proto}" NAME_WE)
     set(d "${CMAKE_CURRENT_BINARY_DIR}/gen")
@@ -261,6 +267,8 @@ if(GTest_FOUND AND IN_WORKSPACE)
                 NAME cov
                 DEPENDENCIES run_tests
                 EXECUTABLE $<TARGET_FILE:unit_test_runner>
+                EXCLUDE ${unit_test_sources}
+                LCOV_ARGS --ignore-errors unused
             )
         else()
             message(WARNING "Cannot provide coverage report without lcov")

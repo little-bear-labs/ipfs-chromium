@@ -221,7 +221,12 @@ target_compile_options(out_of_tree
   PUBLIC
     ${WARNING_FLAGS}
   )
-find_package(Protobuf QUIET)
+find_package(
+    Protobuf
+    "${protobuf_version}"
+    QUIET
+    REQUIRED
+)
 find_package(OpenSSL
     QUIET
     COMPONENTS

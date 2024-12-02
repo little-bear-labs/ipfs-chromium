@@ -6,6 +6,8 @@
 #include <ipfs_client/client.h>
 
 namespace ipfs::ipld {
+/*! A DAG-CBOR dict
+ */
 class DagCborNode final : public DagNode {
   ResolveResult resolve(ResolutionState&) override;
 
