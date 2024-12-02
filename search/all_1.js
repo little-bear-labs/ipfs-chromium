@@ -10,7 +10,5 @@ var searchData=
   ['blockrequestor_16',['BlockRequestor',['../classipfs_1_1BlockRequestor.html',1,'ipfs']]],
   ['blockrequestsplitter_17',['BlockRequestSplitter',['../classipfs_1_1gw_1_1BlockRequestSplitter.html',1,'ipfs::gw']]],
   ['blocksource_18',['BlockSource',['../structipfs_1_1ipld_1_1BlockSource.html',1,'ipfs::ipld']]],
-  ['bytes_19',['bytes',['../structipfs_1_1Car_1_1Block.html#a53f3cfdaa2bb45b01f3bd8eb597d66c9',1,'ipfs::Car::Block']]],
-  ['bytesreceivedhook_20',['BytesReceivedHook',['../classipfs_1_1gw_1_1GatewayRequest.html#a20a1ec743bee476e8358ad2a60182350',1,'ipfs::gw::GatewayRequest']]],
-  ['byteview_21',['ByteView',['../classipfs_1_1crypto_1_1SignatureVerifier.html#abb3e868debfe0e0d159fdf263b64f4e7',1,'ipfs::crypto::SignatureVerifier']]]
+  ['bytes_19',['bytes',['../structipfs_1_1Car_1_1Block.html#a53f3cfdaa2bb45b01f3bd8eb597d66c9',1,'ipfs::Car::Block']]]
 ];

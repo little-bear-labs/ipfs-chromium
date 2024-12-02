@@ -105,33 +105,32 @@ $(function() {
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="comment">// construct. Set it to nullptr. We have time needed to read_start a word.</span></div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr</a>() = <span class="keyword">delete</span>;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
-<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="classipfs_1_1raw__ptr.html#a2ce535e42e009e83d94e045de4016c40">   42</a></span>&#160;  <a class="code" href="classipfs_1_1raw__ptr.html#a2ce535e42e009e83d94e045de4016c40">raw_ptr</a>(T* p) : ptr_{p} {}</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr</a>(<a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr</a>&amp;&amp;) = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr</a>(<a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr</a> <span class="keyword">const</span>&amp;) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr</a>(T* p) : ptr_{p} {}</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr</a>(<a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr</a>&amp;&amp;) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr</a>(<a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr</a> <span class="keyword">const</span>&amp;) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr</a>&amp; operator=(<a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr</a> <span class="keyword">const</span>&amp;) = <span class="keywordflow">default</span>;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr</a>&amp; operator=(<a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr</a> <span class="keyword">const</span>&amp;) = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  T* get() { <span class="keywordflow">return</span> ptr_; }</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  T <span class="keyword">const</span>* get()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> ptr_; }</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keyword">explicit</span> <span class="keyword">operator</span> bool()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> !!ptr_; }</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  T* operator-&gt;() { <span class="keywordflow">return</span> ptr_; }</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  T <span class="keyword">const</span>* operator-&gt;()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> ptr_; }</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  raw_ptr&amp; operator=(T* p) {</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    ptr_ = p;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  }</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  T&amp; operator*() {</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    assert(ptr_);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keywordflow">return</span> *ptr_;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  }</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;};</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  T* get() { <span class="keywordflow">return</span> ptr_; }</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  T <span class="keyword">const</span>* get()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> ptr_; }</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keyword">explicit</span> <span class="keyword">operator</span> bool()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> !!ptr_; }</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  T* operator-&gt;() { <span class="keywordflow">return</span> ptr_; }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  T <span class="keyword">const</span>* operator-&gt;()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> ptr_; }</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <a class="code" href="classipfs_1_1raw__ptr.html">raw_ptr</a>&amp; operator=(T* p) {</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    ptr_ = p;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordflow">return</span> *<span class="keyword">this</span>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  }</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  T&amp; operator*() {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    assert(ptr_);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">return</span> *ptr_;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  }</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;};</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;}  <span class="comment">// namespace ipfs</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; </div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_OBSERVER_PTR_H_</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_OBSERVER_PTR_H_</span></div>
 <div class="ttc" id="aclassipfs_1_1raw__ptr_html"><div class="ttname"><a href="classipfs_1_1raw__ptr.html">ipfs::raw_ptr</a></div><div class="ttdoc">Just an observing (non-owning) pointer.</div><div class="ttdef"><b>Definition:</b> raw_ptr.h:31</div></div>
-<div class="ttc" id="aclassipfs_1_1raw__ptr_html_a2ce535e42e009e83d94e045de4016c40"><div class="ttname"><a href="classipfs_1_1raw__ptr.html#a2ce535e42e009e83d94e045de4016c40">ipfs::raw_ptr::raw_ptr</a></div><div class="ttdeci">raw_ptr(T *p)</div><div class="ttdef"><b>Definition:</b> raw_ptr.h:42</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

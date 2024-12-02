@@ -77,14 +77,13 @@ $(function() {
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="keyword">namespace </span>ipfs::ctx {</div>
 <div class="line"><a name="l00009"></a><span class="lineno"><a class="line" href="classipfs_1_1ctx_1_1NullDnsTxtLookup.html">    9</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1ctx_1_1NullDnsTxtLookup.html">NullDnsTxtLookup</a> : <span class="keyword">public</span> <a class="code" href="classipfs_1_1ctx_1_1DnsTxtLookup.html">DnsTxtLookup</a> {</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  <span class="keywordtype">void</span> SendDnsTextRequest(std::string,</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;                          <a class="code" href="classipfs_1_1ctx_1_1DnsTxtLookup.html#a226609b482eb219df670f7bfe04a3bea">DnsTextResultsCallback</a>,</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;                          DnsTextResultsCallback,</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;                          DnsTextCompleteCallback) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;};</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;}  <span class="comment">// namespace ipfs::ctx</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160; </div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_CHROMIUM_NULL_DNS_TXT_LOOKUP_H</span></div>
 <div class="ttc" id="aclassipfs_1_1ctx_1_1DnsTxtLookup_html"><div class="ttname"><a href="classipfs_1_1ctx_1_1DnsTxtLookup.html">ipfs::ctx::DnsTxtLookup</a></div><div class="ttdef"><b>Definition:</b> dns_txt_lookup.h:11</div></div>
-<div class="ttc" id="aclassipfs_1_1ctx_1_1DnsTxtLookup_html_a226609b482eb219df670f7bfe04a3bea"><div class="ttname"><a href="classipfs_1_1ctx_1_1DnsTxtLookup.html#a226609b482eb219df670f7bfe04a3bea">ipfs::ctx::DnsTxtLookup::DnsTextResultsCallback</a></div><div class="ttdeci">std::function&lt; void(std::vector&lt; std::string &gt; const  &amp;)&gt; DnsTextResultsCallback</div><div class="ttdef"><b>Definition:</b> dns_txt_lookup.h:16</div></div>
 <div class="ttc" id="aclassipfs_1_1ctx_1_1NullDnsTxtLookup_html"><div class="ttname"><a href="classipfs_1_1ctx_1_1NullDnsTxtLookup.html">ipfs::ctx::NullDnsTxtLookup</a></div><div class="ttdef"><b>Definition:</b> null_dns_txt_lookup.h:9</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

@@ -88,7 +88,8 @@ Inheritance diagram for ipfs::ctx::HttpApi:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a4316df6ed302d63ffa29115177303bd3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ctx_1_1HttpApi.html#a4316df6ed302d63ffa29115177303bd3">ReqDesc</a> = ::<a class="el" href="structipfs_1_1HttpRequestDescription.html">ipfs::HttpRequestDescription</a></td></tr>
+<tr class="memitem:a4316df6ed302d63ffa29115177303bd3"><td class="memItemLeft" align="right" valign="top"><a id="a4316df6ed302d63ffa29115177303bd3"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ReqDesc</b> = ::<a class="el" href="structipfs_1_1HttpRequestDescription.html">ipfs::HttpRequestDescription</a></td></tr>
 <tr class="separator:a4316df6ed302d63ffa29115177303bd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae6b89ac5261835a34b27ba5d8cae1b2"><td class="memItemLeft" align="right" valign="top"><a id="aae6b89ac5261835a34b27ba5d8cae1b2"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>Hdrs</b> = std::function&lt; std::string(std::string_view)&gt;</td></tr>
@@ -103,28 +104,12 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>Canceller</b> = std:
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:abe03958aa3ec351614c7edda041061f3"><td class="memItemLeft" align="right" valign="top"><a id="abe03958aa3ec351614c7edda041061f3"></a>
-virtual Canceller&#160;</td><td class="memItemRight" valign="bottom"><b>SendHttpRequest</b> (<a class="el" href="classipfs_1_1ctx_1_1HttpApi.html#a4316df6ed302d63ffa29115177303bd3">ReqDesc</a>, OnComplete cb) const =0</td></tr>
+virtual Canceller&#160;</td><td class="memItemRight" valign="bottom"><b>SendHttpRequest</b> (<a class="el" href="structipfs_1_1HttpRequestDescription.html">ReqDesc</a>, OnComplete cb) const =0</td></tr>
 <tr class="separator:abe03958aa3ec351614c7edda041061f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base class for sending HTTP requests </p><dl class="section note"><dt>Note</dt><dd>Subclassed by implementation, so you'll likely only need 1 subclass per project. </dd></dl>
-</div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a4316df6ed302d63ffa29115177303bd3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4316df6ed302d63ffa29115177303bd3">&#9670;&nbsp;</a></span>ReqDesc</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">using <a class="el" href="classipfs_1_1ctx_1_1HttpApi.html#a4316df6ed302d63ffa29115177303bd3">ipfs::ctx::HttpApi::ReqDesc</a> =  ::<a class="el" href="structipfs_1_1HttpRequestDescription.html">ipfs::HttpRequestDescription</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Description of the request to be sent </p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/ctx/<a class="el" href="http__api_8h_source.html">http_api.h</a></li>
 </ul>
 </div><!-- contents -->

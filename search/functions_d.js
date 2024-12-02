@@ -1,7 +1,6 @@
 var searchData=
 [
-  ['parse_308',['Parse',['../classipfs_1_1ChromiumCborAdapter.html#a283b0f41a4eb5d1288827a6f40f1f292',1,'ipfs::ChromiumCborAdapter::Parse()'],['../classipfs_1_1JsonParserAdapter.html#af0ed64764cbbcaced005cb783d26220b',1,'ipfs::JsonParserAdapter::Parse()'],['../classipfs_1_1ctx_1_1CborParser.html#a9c49e9a1446e8d9e0b87da64701632eb',1,'ipfs::ctx::CborParser::Parse()'],['../classipfs_1_1ctx_1_1JsonParser.html#a01f23b9a60fe504ad706abc2bf0402de',1,'ipfs::ctx::JsonParser::Parse()'],['../classipfs_1_1ctx_1_1NullCborParser.html#a9238ee790a83f1f45e68ce26bfa5ecec',1,'ipfs::ctx::NullCborParser::Parse()']]],
-  ['pbdag_309',['PbDag',['../classipfs_1_1PbDag.html#a10ff4ce3e7b9f96caedafed385bfb2df',1,'ipfs::PbDag::PbDag(Cid const &amp;cid, std::istream &amp;stream)'],['../classipfs_1_1PbDag.html#ad176cb3632332d16cc415abbc1e57d1b',1,'ipfs::PbDag::PbDag(Cid const &amp;cid, ByteView bytes)'],['../classipfs_1_1PbDag.html#a0913cbc7479976bacdef69dd79f339f4',1,'ipfs::PbDag::PbDag(Cid const &amp;cid, std::string_view bytes)'],['../classipfs_1_1PbDag.html#a3ae450fe292528406c995d287c7ad4af',1,'ipfs::PbDag::PbDag()']]],
-  ['preferover_310',['PreferOver',['../classipfs_1_1ipld_1_1DagNode.html#aa2c927c635a82d865721d3bd8cebf182',1,'ipfs::ipld::DagNode']]],
-  ['process_311',['process',['../classmultibase_1_1algorithm.html#a0bdee354ec682027c66e46b440601ceb',1,'multibase::algorithm::process()'],['../classmultibase_1_1basic__algorithm_1_1encoder.html#ad14758f9460a76ec1385c2368328a06f',1,'multibase::basic_algorithm::encoder::process()'],['../classmultibase_1_1basic__algorithm_1_1decoder.html#a7405cead88437a37b2e0f3482ba7742a',1,'multibase::basic_algorithm::decoder::process()']]]
+  ['requestbycid_288',['RequestByCid',['../classipfs_1_1BlockRequestor.html#a925ee8cd1e6de64de3f40f3f90fe969e',1,'ipfs::BlockRequestor']]],
+  ['resolve_289',['Resolve',['../classipfs_1_1ipld_1_1DagNode.html#a8235a31cacc5dd726e269f47ea6a729a',1,'ipfs::ipld::DagNode']]],
+  ['rooted_290',['rooted',['../classipfs_1_1ipld_1_1DagNode.html#a0c1a4d53dec189c2527dcb4ea1244606',1,'ipfs::ipld::DagNode']]]
 ];

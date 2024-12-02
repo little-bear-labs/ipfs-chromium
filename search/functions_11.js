@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['unescapeurlcomponent_325',['UnescapeUrlComponent',['../classipfs_1_1Client.html#a1b5fc981f81d33e3c6172c938a8cd92f',1,'ipfs::Client']]],
-  ['unparsed_326',['unparsed',['../classipfs_1_1PbDag.html#a4047f5a79871e77d89357be061bd0743',1,'ipfs::PbDag']]]
+  ['valid_296',['valid',['../classipfs_1_1PbDag.html#a54d43e70421287221a110f10255ef2ac',1,'ipfs::PbDag']]],
+  ['validatedipns_297',['ValidatedIpns',['../structipfs_1_1ValidatedIpns.html#a31c5bd8b61786b29ed47eb25d7f78fcb',1,'ipfs::ValidatedIpns']]]
 ];

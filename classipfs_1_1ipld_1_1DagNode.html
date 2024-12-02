@@ -129,8 +129,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac994b06ceaa2d74cd62c6f80a6d7a4dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa2c927c635a82d865721d3bd8cebf182"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ipld_1_1DagNode.html#aa2c927c635a82d865721d3bd8cebf182">PreferOver</a> (<a class="el" href="classipfs_1_1ipld_1_1DagNode.html">DagNode</a> const &amp;another) const</td></tr>
 <tr class="separator:aa2c927c635a82d865721d3bd8cebf182"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a35a13ef3aa41f9b24fefff8a4d308b13"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ipld_1_1DagNode.html#a35a13ef3aa41f9b24fefff8a4d308b13">set_api</a> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt; api)</td></tr>
-<tr class="separator:a35a13ef3aa41f9b24fefff8a4d308b13"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73dd35a0ca501f34e047ae398fb46c34"><td class="memItemLeft" align="right" valign="top"><a id="a73dd35a0ca501f34e047ae398fb46c34"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_api</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt;)</td></tr>
+<tr class="separator:a73dd35a0ca501f34e047ae398fb46c34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6fb06a87b2c5653096be7957ea3c92c"><td class="memItemLeft" align="right" valign="top"><a id="ae6fb06a87b2c5653096be7957ea3c92c"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>source</b> (<a class="el" href="structipfs_1_1ipld_1_1BlockSource.html">BlockSource</a> src)</td></tr>
 <tr class="separator:ae6fb06a87b2c5653096be7957ea3c92c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -165,7 +166,8 @@ ResolveResult&#160;</td><td class="memItemRight" valign="bottom"><b>CallChild</b
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a8c1682d8462bdf607e43dd5b0d34006d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::pair&lt; std::string, <a class="el" href="classipfs_1_1ipld_1_1Link.html">Link</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ipld_1_1DagNode.html#a8c1682d8462bdf607e43dd5b0d34006d">links_</a></td></tr>
+<tr class="memitem:a8c1682d8462bdf607e43dd5b0d34006d"><td class="memItemLeft" align="right" valign="top"><a id="a8c1682d8462bdf607e43dd5b0d34006d"></a>
+std::vector&lt; std::pair&lt; std::string, <a class="el" href="classipfs_1_1ipld_1_1Link.html">Link</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>links_</b></td></tr>
 <tr class="separator:a8c1682d8462bdf607e43dd5b0d34006d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5daefb2a24a35618603cdc4bf4075de1"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ipld_1_1DagNode.html#a5daefb2a24a35618603cdc4bf4075de1">api_</a></td></tr>
 <tr class="separator:a5daefb2a24a35618603cdc4bf4075de1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -349,30 +351,6 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a35a13ef3aa41f9b24fefff8a4d308b13"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a35a13ef3aa41f9b24fefff8a4d308b13">&#9670;&nbsp;</a></span>set_api()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void Node::set_api </td>
-          <td>(</td>
-          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt;&#160;</td>
-          <td class="paramname"><em>api</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Provide the <a class="el" href="classipfs_1_1Client.html" title="Interface that provides functionality from whatever environment you&#39;re using this library in.">Client</a> API to be used in DAG operations </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">api</td><td>Shared pointer to API for the context being run in </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="a5daefb2a24a35618603cdc4bf4075de1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a5daefb2a24a35618603cdc4bf4075de1">&#9670;&nbsp;</a></span>api_</h2>
@@ -394,29 +372,6 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>When the next path element is what's needed, and it should already be a link known about... </p>
-
-</div>
-</div>
-<a id="a8c1682d8462bdf607e43dd5b0d34006d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8c1682d8462bdf607e43dd5b0d34006d">&#9670;&nbsp;</a></span>links_</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;std::pair&lt;std::string, <a class="el" href="classipfs_1_1ipld_1_1Link.html">Link</a>&gt; &gt; ipfs::ipld::DagNode::links_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>The child nodes of this node, possibly not yet fetched. </p><dl class="section note"><dt>Note</dt><dd>In some cases the string is empty. For example as stem node of a UnixFS (multi-node) file. </dd></dl>
 
 </div>
 </div>

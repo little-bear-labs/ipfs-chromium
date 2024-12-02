@@ -85,8 +85,9 @@ Collaboration diagram for ipfs::ipld::ResolutionState:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:abb176b1ecb3d2936bace65dd65e2280a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ipld_1_1ResolutionState.html#abb176b1ecb3d2936bace65dd65e2280a">ResolutionState</a> (<a class="el" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> path_to_resolve, ResponseSemantic semantic, BlockLookup lookup)</td></tr>
-<tr class="separator:abb176b1ecb3d2936bace65dd65e2280a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc683b4f33cf23fd165fb0c3d3a62f80"><td class="memItemLeft" align="right" valign="top"><a id="afc683b4f33cf23fd165fb0c3d3a62f80"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ResolutionState</b> (<a class="el" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> path_to_resolve, ResponseSemantic, BlockLookup)</td></tr>
+<tr class="separator:afc683b4f33cf23fd165fb0c3d3a62f80"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a196997ae43ec7516b635b5d439dd5d3f"><td class="memItemLeft" align="right" valign="top"><a id="a196997ae43ec7516b635b5d439dd5d3f"></a>
 <a class="el" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a>&#160;</td><td class="memItemRight" valign="bottom"><b>MyPath</b> () const</td></tr>
 <tr class="separator:a196997ae43ec7516b635b5d439dd5d3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -121,49 +122,6 @@ Public Attributes</h2></td></tr>
 <a class="el" href="classipfs_1_1ipld_1_1DagHeaders.html">ipld::DagHeaders</a>&#160;</td><td class="memItemRight" valign="bottom"><b>headers</b></td></tr>
 <tr class="separator:ac55ac9954dc981c0342ca66338ae788f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="abb176b1ecb3d2936bace65dd65e2280a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abb176b1ecb3d2936bace65dd65e2280a">&#9670;&nbsp;</a></span>ResolutionState()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">ipfs::ipld::ResolutionState::ResolutionState </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a>&#160;</td>
-          <td class="paramname"><em>path_to_resolve</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">ResponseSemantic&#160;</td>
-          <td class="paramname"><em>semantic</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">BlockLookup&#160;</td>
-          <td class="paramname"><em>lookup</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Construct from starting info </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">path_to_resolve</td><td>Relative to the node resolve is being called on </td></tr>
-    <tr><td class="paramname">semantic</td><td>If the resolution results in a stem, i.e. a directory-like not a file, would the preference be for a listing preview HTML page -OR- JSON that describes the links to files and CIDs to merge in with this JSON (in the case of a sharded dir) </td></tr>
-    <tr><td class="paramname">lookup</td><td>Functor that returns a pointer to a node for a given CID if it's already availabe, nullptr otherwise. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/ipld/<a class="el" href="resolution__state_8h_source.html">resolution_state.h</a></li>
 </ul>

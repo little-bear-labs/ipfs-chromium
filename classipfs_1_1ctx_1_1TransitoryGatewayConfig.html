@@ -95,7 +95,8 @@ Collaboration diagram for ipfs::ctx::TransitoryGatewayConfig:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a59d0e9a60a1023749248db0492ed40c7"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structipfs_1_1GatewaySpec.html">GatewaySpec</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ctx_1_1TransitoryGatewayConfig.html#a59d0e9a60a1023749248db0492ed40c7">GetGateway</a> (std::size_t index) const override</td></tr>
+<tr class="memitem:a59d0e9a60a1023749248db0492ed40c7"><td class="memItemLeft" align="right" valign="top"><a id="a59d0e9a60a1023749248db0492ed40c7"></a>
+std::optional&lt; <a class="el" href="structipfs_1_1GatewaySpec.html">GatewaySpec</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>GetGateway</b> (std::size_t index) const override</td></tr>
 <tr class="separator:a59d0e9a60a1023749248db0492ed40c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a76a4925ccd81a75f94afc695cfd57725"><td class="memItemLeft" align="right" valign="top"><a id="a76a4925ccd81a75f94afc695cfd57725"></a>
 unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>GetGatewayRate</b> (std::string_view) override</td></tr>
@@ -139,42 +140,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>SetTypeAffinity</b> (
       </table>
 </div><div class="memdoc">
 <p>Loads gateways from IPFS_GATEWAY environment or a static list </p>
-
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
-<a id="a59d0e9a60a1023749248db0492ed40c7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a59d0e9a60a1023749248db0492ed40c7">&#9670;&nbsp;</a></span>GetGateway()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::optional&lt;<a class="el" href="structipfs_1_1GatewaySpec.html">GatewaySpec</a>&gt; ipfs::ctx::TransitoryGatewayConfig::GetGateway </td>
-          <td>(</td>
-          <td class="paramtype">std::size_t&#160;</td>
-          <td class="paramname"><em>index</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Position-based access (indexing) </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">index</td><td>The 0-based index of the gateway in question </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The spec for the gateway iff index &lt; count of gateways, nullopt otherwise </dd></dl>
-
-<p>Implements <a class="el" href="classipfs_1_1ctx_1_1GatewayConfig.html#a237184c917bee827af4e88288f2b5884">ipfs::ctx::GatewayConfig</a>.</p>
 
 </div>
 </div>

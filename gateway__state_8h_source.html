@@ -107,24 +107,23 @@ $(function() {
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <a class="code" href="classipfs_1_1ctx_1_1GatewayConfig.html">ctx::GatewayConfig</a> <span class="keyword">const</span>&amp; cfg() <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160; </div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00045"></a><span class="lineno"><a class="line" href="classipfs_1_1gw_1_1GatewayState.html#a282fac9266baf4bca338eafefde4be5c">   45</a></span>&#160;  <a class="code" href="classipfs_1_1gw_1_1GatewayState.html#a282fac9266baf4bca338eafefde4be5c">GatewayState</a>(std::string_view prefix, std::shared_ptr&lt;Client&gt; api);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keywordtype">long</span> score(<a class="code" href="classipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> <span class="keyword">const</span>&amp;, <span class="keywordtype">unsigned</span>) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keywordtype">bool</span> bored() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keywordtype">bool</span> over_rate();</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160; </div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordtype">void</span> just_sent_one();</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordtype">void</span> hit(GatewayRequestType, <a class="code" href="classipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> <span class="keyword">const</span>&amp;);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordtype">bool</span> miss(GatewayRequestType, <a class="code" href="classipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> <span class="keyword">const</span>&amp;);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordtype">void</span> timed_out();</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keywordtype">long</span> extra_ms() { <span class="keywordflow">return</span> slowness; }</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;};</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;}  <span class="comment">// namespace ipfs::gw</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_GATEWAY_STATE_H_</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <a class="code" href="classipfs_1_1gw_1_1GatewayState.html">GatewayState</a>(std::string_view prefix, std::shared_ptr&lt;Client&gt;);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordtype">long</span> score(<a class="code" href="classipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> <span class="keyword">const</span>&amp;, <span class="keywordtype">unsigned</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordtype">bool</span> bored() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordtype">bool</span> over_rate();</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keywordtype">void</span> just_sent_one();</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keywordtype">void</span> hit(GatewayRequestType, <a class="code" href="classipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> <span class="keyword">const</span>&amp;);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keywordtype">bool</span> miss(GatewayRequestType, <a class="code" href="classipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> <span class="keyword">const</span>&amp;);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordtype">void</span> timed_out();</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordtype">long</span> extra_ms() { <span class="keywordflow">return</span> slowness; }</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;};</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;}  <span class="comment">// namespace ipfs::gw</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_GATEWAY_STATE_H_</span></div>
 <div class="ttc" id="aclassipfs_1_1ctx_1_1GatewayConfig_html"><div class="ttname"><a href="classipfs_1_1ctx_1_1GatewayConfig.html">ipfs::ctx::GatewayConfig</a></div><div class="ttdef"><b>Definition:</b> gateway_config.h:13</div></div>
 <div class="ttc" id="aclassipfs_1_1gw_1_1GatewayRequest_html"><div class="ttname"><a href="classipfs_1_1gw_1_1GatewayRequest.html">ipfs::gw::GatewayRequest</a></div><div class="ttdef"><b>Definition:</b> gateway_request.h:39</div></div>
 <div class="ttc" id="aclassipfs_1_1gw_1_1GatewayState_html"><div class="ttname"><a href="classipfs_1_1gw_1_1GatewayState.html">ipfs::gw::GatewayState</a></div><div class="ttdef"><b>Definition:</b> gateway_state.h:25</div></div>
-<div class="ttc" id="aclassipfs_1_1gw_1_1GatewayState_html_a282fac9266baf4bca338eafefde4be5c"><div class="ttname"><a href="classipfs_1_1gw_1_1GatewayState.html#a282fac9266baf4bca338eafefde4be5c">ipfs::gw::GatewayState::GatewayState</a></div><div class="ttdeci">GatewayState(std::string_view prefix, std::shared_ptr&lt; Client &gt; api)</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['serialize_319',['Serialize',['../structipfs_1_1ValidatedIpns.html#a148ebc5e19fea05e93c991acef42ca98',1,'ipfs::ValidatedIpns']]],
-  ['set_5fapi_320',['set_api',['../classipfs_1_1ipld_1_1DagNode.html#a35a13ef3aa41f9b24fefff8a4d308b13',1,'ipfs::ipld::DagNode']]],
-  ['slashdelimited_321',['SlashDelimited',['../structipfs_1_1SlashDelimited.html#a0fe5009d8616384f1c6647d36fe3b257',1,'ipfs::SlashDelimited']]],
-  ['symlink_322',['Symlink',['../classipfs_1_1ipld_1_1Symlink.html#ab86b489b97824b67be3cb16cd10fa02e',1,'ipfs::ipld::Symlink']]]
+  ['transitorygatewayconfig_292',['TransitoryGatewayConfig',['../classipfs_1_1ctx_1_1TransitoryGatewayConfig.html#a26ca47aa1c9d94d2f181334c724ac069',1,'ipfs::ctx::TransitoryGatewayConfig']]],
+  ['type_293',['type',['../classipfs_1_1PbDag.html#a63aa49ace3d5750a6eae1eb713ce4462',1,'ipfs::PbDag']]]
 ];

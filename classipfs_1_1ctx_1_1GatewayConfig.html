@@ -87,7 +87,8 @@ Inheritance diagram for ipfs::ctx::GatewayConfig:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a237184c917bee827af4e88288f2b5884"><td class="memItemLeft" align="right" valign="top">virtual std::optional&lt; <a class="el" href="structipfs_1_1GatewaySpec.html">GatewaySpec</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ctx_1_1GatewayConfig.html#a237184c917bee827af4e88288f2b5884">GetGateway</a> (std::size_t index) const =0</td></tr>
+<tr class="memitem:a237184c917bee827af4e88288f2b5884"><td class="memItemLeft" align="right" valign="top"><a id="a237184c917bee827af4e88288f2b5884"></a>
+virtual std::optional&lt; <a class="el" href="structipfs_1_1GatewaySpec.html">GatewaySpec</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>GetGateway</b> (std::size_t index) const =0</td></tr>
 <tr class="separator:a237184c917bee827af4e88288f2b5884"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f85848258f5ccd2be78962909659860"><td class="memItemLeft" align="right" valign="top"><a id="a0f85848258f5ccd2be78962909659860"></a>
 virtual unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>GetGatewayRate</b> (std::string_view url_prefix)=0</td></tr>
@@ -113,43 +114,7 @@ virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>RoutingApiDis
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Configuration for IPFS gateways - which to use, how, etc. </p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a id="a237184c917bee827af4e88288f2b5884"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a237184c917bee827af4e88288f2b5884">&#9670;&nbsp;</a></span>GetGateway()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual std::optional&lt;<a class="el" href="structipfs_1_1GatewaySpec.html">GatewaySpec</a>&gt; ipfs::ctx::GatewayConfig::GetGateway </td>
-          <td>(</td>
-          <td class="paramtype">std::size_t&#160;</td>
-          <td class="paramname"><em>index</em></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Position-based access (indexing) </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">index</td><td>The 0-based index of the gateway in question </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The spec for the gateway iff index &lt; count of gateways, nullopt otherwise </dd></dl>
-
-<p>Implemented in <a class="el" href="classipfs_1_1ctx_1_1TransitoryGatewayConfig.html#a59d0e9a60a1023749248db0492ed40c7">ipfs::ctx::TransitoryGatewayConfig</a>, and <a class="el" href="classipfs_1_1ChromiumIpfsGatewayConfig.html#a1d8d3b05735fc32d99b5859ae17faa3b">ipfs::ChromiumIpfsGatewayConfig</a>.</p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+</div><hr/>The documentation for this class was generated from the following file:<ul>
 <li>library/include/ipfs_client/ctx/<a class="el" href="gateway__config_8h_source.html">gateway_config.h</a></li>
 </ul>
 </div><!-- contents -->

@@ -110,23 +110,22 @@ $(function() {
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keyword">using</span> RequestPtr = ::ipfs::gw::RequestPtr;</div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="classipfs_1_1gw_1_1Requestor.html#aabb9fbb4d0be489d4a71c898b0f995b1">   47</a></span>&#160;  <span class="keyword">virtual</span> std::string_view <a class="code" href="classipfs_1_1gw_1_1Requestor.html#aabb9fbb4d0be489d4a71c898b0f995b1">name</a>() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classipfs_1_1gw_1_1Requestor.html">Requestor</a>() noexcept {}</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordtype">void</span> request(std::shared_ptr&lt;GatewayRequest&gt;);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <a class="code" href="classipfs_1_1gw_1_1Requestor.html">Requestor</a>&amp; or_else(std::shared_ptr&lt;Requestor&gt; p);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <a class="code" href="classipfs_1_1gw_1_1Requestor.html">Requestor</a>&amp; api(std::shared_ptr&lt;Client&gt;);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keywordtype">void</span> TestAccess(<span class="keywordtype">void</span>*);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  std::shared_ptr&lt;Requestor&gt; next_;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;};</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;}  <span class="comment">// namespace ipfs::gw</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_REQUESTOR_H_</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keyword">virtual</span> std::string_view name() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="classipfs_1_1gw_1_1Requestor.html">Requestor</a>() noexcept {}</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keywordtype">void</span> request(std::shared_ptr&lt;GatewayRequest&gt;);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <a class="code" href="classipfs_1_1gw_1_1Requestor.html">Requestor</a>&amp; or_else(std::shared_ptr&lt;Requestor&gt; p);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <a class="code" href="classipfs_1_1gw_1_1Requestor.html">Requestor</a>&amp; api(std::shared_ptr&lt;Client&gt;);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordtype">void</span> TestAccess(<span class="keywordtype">void</span>*);</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; </div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  std::shared_ptr&lt;Requestor&gt; next_;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;};</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;}  <span class="comment">// namespace ipfs::gw</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="preprocessor">#endif  </span><span class="comment">// IPFS_REQUESTOR_H_</span></div>
 <div class="ttc" id="aclassipfs_1_1gw_1_1Requestor_html"><div class="ttname"><a href="classipfs_1_1gw_1_1Requestor.html">ipfs::gw::Requestor</a></div><div class="ttdef"><b>Definition:</b> requestor.h:22</div></div>
-<div class="ttc" id="aclassipfs_1_1gw_1_1Requestor_html_aabb9fbb4d0be489d4a71c898b0f995b1"><div class="ttname"><a href="classipfs_1_1gw_1_1Requestor.html#aabb9fbb4d0be489d4a71c898b0f995b1">ipfs::gw::Requestor::name</a></div><div class="ttdeci">virtual std::string_view name() const =0</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

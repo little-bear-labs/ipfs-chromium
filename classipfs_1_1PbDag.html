@@ -112,7 +112,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad176cb3632332d16cc415abbc1e57d1b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1PbDag.html#ad176cb3632332d16cc415abbc1e57d1b">PbDag</a> (<a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;<a class="el" href="classipfs_1_1PbDag.html#a2a961573eef1d1777f353eae561179a1">cid</a>, ByteView bytes)</td></tr>
 <tr class="memdesc:ad176cb3632332d16cc415abbc1e57d1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize from block of bytes.  <a href="classipfs_1_1PbDag.html#ad176cb3632332d16cc415abbc1e57d1b">More...</a><br /></td></tr>
 <tr class="separator:ad176cb3632332d16cc415abbc1e57d1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0913cbc7479976bacdef69dd79f339f4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1PbDag.html#a0913cbc7479976bacdef69dd79f339f4">PbDag</a> (<a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;<a class="el" href="classipfs_1_1PbDag.html#a2a961573eef1d1777f353eae561179a1">cid</a>, std::string_view bytes)</td></tr>
+<tr class="memitem:a0913cbc7479976bacdef69dd79f339f4"><td class="memItemLeft" align="right" valign="top"><a id="a0913cbc7479976bacdef69dd79f339f4"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>PbDag</b> (<a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;<a class="el" href="classipfs_1_1PbDag.html#a2a961573eef1d1777f353eae561179a1">cid</a>, std::string_view bytes)</td></tr>
 <tr class="separator:a0913cbc7479976bacdef69dd79f339f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab83312fb92dbdc83b57d3d5fafbcdc51"><td class="memItemLeft" align="right" valign="top"><a id="ab83312fb92dbdc83b57d3d5fafbcdc51"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>PbDag</b> (<a class="el" href="classipfs_1_1PbDag.html">PbDag</a> const &amp;)</td></tr>
@@ -165,7 +166,7 @@ std::optional&lt; std::uint64_t &gt;&#160;</td><td class="memItemRight" valign="
 <p>A block may be "raw" - just a bunch of bytes. Or it could be an UnixFS-encoded node in a DAG Or it could be something else, like DAG-CBOR But this class really only handles the first 2 so far. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a10ff4ce3e7b9f96caedafed385bfb2df"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a10ff4ce3e7b9f96caedafed385bfb2df">&#9670;&nbsp;</a></span>PbDag() <span class="overload">[1/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a10ff4ce3e7b9f96caedafed385bfb2df">&#9670;&nbsp;</a></span>PbDag() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -211,7 +212,7 @@ Here is the call graph for this function:</div>
 </div>
 </div>
 <a id="ad176cb3632332d16cc415abbc1e57d1b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad176cb3632332d16cc415abbc1e57d1b">&#9670;&nbsp;</a></span>PbDag() <span class="overload">[2/3]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ad176cb3632332d16cc415abbc1e57d1b">&#9670;&nbsp;</a></span>PbDag() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -245,41 +246,6 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>It's not really a string - certainly not text in any way. It's just a container of arbitrary bytes. </dd></dl>
-
-</div>
-</div>
-<a id="a0913cbc7479976bacdef69dd79f339f4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0913cbc7479976bacdef69dd79f339f4">&#9670;&nbsp;</a></span>PbDag() <span class="overload">[3/3]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">ipfs::PbDag::PbDag </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="classipfs_1_1Cid.html">Cid</a> const &amp;&#160;</td>
-          <td class="paramname"><em>cid</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::string_view&#160;</td>
-          <td class="paramname"><em>bytes</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Convenience constructor </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">cid</td><td>- The CID of the block </td></tr>
-    <tr><td class="paramname">bytes</td><td>- The block </td></tr>
-  </table>
-  </dd>
-</dl>
 
 </div>
 </div>

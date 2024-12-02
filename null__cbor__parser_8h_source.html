@@ -76,15 +76,14 @@ $(function() {
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="keyword">namespace </span>ipfs::ctx {</div>
 <div class="line"><a name="l00008"></a><span class="lineno"><a class="line" href="classipfs_1_1ctx_1_1NullCborParser.html">    8</a></span>&#160;<span class="keyword">class </span><a class="code" href="classipfs_1_1ctx_1_1NullCborParser.html">NullCborParser</a> : <span class="keyword">public</span> <a class="code" href="classipfs_1_1ctx_1_1CborParser.html">CborParser</a> {</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="classipfs_1_1ctx_1_1NullCborParser.html#a9238ee790a83f1f45e68ce26bfa5ecec">   12</a></span>&#160;  std::unique_ptr&lt;DagCborValue&gt; <a class="code" href="classipfs_1_1ctx_1_1NullCborParser.html#a9238ee790a83f1f45e68ce26bfa5ecec">Parse</a>(ByteView)<span class="keyword"> override </span>{</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="keywordflow">return</span> {};</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;  }</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  ~<a class="code" href="classipfs_1_1ctx_1_1NullCborParser.html">NullCborParser</a>() noexcept override = default;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;};</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;}  <span class="comment">// namespace ipfs::ctx</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  std::unique_ptr&lt;DagCborValue&gt; Parse(ByteView)<span class="keyword"> override </span>{</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="keywordflow">return</span> {};</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;  }</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;  ~<a class="code" href="classipfs_1_1ctx_1_1NullCborParser.html">NullCborParser</a>() noexcept <span class="keyword">override</span> = <span class="keywordflow">default</span>;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;};</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;}  <span class="comment">// namespace ipfs::ctx</span></div>
 <div class="ttc" id="aclassipfs_1_1ctx_1_1CborParser_html"><div class="ttname"><a href="classipfs_1_1ctx_1_1CborParser.html">ipfs::ctx::CborParser</a></div><div class="ttdef"><b>Definition:</b> cbor_parser.h:15</div></div>
 <div class="ttc" id="aclassipfs_1_1ctx_1_1NullCborParser_html"><div class="ttname"><a href="classipfs_1_1ctx_1_1NullCborParser.html">ipfs::ctx::NullCborParser</a></div><div class="ttdef"><b>Definition:</b> null_cbor_parser.h:8</div></div>
-<div class="ttc" id="aclassipfs_1_1ctx_1_1NullCborParser_html_a9238ee790a83f1f45e68ce26bfa5ecec"><div class="ttname"><a href="classipfs_1_1ctx_1_1NullCborParser.html#a9238ee790a83f1f45e68ce26bfa5ecec">ipfs::ctx::NullCborParser::Parse</a></div><div class="ttdeci">std::unique_ptr&lt; DagCborValue &gt; Parse(ByteView) override</div><div class="ttdef"><b>Definition:</b> null_cbor_parser.h:12</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
