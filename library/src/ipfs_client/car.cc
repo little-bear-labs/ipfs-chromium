@@ -68,11 +68,11 @@ auto Self::NextBlock() -> std::optional<Block> {
     data_ = {};
     return std::nullopt;
   }
-  Block rv;
-  rv.bytes = data_.subspan(0U, len->toUInt64());
+  Block blk;
+  blk.bytes = data_.subspan(0U, len->toUInt64());
   data_ = data_.subspan(len->toUInt64());
-  if (rv.cid.ReadStart(rv.bytes)) {
-    return rv;
+  if (blk.cid.ReadStart(blk.bytes)) {
+    return blk;
   }
   return std::nullopt;
 }
@@ -103,6 +103,7 @@ auto ReadHeader(ByteView& bytes, ipfs::ctx::CborParser& cbor_parser) -> short {
   }
   return 0;
 }
+// NOLINTBEGIN(readability-magic-numbers)
 auto read_le_u64(ByteView bytes, unsigned& off) -> std::uint64_t {
   auto b = bytes.subspan(off, off + 8);
   off += 8U;
@@ -142,4 +143,7 @@ auto GetV1PayloadPos(ByteView bytes) -> std::pair<std::uint64_t, std::uint64_t> 
 
   return {data_offset, data_size};
 }
+// NOLINTEND(readability-magic-numbers)
+
 }  // namespace
+

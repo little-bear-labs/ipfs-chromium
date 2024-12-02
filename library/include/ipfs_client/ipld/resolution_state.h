@@ -25,7 +25,14 @@ class ResolutionState {
   BlockLookup get_available_block;
 
  public:
-  ResolutionState(SlashDelimited path_to_resolve, ResponseSemantic, BlockLookup);
+  /*! Construct from starting info
+   *  @param path_to_resolve Relative to the node resolve is being called on
+   *  @param semantic If the resolution results in a stem, i.e. a directory-like not a file,
+   *    would the preference be for a listing preview HTML page -OR-
+   *    JSON that describes the links to files and CIDs to merge in with this JSON (in the case of a sharded dir)
+   *  @param lookup Functor that returns a pointer to a node for a given CID if it's already availabe, nullptr otherwise.
+   */
+  ResolutionState(SlashDelimited path_to_resolve, ResponseSemantic semantic, BlockLookup lookup);
 
   SlashDelimited MyPath() const;
   SlashDelimited PathToResolve() const;

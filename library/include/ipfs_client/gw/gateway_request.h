@@ -38,10 +38,13 @@ constexpr std::size_t CAR_RESPONSE_BUFFER_SIZE = 5UL * 1024UL * 1024UL;
  */
 class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
  public:
+  /*! Type for callbacks for when bytes are received
+   */
   using BytesReceivedHook =
       std::function<void(std::string_view, ByteView, ipld::BlockSource const&)>;
 
  private:
+  std::optional<Cid> cid_;
   std::shared_ptr<Partition> orchestrator_;
   std::vector<BytesReceivedHook> bytes_received_hooks;
   std::string main_param;  ///< CID, IPNS name, hostname
@@ -64,11 +67,12 @@ class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
   // TODO - encapsulate. Hopefully these public data members aren't directly accessed everywhere
   std::string path;        ///< For CAR requests
   std::shared_ptr<IpfsRequest> dependent;
-  std::optional<Cid> cid;
   short parallel = 0;
   std::string affinity;
   std::unordered_set<std::string> failures;
 
+  std::optional<Cid> const& cid() const;
+  void cid(Cid c);
   std::string url_suffix() const;
   std::string_view accept() const;
   std::string_view identity_data() const;
@@ -79,6 +83,9 @@ class GatewayRequest : public std::enable_shared_from_this<GatewayRequest> {
   std::string debug_string() const;
   void orchestrator(std::shared_ptr<Partition> const&);
   bool cachable() const;
+
+  /*! @return The part of the path that functions as an origin (the second component)
+   */
   std::string_view root_component() const;
   void root_component(std::string_view);
 

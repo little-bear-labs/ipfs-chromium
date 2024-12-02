@@ -16,42 +16,42 @@ auto ctx::LoadGatewaysFromEnvironmentVariable(ipfs::ctx::GatewayConfig& cfg) -> 
     return false;
   }
   std::istringstream user_override{ovr};
-  std::string gw;
+  std::string gw_pfx;
   bool at_least_one = false;
-  while (user_override >> gw) {
-    if (gw.empty()) {
+  while (user_override >> gw_pfx) {
+    if (gw_pfx.empty()) {
       continue;
     }
-    if (gw.back() != '/') {
-      gw.push_back('/');
+    if (gw_pfx.back() != '/') {
+      gw_pfx.push_back('/');
     }
-    cfg.AddGateway(gw, 300U);
+    cfg.AddGateway(gw_pfx, cfg.RoutingApiDiscoveryDefaultRate());
     at_least_one = true;
   }
   return at_least_one;
 }
-
+// NOLINTBEGIN(readability-magic-numbers)
 void ctx::LoadStaticGatewayList(ipfs::ctx::GatewayConfig& cfg) {
   auto static_list = {
-      std::pair<std::string_view, int>{"http://127.0.0.1:8080/", 1039},
-      {"https://ipfs.io/", 1009},
-      {"https://dweb.link/", 946},
-      {"https://trustless-gateway.link/", 942},
-      {"https://hardbin.com/", 918},
-      {"https://ipfs.greyh.at/", 862},
-      {"https://ipfs.joaoleitao.org/", 856},
-      {"https://dlunar.net/", 697},
-      {"https://flk-ipfs.io/", 681},
-      {"https://ipfs.cyou/", 474},
-      {"https://human.mypinata.cloud/", 415},
-      {"https://jcsl.hopto.org/", 369},
-      {"https://delegated-ipfs.dev/", 324},
-      {"https://4everland.io/", 300},
-      {"https://ipfs.runfission.com/", 268},
-      {"https://gateway.pinata.cloud/", 144},
-      {"https://dag.w3s.link/", 138},
-      {"https://flk-ipfs.xyz/", 100},
-      {"https://ipfs.eth.aragon.network/", 14},
+      std::pair<std::string_view, int>{"http://127.0.0.1:8080/", 1044},
+      {"https://ipfs.io/", 997},
+      {"https://dweb.link/", 938},
+      {"https://trustless-gateway.link/", 935},
+      {"https://hardbin.com/", 905},
+      {"https://ipfs.greyh.at/", 855},
+      {"https://ipfs.joaoleitao.org/", 843},
+      {"https://dlunar.net/", 684},
+      {"https://flk-ipfs.io/", 669},
+      {"https://ipfs.cyou/", 467},
+      {"https://human.mypinata.cloud/", 409},
+      {"https://jcsl.hopto.org/", 355},
+      {"https://delegated-ipfs.dev/", 312},
+      {"https://4everland.io/", 294},
+      {"https://ipfs.runfission.com/", 256},
+      {"https://gateway.pinata.cloud/", 137},
+      {"https://dag.w3s.link/", 131},
+      {"https://flk-ipfs.xyz/", 109},
+      {"https://ipfs.eth.aragon.network/", 11},
       {"https://data.filstorage.io/", 10},
       {"https://storry.tv/", 9},
 
@@ -71,3 +71,4 @@ void ctx::LoadStaticGatewayList(ipfs::ctx::GatewayConfig& cfg) {
     cfg.AddGateway(gw, rt);
   }
 }
+// NOLINTEND(readability-magic-numbers)

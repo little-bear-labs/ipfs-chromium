@@ -15,12 +15,12 @@ using Self = ipfs::gw::BlockRequestSplitter;
 auto Self::name() const -> std::string_view {
   return "BlockRequestSplitter";
 }
-auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
-  if (r->type != GatewayRequestType::Car) {
+auto Self::handle(ipfs::gw::RequestPtr req) -> HandleOutcome {
+  if (req->type != GatewayRequestType::Car) {
     return HandleOutcome::NOT_HANDLED;
   }
   {
-    auto br = std::make_shared<gw::GatewayRequest>(*r);
+    auto br = std::make_shared<gw::GatewayRequest>(*req);
     br->type = GatewayRequestType::Block;
     br->path.clear();
     forward(br);
@@ -29,12 +29,12 @@ auto Self::handle(ipfs::gw::RequestPtr r) -> HandleOutcome {
     auto it = std::find(
         recent_provider_requests.begin(),
         recent_provider_requests.end(),
-        r->affinity);
+        req->affinity);
     if (recent_provider_requests.end() == it) {
       auto i = old_provider_request % recent_provider_requests.size();
-      recent_provider_requests[i] = r->affinity;
+      recent_provider_requests[i] = req->affinity;
       ++old_provider_request;
-      auto pr = std::make_shared<gw::GatewayRequest>(*r);
+      auto pr = std::make_shared<gw::GatewayRequest>(*req);
       pr->type = GatewayRequestType::Providers;
       pr->path.clear();
       pr->affinity.clear();

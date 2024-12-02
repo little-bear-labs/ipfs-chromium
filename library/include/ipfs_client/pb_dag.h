@@ -38,6 +38,10 @@ class PbDag {
    *    It's just a container of arbitrary bytes.
    */
   PbDag(Cid const& cid, ByteView bytes);
+  /*! Convenience constructor
+   *  @param cid - The CID of the block
+   *  @param bytes - The block
+   */
   PbDag(Cid const& cid, std::string_view bytes);
 
   PbDag(PbDag const&);

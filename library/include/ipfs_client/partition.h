@@ -17,8 +17,6 @@ class Client;
  */
 class Partition : public std::enable_shared_from_this<Partition> {
  public:
-  using GatewayAccess =
-      std::function<void(std::shared_ptr<gw::GatewayRequest>)>;
   using MimeDetection = std::function<
       std::string(std::string, std::string_view, std::string const&)>;
   void build_response(std::shared_ptr<IpfsRequest>);

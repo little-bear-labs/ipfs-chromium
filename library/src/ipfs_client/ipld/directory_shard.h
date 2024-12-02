@@ -4,6 +4,8 @@
 #include <ipfs_client/ipld/dag_node.h>
 
 namespace ipfs::ipld {
+/*! A node in a sharded (HAMT) directory
+ */
 class DirShard : public DagNode {
   std::uint64_t const fanout_;
 
@@ -21,6 +23,7 @@ class DirShard : public DagNode {
 
  public:
   /*! Construct with a known fanout
+   *  @param fanout The number of buckets
    */
   explicit DirShard(std::uint64_t fanout = 256UL);
   ~DirShard() noexcept override;

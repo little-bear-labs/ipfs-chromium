@@ -19,7 +19,7 @@ class Link {
   Ptr node;
 
   /*! Construct an unresolved IPLD link
-   *  @param The child's CID
+   *  @param cid The child's CID
    */
   explicit Link(std::string cid);
   /*! Construct a resolved IPLD link
