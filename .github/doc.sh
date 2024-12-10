@@ -13,9 +13,13 @@ echo Configure
             -B build \
             -D USE_DOXYGEN=TRUE \
             -D CMAKE_BUILD_TYPE=Debug
-cmake --build build --config Debug --target doc
-find ./ -iname index.html
-ls -lrth build/
-ls -lrth build/doc/
-ls -lrth build/doc/html
-mv -v ipfs_chromium/.git .
+if cmake --build build --config Debug --target doc
+then
+  find ./ -iname index.html
+  ls -lrth build/
+  ls -lrth build/doc/
+  ls -lrth build/doc/html
+  mv -v ipfs_chromium/.git .
+else
+  find build/ -iname '*proto*'
+fi
