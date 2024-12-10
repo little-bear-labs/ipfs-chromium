@@ -6,15 +6,16 @@ source "${here}/ubuntu-deps.env"
 sudo apt install doxygen
 
 echo Configure
-          mkdir -p build
-          cmake \
-            -G Ninja \
-            -S ipfs_chromium \
-            -B build \
-            -D USE_DOXYGEN=TRUE \
-            -D CMAKE_BUILD_TYPE=Debug
-if cmake --build build --config Debug --target doc
+mkdir -p build
+
+if cmake \
+  -G Ninja \
+  -S ipfs_chromium \
+  -B build \
+  -D USE_DOXYGEN=TRUE \
+  -D CMAKE_BUILD_TYPE=Debug
 then
+  cmake --build build --config Debug --target doc
   find ./ -iname index.html
   ls -lrth build/
   ls -lrth build/doc/
