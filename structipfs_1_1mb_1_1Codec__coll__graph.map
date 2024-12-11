@@ -1,6 +1,9 @@
 <map id="ipfs::mb::Codec" name="ipfs::mb::Codec">
-<area shape="rect" id="node1" title=" " alt="" coords="161,95,284,121"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,5,141,32"/>
-<area shape="rect" id="node3" title=" " alt="" coords="165,5,280,32"/>
-<area shape="rect" id="node4" title=" " alt="" coords="305,5,418,32"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="140,93,263,119"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,120,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="94,36,184,91,181,95,92,40"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="145,5,258,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="204,45,204,93,199,93,199,45"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="283,5,419,31"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="320,40,223,95,220,91,318,35"/>
 </map>

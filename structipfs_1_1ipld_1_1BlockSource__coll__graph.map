@@ -1,9 +1,16 @@
 <map id="ipfs::ipld::BlockSource" name="ipfs::ipld::BlockSource">
-<area shape="rect" id="node1" title=" " alt="" coords="131,199,297,225"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,102,81,129"/>
-<area shape="rect" id="node3" title=" " alt="" coords="120,102,212,129"/>
-<area shape="rect" id="node4" title=" " alt="" coords="245,5,303,32"/>
-<area shape="rect" id="node5" href="$structipfs_1_1ipld_1_1BlockSource_1_1Category.html" title=" " alt="" coords="323,95,489,136"/>
-<area shape="rect" id="node6" title=" " alt="" coords="339,5,502,32"/>
-<area shape="rect" id="node7" title=" " alt="" coords="526,5,577,32"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="198,196,365,221"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,64,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="33,44,32,89,38,112,49,132,80,160,117,180,158,193,198,201,197,206,157,198,115,185,77,164,45,135,33,113,27,89,27,44"/>
+<area shape="rect" id="Node000005" href="$structipfs_1_1ipld_1_1BlockSource_1_1Category.html" title=" " alt="" coords="83,93,250,133"/>
+<area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="55,39,86,67,125,91,123,95,82,71,51,43"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="274,101,366,126"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="312,140,289,197,284,195,308,138"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="390,101,466,126"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="415,139,400,158,382,174,356,188,330,198,328,193,354,183,378,170,396,154,411,136"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="202,140,269,194,265,198,199,144"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="100,5,263,31"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="180,44,172,94,167,93,175,43"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="287,5,337,31"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="299,44,272,71,228,96,225,91,269,67,295,40"/>
 </map>

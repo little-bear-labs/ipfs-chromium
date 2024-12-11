@@ -1,4 +1,5 @@
 <map id="ipfs::IpnsNames" name="ipfs::IpnsNames">
-<area shape="rect" id="node1" title="Fast synchronous access to IPNS &amp; DNSLink name resolution." alt="" coords="5,95,132,121"/>
-<area shape="rect" id="node2" title=" " alt="" coords="20,5,117,32"/>
+<area shape="rect" id="Node000001" title="Fast synchronous access to IPNS &amp; DNSLink name resolution." alt="" coords="5,93,132,119"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="20,5,117,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="71,45,71,93,66,93,66,45"/>
 </map>

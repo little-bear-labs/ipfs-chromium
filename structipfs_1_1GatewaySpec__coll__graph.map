@@ -1,6 +1,9 @@
 <map id="ipfs::GatewaySpec" name="ipfs::GatewaySpec">
-<area shape="rect" id="node1" title=" " alt="" coords="119,109,262,136"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,13,64,39"/>
-<area shape="rect" id="node3" title=" " alt="" coords="88,5,293,47"/>
-<area shape="rect" id="node4" title=" " alt="" coords="323,13,405,39"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="58,108,201,133"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,13,64,38"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="54,47,85,82,114,106,111,110,81,86,50,51"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="89,13,170,38"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="132,52,132,108,127,108,127,52"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="195,5,400,45"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="253,54,151,110,149,106,250,50"/>
 </map>

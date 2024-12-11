@@ -1,5 +1,7 @@
 <map id="ipfs::ipld::IpnsName" name="ipfs::ipld::IpnsName">
-<area shape="rect" id="node1" title=" " alt="" coords="20,169,172,196"/>
-<area shape="rect" id="node2" href="$classipfs_1_1ipld_1_1DagNode.html" title="A block, an IPNS record, etc." alt="" coords="23,95,169,121"/>
-<area shape="rect" id="node3" title=" " alt="" coords="5,5,187,47"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="20,167,172,192"/>
+<area shape="rect" id="Node000002" href="$classipfs_1_1ipld_1_1DagNode.html" title="A block, an IPNS record, etc." alt="" coords="23,93,169,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="99,132,99,167,93,167,93,132"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,5,187,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="99,59,99,93,93,93,93,59"/>
 </map>

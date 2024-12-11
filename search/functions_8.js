@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['link_278',['Link',['../classipfs_1_1ipld_1_1Link.html#a45a2a6c1d774dae98c8b8aa1382d5362',1,'ipfs::ipld::Link::Link(std::string cid)'],['../classipfs_1_1ipld_1_1Link.html#a65cb805c3d2b93093909803728305a0c',1,'ipfs::ipld::Link::Link(std::string cid, std::shared_ptr&lt; DagNode &gt; node)']]]
+  ['ipnsname_0',['IpnsName',['../classipfs_1_1ipld_1_1IpnsName.html#a2ceb7d24275668b4a26c1efcc4302c6d',1,'ipfs::ipld::IpnsName']]],
+  ['is_5ffile_1',['is_file',['../classipfs_1_1PbDag.html#abb7e24a5a579921ca83b699964a5c895',1,'ipfs::PbDag']]]
 ];

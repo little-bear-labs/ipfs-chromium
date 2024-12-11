@@ -1,5 +1,7 @@
 <map id="ipfs::ipld::Link" name="ipfs::ipld::Link">
-<area shape="rect" id="node1" title=" " alt="" coords="111,95,225,121"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,5,187,32"/>
-<area shape="rect" id="node3" title=" " alt="" coords="211,5,269,32"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="50,93,163,119"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,64,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="55,39,99,91,95,95,51,43"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="88,5,269,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="162,43,119,95,115,91,158,39"/>
 </map>

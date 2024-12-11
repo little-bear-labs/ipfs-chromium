@@ -1,5 +1,7 @@
 <map id="multibase::traits&lt;::multibase::encoding::base_32_upper &gt;" name="multibase::traits&lt;::multibase::encoding::base_32_upper &gt;">
-<area shape="rect" id="node1" title=" " alt="" coords="119,109,281,165"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,5,203,32"/>
-<area shape="rect" id="node3" title=" " alt="" coords="227,5,365,32"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="89,108,252,163"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,144,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="95,40,151,106,147,109,91,43"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="168,5,365,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="250,43,195,109,191,106,246,40"/>
 </map>

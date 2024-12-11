@@ -1,4 +1,5 @@
 <map id="ipfs::PbDag::PbDag" name="ipfs::PbDag::PbDag">
-<area shape="rect" id="node1" title="Initialize from stream." alt="" coords="5,5,152,32"/>
-<area shape="rect" id="node2" href="$classipfs_1_1PbDag.html#a2a961573eef1d1777f353eae561179a1" title="Getter for Content IDentifier." alt="" coords="200,5,323,32"/>
+<area shape="rect" id="Node000001" title="Initialize from stream." alt="" coords="5,5,152,31"/>
+<area shape="rect" id="Node000002" href="$classipfs_1_1PbDag.html#a2a961573eef1d1777f353eae561179a1" title="Getter for Content IDentifier." alt="" coords="200,5,323,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="152,15,186,15,186,21,152,21"/>
 </map>

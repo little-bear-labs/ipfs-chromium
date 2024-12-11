@@ -1,5 +1,7 @@
 <map id="ipfs::crypto::Hasher" name="ipfs::crypto::Hasher">
-<area shape="rect" id="node1" title=" " alt="" coords="146,5,295,32"/>
-<area shape="rect" id="node2" href="$classipfs_1_1crypto_1_1IdentityHasher.html" title=" " alt="" coords="5,80,204,107"/>
-<area shape="rect" id="node3" href="$classipfs_1_1crypto_1_1OpensslSha2__256.html" title=" " alt="" coords="229,80,447,107"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="146,5,295,31"/>
+<area shape="rect" id="Node000002" href="$classipfs_1_1crypto_1_1IdentityHasher.html" title=" " alt="" coords="5,79,204,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="192,40,125,81,122,76,189,35"/>
+<area shape="rect" id="Node000003" href="$classipfs_1_1crypto_1_1OpensslSha2__256.html" title=" " alt="" coords="229,79,447,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="253,35,320,76,317,81,250,40"/>
 </map>

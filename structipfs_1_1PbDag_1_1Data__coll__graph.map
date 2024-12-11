@@ -1,5 +1,7 @@
 <map id="ipfs::PbDag::Data" name="ipfs::PbDag::Data">
-<area shape="rect" id="node1" title=" " alt="" coords="9,95,143,121"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,5,59,32"/>
-<area shape="rect" id="node3" title=" " alt="" coords="83,5,157,32"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="19,93,153,119"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,79,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="50,44,59,68,76,92,72,95,54,71,45,45"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="103,5,157,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="120,44,94,94,90,92,115,42"/>
 </map>

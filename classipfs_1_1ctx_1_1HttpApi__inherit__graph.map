@@ -1,5 +1,5 @@
 <map id="ipfs::ctx::HttpApi" name="ipfs::ctx::HttpApi">
-<area shape="rect" id="node1" title=" " alt="" coords="113,5,243,32"/>
-<area shape="rect" id="node2" href="$classipfs_1_1ChromiumHttp.html" title=" " alt="" coords="5,80,156,107"/>
-<area shape="rect" id="node3" href="$classipfs_1_1ctx_1_1NullHttpProvider.html" title=" " alt="" coords="180,80,371,107"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="35,5,166,31"/>
+<area shape="rect" id="Node000002" href="$classipfs_1_1ctx_1_1NullHttpProvider.html" title=" " alt="" coords="5,79,196,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="103,44,103,79,98,79,98,44"/>
 </map>

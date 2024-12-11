@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['electron_20spins_323',['Electron Spins',['../md_doc_spin_blog.html',1,'']]]
+  ['embedded_20client_20explainer_0',['IPFS Embedded Client Explainer',['../md_doc_2explainer.html',1,'']]],
+  ['explainer_1',['IPFS Embedded Client Explainer',['../md_doc_2explainer.html',1,'']]]
 ];

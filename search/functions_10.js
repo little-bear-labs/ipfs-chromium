@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['unescapeurlcomponent_294',['UnescapeUrlComponent',['../classipfs_1_1Client.html#a1b5fc981f81d33e3c6172c938a8cd92f',1,'ipfs::Client']]],
-  ['unparsed_295',['unparsed',['../classipfs_1_1PbDag.html#a4047f5a79871e77d89357be061bd0743',1,'ipfs::PbDag']]]
+  ['transitorygatewayconfig_0',['TransitoryGatewayConfig',['../classipfs_1_1ctx_1_1TransitoryGatewayConfig.html#a26ca47aa1c9d94d2f181334c724ac069',1,'ipfs::ctx::TransitoryGatewayConfig']]],
+  ['type_1',['type',['../classipfs_1_1PbDag.html#a63aa49ace3d5750a6eae1eb713ce4462',1,'ipfs::PbDag']]]
 ];
