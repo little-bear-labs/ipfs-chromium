@@ -1,5 +1,7 @@
 <map id="ipfs::ctx::CborParser" name="ipfs::ctx::CborParser">
-<area shape="rect" id="Node000001" title=" " alt="" coords="19,5,171,31"/>
-<area shape="rect" id="Node000002" href="$classipfs_1_1ctx_1_1NullCborParser.html" title=" " alt="" coords="5,79,184,104"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="97,44,97,79,92,79,92,44"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="137,5,289,31"/>
+<area shape="rect" id="Node000002" href="$classipfs_1_1ChromiumCborAdapter.html" title=" " alt="" coords="5,79,208,104"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="186,40,126,81,123,76,184,36"/>
+<area shape="rect" id="Node000003" href="$classipfs_1_1ctx_1_1NullCborParser.html" title=" " alt="" coords="232,79,411,104"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="243,36,305,76,302,81,241,40"/>
 </map>

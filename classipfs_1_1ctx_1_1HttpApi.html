@@ -81,36 +81,38 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="http__api_8h_source.html">include/ipfs_client/ctx/http_api.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="http__api_8h_source.html">library/include/ipfs_client/ctx/http_api.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for ipfs::ctx::HttpApi:</div>
 <div class="dyncontent">
 <div class="center"><img src="classipfs_1_1ctx_1_1HttpApi__inherit__graph.png" border="0" usemap="#aipfs_1_1ctx_1_1HttpApi_inherit__map" alt="Inheritance graph"/></div>
 <map name="aipfs_1_1ctx_1_1HttpApi_inherit__map" id="aipfs_1_1ctx_1_1HttpApi_inherit__map">
-<area shape="rect" title=" " alt="" coords="35,5,166,31"/>
-<area shape="rect" href="classipfs_1_1ctx_1_1NullHttpProvider.html" title=" " alt="" coords="5,79,196,104"/>
-<area shape="poly" title=" " alt="" coords="103,44,103,79,98,79,98,44"/>
+<area shape="rect" title=" " alt="" coords="113,5,243,31"/>
+<area shape="rect" href="classipfs_1_1ChromiumHttp.html" title=" " alt="" coords="5,79,156,104"/>
+<area shape="poly" title=" " alt="" coords="153,41,98,81,95,76,150,37"/>
+<area shape="rect" href="classipfs_1_1ctx_1_1NullHttpProvider.html" title=" " alt="" coords="180,79,371,104"/>
+<area shape="poly" title=" " alt="" coords="206,37,261,76,258,81,203,41"/>
 </map>
 <center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a4316df6ed302d63ffa29115177303bd3" id="r_a4316df6ed302d63ffa29115177303bd3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classipfs_1_1raw__ptr.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ctx_1_1HttpApi.html#a4316df6ed302d63ffa29115177303bd3">ReqDesc</a> = <a class="el" href="structipfs_1_1HttpRequestDescription.html">::ipfs::HttpRequestDescription</a></td></tr>
+<tr class="memitem:a4316df6ed302d63ffa29115177303bd3" id="r_a4316df6ed302d63ffa29115177303bd3"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1ctx_1_1HttpApi.html#a4316df6ed302d63ffa29115177303bd3">ReqDesc</a> = <a class="el" href="structipfs_1_1HttpRequestDescription.html">::ipfs::HttpRequestDescription</a></td></tr>
 <tr class="separator:a4316df6ed302d63ffa29115177303bd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae6b89ac5261835a34b27ba5d8cae1b2" id="r_aae6b89ac5261835a34b27ba5d8cae1b2"><td class="memItemLeft" align="right" valign="top"><a id="aae6b89ac5261835a34b27ba5d8cae1b2" name="aae6b89ac5261835a34b27ba5d8cae1b2"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Hdrs</b> = std::function&lt; std::string(std::string_view)&gt;</td></tr>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>Hdrs</b> = std::function&lt; std::string(std::string_view)&gt;</td></tr>
 <tr class="separator:aae6b89ac5261835a34b27ba5d8cae1b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f2576f0135f53230b2da05f255cfc44" id="r_a6f2576f0135f53230b2da05f255cfc44"><td class="memItemLeft" align="right" valign="top"><a id="a6f2576f0135f53230b2da05f255cfc44" name="a6f2576f0135f53230b2da05f255cfc44"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><b>OnComplete</b> = std::function&lt; <a class="el" href="classipfs_1_1raw__ptr.html">void</a>(std::int16_t, std::string_view, Hdrs)&gt;</td></tr>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>OnComplete</b> = std::function&lt; void(std::int16_t, std::string_view, Hdrs)&gt;</td></tr>
 <tr class="separator:a6f2576f0135f53230b2da05f255cfc44"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96015be3aa11085ecf3737a20f37af02" id="r_a96015be3aa11085ecf3737a20f37af02"><td class="memItemLeft" align="right" valign="top"><a id="a96015be3aa11085ecf3737a20f37af02" name="a96015be3aa11085ecf3737a20f37af02"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Canceller</b> = std::function&lt; <a class="el" href="classipfs_1_1raw__ptr.html">void</a>()&gt;</td></tr>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>Canceller</b> = std::function&lt; void()&gt;</td></tr>
 <tr class="separator:a96015be3aa11085ecf3737a20f37af02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:abe03958aa3ec351614c7edda041061f3" id="r_abe03958aa3ec351614c7edda041061f3"><td class="memItemLeft" align="right" valign="top"><a id="abe03958aa3ec351614c7edda041061f3" name="abe03958aa3ec351614c7edda041061f3"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> Canceller&#160;</td><td class="memItemRight" valign="bottom"><b>SendHttpRequest</b> (<a class="el" href="classipfs_1_1ctx_1_1HttpApi.html#a4316df6ed302d63ffa29115177303bd3">ReqDesc</a>, OnComplete <a class="el" href="classipfs_1_1raw__ptr.html">cb</a>) <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual Canceller&#160;</td><td class="memItemRight" valign="bottom"><b>SendHttpRequest</b> (<a class="el" href="classipfs_1_1ctx_1_1HttpApi.html#a4316df6ed302d63ffa29115177303bd3">ReqDesc</a>, OnComplete cb) const =0</td></tr>
 <tr class="separator:abe03958aa3ec351614c7edda041061f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -123,7 +125,7 @@ Public Member Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classipfs_1_1raw__ptr.html">using</a> <a class="el" href="classipfs_1_1ctx_1_1HttpApi.html#a4316df6ed302d63ffa29115177303bd3">ipfs::ctx::HttpApi::ReqDesc</a> =  <a class="el" href="structipfs_1_1HttpRequestDescription.html">::ipfs::HttpRequestDescription</a></td>
+          <td class="memname">using <a class="el" href="classipfs_1_1ctx_1_1HttpApi.html#a4316df6ed302d63ffa29115177303bd3">ipfs::ctx::HttpApi::ReqDesc</a> =  <a class="el" href="structipfs_1_1HttpRequestDescription.html">::ipfs::HttpRequestDescription</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -132,7 +134,7 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/ipfs_client/ctx/<a class="el" href="http__api_8h_source.html">http_api.h</a></li>
+<li>library/include/ipfs_client/ctx/<a class="el" href="http__api_8h_source.html">http_api.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

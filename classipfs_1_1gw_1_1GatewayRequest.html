@@ -83,7 +83,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="gateway__request_8h_source.html">include/ipfs_client/gw/gateway_request.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="gateway__request_8h_source.html">library/include/ipfs_client/gw/gateway_request.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for ipfs::gw::GatewayRequest:</div>
 <div class="dyncontent">
@@ -117,72 +117,72 @@ Collaboration diagram for ipfs::gw::GatewayRequest:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a20a1ec743bee476e8358ad2a60182350" id="r_a20a1ec743bee476e8358ad2a60182350"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classipfs_1_1raw__ptr.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html#a20a1ec743bee476e8358ad2a60182350">BytesReceivedHook</a> = std::function&lt; <a class="el" href="classipfs_1_1raw__ptr.html">void</a>(std::string_view, ByteView, <a class="el" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> <a class="el" href="classipfs_1_1raw__ptr.html">const</a>  &amp;)&gt;</td></tr>
+<tr class="memitem:a20a1ec743bee476e8358ad2a60182350" id="r_a20a1ec743bee476e8358ad2a60182350"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html#a20a1ec743bee476e8358ad2a60182350">BytesReceivedHook</a> = std::function&lt; void(std::string_view, ByteView, <a class="el" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> const  &amp;)&gt;</td></tr>
 <tr class="separator:a20a1ec743bee476e8358ad2a60182350"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:abed748f44e5b42e9c2dd427f8df3fea2" id="r_abed748f44e5b42e9c2dd427f8df3fea2"><td class="memItemLeft" align="right" valign="top"><a id="abed748f44e5b42e9c2dd427f8df3fea2" name="abed748f44e5b42e9c2dd427f8df3fea2"></a>
-std::optional&lt; <a class="el" href="classipfs_1_1Cid.html">Cid</a> &gt; <a class="el" href="classipfs_1_1raw__ptr.html">const</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>cid</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+std::optional&lt; <a class="el" href="classipfs_1_1Cid.html">Cid</a> &gt; const &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>cid</b> () const</td></tr>
 <tr class="separator:abed748f44e5b42e9c2dd427f8df3fea2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a54d3122cce0af25212176dede8fd8e7d" id="r_a54d3122cce0af25212176dede8fd8e7d"><td class="memItemLeft" align="right" valign="top"><a id="a54d3122cce0af25212176dede8fd8e7d" name="a54d3122cce0af25212176dede8fd8e7d"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>cid</b> (<a class="el" href="classipfs_1_1Cid.html">Cid</a> <a class="el" href="classipfs_1_1raw__ptr.html">c</a>)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>cid</b> (<a class="el" href="classipfs_1_1Cid.html">Cid</a> c)</td></tr>
 <tr class="separator:a54d3122cce0af25212176dede8fd8e7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4ecdf2f0eb5dbe221f8976d6483317b5" id="r_a4ecdf2f0eb5dbe221f8976d6483317b5"><td class="memItemLeft" align="right" valign="top"><a id="a4ecdf2f0eb5dbe221f8976d6483317b5" name="a4ecdf2f0eb5dbe221f8976d6483317b5"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>url_suffix</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>url_suffix</b> () const</td></tr>
 <tr class="separator:a4ecdf2f0eb5dbe221f8976d6483317b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a50227ab6df86adb84c1f007dccd374cd" id="r_a50227ab6df86adb84c1f007dccd374cd"><td class="memItemLeft" align="right" valign="top"><a id="a50227ab6df86adb84c1f007dccd374cd" name="a50227ab6df86adb84c1f007dccd374cd"></a>
-std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>accept</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>accept</b> () const</td></tr>
 <tr class="separator:a50227ab6df86adb84c1f007dccd374cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a85e74391e3e794ac915318e0fd5d999a" id="r_a85e74391e3e794ac915318e0fd5d999a"><td class="memItemLeft" align="right" valign="top"><a id="a85e74391e3e794ac915318e0fd5d999a" name="a85e74391e3e794ac915318e0fd5d999a"></a>
-std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>identity_data</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>identity_data</b> () const</td></tr>
 <tr class="separator:a85e74391e3e794ac915318e0fd5d999a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a14a34ec1a0d34de59a5d3cab06cae07a" id="r_a14a34ec1a0d34de59a5d3cab06cae07a"><td class="memItemLeft" align="right" valign="top"><a id="a14a34ec1a0d34de59a5d3cab06cae07a" name="a14a34ec1a0d34de59a5d3cab06cae07a"></a>
-short&#160;</td><td class="memItemRight" valign="bottom"><b>timeout_seconds</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+short&#160;</td><td class="memItemRight" valign="bottom"><b>timeout_seconds</b> () const</td></tr>
 <tr class="separator:a14a34ec1a0d34de59a5d3cab06cae07a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5638876c1cc4419aa480ac4b879e3443" id="r_a5638876c1cc4419aa480ac4b879e3443"><td class="memItemLeft" align="right" valign="top"><a id="a5638876c1cc4419aa480ac4b879e3443" name="a5638876c1cc4419aa480ac4b879e3443"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_http</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_http</b> () const</td></tr>
 <tr class="separator:a5638876c1cc4419aa480ac4b879e3443"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a98af6f846c907997054114c4aaf7c690" id="r_a98af6f846c907997054114c4aaf7c690"><td class="memItemLeft" align="right" valign="top"><a id="a98af6f846c907997054114c4aaf7c690" name="a98af6f846c907997054114c4aaf7c690"></a>
-std::optional&lt; std::size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>max_response_size</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+std::optional&lt; std::size_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>max_response_size</b> () const</td></tr>
 <tr class="separator:a98af6f846c907997054114c4aaf7c690"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a00d64f7d43411bf7c56fca1442ea4006" id="r_a00d64f7d43411bf7c56fca1442ea4006"><td class="memItemLeft" align="right" valign="top"><a id="a00d64f7d43411bf7c56fca1442ea4006" name="a00d64f7d43411bf7c56fca1442ea4006"></a>
-std::optional&lt; <a class="el" href="structipfs_1_1HttpRequestDescription.html">HttpRequestDescription</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>describe_http</b> (std::string_view) <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+std::optional&lt; <a class="el" href="structipfs_1_1HttpRequestDescription.html">HttpRequestDescription</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>describe_http</b> (std::string_view) const</td></tr>
 <tr class="separator:a00d64f7d43411bf7c56fca1442ea4006"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab86748504618869012044377c24295db" id="r_ab86748504618869012044377c24295db"><td class="memItemLeft" align="right" valign="top"><a id="ab86748504618869012044377c24295db" name="ab86748504618869012044377c24295db"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>debug_string</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>debug_string</b> () const</td></tr>
 <tr class="separator:ab86748504618869012044377c24295db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19419de188e463b857fd38825bee66f1" id="r_a19419de188e463b857fd38825bee66f1"><td class="memItemLeft" align="right" valign="top"><a id="a19419de188e463b857fd38825bee66f1" name="a19419de188e463b857fd38825bee66f1"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>orchestrator</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1Partition.html">Partition</a> &gt; <a class="el" href="classipfs_1_1raw__ptr.html">const</a> &amp;)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>orchestrator</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1Partition.html">Partition</a> &gt; const &amp;)</td></tr>
 <tr class="separator:a19419de188e463b857fd38825bee66f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af739efd67499fd535b8eba21a7bf7f4a" id="r_af739efd67499fd535b8eba21a7bf7f4a"><td class="memItemLeft" align="right" valign="top"><a id="af739efd67499fd535b8eba21a7bf7f4a" name="af739efd67499fd535b8eba21a7bf7f4a"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>cachable</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>cachable</b> () const</td></tr>
 <tr class="separator:af739efd67499fd535b8eba21a7bf7f4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f6318a270aa2dc966becf59db13b486" id="r_a0f6318a270aa2dc966becf59db13b486"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html#a0f6318a270aa2dc966becf59db13b486">root_component</a> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+<tr class="memitem:a0f6318a270aa2dc966becf59db13b486" id="r_a0f6318a270aa2dc966becf59db13b486"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html#a0f6318a270aa2dc966becf59db13b486">root_component</a> () const</td></tr>
 <tr class="separator:a0f6318a270aa2dc966becf59db13b486"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a42482329d97e700bddfc20dbc531a19f" id="r_a42482329d97e700bddfc20dbc531a19f"><td class="memItemLeft" align="right" valign="top"><a id="a42482329d97e700bddfc20dbc531a19f" name="a42482329d97e700bddfc20dbc531a19f"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>root_component</b> (std::string_view)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>root_component</b> (std::string_view)</td></tr>
 <tr class="separator:a42482329d97e700bddfc20dbc531a19f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad67df3922b9d807ebf559595b12e4673" id="r_ad67df3922b9d807ebf559595b12e4673"><td class="memItemLeft" align="right" valign="top"><a id="ad67df3922b9d807ebf559595b12e4673" name="ad67df3922b9d807ebf559595b12e4673"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>RespondSuccessfully</b> (std::string_view, std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt; <a class="el" href="classipfs_1_1raw__ptr.html">const</a> &amp;api, <a class="el" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> <a class="el" href="classipfs_1_1raw__ptr.html">src</a>, std::string_view <a class="el" href="classipfs_1_1raw__ptr.html">roots</a>=&quot;&quot;, bool *valid=<a class="el" href="classipfs_1_1raw__ptr.html">nullptr</a>)</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>RespondSuccessfully</b> (std::string_view, std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt; const &amp;api, <a class="el" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> src, std::string_view roots=&quot;&quot;, bool *valid=nullptr)</td></tr>
 <tr class="separator:ad67df3922b9d807ebf559595b12e4673"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af954c1a592327a14264d934f526ff1bd" id="r_af954c1a592327a14264d934f526ff1bd"><td class="memItemLeft" align="right" valign="top"><a id="af954c1a592327a14264d934f526ff1bd" name="af954c1a592327a14264d934f526ff1bd"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>Hook</b> (<a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html#a20a1ec743bee476e8358ad2a60182350">BytesReceivedHook</a>)</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Hook</b> (<a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html#a20a1ec743bee476e8358ad2a60182350">BytesReceivedHook</a>)</td></tr>
 <tr class="separator:af954c1a592327a14264d934f526ff1bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31b79b36bf2208ced5b9e2fb5f31d6a6" id="r_a31b79b36bf2208ced5b9e2fb5f31d6a6"><td class="memItemLeft" align="right" valign="top"><a id="a31b79b36bf2208ced5b9e2fb5f31d6a6" name="a31b79b36bf2208ced5b9e2fb5f31d6a6"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>PartiallyRedundant</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>PartiallyRedundant</b> () const</td></tr>
 <tr class="separator:a31b79b36bf2208ced5b9e2fb5f31d6a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab8f1ccdcd43f8f5105323b01f44d9c2c" id="r_ab8f1ccdcd43f8f5105323b01f44d9c2c"><td class="memItemLeft" align="right" valign="top"><a id="ab8f1ccdcd43f8f5105323b01f44d9c2c" name="ab8f1ccdcd43f8f5105323b01f44d9c2c"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>Key</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>Key</b> () const</td></tr>
 <tr class="separator:ab8f1ccdcd43f8f5105323b01f44d9c2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae566493683d4aa63cb8f96bd1274145b" id="r_ae566493683d4aa63cb8f96bd1274145b"><td class="memItemLeft" align="right" valign="top"><a id="ae566493683d4aa63cb8f96bd1274145b" name="ae566493683d4aa63cb8f96bd1274145b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>Finished</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>Finished</b> () const</td></tr>
 <tr class="separator:ae566493683d4aa63cb8f96bd1274145b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
 <tr class="memitem:af565ac5579e82846ef700f347d84706b" id="r_af565ac5579e82846ef700f347d84706b"><td class="memItemLeft" align="right" valign="top"><a id="af565ac5579e82846ef700f347d84706b" name="af565ac5579e82846ef700f347d84706b"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">static</a> std::shared_ptr&lt; <a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>fromIpfsPath</b> (<a class="el" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> <a class="el" href="classipfs_1_1raw__ptr.html">ipfs_path</a>)</td></tr>
+static std::shared_ptr&lt; <a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html">GatewayRequest</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>fromIpfsPath</b> (<a class="el" href="structipfs_1_1SlashDelimited.html">SlashDelimited</a> ipfs_path)</td></tr>
 <tr class="separator:af565ac5579e82846ef700f347d84706b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
@@ -208,7 +208,7 @@ std::unordered_set&lt; std::string &gt;&#160;</td><td class="memItemRight" valig
 <tr class="separator:a02a075d173d100119050aa45c33fe963"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Information about a request that needs to be sent to an IPFS HTTP Gateway </p><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000001">Todo:</a></b></dt><dd>this class has gotten large enough that it should probably be a base class with subclasses instead of switch statements on type </dd></dl>
+<div class="textblock"><p>Information about a request that needs to be sent to an IPFS HTTP Gateway </p><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Todo:</a></b></dt><dd>this class has gotten large enough that it should probably be a base class with subclasses instead of switch statements on type </dd></dl>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a20a1ec743bee476e8358ad2a60182350" name="a20a1ec743bee476e8358ad2a60182350"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a20a1ec743bee476e8358ad2a60182350">&#9670;&#160;</a></span>BytesReceivedHook</h2>
@@ -217,7 +217,7 @@ std::unordered_set&lt; std::string &gt;&#160;</td><td class="memItemRight" valig
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classipfs_1_1raw__ptr.html">using</a> <a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html#a20a1ec743bee476e8358ad2a60182350">ipfs::gw::GatewayRequest::BytesReceivedHook</a> =  std::function&lt;<a class="el" href="classipfs_1_1raw__ptr.html">void</a>(std::string_view, ByteView, <a class="el" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> <a class="el" href="classipfs_1_1raw__ptr.html">const</a>&amp;)&gt;</td>
+          <td class="memname">using <a class="el" href="classipfs_1_1gw_1_1GatewayRequest.html#a20a1ec743bee476e8358ad2a60182350">ipfs::gw::GatewayRequest::BytesReceivedHook</a> =  std::function&lt;void(std::string_view, ByteView, <a class="el" href="structipfs_1_1ipld_1_1BlockSource.html">ipld::BlockSource</a> const&amp;)&gt;</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -245,7 +245,7 @@ std::unordered_set&lt; std::string &gt;&#160;</td><td class="memItemRight" valig
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/ipfs_client/gw/<a class="el" href="gateway__request_8h_source.html">gateway_request.h</a></li>
+<li>library/include/ipfs_client/gw/<a class="el" href="gateway__request_8h_source.html">gateway_request.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

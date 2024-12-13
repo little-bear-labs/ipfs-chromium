@@ -1,15 +1,17 @@
 <map id="ipfs::gw::Requestor" name="ipfs::gw::Requestor">
-<area shape="rect" id="Node000001" title=" " alt="" coords="240,104,387,129"/>
-<area shape="rect" id="Node000003" href="$classipfs_1_1gw_1_1BlockRequestSplitter.html" title=" " alt="" coords="445,5,661,31"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="341,93,383,65,434,40,470,28,472,33,436,44,386,70,344,98"/>
-<area shape="rect" id="Node000004" href="$classipfs_1_1gw_1_1DnsLinkRequestor.html" title=" " alt="" coords="454,55,653,80"/>
-<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="387,99,434,89,489,77,490,83,435,94,388,104"/>
-<area shape="rect" id="Node000005" href="$classipfs_1_1gw_1_1InlineRequestHandler.html" title=" " alt="" coords="443,104,663,129"/>
-<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="401,114,443,114,443,119,401,119"/>
-<area shape="rect" id="Node000006" href="$classipfs_1_1gw_1_1MultiGatewayRequestor.html" title=" " alt="" coords="435,153,672,179"/>
-<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="388,130,435,139,490,151,489,156,434,145,387,135"/>
-<area shape="rect" id="Node000007" href="$classipfs_1_1gw_1_1TerminatingRequestor.html" title=" " alt="" coords="442,203,665,228"/>
-<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="344,136,386,164,436,189,472,200,470,205,434,194,383,168,341,140"/>
-<area shape="rect" id="Node000002" title=" " alt="" coords="5,97,192,137"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="206,114,240,114,240,119,206,119"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="240,129,387,155"/>
+<area shape="rect" id="Node000003" href="$classipfs_1_1CacheRequestor.html" title=" " alt="" coords="473,5,633,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="334,117,377,77,404,57,434,40,472,26,474,31,436,44,407,61,380,81,337,121"/>
+<area shape="rect" id="Node000004" href="$classipfs_1_1gw_1_1BlockRequestSplitter.html" title=" " alt="" coords="445,55,661,80"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="352,121,434,89,478,78,479,83,435,94,354,126"/>
+<area shape="rect" id="Node000005" href="$classipfs_1_1gw_1_1DnsLinkRequestor.html" title=" " alt="" coords="454,104,653,129"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="400,130,453,125,454,130,401,135"/>
+<area shape="rect" id="Node000006" href="$classipfs_1_1gw_1_1InlineRequestHandler.html" title=" " alt="" coords="443,153,663,179"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="401,148,444,152,443,158,400,153"/>
+<area shape="rect" id="Node000007" href="$classipfs_1_1gw_1_1MultiGatewayRequestor.html" title=" " alt="" coords="435,203,672,228"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="355,158,435,189,480,200,478,205,434,194,354,163"/>
+<area shape="rect" id="Node000008" href="$classipfs_1_1gw_1_1TerminatingRequestor.html" title=" " alt="" coords="442,252,665,277"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="338,163,381,202,407,222,436,238,466,249,464,254,434,243,404,226,377,206,334,167"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,122,192,162"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="206,139,240,139,240,145,206,145"/>
 </map>

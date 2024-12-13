@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['todo_20list_0',['Todo List',['../todo.html',1,'']]]
+  ['for_20chromium_0',['IPFS racing multi-gateway integration for Chromium',['../index.html',1,'']]]
 ];

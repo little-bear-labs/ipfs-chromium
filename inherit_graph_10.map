@@ -1,5 +1,7 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$classipfs_1_1ctx_1_1GatewayConfig.html" title=" " alt="" coords="5,13,187,38"/>
-<area shape="rect" id="Node000001" href="$classipfs_1_1ctx_1_1TransitoryGatewayConfig.html" title=" " alt="" coords="235,5,439,45"/>
-<area shape="poly" id="edge5_Node000000_Node000001" title=" " alt="" coords="201,23,235,23,235,28,201,28"/>
+<area shape="rect" id="Node000000" href="$classipfs_1_1ctx_1_1DnsTxtLookup.html" title=" " alt="" coords="5,31,180,56"/>
+<area shape="rect" id="Node000001" href="$classipfs_1_1ChromiumDnsTxtLookup.html" title=" " alt="" coords="228,5,443,31"/>
+<area shape="poly" id="edge6_Node000000_Node000001" title=" " alt="" coords="194,30,228,27,228,32,194,35"/>
+<area shape="rect" id="Node000002" href="$classipfs_1_1ctx_1_1NullDnsTxtLookup.html" title=" " alt="" coords="235,55,435,80"/>
+<area shape="poly" id="edge7_Node000000_Node000002" title=" " alt="" coords="194,51,235,55,235,60,194,56"/>
 </map>

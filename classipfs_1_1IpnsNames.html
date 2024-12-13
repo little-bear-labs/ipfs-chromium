@@ -84,7 +84,7 @@ $(function() {
 <p>Fast synchronous access to IPNS &amp; DNSLink name resolution.  
  <a href="classipfs_1_1IpnsNames.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="ipns__names_8h_source.html">include/ipfs_client/ipns_names.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="ipns__names_8h_source.html">library/include/ipfs_client/ipns_names.h</a>&gt;</code></p>
 <div class="dynheader">
 Collaboration diagram for ipfs::IpnsNames:</div>
 <div class="dyncontent">
@@ -98,26 +98,26 @@ Collaboration diagram for ipfs::IpnsNames:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6a3de6ff356c15d21e8b68a443dcfd4d" id="r_a6a3de6ff356c15d21e8b68a443dcfd4d"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1IpnsNames.html#a6a3de6ff356c15d21e8b68a443dcfd4d">NameResolvedTo</a> (std::string_view name) <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+<tr class="memitem:a6a3de6ff356c15d21e8b68a443dcfd4d" id="r_a6a3de6ff356c15d21e8b68a443dcfd4d"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1IpnsNames.html#a6a3de6ff356c15d21e8b68a443dcfd4d">NameResolvedTo</a> (std::string_view name) const</td></tr>
 <tr class="memdesc:a6a3de6ff356c15d21e8b68a443dcfd4d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the already-known "value"/target of a given name.  <br /></td></tr>
 <tr class="separator:a6a3de6ff356c15d21e8b68a443dcfd4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaaf39692cf8b7413d7c1b56c6c176a18" id="r_aaaf39692cf8b7413d7c1b56c6c176a18"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classipfs_1_1raw__ptr.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1IpnsNames.html#aaaf39692cf8b7413d7c1b56c6c176a18">AssignName</a> (std::string <a class="el" href="classipfs_1_1raw__ptr.html">const</a> &amp;name, <a class="el" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> <a class="el" href="classipfs_1_1raw__ptr.html">rec</a>)</td></tr>
+<tr class="memitem:aaaf39692cf8b7413d7c1b56c6c176a18" id="r_aaaf39692cf8b7413d7c1b56c6c176a18"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1IpnsNames.html#aaaf39692cf8b7413d7c1b56c6c176a18">AssignName</a> (std::string const &amp;name, <a class="el" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> rec)</td></tr>
 <tr class="memdesc:aaaf39692cf8b7413d7c1b56c6c176a18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store an IPNS record that already validated for this name.  <br /></td></tr>
 <tr class="separator:aaaf39692cf8b7413d7c1b56c6c176a18"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1ccd03ba666ba55c3c2e24c1566b100f" id="r_a1ccd03ba666ba55c3c2e24c1566b100f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classipfs_1_1raw__ptr.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1IpnsNames.html#a1ccd03ba666ba55c3c2e24c1566b100f">AssignDnsLink</a> (std::string <a class="el" href="classipfs_1_1raw__ptr.html">const</a> &amp;host, std::string_view <a class="el" href="classipfs_1_1raw__ptr.html">target</a>)</td></tr>
+<tr class="memitem:a1ccd03ba666ba55c3c2e24c1566b100f" id="r_a1ccd03ba666ba55c3c2e24c1566b100f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1IpnsNames.html#a1ccd03ba666ba55c3c2e24c1566b100f">AssignDnsLink</a> (std::string const &amp;host, std::string_view target)</td></tr>
 <tr class="memdesc:a1ccd03ba666ba55c3c2e24c1566b100f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assign a target path to a DNSLink host.  <br /></td></tr>
 <tr class="separator:a1ccd03ba666ba55c3c2e24c1566b100f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f0190dbb39b37c3d994cedfd518bd98" id="r_a9f0190dbb39b37c3d994cedfd518bd98"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classipfs_1_1raw__ptr.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1IpnsNames.html#a9f0190dbb39b37c3d994cedfd518bd98">NoSuchName</a> (std::string <a class="el" href="classipfs_1_1raw__ptr.html">const</a> &amp;name)</td></tr>
+<tr class="memitem:a9f0190dbb39b37c3d994cedfd518bd98" id="r_a9f0190dbb39b37c3d994cedfd518bd98"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1IpnsNames.html#a9f0190dbb39b37c3d994cedfd518bd98">NoSuchName</a> (std::string const &amp;name)</td></tr>
 <tr class="memdesc:a9f0190dbb39b37c3d994cedfd518bd98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Store the definitive absence of a resolution.  <br /></td></tr>
 <tr class="separator:a9f0190dbb39b37c3d994cedfd518bd98"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aabf5d12ed8d6f46bf7671b859e5ea099" id="r_aabf5d12ed8d6f46bf7671b859e5ea099"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> <a class="el" href="classipfs_1_1raw__ptr.html">const</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1IpnsNames.html#aabf5d12ed8d6f46bf7671b859e5ea099">Entry</a> (std::string <a class="el" href="classipfs_1_1raw__ptr.html">const</a> &amp;name)</td></tr>
+<tr class="memitem:aabf5d12ed8d6f46bf7671b859e5ea099" id="r_aabf5d12ed8d6f46bf7671b859e5ea099"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> const *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1IpnsNames.html#aabf5d12ed8d6f46bf7671b859e5ea099">Entry</a> (std::string const &amp;name)</td></tr>
 <tr class="memdesc:aabf5d12ed8d6f46bf7671b859e5ea099"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fetch the all the stored IPNS record data.  <br /></td></tr>
 <tr class="separator:aabf5d12ed8d6f46bf7671b859e5ea099"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:acc72608629b918371d3c8039ae913915" id="r_acc72608629b918371d3c8039ae913915"><td class="memItemLeft" align="right" valign="top"><a id="acc72608629b918371d3c8039ae913915" name="acc72608629b918371d3c8039ae913915"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">static</a> <a class="el" href="classipfs_1_1raw__ptr.html">constexpr</a> std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>kNoSuchName</b> {&quot;NO_SUCH_NAME&quot;}</td></tr>
+static constexpr std::string_view&#160;</td><td class="memItemRight" valign="bottom"><b>kNoSuchName</b> {&quot;NO_SUCH_NAME&quot;}</td></tr>
 <tr class="memdesc:acc72608629b918371d3c8039ae913915"><td class="mdescLeft">&#160;</td><td class="mdescRight">A special value constant. <br /></td></tr>
 <tr class="separator:acc72608629b918371d3c8039ae913915"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -131,9 +131,9 @@ Static Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classipfs_1_1raw__ptr.html">void</a> ipfs::IpnsNames::AssignDnsLink </td>
+          <td class="memname">void ipfs::IpnsNames::AssignDnsLink </td>
           <td>(</td>
-          <td class="paramtype">std::string <a class="el" href="classipfs_1_1raw__ptr.html">const</a> &amp;&#160;</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
           <td class="paramname"><em>host</em>, </td>
         </tr>
         <tr>
@@ -168,9 +168,9 @@ Static Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classipfs_1_1raw__ptr.html">void</a> ipfs::IpnsNames::AssignName </td>
+          <td class="memname">void ipfs::IpnsNames::AssignName </td>
           <td>(</td>
-          <td class="paramtype">std::string <a class="el" href="classipfs_1_1raw__ptr.html">const</a> &amp;&#160;</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
           <td class="paramname"><em>name</em>, </td>
         </tr>
         <tr>
@@ -205,9 +205,9 @@ Static Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> <a class="el" href="classipfs_1_1raw__ptr.html">const</a>  * ipfs::IpnsNames::Entry </td>
+          <td class="memname"><a class="el" href="structipfs_1_1ValidatedIpns.html">ValidatedIpns</a> const  * ipfs::IpnsNames::Entry </td>
           <td>(</td>
-          <td class="paramtype">std::string <a class="el" href="classipfs_1_1raw__ptr.html">const</a> &amp;&#160;</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
           <td class="paramname"><em>name</em></td><td>)</td>
           <td></td>
         </tr>
@@ -268,9 +268,9 @@ Static Public Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classipfs_1_1raw__ptr.html">void</a> ipfs::IpnsNames::NoSuchName </td>
+          <td class="memname">void ipfs::IpnsNames::NoSuchName </td>
           <td>(</td>
-          <td class="paramtype">std::string <a class="el" href="classipfs_1_1raw__ptr.html">const</a> &amp;&#160;</td>
+          <td class="paramtype">std::string const &amp;&#160;</td>
           <td class="paramname"><em>name</em></td><td>)</td>
           <td></td>
         </tr>
@@ -283,7 +283,7 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/ipfs_client/<a class="el" href="ipns__names_8h_source.html">ipns_names.h</a></li>
+<li>library/include/ipfs_client/<a class="el" href="ipns__names_8h_source.html">ipns_names.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

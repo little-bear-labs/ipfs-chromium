@@ -12,5 +12,6 @@ var searchData=
   ['dirshard_9',['DirShard',['../classipfs_1_1ipld_1_1DirShard.html',1,'ipfs::ipld']]],
   ['dnslinkname_10',['DnsLinkName',['../classipfs_1_1ipld_1_1DnsLinkName.html',1,'ipfs::ipld']]],
   ['dnslinkrequestor_11',['DnsLinkRequestor',['../classipfs_1_1gw_1_1DnsLinkRequestor.html',1,'ipfs::gw']]],
-  ['dnstxtlookup_12',['DnsTxtLookup',['../classipfs_1_1ctx_1_1DnsTxtLookup.html',1,'ipfs::ctx']]]
+  ['dnstxtlookup_12',['DnsTxtLookup',['../classipfs_1_1ctx_1_1DnsTxtLookup.html',1,'ipfs::ctx']]],
+  ['dnstxtrequest_13',['DnsTxtRequest',['../classipfs_1_1DnsTxtRequest.html',1,'ipfs']]]
 ];

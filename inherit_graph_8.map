@@ -1,5 +1,3 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$classipfs_1_1ctx_1_1CborParser.html" title=" " alt="" coords="5,5,157,31"/>
-<area shape="rect" id="Node000001" href="$classipfs_1_1ctx_1_1NullCborParser.html" title=" " alt="" coords="205,5,384,31"/>
-<area shape="poly" id="edge3_Node000000_Node000001" title=" " alt="" coords="171,15,205,15,205,21,171,21"/>
+<area shape="rect" id="Node000000" href="$classipfs_1_1crypto_1_1SignatureVerifier.html" title=" " alt="" coords="5,5,216,31"/>
 </map>

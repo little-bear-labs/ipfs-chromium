@@ -1,3 +1,7 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="Node000000" href="$classipfs_1_1crypto_1_1SignatureVerifier.html" title=" " alt="" coords="5,5,216,31"/>
+<area shape="rect" id="Node000000" href="$classipfs_1_1crypto_1_1Hasher.html" title=" " alt="" coords="5,31,155,56"/>
+<area shape="rect" id="Node000001" href="$classipfs_1_1crypto_1_1IdentityHasher.html" title=" " alt="" coords="213,5,411,31"/>
+<area shape="poly" id="edge1_Node000000_Node000001" title=" " alt="" coords="168,31,212,26,213,32,169,36"/>
+<area shape="rect" id="Node000002" href="$classipfs_1_1crypto_1_1OpensslSha2__256.html" title=" " alt="" coords="203,55,421,80"/>
+<area shape="poly" id="edge2_Node000000_Node000002" title=" " alt="" coords="169,50,203,53,202,59,168,55"/>
 </map>

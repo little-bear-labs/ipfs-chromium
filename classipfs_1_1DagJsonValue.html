@@ -80,33 +80,43 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="dag__json__value_8h_source.html">include/ipfs_client/dag_json_value.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="dag__json__value_8h_source.html">library/include/ipfs_client/dag_json_value.h</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for ipfs::DagJsonValue:</div>
+<div class="dyncontent">
+<div class="center"><img src="classipfs_1_1DagJsonValue__inherit__graph.png" border="0" usemap="#aipfs_1_1DagJsonValue_inherit__map" alt="Inheritance graph"/></div>
+<map name="aipfs_1_1DagJsonValue_inherit__map" id="aipfs_1_1DagJsonValue_inherit__map">
+<area shape="rect" title=" " alt="" coords="34,5,177,31"/>
+<area shape="rect" href="classipfs_1_1ChromiumJsonAdapter.html" title=" " alt="" coords="5,79,205,104"/>
+<area shape="poly" title=" " alt="" coords="108,44,108,79,103,79,103,44"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a879c1a1668535cc9de04d6c91ee0454b" id="r_a879c1a1668535cc9de04d6c91ee0454b"><td class="memItemLeft" align="right" valign="top"><a id="a879c1a1668535cc9de04d6c91ee0454b" name="a879c1a1668535cc9de04d6c91ee0454b"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> std::string&#160;</td><td class="memItemRight" valign="bottom"><b>pretty_print</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><b>pretty_print</b> () const =0</td></tr>
 <tr class="separator:a879c1a1668535cc9de04d6c91ee0454b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3943547221e9393aa0020bd2eb0cd465" id="r_a3943547221e9393aa0020bd2eb0cd465"><td class="memItemLeft" align="right" valign="top"><a id="a3943547221e9393aa0020bd2eb0cd465" name="a3943547221e9393aa0020bd2eb0cd465"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> std::unique_ptr&lt; <a class="el" href="classipfs_1_1DagJsonValue.html">DagJsonValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (std::string_view) <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual std::unique_ptr&lt; <a class="el" href="classipfs_1_1DagJsonValue.html">DagJsonValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>operator[]</b> (std::string_view) const =0</td></tr>
 <tr class="separator:a3943547221e9393aa0020bd2eb0cd465"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e46f0061948564a070815bb2dd4f2fe" id="r_a6e46f0061948564a070815bb2dd4f2fe"><td class="memItemLeft" align="right" valign="top"><a id="a6e46f0061948564a070815bb2dd4f2fe" name="a6e46f0061948564a070815bb2dd4f2fe"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_if_string</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_if_string</b> () const =0</td></tr>
 <tr class="separator:a6e46f0061948564a070815bb2dd4f2fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8824d39553be8675b5df67bd680cb053" id="r_a8824d39553be8675b5df67bd680cb053"><td class="memItemLeft" align="right" valign="top"><a id="a8824d39553be8675b5df67bd680cb053" name="a8824d39553be8675b5df67bd680cb053"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> std::optional&lt; std::vector&lt; std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>object_keys</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual std::optional&lt; std::vector&lt; std::string &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>object_keys</b> () const =0</td></tr>
 <tr class="separator:a8824d39553be8675b5df67bd680cb053"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0aace25928d4f0146c9794ec17c99215" id="r_a0aace25928d4f0146c9794ec17c99215"><td class="memItemLeft" align="right" valign="top"><a id="a0aace25928d4f0146c9794ec17c99215" name="a0aace25928d4f0146c9794ec17c99215"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> bool&#160;</td><td class="memItemRight" valign="bottom"><b>iterate_list</b> (std::function&lt; <a class="el" href="classipfs_1_1raw__ptr.html">void</a>(<a class="el" href="classipfs_1_1DagJsonValue.html">DagJsonValue</a> <a class="el" href="classipfs_1_1raw__ptr.html">const</a> &amp;)&gt;) <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>iterate_list</b> (std::function&lt; void(<a class="el" href="classipfs_1_1DagJsonValue.html">DagJsonValue</a> const &amp;)&gt;) const =0</td></tr>
 <tr class="separator:a0aace25928d4f0146c9794ec17c99215"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ad1f31ddd4c15f40007f945984ca1ce" id="r_a1ad1f31ddd4c15f40007f945984ca1ce"><td class="memItemLeft" align="right" valign="top"><a id="a1ad1f31ddd4c15f40007f945984ca1ce" name="a1ad1f31ddd4c15f40007f945984ca1ce"></a>
-std::optional&lt; <a class="el" href="classipfs_1_1Cid.html">Cid</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_if_link</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+std::optional&lt; <a class="el" href="classipfs_1_1Cid.html">Cid</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_if_link</b> () const</td></tr>
 <tr class="separator:a1ad1f31ddd4c15f40007f945984ca1ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A value in the DOM of a dag-json document </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/ipfs_client/<a class="el" href="dag__json__value_8h_source.html">dag_json_value.h</a></li>
+<li>library/include/ipfs_client/<a class="el" href="dag__json__value_8h_source.html">dag_json_value.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

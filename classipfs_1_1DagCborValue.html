@@ -81,66 +81,76 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="dag__cbor__value_8h_source.html">include/ipfs_client/dag_cbor_value.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="dag__cbor__value_8h_source.html">library/include/ipfs_client/dag_cbor_value.h</a>&gt;</code></p>
+<div class="dynheader">
+Inheritance diagram for ipfs::DagCborValue:</div>
+<div class="dyncontent">
+<div class="center"><img src="classipfs_1_1DagCborValue__inherit__graph.png" border="0" usemap="#aipfs_1_1DagCborValue_inherit__map" alt="Inheritance graph"/></div>
+<map name="aipfs_1_1DagCborValue_inherit__map" id="aipfs_1_1DagCborValue_inherit__map">
+<area shape="rect" title=" " alt="" coords="33,5,180,31"/>
+<area shape="rect" href="classipfs_1_1ChromiumCborAdapter.html" title=" " alt="" coords="5,79,208,104"/>
+<area shape="poly" title=" " alt="" coords="109,44,109,79,104,79,104,44"/>
+</map>
+<center><span class="legend">[<a href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a986e1b40dd52717a2f538a2018d5d584" id="r_a986e1b40dd52717a2f538a2018d5d584"><td class="memItemLeft" align="right" valign="top"><a id="a986e1b40dd52717a2f538a2018d5d584" name="a986e1b40dd52717a2f538a2018d5d584"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><b>MapElementCallback</b> = std::function&lt; <a class="el" href="classipfs_1_1raw__ptr.html">void</a>(std::string_view, <a class="el" href="classipfs_1_1DagCborValue.html">DagCborValue</a> <a class="el" href="classipfs_1_1raw__ptr.html">const</a>  &amp;)&gt;</td></tr>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>MapElementCallback</b> = std::function&lt; void(std::string_view, <a class="el" href="classipfs_1_1DagCborValue.html">DagCborValue</a> const  &amp;)&gt;</td></tr>
 <tr class="separator:a986e1b40dd52717a2f538a2018d5d584"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ed100a41e28986e169efcb913206a6e" id="r_a9ed100a41e28986e169efcb913206a6e"><td class="memItemLeft" align="right" valign="top"><a id="a9ed100a41e28986e169efcb913206a6e" name="a9ed100a41e28986e169efcb913206a6e"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ArrayElementCallback</b> = std::function&lt; <a class="el" href="classipfs_1_1raw__ptr.html">void</a>(<a class="el" href="classipfs_1_1DagCborValue.html">DagCborValue</a> <a class="el" href="classipfs_1_1raw__ptr.html">const</a>  &amp;)&gt;</td></tr>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>ArrayElementCallback</b> = std::function&lt; void(<a class="el" href="classipfs_1_1DagCborValue.html">DagCborValue</a> const  &amp;)&gt;</td></tr>
 <tr class="separator:a9ed100a41e28986e169efcb913206a6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a8335f2c50b39d3f367faa5bed31ffc4f" id="r_a8335f2c50b39d3f367faa5bed31ffc4f"><td class="memItemLeft" align="right" valign="top"><a id="a8335f2c50b39d3f367faa5bed31ffc4f" name="a8335f2c50b39d3f367faa5bed31ffc4f"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> std::unique_ptr&lt; <a class="el" href="classipfs_1_1DagCborValue.html">DagCborValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (std::string_view) <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual std::unique_ptr&lt; <a class="el" href="classipfs_1_1DagCborValue.html">DagCborValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (std::string_view) const =0</td></tr>
 <tr class="separator:a8335f2c50b39d3f367faa5bed31ffc4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89e8824656edcc1b1b769361560fed63" id="r_a89e8824656edcc1b1b769361560fed63"><td class="memItemLeft" align="right" valign="top"><a id="a89e8824656edcc1b1b769361560fed63" name="a89e8824656edcc1b1b769361560fed63"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> std::optional&lt; std::uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>as_unsigned</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual std::optional&lt; std::uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>as_unsigned</b> () const =0</td></tr>
 <tr class="separator:a89e8824656edcc1b1b769361560fed63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0688042d889e1e843d96aa9adaa410b2" id="r_a0688042d889e1e843d96aa9adaa410b2"><td class="memItemLeft" align="right" valign="top"><a id="a0688042d889e1e843d96aa9adaa410b2" name="a0688042d889e1e843d96aa9adaa410b2"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> std::optional&lt; std::int64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>as_signed</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual std::optional&lt; std::int64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>as_signed</b> () const =0</td></tr>
 <tr class="separator:a0688042d889e1e843d96aa9adaa410b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad306e518fa52fca107de19372e7ef1ac" id="r_ad306e518fa52fca107de19372e7ef1ac"><td class="memItemLeft" align="right" valign="top"><a id="ad306e518fa52fca107de19372e7ef1ac" name="ad306e518fa52fca107de19372e7ef1ac"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> std::optional&lt; <a class="el" href="classipfs_1_1raw__ptr.html">double</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>as_float</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual std::optional&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>as_float</b> () const =0</td></tr>
 <tr class="separator:ad306e518fa52fca107de19372e7ef1ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a514648d7779a0cc47493a4a9b9bf1a5a" id="r_a514648d7779a0cc47493a4a9b9bf1a5a"><td class="memItemLeft" align="right" valign="top"><a id="a514648d7779a0cc47493a4a9b9bf1a5a" name="a514648d7779a0cc47493a4a9b9bf1a5a"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>as_string</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>as_string</b> () const =0</td></tr>
 <tr class="separator:a514648d7779a0cc47493a4a9b9bf1a5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae0d13436711c4e47d939cbb9c5ff2663" id="r_ae0d13436711c4e47d939cbb9c5ff2663"><td class="memItemLeft" align="right" valign="top"><a id="ae0d13436711c4e47d939cbb9c5ff2663" name="ae0d13436711c4e47d939cbb9c5ff2663"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> std::optional&lt; std::vector&lt; std::uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>as_bytes</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual std::optional&lt; std::vector&lt; std::uint8_t &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>as_bytes</b> () const =0</td></tr>
 <tr class="separator:ae0d13436711c4e47d939cbb9c5ff2663"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a400f3591259596cd38e47d741a6e1069" id="r_a400f3591259596cd38e47d741a6e1069"><td class="memItemLeft" align="right" valign="top"><a id="a400f3591259596cd38e47d741a6e1069" name="a400f3591259596cd38e47d741a6e1069"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>as_bool</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual std::optional&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>as_bool</b> () const =0</td></tr>
 <tr class="separator:a400f3591259596cd38e47d741a6e1069"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aed10651d782dede85aae27f4744208c8" id="r_aed10651d782dede85aae27f4744208c8"><td class="memItemLeft" align="right" valign="top"><a id="aed10651d782dede85aae27f4744208c8" name="aed10651d782dede85aae27f4744208c8"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> std::optional&lt; <a class="el" href="classipfs_1_1Cid.html">Cid</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>as_link</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual std::optional&lt; <a class="el" href="classipfs_1_1Cid.html">Cid</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>as_link</b> () const =0</td></tr>
 <tr class="separator:aed10651d782dede85aae27f4744208c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5528f262553865ca206c0147825855bb" id="r_a5528f262553865ca206c0147825855bb"><td class="memItemLeft" align="right" valign="top"><a id="a5528f262553865ca206c0147825855bb" name="a5528f262553865ca206c0147825855bb"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_map</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_map</b> () const =0</td></tr>
 <tr class="separator:a5528f262553865ca206c0147825855bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc6d52a8d115141ad9f1d7e5c63c547e" id="r_abc6d52a8d115141ad9f1d7e5c63c547e"><td class="memItemLeft" align="right" valign="top"><a id="abc6d52a8d115141ad9f1d7e5c63c547e" name="abc6d52a8d115141ad9f1d7e5c63c547e"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_array</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_array</b> () const =0</td></tr>
 <tr class="separator:abc6d52a8d115141ad9f1d7e5c63c547e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e22601ae926d38bb5132d140a14934b" id="r_a7e22601ae926d38bb5132d140a14934b"><td class="memItemLeft" align="right" valign="top"><a id="a7e22601ae926d38bb5132d140a14934b" name="a7e22601ae926d38bb5132d140a14934b"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> <a class="el" href="classipfs_1_1raw__ptr.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>iterate_map</b> (MapElementCallback) <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>iterate_map</b> (MapElementCallback) const =0</td></tr>
 <tr class="separator:a7e22601ae926d38bb5132d140a14934b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e2d688ed0649c67a6a3174562697787" id="r_a4e2d688ed0649c67a6a3174562697787"><td class="memItemLeft" align="right" valign="top"><a id="a4e2d688ed0649c67a6a3174562697787" name="a4e2d688ed0649c67a6a3174562697787"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">virtual</a> <a class="el" href="classipfs_1_1raw__ptr.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>iterate_array</b> (ArrayElementCallback) <a class="el" href="classipfs_1_1raw__ptr.html">const</a> =0</td></tr>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>iterate_array</b> (ArrayElementCallback) const =0</td></tr>
 <tr class="separator:a4e2d688ed0649c67a6a3174562697787"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afc805fa0d0502efbda3b7c2e514b8496" id="r_afc805fa0d0502efbda3b7c2e514b8496"><td class="memItemLeft" align="right" valign="top"><a id="afc805fa0d0502efbda3b7c2e514b8496" name="afc805fa0d0502efbda3b7c2e514b8496"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>html</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+std::string&#160;</td><td class="memItemRight" valign="bottom"><b>html</b> () const</td></tr>
 <tr class="separator:afc805fa0d0502efbda3b7c2e514b8496"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3049ad02c9190f86f19a7f1686291330" id="r_a3049ad02c9190f86f19a7f1686291330"><td class="memItemLeft" align="right" valign="top"><a id="a3049ad02c9190f86f19a7f1686291330" name="a3049ad02c9190f86f19a7f1686291330"></a>
-<a class="el" href="classipfs_1_1raw__ptr.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>html</b> (std::ostream &amp;) <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>html</b> (std::ostream &amp;) const</td></tr>
 <tr class="separator:a3049ad02c9190f86f19a7f1686291330"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A single value in the DOM of a dag-cbor document </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li>include/ipfs_client/<a class="el" href="dag__cbor__value_8h_source.html">dag_cbor_value.h</a></li>
+<li>library/include/ipfs_client/<a class="el" href="dag__cbor__value_8h_source.html">dag_cbor_value.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
