@@ -23,10 +23,10 @@ auto Self::hash(ipfs::ByteView data) -> std::optional<std::vector<Byte>> {
     LOG(ERROR) << "Failure injesting data into SHA256.";
     return {};
   }
-  std::vector<Byte> rv(SHA256_DIGEST_LENGTH, Byte{});
-  auto *p = reinterpret_cast<unsigned char*>(rv.data());
+  std::vector<Byte> result(SHA256_DIGEST_LENGTH, Byte{});
+  auto *p = reinterpret_cast<unsigned char*>(result.data());
   if (1 == SHA256_Final(p, &ctx)) {
-    return rv;
+    return result;
   } else {
     LOG(ERROR) << "Error calculating sha2-256 hash.";
     return std::nullopt;

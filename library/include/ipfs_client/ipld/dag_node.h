@@ -73,6 +73,9 @@ class DagNode : public std::enable_shared_from_this<DagNode> {
   virtual ResolveResult resolve(ResolutionState& params) = 0;
 
  protected:
+  /*! The child nodes of this node, possibly not yet fetched.
+   *  @note In some cases the string is empty. For example as stem node of a UnixFS (multi-node) file.
+   */
   std::vector<std::pair<std::string, Link>> links_;
   std::shared_ptr<Client> api_;
 
@@ -147,7 +150,10 @@ class DagNode : public std::enable_shared_from_this<DagNode> {
    */
   virtual bool PreferOver(DagNode const& another) const;
 
-  void set_api(std::shared_ptr<Client>);
+  /*! Provide the Client API to be used in DAG operations
+   *  @param api Shared pointer to API for the context being run in
+   */
+  void set_api(std::shared_ptr<Client> api);
   void source(BlockSource src) { source_ = src; }
 };
 }  // namespace ipfs::ipld

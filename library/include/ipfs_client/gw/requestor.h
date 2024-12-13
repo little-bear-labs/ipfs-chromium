@@ -41,6 +41,9 @@ class Requestor : public std::enable_shared_from_this<Requestor> {
 
  public:
   using RequestPtr = ::ipfs::gw::RequestPtr;
+  /*! @return The requestor's name, for debugging.
+   *    Typically this is 1:1 with the concrete type.
+   */
   virtual std::string_view name() const = 0;
   
   virtual ~Requestor() noexcept {}

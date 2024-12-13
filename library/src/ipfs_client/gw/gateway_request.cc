@@ -37,19 +37,14 @@ auto Self::fromIpfsPath(ipfs::SlashDelimited ipfs_path) -> std::shared_ptr<Self>
   auto name_space = ipfs_path.pop();
   auto r = std::make_shared<Self>();
   r->main_param = ipfs_path.pop();
-  Cid cid(r->main_param);
-  if (cid.valid()) {
-    r->cid = std::move(cid);
-  } else {
-    r->cid = std::nullopt;
-  }
+  r->cid(Cid{r->main_param});
   if (name_space == "ipfs") {
-    if (!r->cid.has_value()) {
+    if (!r->cid().has_value()) {
       LOG(ERROR) << "IPFS request with invalid/unsupported CID "
                  << r->main_param;
       return {};
     }
-    if (r->cid.value().hash_type() == HashType::IDENTITY) {
+    if (r->cid().value().hash_type() == HashType::IDENTITY) {
       r->type = GatewayRequestType::Identity;
     } else {
       r->path = ipfs_path.pop_all();
@@ -137,8 +132,8 @@ auto Self::identity_data() const -> std::string_view {
   if (type != GatewayRequestType::Identity) {
     return "";
   }
-  auto hash = cid.value().hash();
-  const auto *d = reinterpret_cast<char const*>(hash.data());
+  auto hash = cid_.value().hash();
+  char const* d = reinterpret_cast<char const*>(hash.data());
   return std::string_view{d, hash.size()};
 }
 
@@ -276,7 +271,7 @@ auto Self::RespondSuccessfully(std::string_view bytes,
       if (c.valid()) {
         VLOG(1) << debug_string() << " resolves to " << c.to_string();
         AddDnsLink("/ipfs/" + c.to_string(), success, src);
-        cid = c;
+        cid(c);
         AddBlock(bytes, success, src, api, valid);
       } else {
         AddDnsLink(bytes, success, src);
@@ -345,8 +340,8 @@ auto Self::Finished() const -> bool {
   return false;
 }
 void Self::FleshOut(ipld::BlockSource& s) const {
-  if (cid.has_value() && cid->valid()) {
-    s.cid = cid->to_string();
+  if (cid().has_value() && cid()->valid()) {
+    s.cid = cid()->to_string();
   } else {
     s.cid = main_param;
   }
@@ -368,14 +363,14 @@ void Self::AddBlock(std::string_view bytes,
                     ipld::BlockSource src,
                     std::shared_ptr<Client> const& api,
                     bool* valid) {
-    DCHECK(cid.has_value());
-    if (!cid.has_value()) {
+  DCHECK(cid().has_value());
+    if (!cid().has_value()) {
         LOG(ERROR) << "Your CID doesn't even have a value!";
         success = false;
         return;
     }
     DCHECK(api);
-    auto node = ipld::DagNode::fromBytes(api, cid.value(), bytes);
+    auto node = ipld::DagNode::fromBytes(api, cid().value(), bytes);
     if (!node) {
         success = false;
     } else {
@@ -409,9 +404,9 @@ void Self::AddBlocks(Car& car, const std::shared_ptr<Client>& api, bool& success
   }
 }
 auto Self::IpnsResponse(ByteView bytes, std::shared_ptr<Client> const& api, bool& success, bool* valid, ipld::BlockSource src) -> bool {
-  if (cid.has_value()) {
+  if (cid().has_value()) {
     DCHECK(api);
-    auto rec = ipfs::ValidateIpnsRecord(bytes, cid.value(), *api);
+    auto rec = ipfs::ValidateIpnsRecord(bytes, cid().value(), *api);
     if (rec.has_value()) {
       ValidatedIpns const validated{rec.value()};
       auto node = std::make_shared<ipld::IpnsName>(validated);
@@ -429,4 +424,15 @@ auto Self::IpnsResponse(ByteView bytes, std::shared_ptr<Client> const& api, bool
     }
   }
   return true;
+}
+
+auto Self::cid() const -> std::optional<Cid> const& {
+  return cid_;
+}
+void Self::cid(Cid cid) {
+  if (cid.valid()) {
+    cid_ = cid;
+  } else {
+    cid_ = {};
+  }
 }

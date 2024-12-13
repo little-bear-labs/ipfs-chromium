@@ -13,8 +13,8 @@ using ReqTyp = ipfs::gw::GatewayRequestType;
 namespace c = std::chrono;
 
 namespace {
-auto describe(ReqTyp t) -> std::string_view {
-  switch (t) {
+auto describe(ReqTyp typ) -> std::string_view {
+  switch (typ) {
     case ReqTyp::DnsLink:
       return "Resolving a DNSLink via DNS TXT record";
     case ReqTyp::Ipns:

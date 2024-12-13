@@ -5,7 +5,7 @@ from json import load
 from re import sub
 from sys import argv
 
-THRESHOLD = 7.7
+THRESHOLD = 7.9
 
 def msg_out(msg):
     f = msg["path"]
@@ -16,8 +16,9 @@ def msg_out(msg):
     t = msg["type"]
     print(f"{f}:{l}:{c}: {t}: {i} {m}")
 
-if __name__ == "__main__":
-    with open(argv[1]) as f:
+
+def parse(warn_file: str):
+    with open(warn_file, encoding="utf-8") as f:
         o = load(f)
     msgs = o['messages']
     for warn in list(filter(lambda x:x['type']=='warning', msgs))[0:9]:
@@ -31,6 +32,9 @@ if __name__ == "__main__":
     elif score > THRESHOLD + 0.3:
         update = (score + THRESHOLD) / 2
         print("Increasing threshold to", update)
-        s = open(__file__).read()
+        s = open(__file__, encoding="utf-8").read()
         s = sub(r'\n\s*THRESHOLD\s*=\s*\d*\.\d*\s*\n', f"\n\nTHRESHOLD = {update:.2}\n\n", s)
-        open(__file__, 'w').write(s)
+        open(__file__, 'w', encoding="utf-8").write(s)
+
+if __name__ == "__main__":
+    parse(argv[1])

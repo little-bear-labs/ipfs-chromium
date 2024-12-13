@@ -7,6 +7,8 @@ namespace ipfs::ctx {
  */
 class NullCborParser : public CborParser {
  public:
+  /*! @return NULL, always
+   */
   std::unique_ptr<DagCborValue> Parse(ByteView) override {
     return {};
   }

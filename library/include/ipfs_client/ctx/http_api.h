@@ -10,6 +10,8 @@ namespace ipfs::ctx {
  */
 class HttpApi {
  public:
+  /*! Description of the request to be sent
+   */
   using ReqDesc = ::ipfs::HttpRequestDescription;
   using Hdrs = std::function<std::string(std::string_view)>;
   using OnComplete = std::function<void(std::int16_t, std::string_view, Hdrs)>;

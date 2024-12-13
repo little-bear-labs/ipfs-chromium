@@ -9,17 +9,18 @@
 #include "ipfs_client/ipns_record.h"
 #include "log_macros.h"
 
+using namespace std::literals;
 using Self = ipfs::IpnsNames;
 
 void Self::NoSuchName(std::string const& name) {
   names_[name];  // If it already exists, leave it.
 }
-void Self::AssignName(std::string const& name, ValidatedIpns entry) {
-  auto& res = entry.value;
+void Self::AssignName(std::string const& name, ValidatedIpns rec) {
+  auto& res = rec.value;
   if ((static_cast<unsigned int>(!res.empty()) != 0U) && res.front() == '/') {
     res.erase(0, 1);
   }
-  auto endofcid = res.find_first_of("/?#", 6);
+  auto endofcid = res.find_first_of("/?#", "/ipns/"sv.size());
   using namespace libp2p::multi;
   auto cid_str = res.substr(5, endofcid);
   LOG(INFO) << "IPNS points to CID " << cid_str;
@@ -33,19 +34,19 @@ void Self::AssignName(std::string const& name, ValidatedIpns entry) {
       desensitized.append(extra);
     }
     LOG(INFO) << name << " now resolves to (desensitized)" << desensitized;
-    entry.value = desensitized;
+    rec.value = desensitized;
   } else {
     LOG(INFO) << name << " now resolves to (extra level)" << res;
   }
-  auto it = names_.find(name);
-  if (it == names_.end()) {
-    names_.emplace(name, std::move(entry));
-  } else if (it->second.sequence < entry.sequence) {
+  auto nam_it = names_.find(name);
+  if (nam_it == names_.end()) {
+    names_.emplace(name, std::move(rec));
+  } else if (nam_it->second.sequence < rec.sequence) {
     LOG(INFO) << "Updating IPNS record for " << name << " from sequence "
-              << it->second.sequence << " where it pointed to "
-              << it->second.value << " to sequence " << entry.sequence
-              << " where it points to " << entry.value;
-    it->second = std::move(entry);
+              << nam_it->second.sequence << " where it pointed to "
+              << nam_it->second.value << " to sequence " << rec.sequence
+              << " where it points to " << rec.value;
+    nam_it->second = std::move(rec);
   } else {
     LOG(INFO) << "Discarding redundant IPNS record for " << name;
   }

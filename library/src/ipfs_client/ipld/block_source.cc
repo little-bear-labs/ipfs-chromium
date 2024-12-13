@@ -8,27 +8,14 @@
 
 using Self = ipfs::ipld::BlockSource;
 
-
-/*
-namespace {
-#ifdef __cpp_lib_constexpr_string
-constexpr auto a =
-    Self::Category{"a", ipfs::gw::GatewayRequestType::Block, true};
-constexpr auto b =
-    Self::Category{"a", ipfs::gw::GatewayRequestType::Identity, true};
-static_assert(a < b);
-#endif
-}  // namespace
-*/
-
 auto Self::Serialize() const -> std::string {
   std::ostringstream result;
   result << name(cat.request_type) << ' ' << cat.cached << ' ' << cid << ' '
          << Clock::to_time_t(fetched_at) << ' ' << cat.gateway_url;
   return result.str();
 }
-void Self::Deserialize(std::string_view sv) {
-  std::istringstream iss{std::string{sv}};
+void Self::Deserialize(std::string_view from_string_view) {
+  std::istringstream iss{std::string{from_string_view}};
   std::string s;
   std::time_t t;
   iss >> s >> cat.cached >> cid >> t;

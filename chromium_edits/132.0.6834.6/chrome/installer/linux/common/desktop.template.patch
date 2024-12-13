@@ -1,0 +1,13 @@
+diff --git a/chrome/installer/linux/common/desktop.template b/chrome/installer/linux/common/desktop.template
+index 2eb13ee1aba46..9af65726bde89 100644
+--- a/chrome/installer/linux/common/desktop.template
++++ b/chrome/installer/linux/common/desktop.template
+@@ -111,7 +111,7 @@ Terminal=false
+ Icon=@@PACKAGE@@
+ Type=Application
+ Categories=Network;WebBrowser;
+-MimeType=application/pdf;application/rdf+xml;application/rss+xml;application/xhtml+xml;application/xhtml_xml;application/xml;image/gif;image/jpeg;image/png;image/webp;text/html;text/xml;x-scheme-handler/http;x-scheme-handler/https;
++MimeType=application/pdf;application/rdf+xml;application/rss+xml;application/xhtml+xml;application/xhtml_xml;application/xml;image/gif;image/jpeg;image/png;image/webp;text/html;text/xml;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/ipfs;x-scheme-handler/ipns;
+ Actions=new-window;new-private-window;
+ 
+ [Desktop Action new-window]
