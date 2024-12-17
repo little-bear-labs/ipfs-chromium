@@ -1,6 +1,25 @@
 var searchData=
 [
-  ['2_20released_0',['IPFS-Chromium Version 0.0.1.2 Released',['../md_doc_20_80_81_82__blog.html#autotoc_md5',1,'']]],
-  ['22_1',['Install CMake 3.22+',['../md_doc_2building.html',1,'']]],
-  ['23_20standard_20library_20in_20particular_20but_20assuming_20the_20compiler_20too_2',['With C++23 (standard library in particular, but assuming the compiler too)',['../md_doc_2building.html#autotoc_md18',1,'']]]
+  ['cache_5funtil_0',['cache_until',['../structipfs_1_1ValidatedIpns.html#a41a4f4c7cf8f347cf2cd160227e07f98',1,'ipfs::ValidatedIpns']]],
+  ['caching_1',['Caching',['../md_doc_2design__notes.html#autotoc_md1',1,'']]],
+  ['callchild_2',['callchild',['../classipfs_1_1ipld_1_1DagNode.html#a3ec76ce53695d2ed7e55cdc5238ba769',1,'ipfs::ipld::DagNode::CallChild(ResolutionState &amp;, std::string_view link_key)'],['../classipfs_1_1ipld_1_1DagNode.html#a28a67bb9a0172de308d17362adfa6c7b',1,'ipfs::ipld::DagNode::CallChild(ResolutionState &amp;, std::function&lt; NodePtr(std::string_view)&gt; gen_child)'],['../classipfs_1_1ipld_1_1DagNode.html#ad5f9cb31ef4b6d043276202525fd9fb3',1,'ipfs::ipld::DagNode::CallChild(ResolutionState &amp;)']]],
+  ['car_3',['car',['../classipfs_1_1Car.html',1,'ipfs::Car'],['../classipfs_1_1Car.html#a494a37634a59c92ab00b4a7889699d5e',1,'ipfs::Car::Car()']]],
+  ['casting_20to_20specific_20subclasses_4',['Down-casting to specific subclasses',['../group__downcast.html',1,'']]],
+  ['category_5',['Category',['../structipfs_1_1ipld_1_1BlockSource_1_1Category.html',1,'ipfs::ipld::BlockSource']]],
+  ['cborparser_6',['CborParser',['../classipfs_1_1ctx_1_1CborParser.html',1,'ipfs::ctx']]],
+  ['changes_20additions_7',['Changes/Additions',['../md_doc_2original__design.html',1,'']]],
+  ['chrome_20users_20interact_20with_20ipfs_20today_8',['How do Chrome users interact with IPFS today?',['../md_doc_2explainer.html#autotoc_md15',1,'']]],
+  ['chromium_20integration_9',['Chromium integration',['../md_doc_2explainer.html#autotoc_md20',1,'']]],
+  ['chunk_10',['chunk',['../classipfs_1_1ipld_1_1Chunk.html',1,'ipfs::ipld::Chunk'],['../classipfs_1_1ipld_1_1Chunk.html#a3acf06b7496018553ec1b356c27334be',1,'ipfs::ipld::Chunk::Chunk()']]],
+  ['chunk_5fdata_11',['chunk_data',['../classipfs_1_1PbDag.html#a9b7eb13d2a30b781b8851fc9d8375fd9',1,'ipfs::PbDag']]],
+  ['cid_12',['cid',['../structipfs_1_1Car_1_1Block.html#ae4404a44a84c1d2996a05c8a5328ec2d',1,'ipfs::Car::Block::cid'],['../classipfs_1_1PbDag.html#a2a961573eef1d1777f353eae561179a1',1,'ipfs::PbDag::cid()'],['../classipfs_1_1ipld_1_1Link.html#aebaf67082303651a44bc755803205caf',1,'ipfs::ipld::Link::cid'],['../classipfs_1_1Cid.html',1,'ipfs::Cid']]],
+  ['cid_5fmatches_5fdata_13',['cid_matches_data',['../classipfs_1_1PbDag.html#acb874f63fb801c94a0dc6bb84e01abdb',1,'ipfs::PbDag']]],
+  ['class_20diagram_14',['Class Diagram',['../md_doc_2original__design.html#autotoc_md31',1,'']]],
+  ['classes_20involved_15',['Classes involved',['../md_doc_2design__notes.html#autotoc_md2',1,'']]],
+  ['client_16',['client',['../classipfs_1_1Client.html',1,'ipfs::Client'],['../index.html',1,'ipfs-client'],['../md_doc_2explainer.html#autotoc_md13',1,'What is an IPFS client?']]],
+  ['client_20explainer_17',['IPFS Embedded Client Explainer',['../md_doc_2explainer.html',1,'']]],
+  ['clock_18',['Clock',['../structipfs_1_1ipld_1_1BlockSource.html#a6ab9f2343474aeba368d0ee741a31d30',1,'ipfs::ipld::BlockSource']]],
+  ['codec_19',['Codec',['../structipfs_1_1mb_1_1Codec.html',1,'ipfs::mb']]],
+  ['compatibility_20',['Compatibility',['../md_doc_2explainer.html#autotoc_md17',1,'']]],
+  ['considerations_21',['Considerations',['../md_doc_2explainer.html#autotoc_md22',1,'']]]
 ];

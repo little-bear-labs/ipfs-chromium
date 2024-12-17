@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['blinkon23_0',['blinkon23',['../md_doc_2slides_2blinkon23.html',1,'']]]
+  ['embedded_20client_20explainer_0',['IPFS Embedded Client Explainer',['../md_doc_2explainer.html',1,'']]],
+  ['explainer_1',['IPFS Embedded Client Explainer',['../md_doc_2explainer.html',1,'']]]
 ];

@@ -81,7 +81,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;<a class="el" href="partition_8h_source.html">library/include/ipfs_client/partition.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="partition_8h_source.html">include/ipfs_client/partition.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for ipfs::Partition:</div>
 <div class="dyncontent">
@@ -106,22 +106,22 @@ Collaboration diagram for ipfs::Partition:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a4e3ca80f6b418830834a757c6a43e810" id="r_a4e3ca80f6b418830834a757c6a43e810"><td class="memItemLeft" align="right" valign="top"><a id="a4e3ca80f6b418830834a757c6a43e810" name="a4e3ca80f6b418830834a757c6a43e810"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>MimeDetection</b> = std::function&lt; std::string(std::string, std::string_view, std::string const  &amp;)&gt;</td></tr>
+<a class="el" href="classipfs_1_1raw__ptr.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><b>MimeDetection</b> = std::function&lt; std::string(std::string, std::string_view, std::string <a class="el" href="classipfs_1_1raw__ptr.html">const</a>  &amp;)&gt;</td></tr>
 <tr class="separator:a4e3ca80f6b418830834a757c6a43e810"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a9eddb1261e3f02e03f233058326bd621" id="r_a9eddb1261e3f02e03f233058326bd621"><td class="memItemLeft" align="right" valign="top"><a id="a9eddb1261e3f02e03f233058326bd621" name="a9eddb1261e3f02e03f233058326bd621"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>build_response</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1IpfsRequest.html">IpfsRequest</a> &gt;)</td></tr>
+<a class="el" href="classipfs_1_1raw__ptr.html">void</a>&#160;</td><td class="memItemRight" valign="bottom"><b>build_response</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1IpfsRequest.html">IpfsRequest</a> &gt;)</td></tr>
 <tr class="separator:a9eddb1261e3f02e03f233058326bd621"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa114b6732a027640a4346fe7462a64e3" id="r_aa114b6732a027640a4346fe7462a64e3"><td class="memItemLeft" align="right" valign="top"><a id="aa114b6732a027640a4346fe7462a64e3" name="aa114b6732a027640a4346fe7462a64e3"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>add_node</b> (std::string key, ipld::NodePtr)</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>add_node</b> (std::string <a class="el" href="classipfs_1_1raw__ptr.html">key</a>, ipld::NodePtr)</td></tr>
 <tr class="separator:aa114b6732a027640a4346fe7462a64e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af871caf7db95cf6606be4a5483ec1ed0" id="r_af871caf7db95cf6606be4a5483ec1ed0"><td class="memItemLeft" align="right" valign="top"><a id="af871caf7db95cf6606be4a5483ec1ed0" name="af871caf7db95cf6606be4a5483ec1ed0"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_key</b> (std::string const &amp;k) const</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>has_key</b> (std::string <a class="el" href="classipfs_1_1raw__ptr.html">const</a> &amp;<a class="el" href="classipfs_1_1raw__ptr.html">k</a>) <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
 <tr class="separator:af871caf7db95cf6606be4a5483ec1ed0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23450f889d4c0a437d62144d4017dc1a" id="r_a23450f889d4c0a437d62144d4017dc1a"><td class="memItemLeft" align="right" valign="top"><a id="a23450f889d4c0a437d62144d4017dc1a" name="a23450f889d4c0a437d62144d4017dc1a"></a>
-std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>Stored</b> () const</td></tr>
+std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>Stored</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
 <tr class="separator:a23450f889d4c0a437d62144d4017dc1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afae9dcc577056cda18261dbb78701489" id="r_afae9dcc577056cda18261dbb78701489"><td class="memItemLeft" align="right" valign="top"><a id="afae9dcc577056cda18261dbb78701489" name="afae9dcc577056cda18261dbb78701489"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Partition</b> (std::shared_ptr&lt; <a class="el" href="classipfs_1_1gw_1_1Requestor.html">gw::Requestor</a> &gt; requestor, std::shared_ptr&lt; <a class="el" href="classipfs_1_1Client.html">Client</a> &gt;)</td></tr>
@@ -130,7 +130,7 @@ std::size_t&#160;</td><td class="memItemRight" valign="bottom"><b>Stored</b> () 
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A partition of your in-memory stored IPFS DAGs Potentially useful in the fight against cache timing attacks </p>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li>library/include/ipfs_client/<a class="el" href="partition_8h_source.html">partition.h</a></li>
+<li>include/ipfs_client/<a class="el" href="partition_8h_source.html">partition.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

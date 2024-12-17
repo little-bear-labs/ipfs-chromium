@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ipfs-chromium: IPFS racing multi-gateway integration for Chromium</title>
+<title>ipfs-chromium: ipfs-client</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,28 +69,66 @@ $(function() {
 </div>
 
 <div><div class="header">
-  <div class="headertitle"><div class="title">IPFS racing multi-gateway integration for Chromium </div></div>
+  <div class="headertitle"><div class="title">ipfs-client </div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p><a class="anchor" id="md_README"></a> </p>
-<h1><a class="anchor" id="autotoc_md104"></a>
-Overview</h1>
-<p>See a <a href="https://blog.ipfs.tech/2023-05-multigateway-chromium-client/">blog post</a> about it.</p>
-<p>The intended audience there was genpop &amp; the IPFS-aware. If, however, you're more of a browser person, the <a class="el" href="md_doc_2explainer.html">explainer</a> might make more sense to you. Maybe.</p>
-<p>Also, slides for a BlinkOn <a class="el" href="md_doc_2slides_2blinkon23.html">lightning talk</a>.</p>
-<h2><a class="anchor" id="autotoc_md105"></a>
-Basic demo</h2>
-<p><a href="https://github.com/little-bear-labs/ipfs-chromium/assets/97759690/ae072a58-f5de-4270-8d48-2c858d9b17b1">demo.webm</a></p>
-<h1><a class="anchor" id="autotoc_md106"></a>
-Documentation</h1>
-<p>For info on how to use the library outside of Chromium, see <a class="el" href="md_library_2README.html">its readme</a>. See also the <a href="https://little-bear-labs.github.io/ipfs-chromium/annotated.html">Doxygen</a> docs.</p>
-<h1><a class="anchor" id="autotoc_md107"></a>
-Design</h1>
-<p>See <a class="el" href="md_doc_2original__design.html">doc/original_design.md</a> for original intent, and a reasonable overview of the big picture.</p>
-<p>See <a class="el" href="md_doc_2design__notes.html">doc/design_notes.md</a> for more detailed notes on some of the more critical features, as-implemented.</p>
-<h1><a class="anchor" id="autotoc_md108"></a>
-Building</h1>
-<p>See <a class="el" href="md_doc_2building.html">doc/building.md</a> </p>
+<h1><a class="anchor" id="autotoc_md33"></a>
+Usage</h1>
+<p>For a rough example of how this is done, see <a href="https://github.com/John-LittleBearLabs/ipfs_client_clitester">this command-line tester</a></p>
+<h2><a class="anchor" id="autotoc_md34"></a>
+Instantiate ipfs::Client</h2>
+<p>Using code should center on the <code><a class="el" href="classipfs_1_1Client.html" title="Interface that provides functionality from whatever environment you&#39;re using this library in.">ipfs::Client</a></code> class found in <code><a class="el" href="client_8h_source.html">include/ipfs_client/client.h</a></code> There are a number of customization points for that class, particularly those things which might vary depending on which dependencies you'd like to use and/or which behaviors you'd like.</p>
+<p>Some concrete classes are provided with the library, each turned off if the corresponding dependency does not appear to be available. If you're using the Conan package, and not on Windows, all those libraries should be already linked in for you. In that case, you may use <code>ipfs::start_default</code> found in <code><a class="el" href="opinionated__context_8h_source.html">include/ipfs_client/opinionated_context.h</a></code> , which is suitable for some non-critical uses.</p>
+<p>If any of these choices don't make sense for your project, you may create a concrete class for whichever interface you need to alter, and call <code>with()</code> on the Client object, passing in an instance of your class. If you don't call <code>with()</code>, usually you get an implementation that simply doesn't do anything (null object), or does something very simplistic.</p>
+<p>To see the sorts of extension points available, look at the various <code>with()</code> methods in <code><a class="el" href="classipfs_1_1Client.html" title="Interface that provides functionality from whatever environment you&#39;re using this library in.">ipfs::Client</a></code>. For example:</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">Interface   </th><th class="markdownTableHeadNone">Function   </th><th class="markdownTableHeadNone">Provided example implementation   </th><th class="markdownTableHeadNone">Design choice in example    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><a class="el" href="classipfs_1_1ctx_1_1HttpApi.html">ipfs::ctx::HttpApi</a>   </td><td class="markdownTableBodyNone">Make HTTP(s) requests   </td><td class="markdownTableBodyNone">ipfs::ctx::BoostBeastHttp   </td><td class="markdownTableBodyNone">Uses <a href="https://www.boost.org/doc/libs/1_84_0/libs/beast/doc/html/index.html">Boost.Beast</a>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><a class="el" href="classipfs_1_1ctx_1_1DnsTxtLookup.html">ipfs::ctx::DnsTxtLookup</a>   </td><td class="markdownTableBodyNone">DNS TXT requests (not getting IPs for gateways)   </td><td class="markdownTableBodyNone">ipfs::ctx::AresDnsTxtLookup   </td><td class="markdownTableBodyNone">Uses <a href="https://c-ares.org/">c-ares</a>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><a class="el" href="classipfs_1_1ctx_1_1GatewayConfig.html">ipfs::ctx::GatewayConfig</a>   </td><td class="markdownTableBodyNone">Configures which IPFS gateways you use and how   </td><td class="markdownTableBodyNone"><a class="el" href="classipfs_1_1ctx_1_1TransitoryGatewayConfig.html">ipfs::ctx::TransitoryGatewayConfig</a>   </td><td class="markdownTableBodyNone">Loads IPFS_GATEWAY environment variable, or if not set a static list of gateways. Changes at runtime are not persisted.    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><a class="el" href="classipfs_1_1ctx_1_1JsonParser.html">ipfs::ctx::JsonParser</a>   </td><td class="markdownTableBodyNone">Parses JSON (String -&gt; <a class="el" href="classipfs_1_1DagJsonValue.html">ipfs::DagJsonValue</a>)   </td><td class="markdownTableBodyNone">ipfs::ctx::NlohmannJsonParser   </td><td class="markdownTableBodyNone">Uses N. Lohmann's <a href="https://github.com/nlohmann/json">JSON for Modern C++</a>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><a class="el" href="classipfs_1_1ctx_1_1CborParser.html">ipfs::ctx::CborParser</a>   </td><td class="markdownTableBodyNone">Parses CBOR (Bytes -&gt; <a class="el" href="classipfs_1_1DagCborValue.html">ipfs::DagCborValue</a>)   </td><td class="markdownTableBodyNone">ipfs::ctx::NlohmannCborParser   </td><td class="markdownTableBodyNone">Uses N. Lohmann's <a href="https://github.com/nlohmann/json">JSON for Modern C++</a>, but for CBOR    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><a class="el" href="classipfs_1_1gw_1_1Requestor.html">ipfs::gw::Requestor</a>   </td><td class="markdownTableBodyNone">A chain-of-responsibility for processing IPFS requests   </td><td class="markdownTableBodyNone">ipfs::gw::default_requestor() returns common requestors   </td><td class="markdownTableBodyNone">If you don't provide an argument, this chain does no caching.    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">MimeTypeDeduction   </td><td class="markdownTableBodyNone">A function that guesses the mime type of a doc given its head &amp; path   </td><td class="markdownTableBodyNone">ipfs::util::TrivialMimeGuess   </td><td class="markdownTableBodyNone">Doesn't even look at file content, just uses extension. Fine for cases that don't really need the mime type.    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">UrlUnescaping   </td><td class="markdownTableBodyNone">Given a URL component (i.e. in-between <code>/</code>s), deal with % escaping   </td><td class="markdownTableBodyNone">ipfs::util::RoughlyUnescapeUrlComponent   </td><td class="markdownTableBodyNone">Not a complete implementation, but deals with some common cases.    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><a class="el" href="classipfs_1_1crypto_1_1SignatureVerifier.html">ipfs::crypto::SignatureVerifier</a>   </td><td class="markdownTableBodyNone">Verifies a public key signature for a particular type of key   </td><td class="markdownTableBodyNone">ipfs::crypto::OpensslSignatureVerifier   </td><td class="markdownTableBodyNone">Uses OpenSSL, but only for RSA &amp; Ed25519 keys (others are dropped)   </td></tr>
+</table>
+<h2><a class="anchor" id="autotoc_md35"></a>
+Get a partition</h2>
+<p><code>ipfs::Client::partition()</code> takes an arbitrary string to use as a key for that partition. The scheme for the keys is whatever you'd like it to be, but if you pass in an identical key you'll get the same partition back each time. If it's the first time for that key, a new object is created, including an isolated view of the DAGs.</p>
+<p>If you are not in a security-critical case, it's entirely reasonable to pass in <code>""</code> every time. You might also consider using URL origins to define partitioning.</p>
+<h2><a class="anchor" id="autotoc_md36"></a>
+Make a request</h2>
+<p><code>std::make_shared&lt;IpfsRequest&gt;(path, callback)</code></p>
+<ul>
+<li>path - A string of the form /ipfs/&lt;cid&gt;/path/to/file or /ipns/&lt;key or hostname&gt;/path/to/file</li>
+<li>callback - What to call when a final response is formed.</li>
+</ul>
+<p>Pass the request to <code>partition-&gt;build_response()</code></p>
+<h2><a class="anchor" id="autotoc_md37"></a>
+Drive your HttpApi and DnsTxtLookup implementations</h2>
+<p>Many implementations will need some sort of event loop. Do that.</p>
+<h2><a class="anchor" id="autotoc_md38"></a>
+Handle response</h2>
+<p>The callback you passed to create the request. Be sure to check the second parameter's (the response's) status_ field, which contains HTTP statuses like:</p>
+<ul>
+<li>200 - success</li>
+<li>502 - unable to find it from known gateways</li>
+<li>404 - That path does not exist in that DAG, provably.</li>
+<li>503 - Unable to resolve IPNS name (either DNSLink failed to resolve or gateways didn't have the IPNS record, as appropriate)</li>
+</ul>
+<p>Depending on quirks of your various implementations you may need to do extra logic here. </p>
 </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->

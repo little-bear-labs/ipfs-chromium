@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>ipfs-chromium: library/src/ipfs_client/ipld/dnslink_name.h Source File</title>
+<title>ipfs-chromium: src/ipfs_client/ipld/dnslink_name.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -74,7 +74,7 @@ $(document).ready(function() { init_codefold(0); });
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_e3d620c6b6fdb93ed3bc6186215bde2e.html">library</a></li><li class="navelem"><a class="el" href="dir_255fa8f554e95a439f260058328638ab.html">src</a></li><li class="navelem"><a class="el" href="dir_4107d5d7af043198ca2d5b165f5d4d30.html">ipfs_client</a></li><li class="navelem"><a class="el" href="dir_bb6fdf50d1fe40a2db3022b3cea9afa7.html">ipld</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_e734eec756e8351494dfee3e9cf4f28b.html">ipfs_client</a></li><li class="navelem"><a class="el" href="dir_b516278dc41a80d4ec5e33b1f631b45f.html">ipld</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -96,12 +96,12 @@ $(document).ready(function() { init_codefold(0); });
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>  std::string target_path_;</div>
 <div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>  std::chrono::system_clock::time_point expiration_;</div>
 <div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>  ResolveResult resolve(<a class="code hl_class" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp; params) <span class="keyword">override</span>;</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>  <span class="keywordtype">bool</span> PreferOver(<a class="code hl_class" href="classipfs_1_1ipld_1_1DagNode.html">DagNode</a> <span class="keyword">const</span>&amp; another) <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>  ResolveResult resolve(<a class="code hl_class" href="classipfs_1_1ipld_1_1ResolutionState.html">ResolutionState</a>&amp; <a class="code hl_class" href="classipfs_1_1raw__ptr.html">params</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>  <span class="keywordtype">bool</span> PreferOver(<a class="code hl_class" href="classipfs_1_1ipld_1_1DagNode.html">DagNode</a> <span class="keyword">const</span>&amp; <a class="code hl_class" href="classipfs_1_1raw__ptr.html">another</a>) <span class="keyword">const override</span>;</div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>  <a class="code hl_class" href="classipfs_1_1ipld_1_1DnsLinkName.html">DnsLinkName</a> <span class="keyword">const</span>* as_dnslink()<span class="keyword"> const override </span>{ <span class="keywordflow">return</span> <span class="keyword">this</span>; }</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  <a class="code hl_class" href="classipfs_1_1ipld_1_1DnsLinkName.html">DnsLinkName</a>(std::string_view target_abs_path);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  <a class="code hl_class" href="classipfs_1_1ipld_1_1DnsLinkName.html">DnsLinkName</a>(std::string_view <a class="code hl_class" href="classipfs_1_1raw__ptr.html">target_abs_path</a>);</div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>  <a class="code hl_class" href="classipfs_1_1ipld_1_1DnsLinkName.html">~DnsLinkName</a>() <span class="keyword">noexcept</span> <span class="keyword">override</span>;</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="classipfs_1_1ipld_1_1DnsLinkName.html#acfa3a76f4923710bd8e8114db8184f39">   23</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="classipfs_1_1ipld_1_1DnsLinkName.html#acfa3a76f4923710bd8e8114db8184f39">expired</a>() <span class="keyword">const override</span>;</div>
@@ -114,6 +114,7 @@ $(document).ready(function() { init_codefold(0); });
 <div class="ttc" id="aclassipfs_1_1ipld_1_1DnsLinkName_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1DnsLinkName.html">ipfs::ipld::DnsLinkName</a></div><div class="ttdef"><b>Definition</b> dnslink_name.h:9</div></div>
 <div class="ttc" id="aclassipfs_1_1ipld_1_1DnsLinkName_html_acfa3a76f4923710bd8e8114db8184f39"><div class="ttname"><a href="classipfs_1_1ipld_1_1DnsLinkName.html#acfa3a76f4923710bd8e8114db8184f39">ipfs::ipld::DnsLinkName::expired</a></div><div class="ttdeci">bool expired() const override</div></div>
 <div class="ttc" id="aclassipfs_1_1ipld_1_1ResolutionState_html"><div class="ttname"><a href="classipfs_1_1ipld_1_1ResolutionState.html">ipfs::ipld::ResolutionState</a></div><div class="ttdef"><b>Definition</b> resolution_state.h:21</div></div>
+<div class="ttc" id="aclassipfs_1_1raw__ptr_html"><div class="ttname"><a href="classipfs_1_1raw__ptr.html">ipfs::raw_ptr</a></div><div class="ttdoc">Just an observing (non-owning) pointer.</div><div class="ttdef"><b>Definition</b> raw_ptr.h:31</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

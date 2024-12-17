@@ -72,7 +72,7 @@ $(function() {
   <div class="headertitle"><div class="title">Changes/Additions</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md54"></a></p><ol type="1">
+<div class="textblock"><p><a class="anchor" id="autotoc_md27"></a></p><ol type="1">
 <li>Outside of components/ipfs<ol type="a">
 <li>chrome/browser gains a dependency on components/ipfs<ol type="i">
 <li>Other apps may opt in as well.</li>
@@ -132,9 +132,9 @@ $(function() {
 </ol>
 </li>
 </ol>
-<h2><a class="anchor" id="autotoc_md55"></a>
+<h2><a class="anchor" id="autotoc_md28"></a>
 Navigation Request Flow</h2>
-<h3><a class="anchor" id="autotoc_md56"></a>
+<h3><a class="anchor" id="autotoc_md29"></a>
 Top-Level</h3>
 <div class="fragment"><div class="line">graph TD;</div>
 <div class="line">    start([&quot;ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors()&quot;])</div>
@@ -166,7 +166,7 @@ Top-Level</h3>
 <div class="line">    gwreq0 --ALL FAIL--&gt; errored</div>
 <div class="line">    links --NO--&gt; reconstitute --&gt; successed([&quot;Call back with status 200 and response body&quot;])</div>
 <div class="line">    style successed fill:#9CF,color:black</div>
-</div><!-- fragment --><h3><a class="anchor" id="autotoc_md57"></a>
+</div><!-- fragment --><h3><a class="anchor" id="autotoc_md30"></a>
 Gateway Request</h3>
 <p>The class maintains:</p><ul>
 <li>Pending requests: A list where each member has:<ul>
@@ -207,7 +207,7 @@ Gateway Request</h3>
 <div class="line">    addbad --&gt; decprio[Indicate to Gateways that this gateway&#39;s score/parallel should be a bit lower] --&gt; selreq</div>
 <div class="line">    anybusy --NO---&gt; all_failed([&quot;As all gateways have TaskFailed on a given request, report that failure&quot;])</div>
 <div class="line">    style all_failed fill:#9CF,color:black</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md58"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md31"></a>
 Class Diagram</h2>
 <div class="fragment"><div class="line">classDiagram</div>
 <div class="line">   class ChromeContentBrowserClient {</div>

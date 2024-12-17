@@ -1,5 +1,10 @@
 var searchData=
 [
-  ['_5fnuxt_20is_20also_20a_20directory_20with_20164_20entries_0',['_nuxt is also a directory, with 164 entries',['../md_doc_2slides_2blinkon23.html#autotoc_md75',1,'']]],
-  ['_5fnuxt_3a_1',['Lots of stuff is in hot in cache. Requesting the entry _nuxt:',['../md_doc_2slides_2blinkon23.html#autotoc_md74',1,'']]]
+  ['features_0',['Features',['../md_doc_2explainer.html#autotoc_md21',1,'']]],
+  ['fetch_5ftime_1',['fetch_time',['../structipfs_1_1ValidatedIpns.html#a2848fb8db773402c46dfe9d53303d845',1,'ipfs::ValidatedIpns']]],
+  ['file_2',['File',['../classipfs_01_1_1redirects_1_1File.html',1,'ipfs ::redirects']]],
+  ['finish_3',['Finish',['../classipfs_1_1GeneratedDirectoryListing.html#a32d70f7eb14745bb79e31abf45bc908f',1,'ipfs::GeneratedDirectoryListing']]],
+  ['flow_4',['Navigation Request Flow',['../md_doc_2original__design.html#autotoc_md28',1,'']]],
+  ['further_20reading_5',['Further reading',['../md_doc_2explainer.html#autotoc_md26',1,'']]],
+  ['future_20plans_6',['Future plans',['../md_doc_2explainer.html#autotoc_md19',1,'']]]
 ];

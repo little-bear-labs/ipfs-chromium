@@ -85,7 +85,7 @@ $(function() {
 <p>Interface that provides functionality from whatever environment you're using this library in.  
  <a href="classipfs_1_1Client.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="client_8h_source.html">library/include/ipfs_client/client.h</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="client_8h_source.html">include/ipfs_client/client.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for ipfs::Client:</div>
 <div class="dyncontent">
@@ -134,25 +134,25 @@ Collaboration diagram for ipfs::Client:</div>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
 <tr class="memitem:a8998a7c64072b37c610f6b4e9d891c0d" id="r_a8998a7c64072b37c610f6b4e9d891c0d"><td class="memItemLeft" align="right" valign="top"><a id="a8998a7c64072b37c610f6b4e9d891c0d" name="a8998a7c64072b37c610f6b4e9d891c0d"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>SigningKeyType</b> = ::ipfs::crypto::SigningKeyType</td></tr>
+<a class="el" href="classipfs_1_1raw__ptr.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><b>SigningKeyType</b> = ::ipfs::crypto::SigningKeyType</td></tr>
 <tr class="separator:a8998a7c64072b37c610f6b4e9d891c0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac92f7fdd2b702a91277ff20cf6bc1f52" id="r_ac92f7fdd2b702a91277ff20cf6bc1f52"><td class="memItemLeft" align="right" valign="top"><a id="ac92f7fdd2b702a91277ff20cf6bc1f52" name="ac92f7fdd2b702a91277ff20cf6bc1f52"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>MimeTypeDeduction</b> = std::function&lt; std::string(std::string, std::string_view, std::string const  &amp;)&gt;</td></tr>
+<a class="el" href="classipfs_1_1raw__ptr.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><b>MimeTypeDeduction</b> = std::function&lt; std::string(std::string, std::string_view, std::string <a class="el" href="classipfs_1_1raw__ptr.html">const</a>  &amp;)&gt;</td></tr>
 <tr class="separator:ac92f7fdd2b702a91277ff20cf6bc1f52"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af54adb2f4dcca975bd48fe85b8512a36" id="r_af54adb2f4dcca975bd48fe85b8512a36"><td class="memItemLeft" align="right" valign="top"><a id="af54adb2f4dcca975bd48fe85b8512a36" name="af54adb2f4dcca975bd48fe85b8512a36"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>UrlUnescaping</b> = std::function&lt; std::string(std::string_view)&gt;</td></tr>
+<a class="el" href="classipfs_1_1raw__ptr.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><b>UrlUnescaping</b> = std::function&lt; std::string(std::string_view)&gt;</td></tr>
 <tr class="separator:af54adb2f4dcca975bd48fe85b8512a36"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a88d883f4a3cdc2844dc3fd0f2e34dbfd" id="r_a88d883f4a3cdc2844dc3fd0f2e34dbfd"><td class="memItemLeft" align="right" valign="top"><a id="a88d883f4a3cdc2844dc3fd0f2e34dbfd" name="a88d883f4a3cdc2844dc3fd0f2e34dbfd"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>DnslinkFallbackSwitch</b> = std::function&lt; bool()&gt;</td></tr>
+<a class="el" href="classipfs_1_1raw__ptr.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><b>DnslinkFallbackSwitch</b> = std::function&lt; bool()&gt;</td></tr>
 <tr class="separator:a88d883f4a3cdc2844dc3fd0f2e34dbfd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3967ca996200b8b9d4fc2b20e7ff422d" id="r_a3967ca996200b8b9d4fc2b20e7ff422d"><td class="memItemLeft" align="right" valign="top"><a id="a3967ca996200b8b9d4fc2b20e7ff422d" name="a3967ca996200b8b9d4fc2b20e7ff422d"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>ByteView</b> = ::ipfs::ByteView</td></tr>
+<a class="el" href="classipfs_1_1raw__ptr.html">using</a>&#160;</td><td class="memItemRight" valign="bottom"><b>ByteView</b> = ::ipfs::ByteView</td></tr>
 <tr class="separator:a3967ca996200b8b9d4fc2b20e7ff422d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aadfd1921cd1e900d70223875d9f5a61d" id="r_aadfd1921cd1e900d70223875d9f5a61d"><td class="memItemLeft" align="right" valign="top"><a id="aadfd1921cd1e900d70223875d9f5a61d" name="aadfd1921cd1e900d70223875d9f5a61d"></a>
-std::shared_ptr&lt; <a class="el" href="classipfs_1_1Partition.html">Partition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>partition</b> (std::string key)</td></tr>
+std::shared_ptr&lt; <a class="el" href="classipfs_1_1Partition.html">Partition</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>partition</b> (std::string <a class="el" href="classipfs_1_1raw__ptr.html">key</a>)</td></tr>
 <tr class="separator:aadfd1921cd1e900d70223875d9f5a61d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd9192bd03cd8f17c48dda361775fd3c" id="r_acd9192bd03cd8f17c48dda361775fd3c"><td class="memItemLeft" align="right" valign="top"><a id="acd9192bd03cd8f17c48dda361775fd3c" name="acd9192bd03cd8f17c48dda361775fd3c"></a>
 <a class="el" href="classipfs_1_1ctx_1_1HttpApi.html">ctx::HttpApi</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>http</b> ()</td></tr>
@@ -202,20 +202,20 @@ std::shared_ptr&lt; <a class="el" href="classipfs_1_1gw_1_1Requestor.html">gw::R
 <tr class="memitem:af974a287c7c436d5e5a183f54e367c80" id="r_af974a287c7c436d5e5a183f54e367c80"><td class="memItemLeft" align="right" valign="top"><a id="af974a287c7c436d5e5a183f54e367c80" name="af974a287c7c436d5e5a183f54e367c80"></a>
 <a class="el" href="classipfs_1_1Client.html">Client</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>with</b> (DnslinkFallbackSwitch)</td></tr>
 <tr class="separator:af974a287c7c436d5e5a183f54e367c80"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a062c3273e71f61ebc1ddde7a5b77dce7" id="r_a062c3273e71f61ebc1ddde7a5b77dce7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Client.html#a062c3273e71f61ebc1ddde7a5b77dce7">MimeType</a> (std::string extension, std::string_view content, std::string const &amp;url)</td></tr>
+<tr class="memitem:a062c3273e71f61ebc1ddde7a5b77dce7" id="r_a062c3273e71f61ebc1ddde7a5b77dce7"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Client.html#a062c3273e71f61ebc1ddde7a5b77dce7">MimeType</a> (std::string <a class="el" href="classipfs_1_1raw__ptr.html">extension</a>, std::string_view <a class="el" href="classipfs_1_1raw__ptr.html">content</a>, std::string <a class="el" href="classipfs_1_1raw__ptr.html">const</a> &amp;url)</td></tr>
 <tr class="memdesc:a062c3273e71f61ebc1ddde7a5b77dce7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determine a mime type for a given file.  <br /></td></tr>
 <tr class="separator:a062c3273e71f61ebc1ddde7a5b77dce7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b5fc981f81d33e3c6172c938a8cd92f" id="r_a1b5fc981f81d33e3c6172c938a8cd92f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Client.html#a1b5fc981f81d33e3c6172c938a8cd92f">UnescapeUrlComponent</a> (std::string_view url_comp)</td></tr>
+<tr class="memitem:a1b5fc981f81d33e3c6172c938a8cd92f" id="r_a1b5fc981f81d33e3c6172c938a8cd92f"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classipfs_1_1Client.html#a1b5fc981f81d33e3c6172c938a8cd92f">UnescapeUrlComponent</a> (std::string_view <a class="el" href="classipfs_1_1raw__ptr.html">url_comp</a>)</td></tr>
 <tr class="memdesc:a1b5fc981f81d33e3c6172c938a8cd92f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove URL escaping, e.g. %20.  <br /></td></tr>
 <tr class="separator:a1b5fc981f81d33e3c6172c938a8cd92f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3235d67e3090e69e6b9f11f2562545d9" id="r_a3235d67e3090e69e6b9f11f2562545d9"><td class="memItemLeft" align="right" valign="top"><a id="a3235d67e3090e69e6b9f11f2562545d9" name="a3235d67e3090e69e6b9f11f2562545d9"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>VerifyKeySignature</b> (SigningKeyType, ByteView signature, ByteView data, ByteView key_bytes) const</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>VerifyKeySignature</b> (SigningKeyType, ByteView <a class="el" href="classipfs_1_1raw__ptr.html">signature</a>, ByteView <a class="el" href="classipfs_1_1raw__ptr.html">data</a>, ByteView <a class="el" href="classipfs_1_1raw__ptr.html">key_bytes</a>) <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
 <tr class="separator:a3235d67e3090e69e6b9f11f2562545d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad6b070c42520c96f8f3a9d9f11e7976c" id="r_ad6b070c42520c96f8f3a9d9f11e7976c"><td class="memItemLeft" align="right" valign="top"><a id="ad6b070c42520c96f8f3a9d9f11e7976c" name="ad6b070c42520c96f8f3a9d9f11e7976c"></a>
-std::optional&lt; std::vector&lt; Byte &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Hash</b> (HashType, ByteView data)</td></tr>
+std::optional&lt; std::vector&lt; Byte &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Hash</b> (HashType, ByteView <a class="el" href="classipfs_1_1raw__ptr.html">data</a>)</td></tr>
 <tr class="separator:ad6b070c42520c96f8f3a9d9f11e7976c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afa9c55e73475e02a8bb107437b9e862a" id="r_afa9c55e73475e02a8bb107437b9e862a"><td class="memItemLeft" align="right" valign="top"><a id="afa9c55e73475e02a8bb107437b9e862a" name="afa9c55e73475e02a8bb107437b9e862a"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>DnslinkFallback</b> () const</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>DnslinkFallback</b> () <a class="el" href="classipfs_1_1raw__ptr.html">const</a></td></tr>
 <tr class="separator:afa9c55e73475e02a8bb107437b9e862a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
@@ -282,7 +282,7 @@ DnslinkFallbackSwitch&#160;</td><td class="memItemRight" valign="bottom"><b>dns_
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">std::string const &amp;&#160;</td>
+          <td class="paramtype">std::string <a class="el" href="classipfs_1_1raw__ptr.html">const</a> &amp;&#160;</td>
           <td class="paramname"><em>url</em>&#160;</td>
         </tr>
         <tr>
@@ -333,7 +333,7 @@ DnslinkFallbackSwitch&#160;</td><td class="memItemRight" valign="bottom"><b>dns_
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>library/include/ipfs_client/<a class="el" href="client_8h_source.html">client.h</a></li>
+<li>include/ipfs_client/<a class="el" href="client_8h_source.html">client.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

@@ -1,7 +1,5 @@
 <map id="ipfs::ctx::GatewayConfig" name="ipfs::ctx::GatewayConfig">
-<area shape="rect" id="Node000001" title=" " alt="" coords="130,5,311,31"/>
-<area shape="rect" id="Node000002" href="$classipfs_1_1ChromiumIpfsGatewayConfig.html" title=" " alt="" coords="5,79,209,119"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="194,41,136,81,133,76,191,36"/>
-<area shape="rect" id="Node000003" href="$classipfs_1_1ctx_1_1TransitoryGatewayConfig.html" title=" " alt="" coords="233,79,437,119"/>
-<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="251,36,309,76,306,81,248,41"/>
+<area shape="rect" id="Node000001" title=" " alt="" coords="17,5,198,31"/>
+<area shape="rect" id="Node000002" href="$classipfs_1_1ctx_1_1TransitoryGatewayConfig.html" title=" " alt="" coords="5,79,209,119"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="110,44,110,79,105,79,105,44"/>
 </map>
