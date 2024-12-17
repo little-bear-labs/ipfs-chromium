@@ -132,7 +132,9 @@ jobs:
           conan --version
       - name: Configure
         shell: bash
-        run: ./ipfs_chromium/.github/lib.config.sh
+        run: |
+          find ./ -name lib.config.sh
+          ./ipfs_chromium/.github/lib.config.sh
       - name: Build
         shell: bash
         run: cmake --build build --config ${{ matrix.config.build_type }} --target package
