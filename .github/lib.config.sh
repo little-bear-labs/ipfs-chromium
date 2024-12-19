@@ -1,22 +1,22 @@
 #!/bin/bash -ex
 mkdir build
 mkdir ipfs-client-dev
-if which ${{ matrix.config.cc }}
+if which "${1}"
 then
-  CC=`which ${{ matrix.config.cc }}`
+  CC=`which "${1}"`
   export CC
 fi
-if which ${{ matrix.config.cxx }}
+if which "${2}"
 then
-  CXX=`which ${{ matrix.config.cxx }}`
+  CXX=`which "${2}"`
   export CXX
 fi
 if cmake \
-  -G "${{ matrix.config.generators }}" \
+  -G "${3}" \
   -S . \
   -B build \
   -D CMAKE_INSTALL_PREFIX=`pwd`/ipfs-client-dev \
-  -D CMAKE_BUILD_TYPE=${{ matrix.config.build_type }} \
+  -D "CMAKE_BUILD_TYPE=${4}" \
   -D USE_DOXYGEN=OFF \
   -D CXX_VERSION=20
 then
