@@ -22,6 +22,6 @@ if cmake \
 then
   echo "Configured."
 else
-  find build/ -iname '*proto*'
+  find "$(pwd)/build/" -iname '*proto*'
 fi
 
