@@ -5,7 +5,7 @@ project(ipfs_client
 )
 set(old_path ${CMAKE_MODULE_PATH})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR};${CMAKE_CURRENT_BINARY_DIR})
-
+include(FindProtobuf)
 if(IN_WORKSPACE)
     include(../cmake/setup.cmake)
     list(APPEND CMAKE_MODULE_PATH ${old_path})
@@ -17,7 +17,6 @@ else()
     find_package(nlohmann_json QUIET REQUIRED CONFIG)
     find_package(
         Protobuf
-        ${protobuf_version}
         QUIET
         REQUIRED
         CONFIG
@@ -74,7 +73,7 @@ target_include_directories(ic_proto
 )
 target_link_libraries(ic_proto
   PUBLIC
-    protobuf::protobuf
+    protobuf::libprotobuf
 )
 
 add_library(ipfs_client
