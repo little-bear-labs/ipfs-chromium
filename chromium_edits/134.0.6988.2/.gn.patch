@@ -1,0 +1,10 @@
+diff --git a/.gn b/.gn
+index 3f65718281973..85eac37feba28 100644
+--- a/.gn
++++ b/.gn
+@@ -173,3 +173,5 @@ exec_script_allowlist =
+       "//tools/grit/grit_rule.gni",
+       "//tools/gritsettings/BUILD.gn",
+     ]
++exec_script_whitelist = exec_script_allowlist
++

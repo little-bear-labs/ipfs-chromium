@@ -61,7 +61,7 @@ def deduce():
         revision = str((next//10) % 10)
         build = str(next % 10)
         result = '.'.join([major, minor, revision, build])
-    with open(join(here, 'library', 'version.txt'), 'w') as txt:
+    with open(join(here, 'scr', 'version.txt'), 'w') as txt:
         print(result, file=txt)
     return result
 

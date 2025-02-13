@@ -3,7 +3,7 @@ list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(version)
 project(ipfs-chromium
   VERSION ${version}
-  DESCRIPTION "An ipfs client library intended for use in browsers, and a Chromium component which uses it."
+  DESCRIPTION "Using ipfs_client in Chromium."
   HOMEPAGE_URL https://github.com/little-bear-labs/ipfs-chromium
   LANGUAGES CXX
   )
@@ -16,6 +16,7 @@ set(CHROMIUM_SOURCE_TREE "${CMAKE_CURRENT_BINARY_DIR}/chromium/src" CACHE PATH
     "Path to chromium/src. If DOWNLOAD_CHROMIUM=TRUE, and it does not exist, it will be created."
 )
 set(CHROMIUM_PROFILE "${CMAKE_BUILD_TYPE}" CACHE STRING "The profile of the current Chromium build.")
+set(IPFS_CLIENT_REF lib CACHE STRING "The branch/tag from which to get ipfs_client")
 set(CXX_VERSION "20" CACHE STRING "The numeric part (year % 100) of the version of the C++ standard to be used. Must be at least 20 (for C++20). Must be one CMake knows about.")
 if(DOWNLOAD_CHROMIUM)
     set(default_dt "${CMAKE_CURRENT_BINARY_DIR}/depot_tools")
@@ -40,11 +41,8 @@ endif()
 set(IN_WORKSPACE 1)
 include(chrome)
 include(setup)
-include(shell)
 
 enable_testing()
-
-add_subdirectory(library)
 
 if(IS_DIRECTORY "${CHROMIUM_SOURCE_TREE}")
     add_subdirectory(component)

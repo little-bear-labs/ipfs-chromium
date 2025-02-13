@@ -73,9 +73,17 @@ add_custom_target(record_edits
   COMMENT "Creating patch files and such (will overwrite if already present)."
   )
 
+# include(FetchContent)
+# FetchContent_Declare(fetch_ipfs_client
+#   GIT_REPOSITORY "https://github.com/little-bear-labs/ipfs-chromium.git"
+#   GIT_TAG "${IPFS_CLIENT_REF}"
+# )
+# FetchContent_MakeAvailable(fetch_ipfs_client)
+
 add_custom_target(setup_in_tree
     COMMENT "Preparing the Chromium repository & build directory, but not building any targets."
     COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/cmake/chromium.py" "${CMAKE_BINARY_DIR}" base
+    # DEPENDS fetch_ipfs_client
   )
 add_custom_target(pull_clang_config
     COMMAND "${CMAKE_COMMAND}" -E copy "${CHROMIUM_SOURCE_TREE}/.clang-format" "${CMAKE_SOURCE_DIR}/"

@@ -29,7 +29,7 @@ except ModuleNotFoundError as ex:
     verbose('Installed requests because of', ex)
 
 
-VERSION_CLOSE_ENOUGH = 30123
+VERSION_CLOSE_ENOUGH = 30135
 LARGE_INT = 9876543210
 here = dirname(__file__)
 
@@ -514,6 +514,22 @@ class Patcher:
                 print(p)
 
 
+def list_releases():
+    per = Patcher(chromium_src_dir, "git", "Debug")
+    for chan in ["Dev", "Beta", "Stable", "Extended"]:
+        for osn in ["Linux", "Mac", "Windows"]:
+            rels = per.release_versions(chan, osn)
+            for (step_desc, verinf) in zip(['Cur', 'Prv', 'Old'], rels):
+                print(f"{verinf[1]:15} {step_desc} {chan:9}{os:7}")
+    for (elec_br, chrom_ver) in per.electron_versions().items():
+        print(f"{chrom_ver:15} Electron {elec_br}")
+    print(f"{per.electron_version():15} Electron main")
+    o = per.oldest()
+    print(f"{o[1]:15} Oldest maintained Extended:", f"({ctime(o[2])})")
+    n = per.newest()
+    print("Development at:", n[1], f"({ctime(n[2])})")
+
+
 if __name__ == "__main__":
     chromium_src_dir = os.environ['CHROMIUM_SOURCE_TREE']
     if len(argv) < 2:
@@ -531,19 +547,7 @@ if __name__ == "__main__":
         for m in missing:
             print(m)
     elif argv[1] == "releases":
-        per = Patcher(chromium_src_dir, "git", "Debug")
-        for chan in ["Dev", "Beta", "Stable", "Extended"]:
-            for osn in ["Linux", "Mac", "Windows"]:
-                rels = per.release_versions(chan, osn)
-                for (step_desc,verinf) in zip(['Cur', 'Prv', 'Old'], rels):
-                    print(f"{verinf[1]:15} {step_desc} {chan:9}{os:7}")
-        for (elec_br,chrom_ver) in per.electron_versions().items():
-            print(f"{chrom_ver:15} Electron {elec_br}")
-        print(f"{per.electron_version():15} Electron main")
-        o = per.oldest()
-        print(f"{o[1]:15} Oldest maintained Extended:", f"({ctime(o[2])})")
-        n = per.newest()
-        print("Development at:", n[1], f"({ctime(n[2])})")
+        list_releases()
     elif argv[1] == "available":
         pr = Patcher(chromium_src_dir, "git", "Debug")
         print(list(pr.available()))
@@ -563,17 +567,5 @@ if __name__ == "__main__":
     elif argv[1] == "oldnew":
         pr = Patcher(chromium_src_dir, "git", "Debug")
         pr.list_ood(list(pr.available()), False, True)
-    elif argv[1] == "git":
-        pr = Patcher(realpath(join(dirname(__file__), "..")), "git", "Debug")
-        PREFIX = "?? component/patches/"
-        SUFFIX = "patch"
-        for output_line in pr.git(["status", "--porcelain"], Result.RawOutput).splitlines():
-            if output_line.startswith(PREFIX) and output_line.endswith(SUFFIX):
-                end = len(output_line) - len(SUFFIX) - 1
-                pch = output_line[len(PREFIX): end]
-                if pr.out_of_date(pch):
-                    sys.exit(9)
-                else:
-                    pr.git(["add", output_line[3:]], Result.OrDie)
     else:
         Patcher(*argv[1:4]).create_patch_file()
