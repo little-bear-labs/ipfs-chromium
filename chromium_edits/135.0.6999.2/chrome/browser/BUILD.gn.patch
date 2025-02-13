@@ -1,0 +1,27 @@
+diff --git a/chrome/browser/BUILD.gn b/chrome/browser/BUILD.gn
+index 9f293f4ddd146..69b82eaf641c2 100644
+--- a/chrome/browser/BUILD.gn
++++ b/chrome/browser/BUILD.gn
+@@ -42,6 +42,7 @@ import("//services/screen_ai/buildflags/features.gni")
+ import("//services/video_effects/args.gni")
+ import("//testing/libfuzzer/fuzzer_test.gni")
+ import("//third_party/blink/public/public_features.gni")
++import("//third_party/ipfs_client/args.gni")
+ import("//third_party/protobuf/proto_library.gni")
+ import("//third_party/webrtc/webrtc.gni")
+ import("//third_party/widevine/cdm/widevine.gni")
+@@ -2514,6 +2515,14 @@ static_library("browser") {
+     "//ui/webui",
+   ]
+ 
++    if (enable_ipfs) {
++      sources += [
++        "ipfs_extra_parts.cc",
++        "ipfs_extra_parts.h",
++      ]
++      deps += [ "//components/ipfs" ]
++    }
++
+   # Platforms that have a network diagnostics dialog. All others fall through
+   # to the stub which is not implemented.
+   if (is_chromeos) {

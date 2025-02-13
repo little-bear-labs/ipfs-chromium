@@ -257,7 +257,10 @@ def sync_dir(source_relative, target_relative, complete=True):
 
 
 sync_dir('component', 'components/ipfs')
-sync_dir('library', 'third_party/ipfs_client')
+ic_dir = join(src, 'third_party/ipfs_client')
+if not isdir(ic_dir):
+    run([git_binary, '-C', join(src, 'third_party'), 'clone', '--branch', 'main', 'git@gitlab.com:jbt/ipfs_client.git'])
+
 if isdir(elec_dir):
     sync_dir('electron-spin', 'electron-spin')
 

@@ -42,8 +42,6 @@ class IpfsUrlLoader final : public network::mojom::URLLoader {
       VirtualOptional<::GURL> const& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
  public:
   explicit IpfsUrlLoader(network::mojom::URLLoaderFactory& handles_http,

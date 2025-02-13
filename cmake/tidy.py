@@ -6,7 +6,7 @@ from glob import glob
 from os import remove
 from os.path import splitext
 
-with open('compile_commands.json') as compile_commands_json:
+with open('compile_commands.json', encoding='utf-8') as compile_commands_json:
     keeps = {}
     for command in json.load(compile_commands_json):
         keeps[command['output']] = command['file']

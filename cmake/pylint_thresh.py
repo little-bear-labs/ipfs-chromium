@@ -5,7 +5,7 @@ from json import load
 from re import sub
 from sys import argv
 
-THRESHOLD = 7.9
+THRESHOLD = 8.2
 
 def msg_out(msg):
     f = msg["path"]
