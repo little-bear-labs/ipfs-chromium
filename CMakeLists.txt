@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-message(WARNING "${CMAKE_MODULE_PATH}")
+
 include(python)
 execute_process(
     COMMAND "${Python_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/bld/ic_version.py"
@@ -64,6 +64,7 @@ foreach(proto ${protos})
     list(APPEND pb_gen "${p}.cc")
     set_source_files_properties("${p}.h" PROPERTIES GENERATED ON)
     set_source_files_properties("${p}.cc" PROPERTIES GENERATED ON)
+    set(gn_protos "${gn_protos}      \"proto/ipfs_client/${base}.proto\", \n ")
 endforeach()
 set_source_files_properties(${pb_gen} PROPERTIES GENERATED ON)
 
@@ -139,6 +140,24 @@ foreach(libname ipfs_client ipfs_client_covered)
         nlohmann_json::nlohmann_json
     )
 endforeach()
+
+foreach(source ${sources})
+  cmake_path(RELATIVE_PATH
+      source
+      OUTPUT_VARIABLE relsrc
+      BASE_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
+  string(FIND "${relsrc}" "opinion" i)
+  string(FIND "${relsrc}" "logger" j)
+  if(i EQUAL j)
+    set(gn_sources "${gn_sources}      \"${relsrc}\", \n ")
+  endif()
+endforeach()
+configure_file(
+    bld/BUILD.gn.in
+    "${CMAKE_CURRENT_SOURCE_DIR}/BUILD.gn"
+    @ONLY
+  )
 
 file(
   GLOB pub_incs

@@ -1,0 +1,15 @@
+image: conanio/gcc13-ubuntu16.04
+
+stages:
+  - build
+
+build package:
+  stage: build
+  script:
+    - conan profile show || date
+    - conan profile profile detect || date
+    - conan profile show
+    - conan remote list
+    - conan remote add ic_glab "${CI_API_V4_URL}/projects/${CI_PROJECT_NAME}/packages/conan"
+    - conan remote list
+    - conan create . --settings:all compiler.cppstd=20 --build=missing
