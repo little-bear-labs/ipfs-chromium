@@ -20,6 +20,8 @@
 
 #if __has_include(<third_party/ipfs_client/ipns_record.pb.h>)
 #include <third_party/ipfs_client/ipns_record.pb.h>
+#elif __has_include(<third_party/ipfs_client/proto/ipfs_client/ipns_record.pb.h>)
+#include <third_party/ipfs_client/proto/ipfs_client/ipns_record.pb.h>
 #else
 #include "ipfs_client/ipns_record.pb.h"
 #endif

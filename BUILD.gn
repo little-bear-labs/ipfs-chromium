@@ -1,0 +1,132 @@
+import("args.gni")
+import("//build/buildflag_header.gni")
+
+buildflag_header("ipfs_buildflags") {
+  header = "ipfs_buildflags.h"
+  flags = [ "ENABLE_IPFS=$enable_ipfs" ]
+}
+
+config("external_config") {
+  include_dirs = [
+    "include",
+  ]
+}
+
+if (enable_ipfs) {
+    cxx_sources = [
+      "src/ipfs_client/block_requestor.cc", 
+       "src/ipfs_client/car.cc", 
+       "src/ipfs_client/cid.cc", 
+       "src/ipfs_client/client.cc", 
+       "src/ipfs_client/crypto/openssl_sha2_256.cc", 
+       "src/ipfs_client/crypto/openssl_signature_verifier.cc", 
+       "src/ipfs_client/crypto/signing_key_type.cc", 
+       "src/ipfs_client/ctx/ares_dns_txt_lookup.cc", 
+       "src/ipfs_client/ctx/boost_beast_http.cc", 
+       "src/ipfs_client/ctx/default_gateways.cc", 
+       "src/ipfs_client/ctx/dns_txt_lookup.cc", 
+       "src/ipfs_client/ctx/gateway_config.cc", 
+       "src/ipfs_client/ctx/nlohmann_cbor_parser.cc", 
+       "src/ipfs_client/ctx/nlohmann_json_parser.cc", 
+       "src/ipfs_client/ctx/null_dns_txt_lookup.cc", 
+       "src/ipfs_client/ctx/null_http_provider.cc", 
+       "src/ipfs_client/ctx/transitory_gateway_config.cc", 
+       "src/ipfs_client/dag_cbor_value.cc", 
+       "src/ipfs_client/dag_json_value.cc", 
+       "src/ipfs_client/generated_directory_listing.cc", 
+       "src/ipfs_client/gw/block_request_splitter.cc", 
+       "src/ipfs_client/gw/default_requestor.cc", 
+       "src/ipfs_client/gw/dnslink_requestor.cc", 
+       "src/ipfs_client/gw/gateway_request.cc", 
+       "src/ipfs_client/gw/gateway_request_type.cc", 
+       "src/ipfs_client/gw/gateway_state.cc", 
+       "src/ipfs_client/gw/inline_request_handler.cc", 
+       "src/ipfs_client/gw/multi_gateway_requestor.cc", 
+       "src/ipfs_client/gw/providers_response.cc", 
+       "src/ipfs_client/gw/requestor.cc", 
+       "src/ipfs_client/gw/terminating_requestor.cc", 
+       "src/ipfs_client/http_request_description.cc", 
+       "src/ipfs_client/identity_cid.cc", 
+       "src/ipfs_client/ipfs_request.cc", 
+       "src/ipfs_client/ipld/block_source.cc", 
+       "src/ipfs_client/ipld/chunk.cc", 
+       "src/ipfs_client/ipld/dag_cbor_node.cc", 
+       "src/ipfs_client/ipld/dag_headers.cc", 
+       "src/ipfs_client/ipld/dag_json_node.cc", 
+       "src/ipfs_client/ipld/dag_node.cc", 
+       "src/ipfs_client/ipld/directory_shard.cc", 
+       "src/ipfs_client/ipld/dnslink_name.cc", 
+       "src/ipfs_client/ipld/ipns_name.cc", 
+       "src/ipfs_client/ipld/link.cc", 
+       "src/ipfs_client/ipld/resolution_state.cc", 
+       "src/ipfs_client/ipld/root.cc", 
+       "src/ipfs_client/ipld/small_directory.cc", 
+       "src/ipfs_client/ipld/symlink.cc", 
+       "src/ipfs_client/ipld/unixfs_file.cc", 
+       "src/ipfs_client/ipns_names.cc", 
+       "src/ipfs_client/ipns_record.cc", 
+       "src/ipfs_client/multi_base.cc", 
+       "src/ipfs_client/multi_hash.cc", 
+       "src/ipfs_client/multicodec.cc", 
+       "src/ipfs_client/partition.cc", 
+       "src/ipfs_client/path2url.cc", 
+       "src/ipfs_client/pb_dag.cc", 
+       "src/ipfs_client/redirects.cc", 
+       "src/ipfs_client/response.cc", 
+       "src/ipfs_client/web_util.cc", 
+       "src/libp2p/multi/uvarint.cc", 
+       "src/smhasher/MurmurHash3.cc", 
+       "src/vocab/byte_view.cc", 
+       "src/vocab/slash_delimited.cc", 
+ 
+    ]
+    static_library("ipfs_client") {
+      if (is_nacl) {
+        sources = cxx_sources - [
+            "src/ipfs_client/ipld/dag_node.cc",
+            "src/ipfs_client/ipns_names.cc",
+            "src/ipfs_client/ipns_record.cc",
+            "src/ipfs_client/pb_dag.cc",
+            "src/ipfs_client/signing_key_type.cc",
+          ]
+      } else {
+        sources = cxx_sources
+      }
+      include_dirs = [
+        "include",
+        "src",
+        "..",
+        "../boringssl/src/include"
+      ]
+      public_configs = [
+        ":external_config"
+      ]
+      public_deps = [
+        "//third_party/abseil-cpp:absl",
+        "//third_party/boringssl",
+        "//base",
+      ]
+      deps = [
+        "//third_party/abseil-cpp:absl",
+        "//base",
+      ]
+      if (!is_nacl) {
+        public_deps += [
+            ":protos",
+            "//third_party/protobuf:protobuf_lite",
+          ]
+      }
+    }
+}
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("protos") {
+  sources = [
+      "proto/ipfs_client/ipns_record.proto", 
+       "proto/ipfs_client/keys.proto", 
+       "proto/ipfs_client/pb_dag.proto", 
+       "proto/ipfs_client/unix_fs.proto", 
+ 
+  ]
+}

@@ -58,7 +58,7 @@ class IpfsChromium(ConanFile):
         f'protobuf/{protobuf_version()}',
     ]
     extensions = ['h', 'cc', 'hpp', 'proto']
-    exports_sources = ['*.cmake', '*.py', '*.sh', '*.txt'] + [f'**/*.{e}' for e in extensions]
+    exports_sources = ['*.cmake', '*.py', '*.sh', '*.txt', '*.in'] + [f'**/*.{e}' for e in extensions]
     exports = 'version.txt'
     package_type = 'static-library'
 

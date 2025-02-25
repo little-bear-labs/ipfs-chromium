@@ -7,6 +7,8 @@
 
 #if __has_include(<third_party/ipfs_client/keys.pb.h>)
 #include <third_party/ipfs_client/keys.pb.h>
+#elif __has_include(<third_party/ipfs_client/proto/ipfs_client/keys.pb.h>)
+#include <third_party/ipfs_client/proto/ipfs_client/keys.pb.h>
 #else
 #include "ipfs_client/keys.pb.h"
 #endif

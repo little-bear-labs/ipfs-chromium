@@ -14,6 +14,9 @@ using ByteView = span<ipfs::Byte const>;
 inline span<std::uint8_t const> as_octets(ByteView bytes) {
   return {reinterpret_cast<std::uint8_t const*>(bytes.data()), bytes.size()};
 }
+inline span<std::uint8_t const> as_octets(std::string const& s) {
+  return {reinterpret_cast<std::uint8_t const*>(s.data()), s.size()};
+}
 template <class ContiguousBytes>
 inline ByteView as_bytes(ContiguousBytes const& b) {
   auto p = reinterpret_cast<ipfs::Byte const*>(b.data());

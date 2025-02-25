@@ -26,6 +26,9 @@
 #if __has_include(<third_party/ipfs_client/pb_dag.pb.h>)
 #include <third_party/ipfs_client/pb_dag.pb.h>
 #include <third_party/ipfs_client/unix_fs.pb.h>
+#elif __has_include(<third_party/ipfs_client/proto/ipfs_client/pb_dag.pb.h>)
+#include <third_party/ipfs_client/proto/ipfs_client/pb_dag.pb.h>
+#include <third_party/ipfs_client/proto/ipfs_client/unix_fs.pb.h>
 #else
 #include "ipfs_client/pb_dag.pb.h"
 #include "ipfs_client/unix_fs.pb.h"
