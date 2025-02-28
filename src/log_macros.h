@@ -8,7 +8,11 @@
 #include "base/logging.h"
 #include "base/check_op.h"
 
-#else // Not in Chromium
+#elif __has_include(<glog/logging.h>)
+
+#include <glog/logging.h>
+
+#else
 
 #include <ipfs_client/logger.h>
 

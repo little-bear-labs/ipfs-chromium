@@ -1,6 +1,7 @@
 #ifndef IPFS_MUTLICODEC_H_
-#define IPFS_MUTLICODEC_H_
+#define IPFS_MUTLICODEC_H_ 1
 
+#include <iosfwd>
 #include <limits>
 #include <string_view>
 
@@ -20,4 +21,7 @@ MultiCodec Validate(MultiCodec);
 std::string_view GetName(MultiCodec);
 }  // namespace ipfs
 
+namespace std {//glog can't find this operator in the global namespace
+auto operator<<(ostream&, ipfs::MultiCodec) -> ostream&;
+}
 #endif  // IPFS_MUTLICODEC_H_

@@ -24,6 +24,7 @@ dependency(protobuf VERSION ${pb_ver})
 dependency(absl)
 dependency(Boost)
 dependency(c-ares)
+dependency(glog)
 dependency(nlohmann_json)
 dependency(OpenSSL)
 if(TESTING)
@@ -82,7 +83,7 @@ target_include_directories(ic_proto
 )
 target_link_libraries(ic_proto
   PUBLIC
-    protobuf::protobuf
+    protobuf::libprotobuf
 )
 
 add_library(ipfs_client
@@ -137,6 +138,7 @@ foreach(libname ipfs_client ipfs_client_covered)
         absl::strings
         Boost::headers
         c-ares::cares
+        glog::glog
         nlohmann_json::nlohmann_json
     )
 endforeach()

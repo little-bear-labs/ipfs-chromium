@@ -3,6 +3,7 @@
 #include <ipfs_client/cid.h>
 #include <ipfs_client/client.h>
 #include <ipfs_client/dag_cbor_value.h>
+#include <ipfs_client/multicodec.h>
 
 #include <cstdint>
 #include <ctime>
@@ -79,6 +80,7 @@ void assign(std::uint64_t& out,
 auto ipfs::ValidateIpnsRecord(ipfs::ByteView top_level_bytes,
                               Cid const& name,
                               Client& api) -> std::optional<IpnsCborEntry> {
+  std::cout << name.codec();
   DCHECK_EQ(name.codec(), MultiCodec::LIBP2P_KEY);
   if (name.codec() != MultiCodec::LIBP2P_KEY) {
     return {};

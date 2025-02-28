@@ -5,7 +5,6 @@
 #include <cstdint>
 
 #include <iomanip>
-#include <iostream>
 #include <version>
 
 #ifdef __cpp_lib_byte
