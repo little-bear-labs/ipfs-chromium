@@ -15,27 +15,14 @@
 
 #define HAS_OPINIONATED_CONTEXT 1
 
-#include <google/protobuf/stubs/logging.h>
-
 namespace boost::asio {
 class io_context;
 }
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-variable"
-namespace google::protobuf {
-  namespace {
-    LogLevel LOGLEVEL_DEBUG = static_cast<LogLevel>(-1);
-    LogLevel LOGLEVEL_TRACE = static_cast<LogLevel>(-2);
-  }
-}  // namespace google::protobuf
-#pragma GCC diagnostic pop
 
 class HttpSession;
 
 namespace ipfs {
 
-// std::pair<std::shared_ptr<ContextApi>, std::shared_ptr<Partition>>
 std::shared_ptr<Client> start_default(boost::asio::io_context& io);
 
 }  // namespace ipfs

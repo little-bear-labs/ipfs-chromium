@@ -24,7 +24,7 @@ using Self = ipfs::Partition;
 Self::Partition(std::shared_ptr<gw::Requestor> requestor,
                 std::shared_ptr<Client> api)
     : api_{std::move(api)}, requestor_{requestor} {
-  DCHECK(requestor);
+  DCHECK(!!requestor);
 }
 
 void Self::build_response(std::shared_ptr<IpfsRequest> req) {

@@ -278,7 +278,7 @@ auto Self::RespondSuccessfully(std::string_view bytes,
       }
     } break;
     case GatewayRequestType::Car: {
-      DCHECK(api);
+      DCHECK(!!api);
       Car car(as_bytes(bytes), api->cbor());
       AddBlocks(car, api, success, valid, src);
       break;
@@ -369,7 +369,7 @@ void Self::AddBlock(std::string_view bytes,
         success = false;
         return;
     }
-    DCHECK(api);
+    DCHECK(!!api);
     auto node = ipld::DagNode::fromBytes(api, cid().value(), bytes);
     if (!node) {
         success = false;
@@ -405,7 +405,7 @@ void Self::AddBlocks(Car& car, const std::shared_ptr<Client>& api, bool& success
 }
 auto Self::IpnsResponse(ByteView bytes, std::shared_ptr<Client> const& api, bool& success, bool* valid, ipld::BlockSource src) -> bool {
   if (cid().has_value()) {
-    DCHECK(api);
+    DCHECK(!!api);
     auto rec = ipfs::ValidateIpnsRecord(bytes, cid().value(), *api);
     if (rec.has_value()) {
       ValidatedIpns const validated{rec.value()};

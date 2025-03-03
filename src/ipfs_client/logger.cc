@@ -1,51 +1,29 @@
 #include <ipfs_client/logger.h>
 
-#include <google/protobuf/stubs/logging.h>
+#undef LOGURU_WITH_STREAMS
+#define LOGURU_WITH_STREAMS 1
+#include <loguru.hpp>
 
 #include <iostream>
+#include <map>
 #include <string>
 #include <string_view>
 
 namespace lg = ipfs::log;
 
 namespace {
-lg::Level current_level = lg::Level::Warn;
-lg::Handler current_handler = nullptr;
-
-void CheckLevel(google::protobuf::LogLevel lv,
-                char const* f,
-                int l,
-                std::string const& m) {
-  auto lev = static_cast<int>(lv);
-  if (lev < static_cast<int>(current_level)) {
-    return;
-  }
-  if (current_handler == nullptr) {
-    return;
-  }
-  current_handler(m, f, l, static_cast<lg::Level>(lev));
+auto to_lev(int i) {
+  i = std::max(-i, -2);
+  i = std::min( i,  4);
+  return static_cast<lg::Level>(i);
 }
-}  // namespace
+}
 
+auto lg::GetLevel() -> Level {
+  return to_lev(loguru::g_stderr_verbosity);
+}
 void lg::SetLevel(Level lev) {
-  IsInitialized();
-  current_level = lev;
-}
-
-void lg::SetHandler(Handler h) noexcept {
-  current_handler = h;
-  google::protobuf::SetLogHandler(&CheckLevel);
-}
-
-void lg::DefaultHandler(std::string const& message,
-                        char const* source_file,
-                        int source_line,
-                        Level lev) {
-  std::clog << source_file << ':' << source_line << ": " << LevelDescriptor(lev)
-            << ": " << message << '\n';
-  if (lev == Level::Fatal) {
-    std::abort();
-  }
+  loguru::g_stderr_verbosity = -static_cast<int>(lev);
 }
 
 auto lg::LevelDescriptor(Level l) -> std::string_view {
@@ -68,11 +46,20 @@ auto lg::LevelDescriptor(Level l) -> std::string_view {
       return "Unknown log level used: possible corruption?";
   }
 }
-
-auto lg::IsInitialized() noexcept -> bool {
-  if (current_handler != nullptr) {
-    return true;
-  }
-  SetHandler(&DefaultHandler);
-  return false;
+namespace {
+void adapt_hook(void* user_data, loguru::Message const& mes) {
+  auto* h = reinterpret_cast<lg::Hook*>(user_data);
+  auto lev = to_lev(mes.verbosity);
+  (*h)(mes.message, mes.filename, mes.line, lev);
+}
+std::map<std::string,lg::Hook> hook_storage;
+}
+void lg::AddHook(std::string id, Hook hook) {
+  auto& h = hook_storage[id];
+  h = hook;
+  loguru::add_callback(id.c_str(), adapt_hook, &h, loguru::NamedVerbosity::Verbosity_MAX);
+}
+void lg::Unhook(std::string id) {
+  hook_storage.erase(id);
+  loguru::remove_callback(id.c_str());
 }

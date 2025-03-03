@@ -106,10 +106,10 @@ void Self::timed_out() {
 }
 // NOLINTEND(readability-magic-numbers)
 auto Self::cfg() -> ctx::GatewayConfig& {
-  DCHECK(api_);
+  DCHECK(!!api_);
   return api_->gw_cfg();
 }
 auto Self::cfg() const -> ctx::GatewayConfig const& {
-  DCHECK(api_);
+  DCHECK(!!api_);
   return api_->gw_cfg();
 }

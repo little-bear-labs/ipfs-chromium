@@ -1,6 +1,8 @@
 #include <ipfs_client/multicodec.h>
 #include <string_view>
 
+#include <iostream>
+
 using Cdc = ipfs::MultiCodec;
 
 namespace {
@@ -31,4 +33,10 @@ auto ipfs::Validate(Cdc c) -> Cdc {
     return Cdc::INVALID;
   }
   return c;
+}
+
+namespace std {
+auto operator<<(ostream& s, ipfs::MultiCodec c) -> ostream& {
+  return s << GetName(c);
+}
 }

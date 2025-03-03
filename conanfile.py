@@ -40,7 +40,6 @@ class IpfsChromium(ConanFile):
         'boost/1.81.0',
         'bzip2/1.0.8',
         'c-ares/1.22.1',
-        'glog/0.7.1',
         'nlohmann_json/3.11.2',
         'openssl/1.1.1w',
         f'protobuf/{protobuf_version()}',
@@ -51,7 +50,7 @@ class IpfsChromium(ConanFile):
     default_options = {
         "testing": False,
         "boost/*:bzip2": True,
-        "boost/*:with_stacktrace_backtrace": True
+        "boost/*:with_stacktrace_backtrace": True,
     }
     tool_requires = [
         'cmake/3.22.6',
@@ -99,6 +98,7 @@ class IpfsChromium(ConanFile):
             self.requires(lib, transitive_headers=True)
         if self.options.testing:
             self.requires('gtest/1.15.0')
+        self.requires('loguru/cci.20230406', options={'enable_streams': 'True'})
 
     @property
     def _min_cppstd(self):

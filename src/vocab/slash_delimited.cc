@@ -88,28 +88,3 @@ auto operator<<(std::ostream& stream, ipfs::SlashDelimited const& sdp) -> std::o
   return stream << sdp.to_view();
 }
 
-#ifndef NACL_TC_REV
-#if __has_include(<google/protobuf/stubs/logging.h>)
-#include <google/protobuf/stubs/logging.h>
-
-using namespace google::protobuf::internal;
-using namespace google::protobuf;
-
-#if PROTOBUF_VERSION >= 3020000
-#include <google/protobuf/stubs/stringpiece.h>
-LogMessage& operator<<(LogMessage& str, ipfs::SlashDelimited const& sdp) {
-  return str << sdp.to_view();
-}
-#elif __has_include(<google/protobuf/stubs/stringpiece.h>)
-#include <google/protobuf/stubs/stringpiece.h>
-auto operator<<(LogMessage& str, ipfs::SlashDelimited const& sdp) -> LogMessage& {
-  return str << StringPiece{sdp.to_view()};
-}
-#else
-LogMessage& operator<<(LogMessage& str, ipfs::SlashDelimited const& sdp) {
-  return str << std::string{sdp.to_view()};
-}
-#endif
-
-#endif
-#endif

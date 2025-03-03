@@ -8,34 +8,20 @@
 #include "base/logging.h"
 #include "base/check_op.h"
 
-#elif __has_include(<glog/logging.h>)
+#elif __has_include(<loguru.hpp>)
 
-#include <glog/logging.h>
+#undef LOGURU_WITH_STREAMS
+#define LOGURU_WITH_STREAMS 1
+#include <loguru.hpp>
+
+#define DCHECK(X) DCHECK_S( X )
+#define DCHECK_EQ(X, Y) DCHECK_EQ_S( X , Y )
+#define LOG(X) LOG_S( X )
+#define VLOG(X) VLOG_S( X )
 
 #else
 
-#include <ipfs_client/logger.h>
-
-#include <google/protobuf/stubs/logging.h>
-
-#define DCHECK_EQ GOOGLE_DCHECK_EQ
-#define DCHECK_GT GOOGLE_DCHECK_GT
-#define DCHECK GOOGLE_DCHECK
-#define LOG GOOGLE_LOG
-
-#define VLOG(X)                                       \
-  ::google::protobuf::internal::LogFinisher() =      \
-      ::google::protobuf::internal::LogMessage(       \
-          static_cast<::google::protobuf::LogLevel>(  \
-              ::google::protobuf::LOGLEVEL_INFO - ( X ) ), \
-          __FILE__, __LINE__)
-
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-variable"
-namespace {
-static bool const is_logging_initialized = ::ipfs::log::IsInitialized();
-} // namespace
-#pragma GCC diagnostic pop
+#error "Provide logging."
 
 #endif //Chromium in-tree check
 

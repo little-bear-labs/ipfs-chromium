@@ -13,6 +13,7 @@ project(ipfs_client
 )
 
 set(TESTING ON CACHE BOOL "Do we want to run tests?")
+set(TEST_BY_DEFAULT OFF CACHE BOOL "If TESTING, do we want to run tests as a part of the default 'all' target.")
 set(CXX_VERSION 20 CACHE STRING "Should be no less than your conan profile.")
 
 file(READ bld/protobuf_version.txt pb_ver)
@@ -24,7 +25,7 @@ dependency(protobuf VERSION ${pb_ver})
 dependency(absl)
 dependency(Boost)
 dependency(c-ares)
-dependency(glog)
+dependency(loguru)
 dependency(nlohmann_json)
 dependency(OpenSSL)
 if(TESTING)
@@ -138,7 +139,7 @@ foreach(libname ipfs_client ipfs_client_covered)
         absl::strings
         Boost::headers
         c-ares::cares
-        glog::glog
+        loguru::loguru
         nlohmann_json::nlohmann_json
     )
 endforeach()

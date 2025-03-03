@@ -130,7 +130,7 @@ auto Self::json() -> ctx::JsonParser& {
     LOG(FATAL) << "A JSON parser must be provided.";
 #endif
   }
-  DCHECK(json_parser_);
+  DCHECK(!!json_parser_);
   return *json_parser_;
 }
 auto Self::cbor() -> ctx::CborParser& {
@@ -142,7 +142,7 @@ auto Self::cbor() -> ctx::CborParser& {
     cbor_parser_ = std::make_unique<ctx::NullCborParser>();
 #endif
   }
-  DCHECK(cbor_parser_);
+  DCHECK(!!cbor_parser_);
   return *cbor_parser_;
 }
 auto Self::requestor() -> std::shared_ptr<gw::Requestor> {

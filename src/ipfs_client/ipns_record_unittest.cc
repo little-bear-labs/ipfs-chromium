@@ -74,12 +74,6 @@ struct Api final : public i::Client {
   void AddGateway(std::string_view) {}
   virtual ~Api() noexcept {}
 };
-  std::vector<std::string> log_lines;
-  std::string all_log;
-  void save_log(std::string const& msg, char const*, int, il::Level) {
-    log_lines.push_back(msg);
-    all_log.append(msg).push_back(';');
-  }
 }  // namespace
 
 TEST(IpnsRecordTest, AKnownKuboRecord) {
@@ -432,13 +426,17 @@ TEST(IpnsRecordTest, ValueMismatch) {
   auto real_validates = ipfs::ValidateIpnsRecord(i::as_bytes(xxd), cid, api);
   EXPECT_TRUE(real_validates);
   xxd[12]++;//cause a mismatch
-  il::SetLevel(il::Level::Error);
-  il::SetHandler(save_log);
+  //il::SetLevel(il::Level::Error);
+  //il::SetHandler(save_log);
+  LogRecorder rec;
   auto modified_validates = ipfs::ValidateIpnsRecord(i::as_bytes(xxd), cid, api);
-  EXPECT_FALSE(modified_validates) << all_log;
-  il::SetHandler(il::DefaultHandler);
-  EXPECT_EQ(log_lines.size(),1UL) << all_log;
-  auto& log_line = log_lines.at(0);
-  EXPECT_LT(log_line.find("Mismatch on Value"),log_line.size()) << all_log;
+  EXPECT_FALSE(modified_validates);
+  //il::SetHandler(il::DefaultHandler);
+  //EXPECT_EQ(log_lines.size(),1UL);
+  //auto& log_line = log_lines.at(0);
+  //EXPECT_LT(log_line.find("Mismatch on Value"),log_line.size()) << all_log;
+  auto is_expected = [](auto&m){return m.message.find("Mismatch on Value") < m.message.size();};
+  auto expected_log = std::count_if(rec.messages.begin(), rec.messages.end(), is_expected);
+  EXPECT_EQ(expected_log, 1);
 }
 #endif
