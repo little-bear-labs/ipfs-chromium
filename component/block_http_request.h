@@ -26,10 +26,16 @@ class BlockHttpRequest : public std::enable_shared_from_this<BlockHttpRequest> {
 
  public:
   using HttpCompleteCallback = ctx::HttpApi::OnComplete;
+
+  /*! Initialize a request
+   */
   BlockHttpRequest(ipfs::HttpRequestDescription, HttpCompleteCallback);
   ~BlockHttpRequest() noexcept;
 
-  void Send(raw_ptr<network::mojom::URLLoaderFactory>);
+  /*! \brief Send the HTTP request to the gateway
+   *  \param loader_factory Used to create URL Loaders for HTTP(s)
+   */
+  void Send(raw_ptr<network::mojom::URLLoaderFactory> loader_factory);
   void Cancel();
 
  private:

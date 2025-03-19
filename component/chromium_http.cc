@@ -6,8 +6,8 @@
 
 using Self = ipfs::ChromiumHttp;
 
-Self::ChromiumHttp(network::mojom::URLLoaderFactory& lf)
-    : loader_factory_{&lf} {}
+Self::ChromiumHttp(network::mojom::URLLoaderFactory& delegate)
+    : loader_factory_{&delegate} {}
 
 auto Self::SendHttpRequest(ReqDesc desc, OnComplete cb) const -> Canceller {
   auto ptr = std::make_shared<BlockHttpRequest>(desc, cb);

@@ -34,6 +34,9 @@ class SimpleURLLoader;
 namespace ipfs {
 class InterRequestState;
 
+/*!
+ * \brief A URL Loader for the ipfs:// (and ipns://) scheme.
+ */
 class IpfsUrlLoader final : public network::mojom::URLLoader {
   void FollowRedirect(
       std::vector<std::string> const& removed_headers,
@@ -44,10 +47,17 @@ class IpfsUrlLoader final : public network::mojom::URLLoader {
                    int32_t intra_priority_value) override;
 
  public:
+  /*!
+   * \brief Construct with the needed tools
+   * \param handles_http How to construct URL Loaders for HTTP
+   * \param state Access to orchestrator, api, etc.
+   */
   explicit IpfsUrlLoader(network::mojom::URLLoaderFactory& handles_http,
                          InterRequestState& state);
   ~IpfsUrlLoader() noexcept override;
 
+  /*! Reference type for this URL Loader (defining memory model)
+   */
   using ptr = std::shared_ptr<IpfsUrlLoader>;
 
   // Passed as the RequestHandler for

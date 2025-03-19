@@ -4,23 +4,29 @@
 #include <ipfs_client/ctx/transitory_gateway_config.h>
 
 #include <base/logging.h>
+#include <base/debug/stack_trace.h>
 #include <base/task/thread_pool.h>
 #include <components/prefs/pref_registry_simple.h>
 #include <components/prefs/pref_service.h>
 #include <content/public/browser/browser_thread.h>
 
-namespace {
-std::string const kGateway{"ipfs.gateway"};
-std::string const kDnslinkFallback{"ipfs.dnslink.fallback_to_gateway"};
-std::string const kDiscoveryRate{"ipfs.discovery.rate"};
-std::string const kDiscoveryOfUnencrypted{"ipfs.discovery.http"};
+#include <string_view>
 
-std::string const kRateKey{"max_requests_per_minute"};
+namespace {
+  using namespace std::literals;
+  auto constexpr kGateway = "ipfs.gateway"sv;
+  auto constexpr kDnslinkFallback = "ipfs.dnslink.fallback_to_gateway"sv;
+  auto constexpr kDiscoveryRate = "ipfs.discovery.rate"sv;
+  auto constexpr kDiscoveryOfUnencrypted = "ipfs.discovery.http"sv;
+
+  auto constexpr kRateKey = "max_requests_per_minute"sv;
 
 base::Value::Dict AsJson(ipfs::GatewaySpec const&);
 }
 
-void ipfs::RegisterPreferences(PrefRegistrySimple* service) {
+void ipfs::RegisterPreferences(PrefRegistrySimple* registry) {
+  LOG(WARNING) << "ipfs::RegisterPreferences(" << static_cast<void const*>(registry) << "):\n" <<
+    base::debug::StackTrace();
   ctx::TransitoryGatewayConfig cfg;
   ctx::LoadStaticGatewayList(cfg);
   base::Value::Dict vals;
@@ -33,10 +39,10 @@ void ipfs::RegisterPreferences(PrefRegistrySimple* service) {
     //    vals.Set(gw->prefix, static_cast<int>(gw->rate));
     vals.Set(gw->prefix, AsJson(*gw));
   }
-  service->RegisterDictionaryPref(kGateway, std::move(vals));
-  service->RegisterIntegerPref(kDiscoveryRate, 120);
-  service->RegisterBooleanPref(kDiscoveryOfUnencrypted, true);
-  service->RegisterBooleanPref(kDnslinkFallback, true);
+  registry->RegisterDictionaryPref(kGateway, std::move(vals));
+  registry->RegisterIntegerPref(kDiscoveryRate, 120);
+  registry->RegisterBooleanPref(kDiscoveryOfUnencrypted, true);
+  registry->RegisterBooleanPref(kDnslinkFallback, true);
 }
 bool ipfs::DnsFallbackPref(PrefService const* p) {
   if (!p) {

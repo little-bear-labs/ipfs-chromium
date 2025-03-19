@@ -1,0 +1,71 @@
+diff --git a/chrome/browser/chrome_content_browser_client.cc b/chrome/browser/chrome_content_browser_client.cc
+index 26ec83541d709..e6fed34a5c332 100644
+--- a/chrome/browser/chrome_content_browser_client.cc
++++ b/chrome/browser/chrome_content_browser_client.cc
+@@ -396,6 +396,7 @@
+ #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
+ #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+ #include "third_party/blink/public/public_buildflags.h"
++#include "third_party/ipfs_client/ipfs_buildflags.h"
+ #include "third_party/widevine/cdm/buildflags.h"
+ #include "ui/base/clipboard/clipboard_format_type.h"
+ #include "ui/base/clipboard/clipboard_metadata.h"
+@@ -506,6 +507,13 @@
+ #include "ui/display/util/display_util.h"
+ #endif
+ 
++#if BUILDFLAG(ENABLE_IPFS)
++#include "chrome/browser/ipfs_extra_parts.h"
++#include "components/ipfs/interceptor.h"
++#include "components/ipfs/ipfs_features.h"
++#include "components/ipfs/url_loader_factory.h"
++#endif
++
+ #if !BUILDFLAG(IS_ANDROID)
+ #include "chrome/browser/actor/actor_features.h"
+ #include "chrome/browser/actor/actor_keyed_service.h"
+@@ -1619,7 +1627,7 @@ void ChromeContentBrowserClient::MaybeProxyNetworkBoundRequest(
+ 
+ std::unique_ptr<content::BrowserMainParts>
+ ChromeContentBrowserClient::CreateBrowserMainParts(bool is_integration_test) {
+-  return ChromeBrowserMainParts::Create(
++   return ChromeBrowserMainParts::Create(
+       is_integration_test, &startup_data_,
+       base::BindOnce(&ChromeContentBrowserClient::InitOnUIThread,
+                      weak_factory_.GetWeakPtr()));
+@@ -6256,6 +6264,23 @@ void ChromeContentBrowserClient::
+   WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
+ #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(ENABLE_EXTENSIONS_CORE) || \
+         // !BUILDFLAG(IS_ANDROID)
++#if BUILDFLAG(ENABLE_IPFS)
++  if (!web_contents) {
++    VLOG(2) << "No web contents, can't register url loader factory.";
++  } else if (base::FeatureList::IsEnabled(ipfs::kEnableIpfs)) {
++    network::mojom::URLLoaderFactory* default_factory = g_browser_process->system_network_context_manager()->GetURLLoaderFactory();
++    auto* context = web_contents->GetBrowserContext();
++    ipfs::IpfsURLLoaderFactory::Create(
++      factories,
++      context,
++      default_factory,
++      GetSystemNetworkContext(),
++      Profile::FromBrowserContext(context)->GetPrefs()
++    );
++  } else {
++    LOG(INFO) << "IPFS disabled.";
++  }
++#endif  // BUILDFLAG(ENABLE_IPFS)
+ 
+ #if BUILDFLAG(IS_CHROMEOS)
+   if (web_contents) {
+@@ -6410,6 +6435,11 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
+     scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner) {
+   std::vector<std::unique_ptr<content::URLLoaderRequestInterceptor>>
+       interceptors;
++#if BUILDFLAG(ENABLE_IPFS)
++  if (base::FeatureList::IsEnabled(ipfs::kEnableIpfs)) {
++    interceptors.push_back(std::make_unique<ipfs::Interceptor>(g_browser_process->system_network_context_manager()->GetURLLoaderFactory(), GetSystemNetworkContext()));
++  }
++#endif
+ #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
+   interceptors.push_back(
+       std::make_unique<offline_pages::OfflinePageURLLoaderRequestInterceptor>(

@@ -1,0 +1,38 @@
+diff --git a/chrome/browser/about_flags.cc b/chrome/browser/about_flags.cc
+index efc7b5dd070cf..e021b6cf55b5b 100644
+--- a/chrome/browser/about_flags.cc
++++ b/chrome/browser/about_flags.cc
+@@ -247,6 +247,7 @@
+ #include "third_party/blink/public/common/features_generated.h"
+ #include "third_party/blink/public/common/forcedark/forcedark_switches.h"
+ #include "third_party/blink/public/common/switches.h"
++#include "third_party/ipfs_client/ipfs_buildflags.h"
+ #include "ui/accessibility/accessibility_features.h"
+ #include "ui/accessibility/accessibility_switches.h"
+ #include "ui/base/ozone_buildflags.h"
+@@ -360,6 +361,10 @@
+ #include "extensions/common/switches.h"
+ #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+ 
++#if BUILDFLAG(ENABLE_IPFS)
++#include "components/ipfs/ipfs_features.h"
++#endif
++
+ #if BUILDFLAG(ENABLE_PDF)
+ #include "pdf/pdf_features.h"
+ #endif
+@@ -10056,6 +10061,14 @@ const FeatureEntry kFeatureEntries[] = {
+      flag_descriptions::kOmitCorsClientCertDescription, kOsAll,
+      FEATURE_VALUE_TYPE(network::features::kOmitCorsClientCert)},
+ 
++#if BUILDFLAG(ENABLE_IPFS)
++    {"enable-ipfs",
++     flag_descriptions::kEnableIpfsName,
++     flag_descriptions::kEnableIpfsDescription,
++     kOsMac | kOsWin | kOsLinux,//TODO: These are the only variants currently getting built, but that is not likely to remain the case
++     FEATURE_VALUE_TYPE(ipfs::kEnableIpfs)},
++#endif
++
+ #if BUILDFLAG(IS_CHROMEOS)
+     {"always-enable-hdcp", flag_descriptions::kAlwaysEnableHdcpName,
+      flag_descriptions::kAlwaysEnableHdcpDescription, kOsCrOS,

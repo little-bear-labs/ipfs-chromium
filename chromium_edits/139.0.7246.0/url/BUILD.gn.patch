@@ -1,0 +1,32 @@
+diff --git a/url/BUILD.gn b/url/BUILD.gn
+index 50a48a650ff58..3cb0224a17598 100644
+--- a/url/BUILD.gn
++++ b/url/BUILD.gn
+@@ -5,6 +5,7 @@
+ import("//build/buildflag_header.gni")
+ import("//testing/libfuzzer/fuzzer_test.gni")
+ import("//testing/test.gni")
++import("//third_party/ipfs_client/args.gni")
+ import("features.gni")
+ 
+ import("//build/config/cronet/config.gni")
+@@ -71,6 +72,7 @@ component("url") {
+   public_deps = [
+     "//base",
+     "//build:robolectric_buildflags",
++    "//third_party/ipfs_client:ipfs_buildflags",
+   ]
+ 
+   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+@@ -93,6 +95,11 @@ component("url") {
+     public_configs = [ "//third_party/jdk" ]
+   }
+ 
++  if (enable_ipfs) {
++    sources += [ "url_canon_ipfs.cc" ]
++    deps += [ "//third_party/ipfs_client:ipfs_client" ]
++  }
++
+   if (is_win) {
+     # Don't conflict with Windows' "url.dll".
+     output_name = "url_lib"

@@ -1,0 +1,144 @@
+diff --git a/components/cbor/values.cc b/components/cbor/values.cc
+index ee05460d72932..51a6b3d7a3ce3 100644
+--- a/components/cbor/values.cc
++++ b/components/cbor/values.cc
+@@ -64,32 +64,34 @@ Value::Value(Type type) : type_(type) {
+   NOTREACHED();
+ }
+ 
+-Value::Value(SimpleValue in_simple)
+-    : type_(Type::SIMPLE_VALUE), simple_value_(in_simple) {
++Value::Value(SimpleValue in_simple, uint64_t tag)
++    : type_(Type::SIMPLE_VALUE), simple_value_(in_simple), tag_(tag) {
+   CHECK(static_cast<int>(in_simple) >= 20 && static_cast<int>(in_simple) <= 23);
+ }
+ 
+-Value::Value(bool boolean_value) : type_(Type::SIMPLE_VALUE) {
++Value::Value(bool boolean_value, uint64_t tag) : type_(Type::SIMPLE_VALUE), tag_(tag) {
+   simple_value_ = boolean_value ? Value::SimpleValue::TRUE_VALUE
+                                 : Value::SimpleValue::FALSE_VALUE;
+ }
+ 
+-Value::Value(double float_value)
+-    : type_(Type::FLOAT_VALUE), float_value_(float_value) {}
++Value::Value(double float_value, uint64_t tag)
++    : type_(Type::FLOAT_VALUE), float_value_(float_value), tag_(tag) {}
+ 
+-Value::Value(int integer_value)
+-    : Value(base::checked_cast<int64_t>(integer_value)) {}
++Value::Value(int integer_value, uint64_t tag)
++    : Value(base::checked_cast<int64_t>(integer_value), tag) {}
+ 
+-Value::Value(int64_t integer_value) : integer_value_(integer_value) {
++Value::Value(int64_t integer_value, uint64_t tag) : integer_value_(integer_value), tag_(tag) {
+   type_ = integer_value >= 0 ? Type::UNSIGNED : Type::NEGATIVE;
+ }
+ 
+-Value::Value(base::span<const uint8_t> in_bytes)
++Value::Value(base::span<const uint8_t> in_bytes, uint64_t tag)
+     : type_(Type::BYTE_STRING),
+-      bytestring_value_(in_bytes.begin(), in_bytes.end()) {}
++      bytestring_value_(in_bytes.begin(), in_bytes.end()),
++      tag_(tag)
++      {}
+ 
+-Value::Value(base::span<const uint8_t> in_bytes, Type type)
+-    : type_(type), bytestring_value_(in_bytes.begin(), in_bytes.end()) {
++Value::Value(base::span<const uint8_t> in_bytes, Type type, uint64_t tag)
++    : type_(type), bytestring_value_(in_bytes.begin(), in_bytes.end()), tag_(tag) {
+   DCHECK(type_ == Type::BYTE_STRING || type_ == Type::INVALID_UTF8);
+ }
+ 
+@@ -115,7 +117,8 @@ Value::Value(std::string&& in_string, Type type) noexcept : type_(type) {
+   }
+ }
+ 
+-Value::Value(std::string_view in_string, Type type) : type_(type) {
++Value::Value(std::string_view in_string, Type type, uint64_t tag) 
++: type_(type), tag_(tag) {
+   switch (type_) {
+     case Type::STRING:
+       new (&string_value_) std::string();
+@@ -131,16 +134,18 @@ Value::Value(std::string_view in_string, Type type) : type_(type) {
+   }
+ }
+ 
+-Value::Value(const ArrayValue& in_array) : type_(Type::ARRAY), array_value_() {
++Value::Value(const ArrayValue& in_array, uint64_t tag)
++: type_(Type::ARRAY), array_value_(), tag_(tag) {
+   array_value_.reserve(in_array.size());
+   for (const auto& val : in_array)
+     array_value_.emplace_back(val.Clone());
+ }
+ 
+-Value::Value(ArrayValue&& in_array) noexcept
+-    : type_(Type::ARRAY), array_value_(std::move(in_array)) {}
++Value::Value(ArrayValue&& in_array, uint64_t tag) noexcept
++    : type_(Type::ARRAY), array_value_(std::move(in_array)), tag_(tag) {}
+ 
+-Value::Value(const MapValue& in_map) : type_(Type::MAP), map_value_() {
++Value::Value(const MapValue& in_map, uint64_t tag)
++: type_(Type::MAP), map_value_(), tag_(tag) {
+   map_value_.reserve(in_map.size());
+   for (const auto& it : in_map)
+     map_value_.emplace_hint(map_value_.end(), it.first.Clone(),
+@@ -166,29 +171,34 @@ Value Value::Clone() const {
+     case Type::NONE:
+       return Value();
+     case Type::INVALID_UTF8:
+-      return Value(bytestring_value_, Type::INVALID_UTF8);
++      return Value(bytestring_value_, Type::INVALID_UTF8, tag_);
+     case Type::UNSIGNED:
+     case Type::NEGATIVE:
+-      return Value(integer_value_);
++      return Value(integer_value_, tag_);
+     case Type::BYTE_STRING:
+-      return Value(bytestring_value_);
++      return Value(bytestring_value_, tag_);
+     case Type::STRING:
+-      return Value(string_value_);
++      return Value(string_value_, Type::STRING, tag_);
+     case Type::ARRAY:
+-      return Value(array_value_);
++      return Value(array_value_, tag_);
+     case Type::MAP:
+-      return Value(map_value_);
++      return Value(map_value_, tag_);
+     case Type::TAG:
+-      NOTREACHED() << constants::kUnsupportedMajorType;
++      return Value();
+     case Type::SIMPLE_VALUE:
+-      return Value(simple_value_);
++      return Value(simple_value_, tag_);
+     case Type::FLOAT_VALUE:
+-      return Value(float_value_);
++      return Value(float_value_, tag_);
+   }
+ 
+   NOTREACHED();
+ }
+ 
++Value& Value::SetTag(uint64_t tag) noexcept {
++  tag_ = tag;
++  return *this;
++}
++
+ Value::SimpleValue Value::GetSimpleValue() const {
+   CHECK(is_simple());
+   return simple_value_;
+@@ -251,9 +261,14 @@ const Value::BinaryValue& Value::GetInvalidUTF8() const {
+   return bytestring_value_;
+ }
+ 
++uint64_t Value::GetTag() const {
++  CHECK(has_tag());
++  return tag_;
++}
++
+ void Value::InternalMoveConstructFrom(Value&& that) {
+   type_ = that.type_;
+-
++  tag_  = that.tag_;
+   switch (type_) {
+     case Type::UNSIGNED:
+     case Type::NEGATIVE:

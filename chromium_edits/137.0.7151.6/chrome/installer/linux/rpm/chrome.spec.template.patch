@@ -1,0 +1,13 @@
+diff --git a/chrome/installer/linux/rpm/chrome.spec.template b/chrome/installer/linux/rpm/chrome.spec.template
+index 658a6edb3924c..a1e090554f81e 100644
+--- a/chrome/installer/linux/rpm/chrome.spec.template
++++ b/chrome/installer/linux/rpm/chrome.spec.template
+@@ -126,7 +126,7 @@ add_nss_symlinks
+ remove_udev_symlinks
+ 
+ if [ ! -e "$DEFAULTS_FILE" ]; then
+-  echo 'repo_add_once="true"' > "$DEFAULTS_FILE"
++  echo 'repo_add_once="false"' > "$DEFAULTS_FILE"
+ fi
+ 
+ . "$DEFAULTS_FILE"

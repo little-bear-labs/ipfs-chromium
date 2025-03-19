@@ -1,0 +1,16 @@
+diff --git a/chrome/browser/flag_descriptions.cc b/chrome/browser/flag_descriptions.cc
+index e1294c292b8c8..af8e9513eedc6 100644
+--- a/chrome/browser/flag_descriptions.cc
++++ b/chrome/browser/flag_descriptions.cc
+@@ -609,6 +609,11 @@ const char kEnableCrossDevicePrefTrackerDescription[] =
+     "Enables the tracking and sharing of select non-syncing preference values "
+     "across a user's signed-in devices.";
+ 
++#if BUILDFLAG(ENABLE_IPFS)
++extern const char kEnableIpfsName[] = "Enable IPFS";
++extern const char kEnableIpfsDescription[] = "Enable ipfs:// and ipns:// URLs";
++#endif
++
+ const char kPreinstalledWebAppAlwaysMigrateCalculatorName[] =
+     "Preinstalled web app always migrate - Calculator";
+ const char kPreinstalledWebAppAlwaysMigrateCalculatorDescription[] =

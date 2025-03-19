@@ -17,12 +17,21 @@ class ChromiumDnsTxtLookup : public ctx::DnsTxtLookup {
   raw_ptr<InterRequestState> state_;
   std::map<std::string, std::vector<std::unique_ptr<DnsTxtRequest>>> dns_reqs_;
 
-  void SendDnsTextRequest(std::string,
+  void SendDnsTextRequest(std::string host,
                           DnsTextResultsCallback,
                           DnsTextCompleteCallback) override;
 
  public:
-  ChromiumDnsTxtLookup(InterRequestState&);
+
+  /*!
+   * \brief construct
+   * \param state Access to nigh-globals, in particular network context.
+   */
+  ChromiumDnsTxtLookup(InterRequestState& state);
+
+  /*!
+   * \brief dtor
+   */
   ~ChromiumDnsTxtLookup() noexcept override;
 };
 }  // namespace ipfs

@@ -1,0 +1,24 @@
+diff --git a/chrome/browser/flag_descriptions.h b/chrome/browser/flag_descriptions.h
+index 151e3658ea6ef..6c2e4e5fc12a7 100644
+--- a/chrome/browser/flag_descriptions.h
++++ b/chrome/browser/flag_descriptions.h
+@@ -23,6 +23,7 @@
+ #include "pdf/buildflags.h"
+ #include "printing/buildflags/buildflags.h"
+ #include "third_party/blink/public/common/buildflags.h"
++#include "third_party/ipfs_client/ipfs_buildflags.h"
+ 
+ // This file declares strings used in chrome://flags. These messages are not
+ // translated, because instead of end-users they target Chromium developers and
+@@ -532,6 +533,11 @@ inline constexpr char kDevToolsStartingStyleDebuggingName[] =
+ inline constexpr char kDevToolsStartingStyleDebuggingDescription[] =
+     "Enables the debugging of @starting-style in the elements panel.";
+ 
++#if BUILDFLAG(ENABLE_IPFS)
++inline constexpr char kEnableIpfsName[] = "Enable IPFS";
++inline constexpr char kEnableIpfsDescription[] = "Enable ipfs:// and ipns:// URLs";
++#endif
++
+ inline constexpr char kEnableSeamlessSigninName[] = "Enable Seamless Sign-in";
+ inline constexpr char kEnableSeamlessSigninDescription[] =
+     "Enables the Seamless Sign-in flow that signs in the user without showing "

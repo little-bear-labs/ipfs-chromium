@@ -34,6 +34,9 @@ else()
         "${CMAKE_CURRENT_BINARY_DIR}/conanfile.txt"
         @ONLY
     )
+    execute_process(
+        COMMAND ${Python3_EXECUTABLE} "${CMAKE_CURRENT_LIST_DIR}/conan_remotes.py"
+    )
     if("${CMAKE_CURRENT_BINARY_DIR}/conanfile.txt" IS_NEWER_THAN "${CMAKE_CURRENT_BINARY_DIR}/conan.timestamp")
       execute_process(
           COMMAND conan install ${CMAKE_CURRENT_BINARY_DIR} --output-folder=${CMAKE_CURRENT_BINARY_DIR} --build=missing --settings build_type=${CMAKE_BUILD_TYPE} --generator CMakeDeps

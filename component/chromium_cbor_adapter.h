@@ -20,19 +20,33 @@ class ChromiumCborAdapter final : public DagCborValue, public ctx::CborParser {
   std::optional<std::vector<std::uint8_t>> as_bytes() const override;
   std::optional<Cid> as_link() const override;
   std::optional<bool> as_bool() const override;
+
+  /*! \return Whether this represents a map/dict
+   */
   bool is_map() const override;
+
+  /*! \return Whether this represents an array/list
+   */
   bool is_array() const override;
   void iterate_map(MapElementCallback) const override;
   void iterate_array(ArrayElementCallback) const override;
 
  public:
   explicit ChromiumCborAdapter();
+
+  /*! \brief Move ctor
+   */
   ChromiumCborAdapter(cbor::Value&&);
   ChromiumCborAdapter(cbor::Value const&);
   ChromiumCborAdapter(ChromiumCborAdapter const& rhs);
   ~ChromiumCborAdapter() noexcept override;
 
-  std::unique_ptr<DagCborValue> Parse(ByteView) override;
+  /*!
+   * \brief Parse CBOR bytes
+   * \param bytes to parse
+   * \return The DAG CBOR IPLD node
+   */
+  std::unique_ptr<DagCborValue> Parse(ByteView bytes) override;
 };
 }  // namespace ipfs
 

@@ -1,0 +1,19 @@
+diff --git a/chrome/browser/shell_integration_mac.mm b/chrome/browser/shell_integration_mac.mm
+index b36b6c8a1a5c4..8436488b7254c 100644
+--- a/chrome/browser/shell_integration_mac.mm
++++ b/chrome/browser/shell_integration_mac.mm
+@@ -81,6 +81,14 @@ bool SetAsDefaultBrowser() {
+                                      toOpenURLsWithScheme:@"https"
+                                         completionHandler:^(NSError*){
+                                         }];
++  [NSWorkspace.sharedWorkspace setDefaultApplicationAtURL:app_bundle
++                                     toOpenURLsWithScheme:@"ipfs"
++                                        completionHandler:^(NSError*){
++                                        }];
++  [NSWorkspace.sharedWorkspace setDefaultApplicationAtURL:app_bundle
++                                     toOpenURLsWithScheme:@"ipns"
++                                        completionHandler:^(NSError*){
++                                        }];
+   [NSWorkspace.sharedWorkspace setDefaultApplicationAtURL:app_bundle
+                                         toOpenContentType:UTTypeHTML
+                                         completionHandler:^(NSError*){

@@ -1,0 +1,24 @@
+diff --git a/chrome/browser/flag_descriptions.h b/chrome/browser/flag_descriptions.h
+index 00e9e9fb286f8..94c2b0f703aaa 100644
+--- a/chrome/browser/flag_descriptions.h
++++ b/chrome/browser/flag_descriptions.h
+@@ -24,6 +24,7 @@
+ #include "pdf/buildflags.h"
+ #include "printing/buildflags/buildflags.h"
+ #include "third_party/blink/public/common/buildflags.h"
++#include "third_party/ipfs_client/ipfs_buildflags.h"
+ 
+ // This file declares strings used in chrome://flags. These messages are not
+ // translated, because instead of end-users they target Chromium developers and
+@@ -374,6 +375,11 @@ extern const char kEnableDevtoolsDeepLinkViaExtensibilityApiName[];
+ extern const char kEnableDevtoolsDeepLinkViaExtensibilityApiDescription[];
+ #endif  // !BUILDFLAG(IS_ANDROID)
+ 
++#if BUILDFLAG(ENABLE_IPFS)
++extern const char kEnableIpfsName[];
++extern const char kEnableIpfsDescription[];
++#endif
++
+ extern const char kEnableLazyLoadImageForInvisiblePageName[];
+ extern const char kEnableLazyLoadImageForInvisiblePageDescription[];
+ 

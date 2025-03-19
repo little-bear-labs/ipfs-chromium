@@ -12,15 +12,17 @@ from sys import stderr
 
 import json
 
-inc_link = join(build_dir,'component','inc_link')
+inc_link = join(build_dir, 'component','inc_link')
 chromium_src = CACHE_VARS['CHROMIUM_SOURCE_TREE'].rstrip('/')
 profile = CACHE_VARS['CHROMIUM_PROFILE']
 gen_dir = join(chromium_src,'out',profile,'gen')
 source_bases = [
     chromium_src,
     gen_dir,
-    join(chromium_src,'v8','include'),
-    join(chromium_src,'third_party', 'abseil-cpp')
+    join(chromium_src, 'v8',  'include'),
+    join(chromium_src, 'third_party', 'abseil-cpp'),
+    join(chromium_src, 'net', 'third_party', 'quiche', 'overrides'),
+    join(chromium_src, 'net', 'third_party', 'quiche', 'src'),
     ]
 for g in [f'{chromium_src}/third_party/**/include', f'{chromium_src}/base/**/src', f'{gen_dir}/base/**/src' ]:
     for inc_dir in glob(g, recursive=True):
@@ -86,6 +88,7 @@ class Command:
     def eval_line(self, line) -> bool:
         global link_count
         global unfound_count
+        verbose('Eval:', line)
         pound = line.find('#include')
         if pound == -1:
             return False
@@ -107,20 +110,30 @@ class Command:
             return False
         if not exists( dirname(target) ):
             makedirs(dirname(target))
-        if 'openssl' in target:
+        verbose('target=', target, 'for line', line)
+        if 'boringssl' in inc and not inc.endswith('input.h'):
+            with open(target, 'w') as tgt:
+                print("//This file included and probably not provided by the conan (newer) version of openssl", file=tgt)
+        elif 'openssl' in target:
             # with open(target, 'w') as tgt:
             #     print("//This file included and probably not provided by the conan (newer) version of openssl", file=tgt)
             #     print('Stubbed',tgt)
             return False
         for base in source_bases:
-            source = join(base,inc)
+            source = join(base, inc)
             if exists(source):
-                symlink(source, target)
-                print("Symlink",inc,source,'=>',target)
+                verbose(source, 'exists. Attempt symlink to', target)
+                try:
+                    symlink(source, target)
+                except FileExistsError:
+                    return False
+                print("Symlink", inc, source, '=>', target)
                 self.retry = True
                 link_count += 1
                 return True
-        print('Failed to resolve:',inc,pound,quote,angle,line,file=stderr)
+            else:
+                verbose('Did not find', source, 'for', line)
+        print('Failed to resolve:', inc, pound, quote, angle, line, file=stderr)
         unfound_count += 1
         return False
 

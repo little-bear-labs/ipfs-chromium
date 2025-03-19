@@ -1,0 +1,25 @@
+diff --git a/components/policy/resources/templates/policies.yaml b/components/policy/resources/templates/policies.yaml
+index 5ce43f00d763a..4034202fbd55c 100644
+--- a/components/policy/resources/templates/policies.yaml
++++ b/components/policy/resources/templates/policies.yaml
+@@ -1403,6 +1403,15 @@ policies:
+   1402: GeminiActOnWebSettings
+   1403: LocalAuthFactorsComplexity
+   1404: ProxyOverrideRules
++  1405: LocalAuthFactors
++  1406: EnableProxyOverrideRulesForAllUsers
++  1407: DefaultIdleDetectionSetting
++  1408: IdleDetectionAllowedForUrls
++  1409: IdleDetectionBlockedForUrls
++  1410: GeolocationAllowedForUrls
++  1411: GeolocationBlockedForUrls
++  1412: PdfXfaFormsEnabled
++  1413: CameraSaveLocation
+ atomic_groups:
+   1: Homepage
+   2: RemoteAccess
+@@ -1465,3 +1474,4 @@ atomic_groups:
+   59: DeviceAttributesSettings
+   60: ProtectedContent
+   61: LegacyCookieScopeSettings
++  62: GeolocationSettings

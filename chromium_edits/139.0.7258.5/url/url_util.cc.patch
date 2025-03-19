@@ -1,0 +1,45 @@
+diff --git a/url/url_util.cc b/url/url_util.cc
+index f77ce7f6de0a1..9ad8eaf99f393 100644
+--- a/url/url_util.cc
++++ b/url/url_util.cc
+@@ -77,6 +77,8 @@ struct SchemeRegistry {
+   std::vector<SchemeWithType> referrer_schemes = {
+       {kHttpsScheme, SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION},
+       {kHttpScheme, SCHEME_WITH_HOST_PORT_AND_USER_INFORMATION},
++      {"ipfs", SCHEME_WITH_HOST},
++      {"ipns", SCHEME_WITH_HOST},
+   };
+ 
+   // Schemes that do not trigger mixed content warning.
+@@ -85,6 +87,8 @@ struct SchemeRegistry {
+       kWssScheme,
+       kDataScheme,
+       kAboutScheme,
++      {"ipfs", SCHEME_WITH_HOST},
++      {"ipns", SCHEME_WITH_HOST},
+   };
+ 
+   // Schemes that normal pages cannot link to or access (i.e., with the same
+@@ -106,6 +110,8 @@ struct SchemeRegistry {
+       kHttpsScheme,
+       kHttpScheme,
+       kDataScheme,
++      {"ipfs", SCHEME_WITH_HOST},
++      {"ipns", SCHEME_WITH_HOST},
+   };
+ 
+   // Schemes that can be used by web to store data (local storage, etc).
+@@ -310,7 +316,12 @@ bool DoCanonicalize(const CHAR* spec,
+     success = CanonicalizeFileSystemURL(
+         spec, ParseFileSystemURL(std::basic_string_view(spec, spec_len)),
+         charset_converter, output, output_parsed);
+-
++  } else if (DoCompareSchemeComponent(spec, scheme, "ipfs")) {
++    auto spec_view = std::basic_string_view(spec, spec_len);
++    // Switch multibase away from case-sensitive ones before continuing canonicalization.
++    auto parsed_input = ParseStandardURL(spec_view);
++    success = CanonicalizeIpfsURL(spec_view, parsed_input, scheme_type,
++                                  charset_converter, output, output_parsed);
+   } else if (DoIsStandard(std::optional(scheme.as_string_view_on(spec)),
+                           &scheme_type)) {
+     // All "normal" URLs.

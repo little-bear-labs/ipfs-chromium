@@ -41,7 +41,12 @@ class COMPONENT_EXPORT(IPFS) InterRequestState
   void network_context(network::mojom::NetworkContext*);
   network::mojom::NetworkContext* network_context() const;
 
-  static void CreateForBrowserContext(content::BrowserContext*, PrefService*);
+  /*!
+   * \brief Factory method
+   * \param c The browser context that it will embedded with
+   * \param p The preferences that control how IPFS will be used
+   */
+  static void CreateForBrowserContext(content::BrowserContext* c, PrefService* p);
   static InterRequestState& FromBrowserContext(content::BrowserContext*);
 };
 }  // namespace ipfs

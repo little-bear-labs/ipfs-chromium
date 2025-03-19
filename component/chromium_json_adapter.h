@@ -5,6 +5,10 @@
 #include <ipfs_client/dag_json_value.h>
 
 namespace ipfs {
+
+/*!
+ * \brief A DAG Json value, using Chromium's JSON parsing
+ */
 class ChromiumJsonAdapter final : public ipfs::DagJsonValue {
   base::Value data_;
   std::string pretty_print() const override;
@@ -14,7 +18,11 @@ class ChromiumJsonAdapter final : public ipfs::DagJsonValue {
   bool iterate_list(std::function<void(DagJsonValue const&)>) const override;
 
  public:
-  ChromiumJsonAdapter(base::Value);
+
+  /*! \brief construct
+   *  \details d The data (JSON value) being represented.
+   */
+  ChromiumJsonAdapter(base::Value d);
   ~ChromiumJsonAdapter() noexcept override;
 };
 }  // namespace ipfs

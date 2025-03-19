@@ -240,10 +240,14 @@ find_package(OpenSSL
     COMPONENTS
         Crypto
 )
+find_package(
+  ipfs_client
+  REQUIRED
+)
 target_link_libraries(out_of_tree
   PUBLIC
     protobuf::libprotobuf
-    ipfs_client
+    ipfs_client::ipfs_client
     OpenSSL::SSL
   )
 target_include_directories(out_of_tree

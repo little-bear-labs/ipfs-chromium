@@ -29,7 +29,9 @@ except ModuleNotFoundError as ex:
     verbose('Installed requests because of', ex)
 
 
-VERSION_CLOSE_ENOUGH = 30135
+VERSION_CLOSE_ENOUGH = 30317
+OOD_GRACE_PERIOD = VERSION_CLOSE_ENOUGH * 23
+MONTHS_OF_SUPPORT = 14
 LARGE_INT = 9876543210
 here = dirname(__file__)
 
@@ -194,13 +196,17 @@ class Patcher:
         return False
 
     def check_patch(self, patch_path: str, relative: str):
+        src = splitext(relative)[0]
+        skip = join(self.csrc, src + '.skip')
+        if isfile(skip):
+            print('Manual override in place at', skip, 'so skipping the patch', patch_path)
+            return
         if 0 == self.git(
             ["apply", "--check", "--reverse", "--verbose", patch_path],
             Result.ExitCodeOnly,
         ):
             verbose(patch_path, "already applied.")
             return
-        src = splitext(relative)[0]
         ec = self.git(["apply", "--verbose", patch_path], Result.ExitCode)
         verbose("Applying patch", patch_path, "gave exit code", ec)
         if ec == 0:
@@ -223,6 +229,8 @@ class Patcher:
                         join(self.csrc, src),
                         ") with",
                         patch_path,
+                        f"try\ngit difftool {self.__closest_by_git()}.ic ",
+                        src
                     )
                     sys.exit(8)
 
@@ -341,7 +349,7 @@ class Patcher:
             )
         )
         vs.sort()
-        verbose(f"'Most' ({idx}) versions:", vs)
+        verbose(f"'Most' {ch} ({idx}) versions:", vs)
         return vs[idx]
 
     def newest(self):
@@ -364,7 +372,8 @@ class Patcher:
             return self.up_rels[f"electron-{branch}"]
         u = f"https://raw.githubusercontent.com/electron/electron/{branch}/DEPS"
         resp = requests.get(u, timeout=999)
-        toks = resp.text.split("'")
+        toks = list(resp.text.split("'"))
+        verbose(f'electron branch {branch} DEPS={toks}')
         i = toks.index("chromium_version") + 2
         self.up_rels[f"electron-{branch}"] = toks[i]
         return toks[i]
@@ -486,16 +495,18 @@ class Patcher:
                 return lines[i:j]
         return []
 
-    def list_ood(self, to_check: list[str], sense: bool, both: bool = False):
+    def list_ood(self, to_check_a: list[str], sense: bool, both: bool = False):
+        to_check = [[int(t) for t in x.split('.')] for x in to_check_a]
         to_check.sort()
+        to_check = [[str(i) for i in a] for a in to_check]
+        to_check = ['.'.join(a) for a in to_check]
         oldest = self.oldest()
         newest = self.newest()
-        gap = newest[0] - oldest[0] + VERSION_CLOSE_ENOUGH
-        min_ver = oldest[0] - gap
-        min_date = time() - 3600 * 24 * 31 * 6
-        verbose(
-            f"Oldest supportable version: {oldest} , newest was: {newest} , gap: {gap} -> {min_ver}"
-        )
+        gap = newest[0] - oldest[0]
+        min_ver = oldest[0] - gap - OOD_GRACE_PERIOD
+        min_date = time() - 3600 * 24 * 31 * MONTHS_OF_SUPPORT
+        verbose(f"Oldest supportable version: {oldest} , newest was: {newest} ")
+        verbose(f"gap: {gap} -> {min_ver} , checking {to_check} which should be a sorted version of {to_check_a}.")
         for p in to_check:
             d = self.date_of(p)
             verbose("Checking", p, d, ctime(d))
@@ -520,7 +531,7 @@ def list_releases():
         for osn in ["Linux", "Mac", "Windows"]:
             rels = per.release_versions(chan, osn)
             for (step_desc, verinf) in zip(['Cur', 'Prv', 'Old'], rels):
-                print(f"{verinf[1]:15} {step_desc} {chan:9}{os:7}")
+                print(f"{verinf[1]:15} {step_desc} {chan:9}{osn:7}")
     for (elec_br, chrom_ver) in per.electron_versions().items():
         print(f"{chrom_ver:15} Electron {elec_br}")
     print(f"{per.electron_version():15} Electron main")
