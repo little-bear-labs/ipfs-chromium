@@ -1,0 +1,16 @@
+diff --git a/chrome/browser/flag_descriptions.cc b/chrome/browser/flag_descriptions.cc
+index dc749811f0335..29a81896a4db2 100644
+--- a/chrome/browser/flag_descriptions.cc
++++ b/chrome/browser/flag_descriptions.cc
+@@ -491,6 +491,11 @@ const char kEnableBookmarksSelectedTypeOnSigninForTestingDescription[] =
+     "sync-enable-bookmarks-in-transport-mode. Enables the bookmarks "
+     "UserSelectableType upon sign-in";
+ 
++#if BUILDFLAG(ENABLE_IPFS)
++extern const char kEnableIpfsName[] = "Enable IPFS";
++extern const char kEnableIpfsDescription[] = "Enable ipfs:// and ipns:// URLs";
++#endif
++
+ const char kPreloadingOnPerformancePageName[] =
+     "Preloading Settings on Performance Page";
+ const char kPreloadingOnPerformancePageDescription[] =

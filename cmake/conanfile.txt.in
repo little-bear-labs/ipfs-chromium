@@ -1,8 +1,9 @@
 [requires]
-    abseil/20230802.1
+    abseil/20240116.2
     boost/1.81.0
     c-ares/1.22.1
     gtest/1.13.0
+    ipfs_client/@IPFS_CLIENT_VERSION@
     nlohmann_json/3.11.2
     openssl/1.1.1w
     protobuf/@protobuf_version@

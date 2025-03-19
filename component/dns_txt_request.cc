@@ -29,8 +29,14 @@ void Self::OnTextResults(std::vector<std::string> const& results) {
   results_callback_(results);
 }
 void Self::OnComplete(int32_t result,
-                      const ::net::ResolveErrorInfo&,
+                      ::net::ResolveErrorInfo const&,
                       VirtualOptional<::net::AddressList> const&,
                       VirtualOptional<Endpoints> const&) {
+  completion_callback_();
+}
+void Self::OnComplete(int32_t result,
+                ::net::ResolveErrorInfo const&,
+                ::net::AddressList const&,
+                std::vector<::net::HostResolverEndpointResult> const&) {
   completion_callback_();
 }

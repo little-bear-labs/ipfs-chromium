@@ -25,12 +25,29 @@ class InterRequestState;
  */
 class CacheRequestor : public gw::Requestor {
  public:
-  CacheRequestor(InterRequestState&, base::FilePath);
+
+  /*!
+   * \brief ctor
+   * \param base Directory to store cache in
+   */
+  CacheRequestor(InterRequestState& state, base::FilePath base);
   ~CacheRequestor() noexcept override;
+
+  /*!
+   * \brief Cache a response
+   * \param key Canonical version of the data (e.g. not including gateway)
+   * \param headers Info about its original fetch (and also expiration)
+   * \param body Data to store.
+   */
   void Store(std::string key, std::string headers, ByteView body);
   void Expire(std::string const& key);
 
+  /*!
+   * \brief A static string describing the class for logging purposes
+   * \return "Disk Cache"
+   */
   std::string_view name() const override;
+  void Assign(disk_cache::BackendResult);
 
  private:
   struct Task {
@@ -47,7 +64,7 @@ class CacheRequestor : public gw::Requestor {
     gw::RequestPtr request;
     ipld::BlockSource orig_src;
   };
-  raw_ref<InterRequestState> state_;
+  // raw_ref<InterRequestState> state_;
   std::unique_ptr<disk_cache::Backend> cache_;
   bool startup_pending_ = false;
   base::FilePath path_;
@@ -55,7 +72,6 @@ class CacheRequestor : public gw::Requestor {
   void Start();
 
   void StartFetch(Task& t, net::RequestPriority priority);
-  void Assign(disk_cache::BackendResult);
   void OnOpen(Task, disk_cache::EntryResult);
   void OnHeaderRead(Task, int);
   void OnBodyRead(Task, int);

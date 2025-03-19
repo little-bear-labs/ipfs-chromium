@@ -1,0 +1,16 @@
+diff --git a/chrome/browser/flag_descriptions.cc b/chrome/browser/flag_descriptions.cc
+index 7d93033ed5ed8..6ae02f29676c3 100644
+--- a/chrome/browser/flag_descriptions.cc
++++ b/chrome/browser/flag_descriptions.cc
+@@ -597,6 +597,11 @@ const char kD3D12VideoEncoderDescription[] =
+     "or fails to initialize.";
+ #endif  // BUILDFLAG(IS_WIN)
+ 
++#if BUILDFLAG(ENABLE_IPFS)
++extern const char kEnableIpfsName[] = "Enable IPFS";
++extern const char kEnableIpfsDescription[] = "Enable ipfs:// and ipns:// URLs";
++#endif
++
+ const char kPreinstalledWebAppAlwaysMigrateCalculatorName[] =
+     "Preinstalled web app always migrate - Calculator";
+ const char kPreinstalledWebAppAlwaysMigrateCalculatorDescription[] =

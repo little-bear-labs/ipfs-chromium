@@ -53,6 +53,7 @@ std::string Unescape(std::string_view comp) {
 
 auto ipfs::CreateContext(InterRequestState& stat, PrefService* pref)
     -> std::shared_ptr<Client> {
+  LOG(WARNING) << __PRETTY_FUNCTION__;
   using K = crypto::SigningKeyType;
   auto result = std::make_shared<Client>();
   result->with(std::make_unique<ChromiumIpfsGatewayConfig>(pref))

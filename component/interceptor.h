@@ -17,9 +17,15 @@ class COMPONENT_EXPORT(IPFS) Interceptor final
   raw_ptr<network::mojom::NetworkContext> network_context_;
   raw_ptr<PrefService> pref_svc_;
 
-  void MaybeCreateLoader(network::ResourceRequest const&,
-                         content::BrowserContext*,
-                         LoaderCallback) override;
+  /*!
+   * \brief Asynchronously check whether an IpfsUrlLoader would be appropriate, and if so create one
+   * \param req The request to be loaded
+   * \param context In what browser context
+   * \param loader_callback What to call with a loader or lack thereof
+   */
+  void MaybeCreateLoader(network::ResourceRequest const& req,
+                         content::BrowserContext* context,
+                         LoaderCallback loader_callback) override;
 
  public:
   Interceptor(network::mojom::URLLoaderFactory* handles_http,

@@ -9,11 +9,58 @@
 using Self = ipfs::CacheRequestor;
 namespace dc = disk_cache;
 
+namespace {
+  using old_signature = disk_cache::BackendResult (*)(
+      net::CacheType,
+      net::BackendType,
+      scoped_refptr<disk_cache::BackendFileOperationsFactory>,
+      base::FilePath const&,
+      int64_t,
+      disk_cache::ResetHandling ,
+      net::NetLog*,
+      disk_cache::BackendResultCallback
+    );
+  using new_signature = disk_cache::BackendResult (*)(
+      net::CacheType,
+      net::BackendType,
+      scoped_refptr<disk_cache::BackendFileOperationsFactory>,
+      base::FilePath const&,
+      int64_t,
+      disk_cache::ResetHandling ,
+      net::NetLog*,
+      net::CacheEncryptionDelegate*,
+      disk_cache::BackendResultCallback
+    );
+
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunused-function"
+
+    disk_cache::BackendResult create_backend_compatibly(Self* assign_to, base::FilePath path, old_signature real_create) {
+      return real_create(
+        net::CacheType::DISK_CACHE, net::CACHE_BACKEND_DEFAULT, {}, path, 0,
+        dc::ResetHandling::kResetOnError, nullptr,
+        base::BindOnce(&Self::Assign, base::Unretained(assign_to))
+      );
+    }
+    disk_cache::BackendResult create_backend_compatibly(Self* assign_to, base::FilePath path, new_signature real_create) {
+      return real_create(
+        net::CacheType::DISK_CACHE, net::CACHE_BACKEND_DEFAULT, {}, path, 0,
+        dc::ResetHandling::kResetOnError, nullptr,
+        nullptr,
+        base::BindOnce(&Self::Assign, base::Unretained(assign_to))
+      );
+    }
+
+  #pragma clang diagnostic pop
+
+}
+
 std::string_view Self::name() const {
   return "Disk Cache";
 }
 Self::CacheRequestor(InterRequestState& state, base::FilePath base)
-    : state_{state} {
+    // : state_{state}
+{
   if (!base.empty()) {
     path_ = base.AppendASCII("IpfsBlockCache");
   }
@@ -23,11 +70,7 @@ void Self::Start() {
   if (startup_pending_) {
     return;
   }
-  auto result = dc::CreateCacheBackend(
-      net::CacheType::DISK_CACHE, net::CACHE_BACKEND_DEFAULT, {}, path_, 0,
-      //      dc::ResetHandling::kNeverReset,
-      dc::ResetHandling::kResetOnError, nullptr,
-      base::BindOnce(&Self::Assign, base::Unretained(this)));
+  auto result = create_backend_compatibly(this, path_, &dc::CreateCacheBackend);
   startup_pending_ = result.net_error == net::ERR_IO_PENDING;
   if (!startup_pending_) {
     Assign(std::move(result));

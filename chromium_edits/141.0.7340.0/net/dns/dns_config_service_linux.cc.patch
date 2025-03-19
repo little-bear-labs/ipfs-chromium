@@ -1,0 +1,35 @@
+diff --git a/net/dns/dns_config_service_linux.cc b/net/dns/dns_config_service_linux.cc
+index 8c0bf26c27e2b..473ff825f0f4a 100644
+--- a/net/dns/dns_config_service_linux.cc
++++ b/net/dns/dns_config_service_linux.cc
+@@ -254,20 +254,6 @@ bool IsNsswitchConfigCompatible(
+         }
+         break;
+ 
+-      case NsswitchReader::Service::kResolve:
+-        // If /etc/resolv.conf points to systemd-resolved then treat nss-resolve
+-        // the same as nss-dns. If it's not then consider the nsswitch
+-        // configuration incompatible.
+-        if (!resolv_reader.IsLikelySystemdResolved()) {
+-          RecordIncompatibleNsswitchReason(
+-              IncompatibleNsswitchReason::kIncompatibleService,
+-              specification.service);
+-          return false;
+-        }
+-        // systemd-resolved also supports looking up records from /etc/hosts.
+-        files_found = true;
+-        [[fallthrough]];
+-
+       case NsswitchReader::Service::kDns:
+         if (!files_found) {
+           RecordIncompatibleNsswitchReason(
+@@ -291,7 +277,8 @@ bool IsNsswitchConfigCompatible(
+         // Ignore any entries after `kDns` because Chrome will fallback to the
+         // system resolver if a result was not found in DNS.
+         return true;
+-
++      case NsswitchReader::Service::kResolve:
++        break;
+       case NsswitchReader::Service::kMdns:
+       case NsswitchReader::Service::kMdns4:
+       case NsswitchReader::Service::kMdns6:

@@ -10,8 +10,12 @@ here = join(dirname(__file__), '..')
 
 def git(git_args):
     cmd_args = ['git', '-C', here] + git_args
-    result = subprocess.run(args=cmd_args, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True)
-    return result.stdout.strip()
+    result = subprocess.check_output(
+        args=cmd_args,
+        text=True,
+        stderr=subprocess.STDOUT
+        )
+    return result.strip()
 
 
 def tag_to_version(tag):
@@ -26,7 +30,7 @@ def tag_to_version(tag):
             result *= 10
             result += i
         return result
-    except Exception:
+    except ValueError:
         return 0
 
 
@@ -43,7 +47,12 @@ def recent():
 
 
 def on_tag():
-    return git(['describe', '--tags', '--exact-match', 'HEAD'])
+    try:
+        return git(['describe', '--tags', '--exact-match', 'HEAD'])
+    except subprocess.CalledProcessError as cpe:
+        if 'no tag exactly matches' in cpe.output:
+            return None
+        raise cpe
 
 
 def deduce():
@@ -55,13 +64,13 @@ def deduce():
         tags = git(['tag']).splitlines()
         versions = map(tag_to_version, tags)
         last = max(versions)
-        next = last + 1
-        major = str(next//1000)
-        minor = str((next//100) % 10)
-        revision = str((next//10) % 10)
-        build = str(next % 10)
+        nxt = last + 1
+        major = str(nxt//1000)
+        minor = str((nxt//100) % 10)
+        revision = str((nxt//10) % 10)
+        build = str(nxt % 10)
         result = '.'.join([major, minor, revision, build])
-    with open(join(here, 'scr', 'version.txt'), 'w') as txt:
+    with open(join(here, 'scr', 'version.txt'), 'w', encoding='utf-8') as txt:
         print(result, file=txt)
     return result
 

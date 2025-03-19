@@ -16,8 +16,20 @@ class ChromiumHttp : public ctx::HttpApi {
   raw_ptr<network::mojom::URLLoaderFactory> loader_factory_ = nullptr;
 
  public:
-  Canceller SendHttpRequest(ReqDesc, OnComplete cb) const override;
-  ChromiumHttp(network::mojom::URLLoaderFactory&);
+
+  /*!
+   * \brief Send an HTTP request
+   * \param desc Describe the request to be sent
+   * \param cb Called with results when the request has completed
+   * \return An object which can be used to cancel a pending request
+   */
+  Canceller SendHttpRequest(ReqDesc desc, OnComplete cb) const override;
+
+  /*!
+   * \brief construct
+   * \param delegate Loader factor to use for access to HTTP
+   */
+  ChromiumHttp(network::mojom::URLLoaderFactory& delegate);
 };
 }  // namespace ipfs
 

@@ -24,11 +24,15 @@ using NonNetworkURLLoaderFactoryMap =
 class COMPONENT_EXPORT(IPFS) IpfsURLLoaderFactory
     : public network::SelfDeletingURLLoaderFactory {
  public:
+  /*!
+   * \brief factory method
+   * \param in_out Where to put the newly created object
+   */
   static void Create(NonNetworkURLLoaderFactoryMap* in_out,
-                     content::BrowserContext*,
-                     URLLoaderFactory*,
-                     network::mojom::NetworkContext*,
-                     PrefService*);
+                     content::BrowserContext* context,
+                     URLLoaderFactory* default_factory,
+                     network::mojom::NetworkContext* net_ctxt,
+                     PrefService* pref_svc);
 
  private:
   IpfsURLLoaderFactory(std::string,

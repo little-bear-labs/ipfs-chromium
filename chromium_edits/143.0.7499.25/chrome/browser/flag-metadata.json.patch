@@ -1,0 +1,16 @@
+diff --git a/chrome/browser/flag-metadata.json b/chrome/browser/flag-metadata.json
+index cd4f9d3948c59..4e2963f4dd654 100644
+--- a/chrome/browser/flag-metadata.json
++++ b/chrome/browser/flag-metadata.json
+@@ -3789,6 +3789,11 @@
+     "owners": [ "ginnyhuang@google.com", "bling-pandamonium@google.com" ],
+     "expiry_milestone": 140
+   },
++  {
++    "name": "enable-ipfs",
++    "owners": [ "//components/ipfs/OWNERS" ],
++    "expiry_milestone": 150
++  },
+   {
+     "name": "enable-isolated-sandboxed-iframes",
+     "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],

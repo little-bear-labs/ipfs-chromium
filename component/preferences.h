@@ -14,6 +14,11 @@ class PrefRegistrySimple;
 class PrefService;
 
 namespace ipfs {
+
+/*!
+ *  \brief Register IPFS-specific preferences
+ *  \param registry Where to register them
+ */
 COMPONENT_EXPORT(IPFS) void RegisterPreferences(PrefRegistrySimple*);
 bool DnsFallbackPref(PrefService const*);
 
@@ -30,7 +35,11 @@ class ChromiumIpfsGatewayConfig final : public ipfs::ctx::GatewayConfig {
   std::size_t delta() const;
 
  public:
-  ChromiumIpfsGatewayConfig(PrefService*);
+
+  /*! \brief construct
+   *  \param prefs The underlying preference service for persisting configuration
+   */
+  ChromiumIpfsGatewayConfig(PrefService* prefs);
 
   unsigned GetGatewayRate(std::string_view) override;
   void SetGatewayRate(std::string_view, unsigned) override;

@@ -5,13 +5,16 @@ from cache_vars import build_dir, CACHE_VARS
 from patch import Patcher
 
 from glob import glob
-from os import environ, makedirs, remove
+from os import environ, makedirs, remove, rename
 from os.path import basename, dirname, getmtime, isdir, isfile, join, pathsep, realpath, relpath, splitext
 from shutil import copyfile, which
 from sys import argv, stderr
 
 import filecmp
 import subprocess
+
+import requests
+import tarfile
 
 depot_tools_dir = CACHE_VARS['DEPOT_TOOLS_DIRECTORY']
 src = CACHE_VARS['CHROMIUM_SOURCE_TREE']
@@ -26,6 +29,8 @@ gnargs = CACHE_VARS['GN_ARGS']
 build_type = CACHE_VARS['CMAKE_BUILD_TYPE']
 branding_dir = CACHE_VARS['BRANDING_DIR']
 python = CACHE_VARS['_Python3_EXECUTABLE']
+ipfs_client_version = CACHE_VARS['IPFS_CLIENT_VERSION']
+
 patcher = Patcher(src, git_binary, build_type)
 UPDATED = 'chromium_source_updated'
 
@@ -73,7 +78,7 @@ def run(args, fail_ok=False, cwd=None):
         rem = ':' + ':'.join(line.split(':')[1:])
         found = False
         for d in ds:
-            if isfile(join(d,p)):
+            if isfile(join(d, p)):
                 print(realpath(join(d, p)) + rem)
                 found = True
                 break
@@ -257,9 +262,18 @@ def sync_dir(source_relative, target_relative, complete=True):
 
 
 sync_dir('component', 'components/ipfs')
-ic_dir = join(src, 'third_party/ipfs_client')
+third = join(src, 'third_party')
+ic_dir = join(third, 'ipfs_client')
+print('ic_dir=', ic_dir)
 if not isdir(ic_dir):
-    run([git_binary, '-C', join(src, 'third_party'), 'clone', '--branch', 'main', 'git@gitlab.com:jbt/ipfs_client.git'])
+    # run([git_binary, '-C', join(src, 'third_party'), 'clone', '--branch', 'main', 'git@gitlab.com:jbt/ipfs_client.git'])
+    ipfs_client_url = f'https://gitlab.com/jbt/ipfs_client/-/archive/{ipfs_client_version}/ipfs_client-{ipfs_client_version}.tar.gz'
+    print('Extracting', ipfs_client_url, 'to', third)
+    with requests.get(ipfs_client_url, stream=True, timeout=99) as rx, tarfile.open(fileobj=rx.raw, mode="r:gz") as tarobj:
+        tarobj.extractall(third)
+    extracted = join(third, f'ipfs_client-{ipfs_client_version}')
+    print('Rename extracted directory from', extracted, 'to', ic_dir)
+    rename(extracted, ic_dir)
 
 if isdir(elec_dir):
     sync_dir('electron-spin', 'electron-spin')
@@ -289,4 +303,3 @@ if not isfile(n) or (isfile(UPDATED) and getmtime(UPDATED) > getmtime(n)):
 for ninja_target in argv[2:]:
     print("Build target", ninja_target, file=stderr)
     run([python, join(depot_tools_dir, 'ninja.py'), '-C', out, '-j', jobs, ninja_target])
-
