@@ -9,6 +9,10 @@
 using Self = ipfs::CacheRequestor;
 namespace dc = disk_cache;
 
+namespace net {
+  class CacheEncryptionDelegate; // In case you're in a version where this type does not exist
+}
+
 namespace {
   using old_signature = disk_cache::BackendResult (*)(
       net::CacheType,
